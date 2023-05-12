@@ -2,6 +2,10 @@
 
 ## 免费Chatgpt chatgpt4
 
+- 公益站点 https://ct1.xiami.monster/ 
+
+      益站点
+
 - ForeFront 网址： https://chat.forefront.ai/
       
       针对性地帮助自己完成各种任务
