@@ -4,7 +4,7 @@
 
 - 公益站点 https://ct1.xiami.monster/ 
 
-      公益站点
+      益站点
 
 - ForeFront 网址： https://chat.forefront.ai/
       
