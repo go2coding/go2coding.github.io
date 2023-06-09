@@ -11,13 +11,6 @@
 
       无限制地免费访问GPT-4
 
-- TDchat 网址： https://www.tdchat.com/
-
-       国内独立开发者做的网站
-
-- fastgpt 网址：https://fastgpt.app/
-
-      支持AI对话、写作、文案、创作人工智能机器人
 - poe 网址：  https://poe.com/
       
        使用提示创建自己的机器人
