@@ -53,10 +53,17 @@ aibard123.com 是一个开源导航网站，旨在为爱好人工智能的人提
 
 4. 配置域名解析：将域名解析到服务器的IP地址上，可以在域名注册服务商的管理界面中进行配置。
 
-
+- AI工具导航
 
 ![aibard123_screenshot](https://aibard123.com/assets/images/screenshot/shot.png)
 
+- AI日报
+
+![aibard123_screenshot](https://aibard123.com/assets/images/screenshot/aireport.png)
+
+- AI文摘
+
+![aibard123_screenshot](https://aibard123.com/assets/images/screenshot/aidigest.png)
 
 如果想看看效果可也访问：[aibard123.com](https://aibard123.com/?github_web) 或者[aibard123.top](https://aibard123.top/?github_web)
 
