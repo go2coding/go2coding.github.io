@@ -1,0 +1,751 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>模块化大模型来了！IBM公开WastonX核心架构技术细节 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+	<meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">模块化大模型来了！IBM公开WastonX核心架构技术细节</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 24, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.com/images/20230624/1288396636645267817.webp" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <pre><code>作者： 量子位  来源： [量子位](https://mp.weixin.qq.com/s/EaptzYnOtf2K_Wfb2rb5Ow)
+</code></pre>
+<h4 id="允中-发自-凹非寺">允中 发自 凹非寺</h4>
+<p>量子位 | 公众号 QbitAI</p>
+<p>大型语言模型（LLMs）的性能非常强大，但是现有的模型训练和部署成本都很高。而且在不忘记先前知识的前提，扩展它们去学习新的知识也很困难。也很难针对特定的任务去提取出轻量化的模型。</p>
+<p>最近，来自MIT-IBM Waston AI Lab、清华大学、Mila的研究人员联合提出了一种新的神经网络架构<strong>ModuleFormer</strong> ，利用模块化来大幅提高大型语言模型的效率和灵活性。</p>
+<p>ModuleFormer是一种基于<strong>稀疏专家混合</strong> (SMoE)的模块化架构，包括两种不同类型的模块，即新的stick-breaking注意力专家模块和传统的MLP专家模块。在训练和推理过程中，根据输入的向量，不同的模块会被稀疏地激活。</p>
+<p>与之前基于SMoE的模块化语言模型不同，ModuleFormer可以通过其新的<strong>负载平衡</strong> （load balance）和<strong>负载集中</strong> （load concentration）损失函数从未经筛选的数据中诱导出模块化。</p>
+<p>在实验中，团队发现模块化架构使得大型预训练语言模型具备了三个重要的能力：</p>
+<p><strong>1）效率‍</strong></p>
+<p>因为ModuleFormer只对每个输入只激活一小部分模块，因此可以以两倍以上的吞吐量达到与常规语言模型相同的性能。</p>
+<p><strong>2）可扩展性</strong></p>
+<p>实验表明，由于微调阶段ModuleFormer只需要更新一部分的模块，因此比常规语言模型更不容易发生灾难性遗忘，并且可以轻松通过新的模块扩展以学习训练数据中不包含的新知识。</p>
+<p><strong>3）模块特异化和筛选</strong> ‍</p>
+<p>在微调阶段ModuleFormer，新提出的负载集中损失函数可以自动筛选一部分模块，让它们专注于目标任务，而与任务无关的模块可以被直接抛弃掉以实现轻量化部署。</p>
+<p><img src="/images/20230624/1288396636645267817.webp" alt=""></p>
+<h4 id="导言">导言</h4>
+<p>尽管现代大型语言模型（LLM）在某些任务上取得了显著的成果，甚至超过了人类的表现，但其效率和灵活性仍然不高。</p>
+<p>大多数LLM（例如Llama，Falcon）在推理和训练过程中都使用了它们的全部参数，我们称这些模型为密集模型。</p>
+<p>然而，先前的研究已经表明，在执行任何特定任务时，神经模型中的大部分参数都可以在不影响模型性能的前提下被剪枝掉。</p>
+<p>此外，一旦训练完成，LLM就会“定格在某个时间点”，但许多实际应用情况要求LLM具有最新的知识。因此模型进行continue leanring的扩展能力也十分重要。</p>
+<p>随着模型规模的增长，为了领域适应或持续学习而对整个模型进行微调变得代价高昂且计算资源受限，这使得那些计算预算较小的用户无法实施。同时，更新所有参数也使得模型容易遭受灾难性遗忘（catastrophic forgetting）。</p>
+<p>为此，像LoRA这样仅更新一小部分原始参数修正量的轻量级适应方法正在变得流行。</p>
+<p>然而实验表明，这种方法仍然可能遭受灾难性遗忘影响，并且LoRA并不擅长需要模型学习大量新知识的场景，比如让模型学习一种新的语言。</p>
+<p>文章作者认为模块化是解决前述问题的一个好方法。模块化模型具有以下几个优点：</p>
+<ul>
+<li>
+<p>模型可以在输入或任务上激活一组模块条件，从而比密集激活整个模型需要更少的计算量；</p>
+</li>
+<li>
+<p>在给定领域或任务的情况下，可以组装一组与领域/任务相关的模块，形成一个新的轻量级模型；</p>
+</li>
+<li>
+<p>模型可以轻松添加新的模块进行领域适应或持续学习；</p>
+</li>
+<li>
+<p>模型可能更不容易发生灾难性遗忘，因为只有与输入相关的模块在模型微调期间进行更新。</p>
+</li>
+</ul>
+<p>这篇论文提出了一种新的模块化架构，ModuleFormer（图1a），以及在其中进行模块操作的方法。ModuleFormer每层包含一个组前馈神经网络（MLP）专家模块和一组新提出的Stickbreaking注意力专家模块。</p>
+<p>为了平衡在训练过程中不同模块的负载，作者提出了一种新的互信息损失函数。此外，文章还展示了如何在ModuleFormer中插入新模块（图1b）和进行模块修剪（图1c）。</p>
+<p>为了实现模块修建，文章引入了一种新的负载集中损失函数，用于在微调的过程中自动选择最适合执行给定任务的模块，同时通过微调进一步增强了这些模块执行该任务的能力。</p>
+<p><img src="/images/20230624/6381093384306778141.webp" alt=""><strong>△</strong> 图1</p>
+<p>实验结果显示ModuleFormer相对于密集模型在以下方面有显著的提升：</p>
+<ul>
+<li>
+<p>由于稀疏的模块激活机制（图1a）它在更低的延迟（50％）和更小的内存占用下实现了与密集LLM相同的性能，因此ModuleFormer可以实现密集模型两倍的吞吐量。</p>
+</li>
+<li>
+<p>在对新领域进行微调后，它收到灾难性遗忘的影响较低，并且也可以轻松地通过添加新模块来学习新语言和知识。（图1b）。</p>
+</li>
+<li>
+<p>它可以在下游任务上进行微调，将一部分模块特异化成为处理该任务专用的模块，而未使用的模块可以被扔掉而不会牺牲模型在该任务上的性能（图1c）。</p>
+</li>
+</ul>
+<h4 id="详解moduleformer模型">详解ModuleFormer模型</h4>
+<h4 id="sparse-mixture-of-expertssmoe的基本结构">Sparse Mixture of Experts（SMoE）的基本结构</h4>
+<p>SMoE最早由Shazeer在《Outrageously large neural networks: The sparsely-gated mixture-of-experts layer》一文中提出。</p>
+<p>每个SMoE层包含一组用于处理输入产生输出的专家模块m_1, m_2, …, m_n，以及一个用于挑选专家的路由函数g。在本篇文章中，路由函数由一个一层的神经网络来建模：</p>
+<p><img src="/images/20230624/9822710186660453470.webp" alt=""></p>
+<p>在给定一个输入向量x之后，路由函数g会计算一个专家模块的概率分布g(m|x)，然后模型会自动选择分布中前top k的专家模块来处理输入x。SMoE层的输出就是专家模块的输出通过对应的路由概率家和得到：</p>
+<p><img src="/images/20230624/5591476957301780663.webp" alt=""></p>
+<p>其中不再topk内的专家模块不会被计算，同时对应的概率g也会被用0替代。</p>
+<p>在ModuleFormer中，作者使用了两种不同的专家模块来分别构建传统transformer解码器中的自注意力层（self attention）和前馈层（MLP）。其中前馈层的专家模块和常见的SMoE专家模块一致，是一个单一隐藏层的全连通神经网络。而自注意力层的专家模块则是一个新提出的stick-breaking注意力模块。</p>
+<h4 id="stick-breaking注意力模块">Stick-Breaking注意力模块</h4>
+<p>Stick-Breaking自注意力是设计用于取代Transformer解码器的自注意力层，使用狄利克雷过程中的Stick-Breaking（折棍子）过程对每个字符xt与之前的字符x&lt;t之间的注意力分布进行建模，而不是标准自注意力层中的softmax函数。</p>
+<p>Stick-Breaking自注意力的优势在于它会自动关注最近的相关字符，而不需要引入额外的位置信息，比如position embedding和relative position bias。</p>
+<p>给定一个包含 t 个时间步的输入向量序列 x1, x2, …, xt，每个输入被投影到一系列key向量 k1, k2, …, kt 和一系列value向量 v1, v2, …, vt。为了计算时间 t 的注意力，输入 x_t 被投影到一个查询向量 q_t = W_q x_t，其中 W_q 是查询投影矩阵。对于所有之前的步骤和当前步骤 i ≤ t，计算时间步 i 的键与时间步 t 的查询匹配的概率:</p>
+<p><img src="/images/20230624/8351180927118314340.webp" alt=""></p>
+<p>需要注意的是，这个查询概率使用了sigmoid激活函数，所以没有归一化。接下来通过stick-breaking过程来对查询概率进去归一化：</p>
+<p><img src="/images/20230624/5928468235457256301.webp" alt=""></p>
+<p>这样，注意力就会自动分配给离t时刻最近，且具有较大查询概率的时刻。使得自注意力机制在没有额外的位置信息的情况下，也能对于相对位置进行有效的建模。最终，自注意力模块的输出是由注意力权重对历史的value向量进行加和并且投影得到：</p>
+<p><img src="/images/20230624/6271654620237349932.webp" alt=""></p>
+<h4 id="moduleformer中的模块控制">ModuleFormer中的模块控制</h4>
+<h4 id="预训练中的负载均衡">预训练中的负载均衡</h4>
+<p>为了避免SMoE反复使用相同的模块并浪费其他模块的额外容量，一般采用负载平衡损失函数来调节每个专家的使用频率。与之前的SMoE模型 不同，团队希望最大化输入字符和模块之间的互信息（MI）：</p>
+<p><img src="/images/20230624/7395620464745425255.webp" alt=""></p>
+<p>为了简化起见，假设在批次X中的令牌分布是均匀的，因此p(x) = 1/X。在去除所有常数成分后，可以简化互信息损失（公式6）为p(m)的熵与p(m | x)的条件熵之间的差异。</p>
+<p><img src="/images/20230624/18071466339224401833.webp" alt=""></p>
+<p>在上述内容中，p(m) = sum_x(g(m|x)p(x))，其中p(x)是批处理中每个字符的概率，H(m)是模块分布的边际熵，H(m | x)是模块在给定输入字符x的条件下的熵，|X |是输入字符的数量。对于长度为T的batch大小为B的小批量，字符的数量是|X | = BT，字符的概率是p(x) = 1/|X |。</p>
+<p>直观地说，互信息损失最大化了模块的概率分布的边际熵，并最小化了给定输入x的模块条件分布的商。它平衡了整个batch中每个专家的负载（最大化H(m)），同时也鼓励每个输入x将其路由概率集中在较少的模块上（最小化H(m | x)）。</p>
+<h4 id="微调中的负载集中">微调中的负载集中</h4>
+<p>尽管团队希望在预训练期间最大限度地利用每个专家的能力，但在微调期间希望将少量的模块专注于下游任务。这样可以移除未使用的模块并减少微调后模型的参数数量。为了将负载集中在较少的模块上，团队引入了一个新的负载集中损失函数来最小化模块的边际熵：</p>
+<p><img src="/images/20230624/1154904470067433483.webp" alt=""></p>
+<p>这样可以鼓励模型使用更少的模块来处理下游任务。在微调后，可以计算在训练或验证集上使用的模块频率f_m。f_m代表了模块m对于这个任务的重要性，可以通过移除f_m小于某个特定阈值的专家来轻松实现模型剪枝。</p>
+<h4 id="用新的模块来学习新的知识">用新的模块来学习新的知识</h4>
+<p>对于模块化模型来说，插入新模块是一种直接且参数高效的方法，可以在不对整个模型进行微调的情况下学习新知识。当向每一层插入N_new个随机初始化的模块时，还需要扩展路由器（方程2中的A）中的模块嵌入层A，使其包含一个形状为（N_new，D_rtr）的新矩阵A’。因此，</p>
+<p>新的路由函数可以写成：</p>
+<p><img src="/images/20230624/10552369223415329193.webp" alt=""></p>
+<p>由于在微调期间其他的模块参数被冻结，因此使用新模块进行持续学习可以在很大程度上避免灾难性遗忘问题。</p>
+<p>然而，灾难性遗忘仍然可能影响路由函数。当新模块在一个新领域进行训练时，如果路由函数错误地将来自旧领域的输入路由到新专家，模型可能会遭受灾难性遗忘。</p>
+<p>为了避免这种情况，团队对路由函数进行了正则化以避免灾难性遗忘，并提出了两种训练策略：</p>
+<p>1）全面微调路由，公式9中A和B使用预训练参数进行初始化，而A’则是随机初始化的。这个策略是为了训练数据中同时包含新旧数据的情况设计。</p>
+<p>2）只训练A’，这个策略是为了连续学习（lifelong learning）的情况而设计的，不使用以前训练过的数据。由于这种情况可能导致新的模块使用频率过高，从而带来灾难性遗忘。团队引入了正则项来限制A’的范数：</p>
+<p><img src="/images/20230624/4760407210429387166.webp" alt=""></p>
+<p>与被指出存在缺陷的传统连续学习正则化方法（如衰减或L2损失）不同，路由正则化不限制专家的能力，而只限制对新专家的使用趋势。</p>
+<h4 id="评估">评估</h4>
+<p>基于ModuleFormer，研究者在Pile数据集上预训练了三个不同体积和计算量的ModuleFormer Language Model（MoLM）语言模型：</p>
+<p><img src="/images/20230624/12612960887203834339.webp" alt=""></p>
+<h4 id="基础性能评估">基础性能评估</h4>
+<p>团队使用Language Model Evaluation Harness来评估零样本、少样本和语言建模任务中的语言模型。</p>
+<p>对于零样本和少样本任务，目标是在给定上下文的基础上从一组给定选项中选择最合适的完成部分。最终选择在给定上下文下具有最高可能性的完成部分。</p>
+<p>对于语言建模，在Wikitext数据集上进行测试。目标是最小化下一个标记预测的困惑度。</p>
+<p>对于代码生成，在HumanEval数据集上评估模型。HumanEval包含164个手写的Python编程问题。模型需要根据任务描述提示完成一个函数，以便能够通过所有提供的测试案例。</p>
+<p><img src="/images/20230624/842121812248317885.webp" alt=""></p>
+<p>表2和表3显示了MoLM和基准语言模型在常识推理、闭卷问答和代码生成基准上的性能。</p>
+<p>总体而言，MoLM-4B-K2模型的性能与大约13亿参数的稠密模型相当，MoLM-4B-K4和MoLM-8B-K2模型的性能与大约27亿参数的稠密模型相当。</p>
+<p>由于其稀疏计算结构，MoLM处理每个字符的激活参数仅（等同于计算量）相当于同等性能稠密模型的约25%。因此，它减少了50%的延迟，同时具有较低的内存使用峰值，并在GPU内存完全占用时将吞吐量提高了2倍。</p>
+<h4 id="通过增加模块学习新语言">通过增加模块学习新语言</h4>
+<p>在本节中，我们测试了模型学习新语言的能力。主要研究两种实验设置：连续联合预训练（continual joint pre-training）和连续终身预训练（continual lifelong pre-training）。</p>
+<p>它们的区别在于是否有英文文本的存在。对于这两种设置，我们通过在CC-100语料库上进行语言模型任务，不断地对ModuleFormer和GPT-Neo进行预训练。为了评估质量，我们采用了由XGLM和mGPT引入的0-shot方法的mLAMA基准测试。<br>
+<img src="/images/20230624/15958180598334598092.webp" alt=""></p>
+<p>持续联合预训练：在这部分中，我们对联合训练的模型进行持续预训练。具体而言，我们混合了英语和一种新语言来构建一个新的训练语料库，并保持嵌入层可训练。联合训练[Caruana, 1997]是一种众所周知的多任务学习方法，展示了对旧任务和新任务的熟练掌握。然而，它经常在不同任务之间产生负面干扰。</p>
+<p>表4显示了持续训练模型获得的结果。表格揭示了以下发现：</p>
+<p>1）我们观察到稀疏模型在Fully Tuned的情况下经历较少干扰，最终得到了最好的的性能；<br>
+2）ModuleFormer通过增加模块（Insert New Expert）的能力，比之前的LoRA方法展示出了更好的少量参数（Parameter Efficient）调优的能力。这些结果表明，稀疏架构带来了更强的抗遗忘能力。</p>
+<p>持续终身预训练：对于这个实验设定，模型仅在新语言文本上进行训练。Abraham和Robins [2005] 提出了稳定性-可塑性困境，这解释了模型面临的一个困难挑战：<br>
+1）模型应具有较高的可塑性以学习新语言，<br>
+2）模型必须具有出色的稳定性，考虑到在众多的训练迭代中不会接触到任何英语标记。</p>
+<p>表5显示了LoRA基准和我们的方法在不同的路由正则化损失权重下的结果。我们的ModuleFormer借助路由正则化损失表现出了强大的平衡稳定性和可塑性的能力。</p>
+<p>当我们通过增加损失权重来限制新专家的使用时，模型获得了稳定性，但可塑性下降。相比之下，使用LoRA对GPT-Neo进行微调在稳定性和可塑性方面都落后。</p>
+<p>相比于1.33亿可训练参数的高秩LoRA，低秩LoRA（减少训练参数到2400万）和基本正则化都无法改善稳定性。</p>
+<h4 id="微调和压缩模型">微调和压缩模型</h4>
+<p>在本节中，我们展示了ModuleFormer中的模块可以被快速移除，以创建一个在尺寸上更小但性能不受损的任务专用模型。</p>
+<p>我们首先从GitHub-code-clean数据集中创建了一个包含150亿个字符的子集，该子集只包含Python代码。然后，我们使用负载集中损失函数（权重为0.001）对MoLM-4B-K2模型在该数据集上进行精调。</p>
+<p>在精调之后，我们在从精调数据集中随机抽样的小型评估集上，计算每个专家的激活频率，然后通过将每层除以层内最大频率来进行归一化。之后，我们设定一个阈值τ，并修剪了所有归一化频率低于该阈值的模块。</p>
+<p><img src="/images/20230624/17822469992677142108.webp" alt=""></p>
+<p>我们在HumanEval数据集上测试了我们修剪后的MoLM-4B-K2模型。</p>
+<p>图2a说明了pass@k指标与剩余参数比例之间的相关性。图2b展示了剩余参数比例与阈值之间的关联。我们观察到：</p>
+<p>1）修剪不必要的模块对结果影响不大。我们可以修剪40%至50%的参数而不牺牲性能。相反，适当的修剪（33%）使精调后的模型在任务上表现更好。</p>
+<p>2）模块分布存在显著差异，大约有一半的模块的激活频率低于最常使用的专家的0.3%。这个结果显示了负载集中损失函数的有效性。</p>
+<h4 id="总结">总结</h4>
+<p>在这篇论文中，我们提出了一种新的模块化架构ModuleFormer，以及与之相关的模块操作方法。</p>
+<p>ModuleFormer包括几个新组件：新的Stickbreaking注意力机制、新的互信息负载平衡损失函数用于预训练，以及新的负载集中损失函数用于微调。</p>
+<p>基于ModuleFormer，我们预训练了一个新的语言模型MoLM。我们的实验结果显示了MoLM的相对于稠密LLM展现出了一些新的能力：</p>
+<p>1）它在更低的延迟（50%）和更小的内存占用下实现了与密集LLM相同的性能；从而提高了吞吐量超过2倍；</p>
+<p>2）在对整个模型进行微调以适应新领域后，它对灾难性遗忘的鲁棒性较强，并且也可以轻松扩展以学习新的语言和知识；</p>
+<p>3）它可以在下游任务上进行微调，以使一部分模块专注于任务，并且未被任务使用的模块可以被修剪而不影响性能。</p>
+<p>论文地址：<br>
+<a href="https://arxiv.org/abs/2306.04640">https://arxiv.org/abs/2306.04640</a></p>
+<p>— <strong>完</strong>  —</p>
+<p><strong>「AIGC+垂直领域社群」</strong></p>
+<p><strong>招募中！</strong></p>
+<p>欢迎关注AIGC的伙伴们加入AIGC+垂直领域社群，一起学习、探索、创新AIGC！</p>
+<p>请备注您想加入的垂直领域「教育」或「电商零售」，加入AIGC人才社群请备注「人才」&amp;「姓名-公司-职位」。</p>
+<p><img src="/images/20230624/723532661254177433.webp" alt=""></p>
+<p><strong>点这里👇关注我，记得标星哦～</strong></p>
+<p><strong>一键三连「分享」、「点赞」和「在看」</strong></p>
+<p>**科技前沿进展日日相见 ~ **</p>
+<p><img src="/images/20230624/10802282143666712309.svg+xml" alt=""></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

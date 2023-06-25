@@ -1,0 +1,701 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>DeepSpeed ZeRO&#43;&#43;：降低4倍网络通信，显著提高大模型及类ChatGPT模型训练效率 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+	<meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">DeepSpeed ZeRO&#43;&#43;：降低4倍网络通信，显著提高大模型及类ChatGPT模型训练效率</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 24, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.com/images/20230624/13398573209306140653.gif" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <pre><code>作者： 机器之心  来源： [机器之心](https://mp.weixin.qq.com/s/VNbY_cu9uz1KvCvJjLljTA)
+</code></pre>
+<p>机器之心转载****</p>
+<p><strong>来源：知乎</strong></p>
+<p><strong>作者：微软DeepSpeed</strong></p>
+<p>大型 AI 模型正在改变数字世界。基于大型语言模型 (LLM) 的 Turing-NLG、ChatGPT 和 GPT-4 等生成语言模型用途广泛，能够执行摘要、代码生成和翻译等任务。同样，DALL・E、Microsoft Designer 和 Bing Image Creator 等大型多模态生成模型可以生成艺术、建筑、视频和其他数字资产，使内容创作者、建筑师和工程师能够探索全新的创意生产力。</p>
+<p>然而，训练这些大型模型需要在数百甚至数千个 GPU 设备上使用大量内存和计算资源。例如，训练 Megatron-Turing NLG 530B 模型需要使用超过 4,000 个 NVidia A100 GPU。有效地利用这些资源需要一个复杂的优化系统，以将模型合理分配到各个设备的内存中，并有效地并行化这些设备上的计算。同时，为了使深度学习社区能够轻松进行大型模型训练，这些优化必须易于使用。</p>
+<p>DeepSpeed 的 ZeRO 优化系列为这些挑战提供了强大的解决方案，并已广泛用于大型深度学习模型例如 TNLG-17B、Bloom-176B、MPT-7B、Jurrasic-1 的训练中 。尽管它具有变革性的能力 ，在一些关键场景中，ZeRO 会在 GPU 之间产生大量数据传输开销，这降低了训练效率。这种情况特别发生在以下场景中：a) 全局 batch size 较小，而 GPU 数量多，这导致每个 GPU 上 batch size 较小，需要频繁通信；或者 b) 在低端集群上进行训练，其中跨节点网络带宽有限，导致高通信延迟。在这些情况下，ZeRO 的训练效率会受到限制。</p>
+<p>为了解决这些限制，我们发布了 ZeRO++ 。ZeRO++ 相比 ZeRO 将总通信量减少了 4 倍，而不会影响模型质量。这有两个关键意义：</p>
+<p><strong>1. ZeRO++ 加速大型模型预训练和微调</strong></p>
+<ol>
+<li>
+<p>每个 GPU 上 batch size 较小时：无论是在数千个 GPU 上预训练大型模型，还是在数百个甚至数十个 GPU 上对其进行微调，当每个 GPU 的 batch size 较小时，ZeRO++ 提供比 ZeRO 高 2.2 倍的吞吐量，直接减少训练时间和成本。</p>
+</li>
+<li>
+<p>低带宽计算集群: ZeRO++ 使低带宽集群能够实现与带宽高 4 倍的高端集群类似的吞吐量。因此，ZeRO++ 可以跨更广泛的集群进行高效的大型模型训练。</p>
+</li>
+</ol>
+<p><strong>2. ZeRO++ 加速 ChatGPT 类的 RLHF 训练</strong></p>
+<ol>
+<li>
+<p>虽然 ZeRO++ 主要是为训练而设计的，但它的优化也自动适用于 ZeRO-Inference，因为通信开销对于 ZeRO 的训练和推理同样适用。因此，ZeRO++ 可以提高人类反馈强化学习 (RLHF) 等算法的效率，因为 RLHF 结合了训练和推理。</p>
+</li>
+<li>
+<p>通过与 DeepSpeed-Chat 的集成，与原始 ZeRO 相比，ZeRO++ 可以将 RLHF 训练的生成阶段效率提高多达 2 倍，强化学习训练阶段效率提高多达 1.3 倍。</p>
+</li>
+</ol>
+<p>接下来，我们将更深入地解释 ZeRO 及其通信开销，并讨论 ZeRO++ 中为解决这些问题而进行的关键优化。然后我们将展示 ZeRO++ 对不同模型大小、批量大小和带宽限制的训练吞吐量的影响。我们还将讨论 ZeRO++ 如何应用于 DeepSpeed-Chat，以加速使用 RLHF 的对话模型的训练。</p>
+<p><strong>ZeRO++ 详解</strong></p>
+<p><img src="/images/20230624/13398573209306140653.gif" alt=""><em>图2：ZeRO optimizer 工作流程图（此为部分展示，完整流程请看知乎原文）</em></p>
+<p>ZeRO 是数据并行 (Data Parallelism) 的一种内存高效版本，其中模型状态会被分割储存在所有 GPU 上，而不需要在训练期间使用基于 gather/broadcas 的通信进行复制和重建。这使 ZeRO 能够有效地利用所有设备的聚合 GPU 内存和计算力，同时提供简单易用的数据并行训练。</p>
+<p>假设模型大小为 M。在前向传播过程中，ZeRO 执行全收集 / 广播 (all-gather/broadcast) 操作以在需要之时为每个模型层收集参数（总共大小为 M）。在向后传递中，ZeRO 对每一层的参数采用类似的通信模式来计算其局部梯度（总大小为 M）。此外，ZeRO 在对每个局部梯度计算完毕后会立刻使用 reduce 或 reduce-scatter 通信进行平均和分割储存（总大小为 M）。因此，ZeRO 总共有 3M 的通信量，平均分布在两个全收集 / 广播 (all-gather/broadcast) 和一个减少分散 / 减少 (reduce-scatter/reduce) 操作中。</p>
+<p>为了减少这些通信开销，ZeRO++ 进行了三组通信优化，分别针对上述三个通信集合：</p>
+<p><img src="/images/20230624/11694794320566195654.webp" alt=""></p>
+<p><em>图 3:qwZ 的分区量化图例</em></p>
+<p><strong>ZeRO 通信过程中的权重量化 (qwZ)</strong></p>
+<p>首先，为了减少 all-gather 期间的参数通信量，我们采用权重量化在通信前将每个模型参数从 FP16（两个字节）动态缩小为 INT8（一个字节）数据类型，并在通信后对权重进行反量化。然而，简单地对权重进行量化会降低模型训练的准确性。为了保持良好的模型训练精度，我们采用分区量化，即对模型参数的每个子集进行独立量化。目前尚且没有针对分区量化的高性能现有实现。因此，我们自行从头开始实现了一套高度优化的量化 CUDA 内核，与基本量化相比，精度提高 3 倍，速度提高 5 倍。</p>
+<p><img src="/images/20230624/17485551649740834272.webp" alt=""></p>
+<p><em>图 4: 权重的分层分割存储 (hpZ)</em></p>
+<p><strong>ZeRO 模型权重的分层分割存储 (hpZ)</strong></p>
+<p>其次，为了减少向后传递期间全收集 (all-gather) 权重的通信开销，我们用 GPU 内存进行通信。更具体地说，我们不像在 ZeRO 中那样将整个模型权重分布在所有机器上，而是在每台机器中维护一个完整的模型副本。以更高的内存开销为代价，这允许我们用机器内的模型权重全收集 / 广播 (all-gather/broadcast) 代替昂贵的跨机器全收集 / 广播 (all-gather/broadcast)，由于机器内通信带宽更高，这使得通信速度大幅提升。</p>
+<p><img src="/images/20230624/12798348660078399516.gif" alt=""><em>图 5: qgZ 端到端的工作流程</em></p>
+<p><strong>ZeRO 通信过程中梯度量化 (qgZ)</strong></p>
+<p>第三，要降低梯度的 reduce-scatter 通信成本更具挑战性。因为直接应用量化来减少通信量是不可行的。即使我们使用分区量化来降低量化误差，梯度 reduce 也会累积并放大量化误差。为了解决这个问题，我们只在通信之前量化梯度，但在任何 reduce 操作之前将它们反量化到原有精度。为了有效地做到这一点，我们发明了一种名为 qgZ 的基于 all-to-all 的新型量化梯度通信范式，它在功能上等同于压缩的归约 - 分散 (reduce-scatter) 操作。</p>
+<p>qgZ 旨在解决两个挑战：i) 如果我们简单地在 INT4/INT8 中实施 reduce-scatter 会导致显著精度损失，以及 ii) 在传统 tree 或 ring-based reduce-scatter 中使用量化需要一长串量化和反量化步骤，这直接导致误差积累和显著的延迟，即使我们在全精度上进行 reduce。为了解决这两个挑战，qgZ 不使用 tree 或 ring-based reduce-scatter 算法，而是基于一种新颖的分层 all-to-all 方法。</p>
+<p>qgZ 中有三个主要步骤：</p>
+<ul>
+<li>
+<p>梯度切片重新排序；</p>
+</li>
+<li>
+<p>节点内通信和 reduce；</p>
+</li>
+<li>
+<p>节点间通信和 reduce。</p>
+</li>
+</ul>
+<p>首先，在任何通信发生之前，我们对梯度进行切片并对张量切片重新排序，以保证通信结束时每个 GPU 上的最终梯度位置（即图 5 中的绿色块）是正确的。其次，我们量化重新排序的梯度切片，在每个节点内进行 all-to-all 通信，从 all-to-all 中对接收到的梯度切片进行反量化，并进行局部 reduce。第三，我们再次量化局部 reduce 后的梯度，进行节点间的 all-to-all 通信，再次对接收到的梯度进行反量化，并计算最终的高精度梯度 reduce，得到图 5 中绿色块的结果。</p>
+<p>这种分层方法的原因是为了减少跨节点通信量。更准确地说，给定每个节点 N 个 GPU、M 的模型大小和 Z 的量化比率，单跳 all-to-all 将生成 M<em>N/Z 跨节点流量。相比之下，通过这种分层方法，我们将每个 GPU 的跨节点流量从 M/Z 减少到 M/(Z</em>N)。因此，总通信量从 M<em>N/Z 减少到 M</em>N/(Z*N) = M/Z。我们通过重叠节点内和节点间通信以及融合 CUDA 内核来进一步优化 qgZ 的端到端延迟（张量切片重新排序 (Tensor Slice Reordering)+ 节点内量化 (Intra-node quantization)）和（节点内反量化 (Intra-node Dequantization) + 节点内梯度整合 (Intra-node Reduction) + 节点间量化 (inter-node quantization)）。</p>
+<p><img src="/images/20230624/17290894152111342798.webp" alt=""></p>
+<p><strong>通信总量优化</strong></p>
+<p>通过结合以上所有三个组件，我们将跨节点通信量从 3M 减少到 0.75M。更具体地说，我们使用 qwZ 将模型权重的前向全收集 / 广播从 M 减少到 0.5M。我们使用 hpZ 消除了反向传播期间的跨节点 all-gather，将通信从 M 减少到 0。最后，我们使用 qgZ 将反向传播期间的跨节点 reduce-scatter 通信从 M 减少到 0.25M。</p>
+<p><strong>ZeRO++ 加速大型语言模型训练</strong></p>
+<p>在这里，我们展示了 ZeRO++ 在 384 个 Nvidia V100 GPU 上的真实 LLM 训练场景的测试结果。</p>
+<p><img src="/images/20230624/15664453763075236236.webp" alt=""></p>
+<p><em>图 6: 在 384 个 V100 GPU 上的各种模型大小下 ZeRO++ 与 ZeRO 的吞吐量，节点间使用 4 个 Infiniband (IB) 进行互连，每个以 100 Gbps 运行。</em></p>
+<p><strong>在 GPU 小 batch size 情况下 ZeRO++ 实现更高的训练效率</strong></p>
+<p>高带宽集群：如图 6 所示，我们首先展示了 ZeRO++ 相对于 ZeRO 的吞吐量改进，针对不同的模型大小和微批量 (micro-batch size) 大小，测试使用 4x Infiniband (IB) 以实现 400Gbps 跨节点互连带宽，每个以 100Gbps 运行。在 micro-batch size 为每 GPU 1k tokens 时，ZeRO++ 比 ZeRO-3 的吞吐量提高了 28% 到 36%。对于 2k tokens micro-batch size 大小，ZeRO++ 比 ZeRO-3 实现了 24% 到 29% 的吞吐量增益。</p>
+<p><img src="/images/20230624/11131443507651015330.webp" alt=""></p>
+<p><em>图 7: 在 384 个 V00 GPU 上 100Gbps 跨节点带宽时各种 LLM 的吞吐量</em></p>
+<p><strong>低带宽集群：</strong> 在 100Gbps 等低带宽网络环境中，ZeRO++ 的性能明显优于 ZeRO-3。如图 7 所示，与 ZeRO-3 相比，ZeRO++ 在端到端吞吐量方面实现了高达 2.2 倍的加速。平均而言，ZeRO++ 比 ZeRO-3 基线实现了大约 2 倍的加速。</p>
+<p><img src="/images/20230624/14558649246462293696.webp" alt=""></p>
+<p><em>图 8: ZeRO++ 以显著降低的带宽实现高带宽集群性能</em></p>
+<p><strong>实现高带宽 ZeRO 和低带宽 ZeRO++ 集群之间的模型训练效率等效</strong></p>
+<p>此外，与 ZeRO 在高得多的带宽环境下相比，ZeRO ++ 可以在低带宽集群中实现相当的系统吞吐量。如图 8 所示，对于 18B 和 138B 模型大小，具有 200Gbps 跨节点带宽的 ZeRO++ 可以达到与 800Gbps 跨节点带宽的 ZeRO-3 相似的 TFLOP。</p>
+<p>鉴于 ZeRO++ 出色的可扩展性，我们将 ZeRO++ 视为用于训练大型 AI 模型的下一代 ZeRO。</p>
+<p><strong>DeepSpeed-Chat 与 ZeRO++ 结合用于 RLHF 训练</strong></p>
+<p><strong>RLHF 训练简介</strong></p>
+<p>ChatGPT 类模型由 LLM 提供支持，并使用 RLHF 进行微调。RLHF 由生成（推理）阶段和训练阶段组成。在生成阶段，演员 (actor) 模型将部分对话作为输入，并使用一系列前向传递生成响应。然后在训练阶段，评论 (critic) 模型根据质量对生成的响应进行排名，为演员模型提供强化信号。使用这些排名对参与者模型进行微调，使其能够在后续迭代中生成更准确和适当的响应。</p>
+<p>RLHF 训练带来了巨大的内存压力，因为它使用了四种模型（演员、参考、评论、奖励）。常见的解决方案是采用低秩自适应训练 (LoRA) 来解决 RLHF 的内存压力。LoRA 冻结了预训练模型的权重，并将可训练的秩分解矩阵注入到 Transformer 架构的每一层中，显著减少了可训练参数的数量。LoRA 通过减少内存使用来加速 RLHF，允许更大的批处理 (batch) 大小，从而大大提高吞吐量。</p>
+<p><strong>DeepSpeed-Chat with ZeRO++ 用于 RLHF 训练</strong></p>
+<p><img src="/images/20230624/3270467503060913201.webp" alt=""></p>
+<p><em>图 9: ZeRO++ 加速了 RLHF 训练的生成和训练阶段</em></p>
+<p>ZeRO++ 在 RLHF + LoRA 的场景下有着独特的应用，因为大多数模型权重都被冻结了。这意味着 ZeRO++ 可以将这些冻结的权重量化保存到 INT4/8 中，而不是将它们存储在 fp16 中并在每次通信操作之前对其进行量化。通信后的反量化仍然是为了让权重为计算做好准备，但反量化后的权重在计算后被简单地丢弃。</p>
+<p>以这种方式使用 ZeRO++ 进行 RLHF 训练可以减少内存使用和通信量。这意味着通过减少通信以及由于减少内存使用而启用更大的批处理大小来提高训练吞吐量。在生成阶段，ZeRO++ 使用 hpZ 将所有权重通信保持在每个节点内，以利用更高的节点内通信带宽，减少通信量，进一步提高生成吞吐量。</p>
+<p>ZeRO++ 已集成到 DeepSpeed-Chat 中，以支持 ChatGPT 类模型的 RLHF 训练。在图 9 中，我们比较了不同大小的 actor 模型的 RLHF 生成吞吐量。测试配置为 32 个 V100 GPU ，actor 模型大小为 30B 和 66B 以测试 ZeRO 和 ZeRO++ 性能。结果表明，ZeRO++ 的 RLHF 生成吞吐量比 ZeRO 高出 2.25 倍。我们还展示了在 16 个 V100 GPU 上训练阶段的加速，其中 ZeRO++ 实现了比 ZeRO 高 1.26 倍的吞吐量，这是由于 ZeRO++ 支持的更低通信量和更大批量大小。</p>
+<p><strong>DeepSpeed ZeRO++ 现已发布！</strong></p>
+<p>我们非常高兴能够发布 DeepSpeed ZeRO++ 并让 AI 社区中的每个人都可以使用它。请访问我们的 GitHub 页面以获取 LLM 训练教程。用于 DeepSpeed-Chat 的 ZeRO++ 将在未来几周内发布。有关 ZeRO++ 的更多技术细节，请查看我们的 arxiv 论文。</p>
+<p>DeepSpeed-ZeRO++ 是 DeepSpeed 生态系统的一部分。要了解更多信息，请访问我们的网站，在那里您可以找到详细的博客文章、教程和有用的文档。</p>
+<p>您还可以在我们的英文 Twitter、日文 Twitter 和中文知乎 上获取最新的 DeepSpeed 新闻。</p>
+<p>DeepSpeed 欢迎您的贡献！我们鼓励您在 DeepSpeed GitHub 页面上报告问题、贡献 PR 并加入讨论。有关更多详细信息，请参阅我们的贡献指南。我们对与大学、研究实验室和公司的合作持开放态度。对于此类请求（以及其他不适合 GitHub 的请求），请直接发送电子邮件至 <a href="mailto:deepspeed-info@microsoft.com">deepspeed-info@microsoft.com</a>。</p>
+<p><strong>贡献者:</strong></p>
+<p>DeepSpeed 团队的以下人员的贡献使该项目成为可能：</p>
+<p>Guanhua Wang, Heyang Qin, Sam Ade Jacobs, Connor Holmes, Samyam Rajbhandari, Olatunji Ruwase, Ammar Ahmad Awan, Jeff Rasley, Michael Wyatt, Yuxiong He (team lead)</p>
+<p>本文转载自微软DeepSpeed组。</p>
+<p>官方知乎账号：zhihu.com/people/deepspeed</p>
+<p><img src="/images/20230624/16632165018912526463.webp" alt=""></p>
+<p>© THE END</p>
+<p>转载请联系本公众号获得授权</p>
+<p>投稿或寻求报道：content@jiqizhixin.com</p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
