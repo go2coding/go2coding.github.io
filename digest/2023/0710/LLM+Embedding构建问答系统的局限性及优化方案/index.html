@@ -1,0 +1,1119 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>LLM&#43;Embedding构建问答系统的局限性及优化方案 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+	<meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">LLM&#43;Embedding构建问答系统的局限性及优化方案</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              July 10, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7XECF6zg8YiaGzRJzabqiaicok09zuZQbdE0eF6ledgAQniao2AEcJdgjicA/640?wx_fmt=other" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <pre><code>作者： TechLetter  来源： [TechLetter](https://mp.weixin.qq.com/s/9623xhoiY-quR5AuzxNdsw)
+</code></pre>
+<blockquote>
+<p>近期LangChain + LLM 方案高速发展，降低了知识问答等下游应用的开发门槛。但随着业务深入，一些局限性也日渐显露，比如：LLM意图识别准确性较低，交互链路长导致时间开销大；Embedding 不适合多词条聚合匹配等。本文结合实际案例，分析上述问题存在的根源，并提出基于传统 NLP 技术的解决思路。</p>
+</blockquote>
+<h4 id="heading"></h4>
+<h4 id="背景">背景</h4>
+<p>笔者在基于大语言模型构建知识问答系统一文中描述了，以 LLM 为基础的知识问答系统构建方法，核心在于：</p>
+<ul>
+<li>
+<p>将用户问题和本地知识进行 Embedding，通过向量相似度(Vector Similarity)实现召回；</p>
+</li>
+<li>
+<p>通过 LLM 对用户问题进行意图识别；并对原始答案加工整合。</p>
+</li>
+</ul>
+<p>原文通过 OpenAI API 和ChatGPT 交互，缺陷也很明显：</p>
+<ul>
+<li>
+<p>上层应用和模型基座绑死。切换模型基座时，上层逻辑不得不大量修改。在 LLM 蓬勃发展的当下，无论是处于成本、License、研究热点还是性能等各方面考虑，基座变更几乎不可避免。</p>
+</li>
+<li>
+<p>处理环节不完善，开发成本高。比如：向量存储和搜索，LLM 提示词生成，数据链路（导入、分片、加工）等等。如果全部手撸，成本过高。</p>
+</li>
+<li>
+<p>缺少标准化。轮子不但要丰富还要标准化，以结合场景灵活编排。一个粗浅的比喻是——我们需要 “乐高” 。</p>
+</li>
+</ul>
+<p>LangChain 的诞生就是解决这些问题的，它抽象了业务应用和LLM 交互的方式，内置通用环节实现，标准化工具链交互接口，极大提升开发效率。LangChain 的大致结构如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7BnmCfoRC0NL98CaOO0GdnbeicH3Y4dZQ5GicODAErYlFyFCmnBa9uLDg/640?wx_fmt=other" alt=""></p>
+<p>LangChain 应用示意图</p>
+<p>基于LangChain + LLM 的组合，下游应用在：“场景拓展” 和 “效能提升”方面取得长足进步，但垂直领域一些深层问题也逐渐暴露出来。本文就开发问答系统时遇到的实际案例，说明上述方式的局限性，并提出解决方案。</p>
+<h4 id="局限性分析">局限性分析</h4>
+<h4 id="问题简介">问题简介</h4>
+<p>首当其冲的是：多知识点聚合处理场景下，Embedding-Search 召回精度较低 的问题。典型应用范式是：</p>
+<ul>
+<li>
+<p>一个仓库有 N 条记录，每个记录有 M 个属性；</p>
+</li>
+<li>
+<p>用户希望对 x 条记录的y 个属性进行查询、对比、统计等处理。</p>
+</li>
+</ul>
+<p>这种场景在游戏攻略问答中很常见，以体育游戏 NBA2K Online2 为例：</p>
+<blockquote>
+<h1 id="多知识点简单查询">多知识点——简单查询</h1>
+</blockquote>
+<p>Q: 皮蓬、英格利什和布兰德的身高、体重各是多少？</p>
+<h1 id="多知识点筛选过滤">多知识点——筛选过滤</h1>
+<p>Q: 皮蓬、英格利什和布兰德谁的第一位置是 PF？</p>
+<h1 id="多知识点求最值">多知识点——求最值</h1>
+<p>Q: 皮蓬、英格利什和布兰德谁的金徽章数最多？</p>
+<h4 id="embedding-缺陷">Embedding 缺陷</h4>
+<p>原始的 Embedding Search在面对多知识点聚合处理时，存在几个问题：</p>
+<ol>
+<li>本地知识建立索引时，通常对单个知识点进行 Embedding；不会也不可能，为不同知识点的排列组合分别制作索引。不难想象，不同记录和属性的组合方式有 �⋅���⋅��� (C问题数，如过滤，查询，最值；A 即排列)，所有组合都建立索引的开销是巨大的。</li>
+</ol>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7MtPHc6hVTG1UjoK2LBtqDuwNDVAnXiaicnxwxYgdow3SUTJOVnUSq0ow/640?wx_fmt=other" alt=""></p>
+<ol start="2">
+<li>原始问题直接 Embedding ，和单条知识点的向量相似度比较低。为了避免召回结果有遗漏，就需要 <strong>降低</strong> 相似度评分下限(vector similarity score threshold)，同时提高召回结果数量上限(top k)。并产生不好的副效应：</li>
+</ol>
+<ul>
+<li>
+<p>召回结果，有效信息密度大幅降低；score threshold 过高或 top k 过低，会导致某些有效知识点无法命中；反之，很多无效知识点或噪声会被引入。且由于总 token 数量的限制，导致本地知识点被截断，遗漏相似度较低但有效的知识点。</p>
+</li>
+<li>
+<p>召回结果的膨胀，增加了和 LLM 交互的 token 开销；增加了 LLM 处理的时间复杂度。再直白点：既慢又花钱。</p>
+</li>
+<li>
+<p>更糟糕的是，给 LLM 的分析处理带来额外噪声，影响最终答案的正确性。</p>
+</li>
+</ul>
+<p>下面给出一个示例：</p>
+<ul>
+<li>
+<p>问题是：<em>皮蓬、英格利什和布兰德谁的推荐位置是什么？</em> 这句话中的关键词是：三个球员“姓名”和属性“位置”。</p>
+</li>
+<li>
+<p>召回结果如下所示：按照相似度降序排列。依次是：姓名、位置单词条命中；多姓名同时命中；位置命中。实际上，中部信息是冗余的。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7knu3f435Qe2f7yyvDbkc7SPjHk61zmCteqGwbOiayyCsxDHuR1b1MPQ/640?wx_fmt=other" alt=""></p>
+<p>再看看 LLM（ ChatGLM-6B ）对召回结果整合后的反馈，耗时 16s 用于处理大量输入，结果让人啼笑皆非：</p>
+<blockquote>
+<p>皮蓬、莺利什和布兰德的推荐位置是前锋/后卫。</p>
+</blockquote>
+<p>几处很明显的错误：英格利什莫名其妙变为莺利什；且三人的位置回答不准确，由于过多冗余信息导致混淆。也许和 LLM 自身的性能有关，但也能说明 Embedding Search 低效且不可靠。</p>
+<h4 id="方案分析">方案分析</h4>
+<p>针对上面的问题重新整理思路，想要更加精准的回答问题，需要从两个层面入手：</p>
+<h4 id="1-问题理解准确识别用户意图">1. 问题理解——准确识别用户意图</h4>
+<p>这是问答系统的基础：通过解析用户问题，精准把握意图后，才能更好的规划后续处理步骤：</p>
+<ul>
+<li>
+<p>根据意图，制定计划，拆分为若干步骤；在每个步骤选择合适的工具进行处理；根据每个步骤返回的结果，动态决定下一步的方案。比如：要分析球员的位置，应按下属步骤拆解：</p>
+<ul>
+<li>
+<p>了解到底有哪些球员</p>
+</li>
+<li>
+<p>查询这些球员的位置各是什么</p>
+</li>
+<li>
+<p>对位置信息进行处理：基于召回结果，对用户问题进行推理。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>规划生成的单个步骤，做好抽象和封装，明确输入和输出以及执行逻辑。</p>
+</li>
+</ul>
+<p>langchain 中的 Agents 已经对上述步骤提供了标准化接口，它相对于 Chains 一个重要不同在于：结合应用场景，通过提示词引导 LLM和用户多轮交互，摸清在什么时候应该需要选择什么样的工具链进行处理。其中 Plan-and-Execute Agents 用于制定动作计划；Action Agents 决定实施何种动作。</p>
+<p>有了 Agents 和 Chains的标准抽象，下面再来看看摸清用户意图的几种方法，这样才能开发合适的工具：</p>
+<ul>
+<li>��_���ℎ������ �_������� �_���������(����) 。Precise Zero-Shot Dense Retrieval without Relevance Labels 一文面向 zero-shot场景下的稠密检索 ，使用基础模型在训练过程中已经掌握的相关语料，面向用户问题，生成虚构的文档。该文档的作用，不是输出最终结果，而是通过 LLM 对问题的理解能力，生成与之相关的内容。这相当于自动化生成相关性标签，避免外部输入。虚构文档生成后，再使用无监督检索器进行 Embedding；然后将生成的向量在本地知识库中进行相似性检索，寻找最终结果。上述过程在原论文中也提供了示意图：</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7wbE2FZ7w76ZyfYaqxS3E8pu62zdMBhvl19ECFbcLBAvBq1gN8yCibiaA/640?wx_fmt=other" alt=""></p>
+<p>HyDE 要求与用户问题相关的知识，已经存在于 LLM 基础模型中。但专业领域知识，可能本来就是未联网、未公开的；LLM 生成的虚构文档，可能包含很多噪音，所以效果不一定很明显；另外生成文档的额外交互，进一步增加了时间开销。目前，LangChain 提供了 HyDE Chain，LlamaIndex 也提供了类似的能力；大家有兴趣可以尝试，面对中文可能需要自定义 Prompt Template。</p>
+<ul>
+<li>
+<p>意图识别。通过 命名实体识别 和 槽位填充 实现。概括就是：</p>
+<ul>
+<li>
+<p>在为用户提供服务的预设场景下，细分用户各种意图的类别，定制对应的语义槽，每个槽位可以视为在语义层面体现意图的基本单位。</p>
+</li>
+<li>
+<p>通过深度学习、统计学习，甚至 LLM ，理解用户问题提取语义槽中需要的内容。在基于大语言模型构建知识问答系统一文中给过例子：通过 System Role 告知LLM 需要提取槽位信息，让 LLM通过多轮对话引导用户给出所有槽位信息。还是以游戏攻略为例，玩家咨询球员的打法，那么必须提供：球员姓名，年代（比如2020/2022 年），比赛模式。对应的语义槽可以定义为：</p>
+<p>&ldquo;球员打法&rdquo; : {<br>
+&ldquo;球员名称&rdquo; : ____,<br>
+&ldquo;年代&rdquo; : ____,<br>
+&ldquo;比赛模式&rdquo;: ____,<br>
+}</p>
+</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>搜索召回——提升精度</li>
+</ol>
+<p>将用户的诉求转化为语义槽后，可以较为准确的体现问答意图，这有助于提升搜索命中精度。原始知识点在建立索引时，除了原始的 Embedding 方法，可以做更多优化：</p>
+<ul>
+<li>
+<p>增加 关键词、主题词检索。主题词由机构定义和发布的规范词，通常是专有名词或名词短语；主题词检索结果包括检索词的近义词、同义词以及同一概念词的不同书写形式等，通过主题词检索可以很大程度降低漏检和误检。关键词由作者自定义或自动分析提取，通常是可以高度概括该文章主题的，使用关键词搜索可搜出更加明确的主题方向的文章。</p>
+</li>
+<li>
+<p>对相同知识点建立多级索引。同一知识点通常涉及多个维度，建立多级索引可以让其在多维度查询下发挥作用。比如，球员信息涉及：姓名、球队、年龄、进攻、防守、荣誉等多项属性。可以针对多属性分别建立索引，这样可以高效查询指定的属性数据，而不必每次将所有内容全部提取。</p>
+</li>
+<li>
+<p>把原始知识库转化为知识图谱。知识图谱的三元组：实体、属性和关系。实体表示现实世界中的某个事物或对象，属性表示这个事物或对象的特征或属性，关系表示实体之间的关系。知识三元组可以帮助人们更好地理解和组织知识，并支持推理和问题解决。在问答系统中可以通过提示词引导 LLM 从用户的问题中提取知识三元组，然后在知识图数据库中进行查询。</p>
+</li>
+</ul>
+<h4 id="解决思路">解决思路</h4>
+<p>意图识别和召回优化，属于一体两面，均有助于提升问答系统的精度。搜索层面知识图谱相对于 Embedding 方式，加工成本较高。在遵从奥卡姆剃刀的前提下，有没有什么高性价比的方式来解决这个问题？</p>
+<p>笔者想到，意图识别和召回，其实有一个共同点：均可用 <strong>关键词/主题词</strong> 表示。那么问题可以转变为：</p>
+<ul>
+<li>
+<p>关键词/主题词提取：</p>
+<ul>
+<li>
+<p>面向知识点，提取的结果作为索引入口。</p>
+</li>
+<li>
+<p>面向问题，提取的结果作为语义槽内容。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>复用 Embedding 框架。从原始问题和知识点直接 Embedding 后的匹配，转化为对两者提取的关键词进行 Embedding 后再进行匹配。</p>
+</li>
+</ul>
+<p>基于关键词Embedding的入库和搜索的流程图如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7vhxibKEzYQByvIzgROovU3m6M5YjnbGQibC9iaQQbYxkDqAYp4EnTFRFA/640?wx_fmt=other" alt=""></p>
+<p>这种方式怎么解决原始 Embedding 存在的几个局限呢？</p>
+<ul>
+<li>多知识点聚合处理局限。在关键词提取过程中，可以将并列的关键词短语拆分，平铺后分别检索。这样就可以降低 Embedding 的噪音，提高命中精度。最后将生成不同关键词短语召回的结果组合即可。举个例子：</li>
+</ul>
+<blockquote>
+<p>语句：姚明和奥尼尔的内线与三分能力。</p>
+</blockquote>
+<p>关键词提取后，按照从属关系叉乘，得到的结果应该是：</p>
+<ul>
+<li>
+<p>姚明内线</p>
+</li>
+<li>
+<p>姚明三分</p>
+</li>
+<li>
+<p>奥尼尔内线</p>
+</li>
+<li>
+<p>奥尼尔三分</p>
+<ul>
+<li>LLM 过度依赖导致的性能开销。首先通过关键词短语召回已经可以大大提升命中精度，所以不必设置较低的 score threshold 或者较大的 top k，这本来就过滤了很多无关词条。另外，关键词提取如果可以不依赖于 LLM，而是使用传统的 NLP 技术，那么可以避免和 LLM 的多轮交互，节省了响应时间。这样，对于大量的知识点文档，也可以做关键词提取。</li>
+</ul>
+</li>
+</ul>
+<p>带着这样的思路，下文主要描述关键词提取实现方法和效果。</p>
+<h4 id="关键词提取">关键词提取</h4>
+<p>我们的目标是，从无标注文本（零样本）是实现信息抽取（Information Extraction，IE），因为很少涉及人为干预，该问题非常具有挑战性。IE 包含三类任务：</p>
+<ul>
+<li>
+<p>实体关系三元组抽取(RE, Relation Extraction )。三元组(triples)即 <em>(主体, 关系, 客体)</em> ，用英文表示为 <em>(Subject, Relation, Object)</em> 。关系抽取，即实体三元组抽取。涉及两件事：</p>
+<ul>
+<li>
+<p>识别文本中的主体、客体，即实体识别任务。</p>
+</li>
+<li>
+<p>判断这两个实体属于哪种关系，即关系分类。 </p>
+</li>
+</ul>
+</li>
+<li>
+<p>命名实体识别(NER, Name-Entity Recognition)。又称作专名识别、命名实体，是指识别文本中具有特定意义的实体，主要包括人名、地名、机构名、专有名词等，以及时间、数量、货币、比例数值等文字。指的是可以用专有名词（名称）标识的事物，一个命名实体一般代表唯一一个具体事物个体，包括人名、地名等。</p>
+</li>
+<li>
+<p>事件抽取(EE, Event Extraction)。指的是若干与特定矛盾相关的事物，在某一时空内的运动，从自然语言角度通过“主谓宾”等语义单元体现。事件抽取就是从半结构化、非结构化数据中，识别一个与目标相关的事件的重要元素识别出来。</p>
+</li>
+</ul>
+<p>笔者针对知识问答这样的特定场景，将上述三类任务简化为两个过程：</p>
+<ol>
+<li>名词短语提取。即：主语、宾语。通常由名词，和名词的限定词或者修饰词组成。比如：</li>
+</ol>
+<blockquote>
+<p>姚主席如何评价周琦的组织进攻能力？<br>
+主语：姚主席<br>
+宾语：能力。但真正具有实际意义的是能力的限定修饰词，即“周琦组织进攻能力”。</p>
+</blockquote>
+<ol start="2">
+<li>谓语。体现名词短语之间的事件。比如：评价。在更多场景中是：比较、查询、过滤、统计等，存在动态计算、处理的需求。因此即使忽略谓语，仅通过名词短语的组合也可以获得完备的知识。谓语所代表的事件，可以交给 LLM 处理。</li>
+</ol>
+<p>笔者在经过对多种业务场景的分析后，最终萌生出下面的 关键词提取方式：</p>
+<ul>
+<li>
+<p>关键词只考虑名词短语，将其作为知识点的索引用于召回。</p>
+</li>
+<li>
+<p>事件体现的是不同知识点的关系。重点在于事件关联者，获取事件关联者对应的语料后，通过 LLM 理解事件进行处理：</p>
+<ul>
+<li>
+<p>知识点通常不是按照事件组织的，而是按实体。因此索引建立和关键词抽取，应该以名词短语为主要目标。</p>
+</li>
+<li>
+<p>主语、宾语之间存在并列和限定关系。将限定关系按级联方式处理，同一名词短语内如果存在并列关系则与其他部分叉乘。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>将该思路应用到上面的例子中：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7Tia3wogWIRiau5icHcUJhVicKAvh0PNqEzIJvB5Iya0mgnXwYF9Qcn3JvQ/640?wx_fmt=other" alt=""></p>
+<p>如图所示，使用 NLU 的基本处理流程，分析原始问句：</p>
+<ol>
+<li>
+<p>分词</p>
+</li>
+<li>
+<p>词性标注(Part-Of-Speech Tagging, Penn Chinese Treebank)，用于识别名词短语。比如：NR 表示人名、机构、地名等专有名词；NT 表示时间名词，NOI表示汉字顺序颠倒产生的噪声，NN 表示其它类型名词。</p>
+</li>
+<li>
+<p>NER 识别。比如姚，周琦等。</p>
+</li>
+<li>
+<p>然后还需要考虑语义间的依存关系，确定名词间的关系，比如：</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>并列</p>
+</li>
+<li>
+<p>修饰。比如：“组织进攻能力”</p>
+</li>
+<li>
+<p>从属、限定等等。比如：[&ldquo;周琦&rdquo;, &ldquo;组织进攻能力&rdquo;]</p>
+</li>
+</ul>
+<p>这样不难得到应该搜索的关键词列表：[&lsquo;姚主席&rsquo;, &lsquo;周琦&rsquo;, &lsquo;组织进攻能力&rsquo;]。下面来看看这种思路究竟如何实现，还是分为两大类：LLM、传统 NLP。</p>
+<h4 id="基于-llm-提取">基于 LLM 提取</h4>
+<p>LLM已经天然具备 NLU 和 NLG 的能力，所以做名词短语提取按道理应该手到擒来。业界已经有尝试，比如《Zero-Shot Information Extraction via Chatting with ChatGPT》一文，提出两阶段多轮问答信息提取方式：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7PnJLTZDGHEdwBtDkjI82YxosREPp1iaR5MnZTSicTupNehgSkpR6QhcQ/640?wx_fmt=other" alt=""></p>
+<p>在该思想的启发下，笔者使用 langchain 开发了信息提取 Chain，LLM 使用的是 ChatGLM-6B本地部署，提取部分测试片段如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7Kiax42bdwNUYntjyDKTXX34EObk8oJg8picgOfzfLz1s12Ra7pFQ7lOw/640?wx_fmt=other" alt=""></p>
+<p>发现问题了吗：明明是分析张三丰；结果李四和王五怎么冒出来了。要知道，Prompt 已经添加了“不要编造内容”的说明，但无济于事。总体而言，使用 LLM 提取信息效果如下：</p>
+<ul>
+<li>
+<p>可以支持部分程度的 NER；对非专业名词、或业务自定义术语识别不好，需要Fine-Tuning。</p>
+</li>
+<li>
+<p>可以提取名词短语，但无法做精确的语义分析，大量测试案例下总是存在不少偏差。</p>
+</li>
+<li>
+<p>即使明确了输出格式，但还是频繁出错。</p>
+</li>
+<li>
+<p>耗时较长。提取 6 条测试案例耗时 12s。</p>
+</li>
+</ul>
+<p>简单而言：不是不能做，但对 LLM 的要求较高；结果不准确、开销也大。</p>
+<h4 id="传统-nlp-方法提取">传统 NLP 方法提取</h4>
+<p>在 LLM 做信息提取，效果不尽如人意的情况下，转而尝试传统 NLP 技术。前面提到的：分词、词性标注、NER 等，业界已经有不少传统 NLP 工具可以使用。</p>
+<ul>
+<li>spacy，测试结果较差，很多语句识别不出来，比如：</li>
+</ul>
+<blockquote>
+<p>“请比较詹姆斯和麦迪的属性”<br>
+—— 无法识别任何人名<br>
+“詹姆斯、字母哥和杰林.布朗的金徽章有何差异？”<br>
+—— 只能识别出布朗，且将 &ldquo;杰林&rdquo; 抛弃</p>
+</blockquote>
+<ul>
+<li>CoreNLP 和 HanLP 均可正确识别。</li>
+</ul>
+<p>经过测试后最终选择 HanLP作为基础工具，原因在于：</p>
+<ul>
+<li>
+<p>对中文支持好</p>
+</li>
+<li>
+<p>依赖少，开箱即用</p>
+</li>
+<li>
+<p>基础工具完备，接口整洁，便于二次开发</p>
+</li>
+</ul>
+<p>下面基于 HanLP，看看究竟如何解决前文提出的：多知识点聚合查询问题？其核心点在于三步：</p>
+<ol>
+<li>
+<p>词性标注</p>
+</li>
+<li>
+<p>名词短语关系分析：修饰、限定、并列等</p>
+</li>
+<li>
+<p>名词短语重新组织：修饰、限定关系级联；并列关系与其他部分叉乘。</p>
+</li>
+</ol>
+<h4 id="名词短语提取与整合">名词短语提取与整合</h4>
+<p>举一个更加复杂的例子，在主语和宾语中添加：并列和修饰关系。首先分词，然后添加词性标注，结果如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7nth4ELpT3B5h1IFMQy5swD1Yfxia2KribCBuUhH0jAuApmmibxDa8oHKg/640?wx_fmt=png" alt=""></p>
+<h4 id="依存分析">依存分析</h4>
+<p>词性有了，下面需要进一步提取句子中单词与单词之间的语法关系，即 依存句法分析；笔者采取 Stanford Dependencies Chinese (SDC) 标准进行分析，并且为了清晰展示，将分析结果转化为 Pandas DataFrame 的形式，如下图所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7XECF6zg8YiaGzRJzabqiaicok09zuZQbdE0eF6ledgAQniao2AEcJdgjicA/640?wx_fmt=other" alt=""></p>
+<ul>
+<li>
+<p>dep_tok_id，表示当前分词所依赖的中心词的id。比如：“指导” 的中心词 ID是 5。</p>
+</li>
+<li>
+<p>dep_rel，表示当前分词和中心词的关系。比如：“指导”和中心词“主席”的关系是 <em>conj</em> ，根据 SDC 标准其含义为“连接”，即指导和主席属于并列关系。类似的，“詹姆斯”、“约基奇”和“张伯伦”都属于并列关系；但是“张伯伦”的中心词是“能力”，关系为 <em>assmod</em> ，即关联关系（修饰限定）。</p>
+</li>
+<li>
+<p>sdp_tok_ids 和 sdp_rel。是在依存句法分析的基础上，进一步提供 语义依存分析，旨在分析一个句子中单词与单词之间的语义关系(sdp_rel)，并将其表示为图结构的任务。不同于依存句法分析的地方是：图结构中每个节点可以有任意个目标节点。在本例当中，特别需要关注的是：<em>Agt</em>（施事者），<em>Poss</em>（领事者），<em>eCoo</em>（并列关系）等。</p>
+</li>
+</ul>
+<p>根据 DataFrame 中提供的依赖关系，可以直观地获取名词短语：</p>
+<ul>
+<li>
+<p>主体：并列关系 [张指导, 姚主席]</p>
+</li>
+<li>
+<p>客体：[三分能力]，三分和能力是修饰关系</p>
+</li>
+<li>
+<p>客体还存在三个并列的领事关系（所属关系）：[詹姆斯, 约基奇, 张伯伦]</p>
+</li>
+</ul>
+<p>所以实际的客体，应该将并列的领事关系和本体叉乘后平铺，结果就是：</p>
+<pre><code>['詹姆斯三分能力', '约基奇三分能力', '张伯伦三分能力']
+</code></pre>
+<p>用这三个关键词，Embedding 后去本地知识库搜索就可大大提升命中精度。不过大家如果细心的话可以发现：语义依存分析的结果其实 不准确，比如：</p>
+<ul>
+<li>
+<p>“指导”一词的 sdp_rel 为 root，即被识别为动词作为语义树的根部</p>
+</li>
+<li>
+<p>“和”与“主席”被识别为领事关系</p>
+</li>
+</ul>
+<p>这种语义偏差的原因在于：同一个分词的语义容易产生混淆。比如“指导”既可以作为名词，也可以作为动词。中文多义词和语境比较复杂，导致语义依存分析有不小的概率会出现误判。那么怎么解决这个问题呢？一定要使用有监督训练方式，对基础语义依存分析模型进行 Fine-Tuning吗？一旦涉及有监督，成本就不容小区了。不过幸好：词性标注和依存句法分析，相对语义依存分析，准确率是更高的，所以笔者想到另外一种方式：</p>
+<blockquote>
+<p>基于正确的词性标注，构建出语法树，从语法角度提取名词短语。</p>
+</blockquote>
+<h4 id="成分句法分析">成分句法分析</h4>
+<p>分析一个句子在语法上的递归构成，在 NLU 领域是经典的 成分句法分析 问题。下面罗列 Chinese Treebank 标准片段，描述对分词单元类型的定义，请大家关注蓝色背景内容。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7OiclDzBlDUBcILkusoLnZcm6WIMAqHKcoiceu9pxTlcDk7Uibz3EDg6JA/640?wx_fmt=other" alt=""></p>
+<p>再次回顾我们要解决的多知识点聚合处理的目标：</p>
+<ul>
+<li>
+<p>名词短语(Noun Phrase)提取。即提取 NP;</p>
+</li>
+<li>
+<p>处理好修饰名词短语间的修饰限定问题。比如：DNP 等</p>
+</li>
+<li>
+<p>处理好并列、连接关系。比如：CC 等</p>
+</li>
+<li>
+<p>将修饰关系的名词短语级联；将并列关系的NP和修饰关系的NP 叉乘。</p>
+</li>
+</ul>
+<p>基于该思路，上文提到实例，可以转化为下面的成分句法分析树：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7jf27b8vpszPpTYicPrZNTnkExwzglrskzGGdCPcxibede0JHLhAkc31w/640?wx_fmt=other" alt=""></p>
+<p>这是典型的树结构：</p>
+<ul>
+<li>
+<p>顶层的 NP 有两个：分别是主体和客体。客体是 VP(动词短语)，表示主体的施事对象，和施事行为。</p>
+</li>
+<li>
+<p>每个 NP 是一颗子树。变种很多，但核心有三种形式：</p>
+<ul>
+<li>
+<p>并列。比如：[&lsquo;张指导&rsquo;, &lsquo;姚主席&rsquo;]通过明确的连接词 &ldquo;和&rdquo; 建立关系；[&lsquo;詹姆斯&rsquo;, &lsquo;约基奇&rsquo;, &lsquo;张伯伦&rsquo;] 则通过非终结的标点服务建立关系。</p>
+</li>
+<li>
+<p>堆叠。由修饰词和名词联合形成一个名词短语。</p>
+</li>
+<li>
+<p>从属。通过&quot;的&quot;这样 DEG 词性的结构，明确表示前后两个短语间的从属关系。比如：&ldquo;三分及抢断&rdquo;，隶属于&quot;詹姆斯&quot;。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>这样来看，NP 的提取非常简单，通过递归方式对三种基础形式的树结构进行识别即可，提取时注意区分：</p>
+<ul>
+<li>
+<p>主体、客体。</p>
+</li>
+<li>
+<p>NP 子树中各个单元的组织关系。并列单元在和其它单元组合时，需要叉乘输出；其它邻接单元直接合并即可。</p>
+</li>
+</ul>
+<p>在上述算法下，样例中提取的名词短语列表最终如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7C28qqTbMUsaXRJw3IG6aUkDLTpX4hibPbQIXJSfBU20MLJeBAbOmhjQ/640?wx_fmt=png" alt=""></p>
+<ul>
+<li>
+<p>第一个列表为主语列表</p>
+</li>
+<li>
+<p>第二个列表为平铺后的宾语列表</p>
+</li>
+<li>
+<p>在性能方面，单条语句处理方式是 5ms；之前基于 LLM 的方式处理 6 条语句，需要 12s；性能相差数百倍。</p>
+</li>
+</ul>
+<p>至此，已经介绍完笔者关于关键词提取的基本思路，完整的处理流程如下图所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7dg5M22P3uoyvTm2ytQjWhlwOrMHEZDvB19yjZxE1DG1ic40N1ZkkUsw/640?wx_fmt=other" alt=""></p>
+<h4 id="应用效果">应用效果</h4>
+<p>关键词提取实现后，配合前文提到的召回方法，应用到文章开始的几个示例问题，结果如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7j6lASNz1vCms3Z4zfVCyBhobZb0yGMrvfxDLXgmTS0JM1TF1qpm8ZA/640?wx_fmt=other" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7E2ettIibob9VbNId6rlV90PTFUunpDhLQbO5ZkU0S5G9slmLbtHBHWw/640?wx_fmt=other" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/RibsxBKlZeM6nlK96JeyLicpcciaNvUG2Q7l63WyqMrsCLib7DhhaSPibb4XU7wh5RoahPLacfibC4JMqzHBvlzibqe3A/640?wx_fmt=other" alt=""></p>
+<p>最后汇总笔者提出的解决多知识点聚合处理问题的方案：</p>
+<ul>
+<li>
+<p>基于传统 NLP 的成分句法分析，提取名词短语；再通过短语间的依存关系，生成关键词列表</p>
+</li>
+<li>
+<p>从完整语句的 Embedding，切换为关键词 Embedding：</p>
+<ul>
+<li>
+<p>知识库构建时。基于单知识点入库，入库时提取关键词列表进行 Embedding，用于检索。</p>
+</li>
+<li>
+<p>查询时。对用户的问题提取关键词列表进行 Embedding 后，从本地知识库命中多条记录。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>将单问句中的多知识点拆解后检索，将召回的多条记录交付给 LLM 整合。</p>
+</li>
+</ul>
+<p>该方法的优势在于：</p>
+<ul>
+<li>
+<p>相比传统 Embedding，大幅提升召回精准度。</p>
+</li>
+<li>
+<p>支持单次交互，对多知识点进行聚合处理。而不必让用户，手动分别查询单个知识点，然后让 LLM 对会话历史中的单个知识点进行汇总。</p>
+</li>
+<li>
+<p>使用传统 NLP 在专项问题处理上，相比 LLM 提供更好的精度和性能。</p>
+</li>
+<li>
+<p>减少了对 LLM 的交互频次；提升了交付给 LLM 的有效信息密度；大大提升问答系统的交互速度。</p>
+</li>
+</ul>
+<h4 id="总结">总结</h4>
+<p>LLM 的出现，推动下游应用激烈变革，各种探索如火如荼地展开。但在热潮背后，我们还有一些细节问题需要仔细对待。LLM 的未来是伟大的，甚至可能是迈向 AGI 的重要里程碑；但现在并不能宣判传统 NLP 技术的死亡。</p>
+<p>本文提供了传统 NLP 和 LLM 结合的一种可能，通过用户问题和本地知识库关键词提取，能较好的解决 Embedding 精度缺失，以及 HyDE、LLM NLU的精度和性能问题。实现单轮对话，对多知识点的聚合处理。后续将继续探索 LLM 和传统技术的角色分工，进一步提升综合收益。</p>
+<h4 id="heading-1">****</h4>
+<h4 id="heading-2"></h4>
+<p>文转自知乎：小虫飞飞</p>
+<p><strong>扫一扫添加TechLetter小助手可邀进群</strong></p>
+<p>** 获取更多科技资讯、前沿资料**</p>
+<p>**备注格式：职业-城市-名字  **</p>
+<p><strong>▼</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/RibsxBKlZeM4ic9R0JaD789EJIh0xvbr6iaF4kA9qFvH5icEX8x6QV3DxyIMybwxBzceFnoH47snJC5UyylLQQ18pQ/640?wx_fmt=jpeg" alt=""></p>
+<p>往期推荐</p>
+<p>[</p>
+<p>跨越奇点，人工智能全景投资框架</p>
+<p>](<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485865&amp;idx=1&amp;sn=5e981063296751a3f73d467f8f8b1c63&amp;chksm=9f74b7d2a8033ec401be117b459f56efd2bbf4950952b2820cd2c0d29eab76de53038d08a3b7&amp;scene=21#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485865&amp;idx=1&amp;sn=5e981063296751a3f73d467f8f8b1c63&amp;chksm=9f74b7d2a8033ec401be117b459f56efd2bbf4950952b2820cd2c0d29eab76de53038d08a3b7&amp;scene=21#wechat_redirect</a>)</p>
+<p>[</p>
+<p>生成式AI认知及使用情况研究</p>
+<p>](<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485821&amp;idx=1&amp;sn=0bbe0af11ad444a6230083370099a585&amp;chksm=9f74b706a8033e10db59daa99d0e5eb1004f8a5f3bf1fb594e55e77d1fd6eb00ae7be235652b&amp;scene=21#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485821&amp;idx=1&amp;sn=0bbe0af11ad444a6230083370099a585&amp;chksm=9f74b706a8033e10db59daa99d0e5eb1004f8a5f3bf1fb594e55e77d1fd6eb00ae7be235652b&amp;scene=21#wechat_redirect</a>)</p>
+<p>[</p>
+<p>a16z 创始人：努力推动 AI 的人，都可以被归为英雄</p>
+<p>](<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485806&amp;idx=1&amp;sn=b453a455c4a1b52bcf80c5cabf654a3b&amp;chksm=9f74b715a8033e03ad4fef7f99fe787fac613487bcd25846bd9666d8fa2cfdd2d4e0a1eec28b&amp;scene=21#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485806&amp;idx=1&amp;sn=b453a455c4a1b52bcf80c5cabf654a3b&amp;chksm=9f74b715a8033e03ad4fef7f99fe787fac613487bcd25846bd9666d8fa2cfdd2d4e0a1eec28b&amp;scene=21#wechat_redirect</a>)</p>
+<p>[</p>
+<p>张一鸣创业初期的思考——关于思维</p>
+<p>](<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485806&amp;idx=2&amp;sn=f4e0e30316e8be438b73b2df58b5a6d2&amp;chksm=9f74b715a8033e0375adf66132c12d1a96cd8e5c48c390f793fee390e710ab2d17a43d2ce72f&amp;scene=21#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485806&amp;idx=2&amp;sn=f4e0e30316e8be438b73b2df58b5a6d2&amp;chksm=9f74b715a8033e0375adf66132c12d1a96cd8e5c48c390f793fee390e710ab2d17a43d2ce72f&amp;scene=21#wechat_redirect</a>)</p>
+<p>[</p>
+<p>张一鸣创业初期的思考——关于成长</p>
+<p>](<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485769&amp;idx=1&amp;sn=a2f3c404df7279e667aa4ff67e72cee9&amp;chksm=9f74b732a8033e24716413a3a4bb47d16d49d5ced902ffc0dda8dd03124d8062d3dafdf20b68&amp;scene=21#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485769&amp;idx=1&amp;sn=a2f3c404df7279e667aa4ff67e72cee9&amp;chksm=9f74b732a8033e24716413a3a4bb47d16d49d5ced902ffc0dda8dd03124d8062d3dafdf20b68&amp;scene=21#wechat_redirect</a>)</p>
+<p>[</p>
+<p>生成式AI的经济潜力</p>
+<p>](<a href="http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485738&amp;idx=1&amp;sn=a5b79b59f1dd98ab3e131b5623bd72ef&amp;chksm=9f74b751a8033e47421d6998ce1225575076844a7a0360f091e5a744bb7d2aa09f7f01c67cea&amp;scene=21#wechat_redirect">http://mp.weixin.qq.com/s?__biz=MzA3NTA4MjUxNg==&amp;mid=2247485738&amp;idx=1&amp;sn=a5b79b59f1dd98ab3e131b5623bd72ef&amp;chksm=9f74b751a8033e47421d6998ce1225575076844a7a0360f091e5a744bb7d2aa09f7f01c67cea&amp;scene=21#wechat_redirect</a>)</p>
+<p><strong>免责声明：本公众号所分享的文章为本公众号原创或根据网络搜索下载编辑整理，文章版权归原作者所有，对于文中所使用的图片、文字、链接中所包含的软件、资料等，如有侵权，请联系后台管理员删除！</strong></p>
+<p>不想错过文章推送？可以给<strong>TechLetter</strong> 公众号加个星标。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/RibsxBKlZeM6ribe3aRdGBKrFHnL4P4HVo77n2keS6SBK7FSEQPbWRx4DsFZDPoAqgLictKxNxzAB09z2xQsa950Q/640?wx_fmt=png" alt=""></p>
+<p><strong>阅读至此了，分享、点赞、在看三选一吧🙏</strong></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
