@@ -1,0 +1,725 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>【完整全文】揭秘GPT-4：OpenAI在架构设计中所做的工程权衡 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+	<meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">【完整全文】揭秘GPT-4：OpenAI在架构设计中所做的工程权衡</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              July 13, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/V08icaMk7MVZLhevHQhcGeD8nwRN7uUNhLBJNyvoCfp7xUHmneOx4FXLD9AUDaRicrW4Isyh8ltlFCL4iaTG80Xicw/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <pre><code>作者： Web3天空之城  来源： [Web3天空之城](https://mp.weixin.qq.com/s/AIwinPksV_u-RQfcoCD7nw)
+</code></pre>
+<p><em>文：城主</em></p>
+<p><em>（声明：转载此文即表明您同意保留作者出处，并给出公号或原文超链接）</em></p>
+<p><em>这是一篇今天网络发布的一篇GPT-4内部技术解密文档，原文：</em></p>
+<p><em>GPT-4 Architecture, Infrastructure, Training Dataset, Costs,Vision, MoE （GPT-4架构、基础设施、训练数据集、成本、视觉和MoE ） by Dylan Patel and Gerald Wong</em> 2023.7.11</p>
+<p>过去几个月都陆续有一些关于GPT-4架构的猜测和爆料，这篇文章正是集大成者，特此整理。</p>
+<hr>
+<p>OpenAI保持GPT-4架构的封闭性，并非因为对人类存在着某种存在风险，而是因为他们所构建的东西是可复制的。事实上，我们预计Google、Meta、Anthropic、Inflection、Character、Tencent、ByteDance、Baidu等公司在短期内都会拥有与GPT-4同样甚至更强大的模型。</p>
+<p>不要误会，OpenAI具有令人惊叹的工程能力，他们所构建的东西令人难以置信，但他们达到的解决方案并非魔法。这是一个优雅的解决方案，涉及许多复杂的权衡。扩大规模只是战斗的一部分。OpenAI最持久的优势在于他们在实际应用中具有最多的使用情况、领先的工程人才，并且可以继续在未来的模型中超越其他公司。</p>
+<p>我们从许多来源收集了关于GPT-4的大量信息，今天我们想要分享。其中包括模型架构、训练基础设施、推理基础设施、参数数量、训练数据集的组成、标记数量、层数量、并行策略、多模态视觉适应、不同工程权衡背后的思考过程、实现的独特技术，以及他们如何减轻与庞大模型推理相关的一些最大瓶颈。</p>
+<p>GPT-4最有趣的方面是理解他们为什么做出了某些架构决策。</p>
+<p>此外，我们将概述在A100上训练和推理GPT-4的成本，并说明它在下一代模型架构中如何与H100进行扩展。</p>
+<p>首先，让我们来谈谈问题陈述。从GPT-3到GPT-4，OpenAI希望将规模扩大100倍，但成本是一个困扰的问题。密集的Transformer模型将无法进一步扩展。密集Transformer是OpenAI GPT-3、Google PaLM、Meta LLAMA、TII Falcon、MosaicML MPT等所使用的模型架构。我们可以轻松列举出50家公司正在使用相同的架构进行LLM（Large Language Models）训练。这是一个不错的架构，但对于扩展来说存在问题。</p>
+<p>请参阅我们在GPT-4发布之前关于密集模型训练成本的讨论，涉及即将出现的AI瓶颈问题。在那里，我们透露了OpenAI在GPT-4架构和各种现有模型的训练成本方面的高级内容。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/V08icaMk7MVZLhevHQhcGeD8nwRN7uUNhqQAXwPddBvEZb609R632M2qU5lpAj8Hwrf1QyYZhuXPqXgpGO2E2Ww/640?wx_fmt=png" alt=""></p>
+<p>在过去的6个月里，我们意识到训练成本是无关紧要的。</p>
+<p>当然，表面上看起来疯狂，需要花费数千万甚至数亿美元的计算时间来训练一个模型，但对于这些公司来说，这种支出微不足道。这实际上是一个固定资本支出项目，通过扩大规模可以持续获得更好的结果。唯一的限制因素是将计算资源扩展到人类能够获得反馈并修改架构的时间尺度上。</p>
+<p>在未来几年里，包括Google、Meta和OpenAI/Microsoft在内的多家公司将在价值超过1000亿美元的超级计算机上训练模型。Meta每年在&quot;元宇宙&quot;上烧掉160亿美元，Google每年浪费100亿美元用于各种无法实现的项目。亚马逊在Alexa上已经亏损了超过500亿美元。加密货币在没有价值的东西上浪费了1000亿美元。</p>
+<p>这些公司和整个社会可以并且将会花费超过1000亿美元来创建能够训练单个大规模模型的超级计算机。然后，这些大规模模型可以以各种方式产品化。这个努力将在多个国家和公司中复制。这是一场新的太空竞赛。与以前的浪费不同的是，现在的AI具有明显的价值，短期内将从人类助理和自主代理中获得实际价值。</p>
+<p>扩展人工智能的一个更重要问题，真正的AI瓶颈，是推理。目标是将训练计算与推理计算分离。这就是为什么训练超出最佳状态对于任何将被部署的模型都是有意义的。这也是为什么要使用稀疏模型架构；在推理过程中，并非每个参数都被激活。</p>
+<p>真正的挑战是将这些模型扩展到用户和代理上的成本过高。推理的成本比训练的成本高出多倍。这就是OpenAI在模型架构和基础设施方面的创新目标。</p>
+<p>对于密集模型来说，大型模型的推理是一个多变量问题。我们在这里详细讨论了边缘计算方面的问题，但对于数据中心来说，问题陈述非常相似。简单来说，设备永远无法提供足够的内存带宽来实现大型语言模型的某些吞吐量水平。即使它们有足够的带宽，边缘设备上的硬件计算资源利用率也将很低。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/V08icaMk7MVZLhevHQhcGeD8nwRN7uUNh3AAbPiadWS2RuQqQTibDb8n0rnxibPTibiaN8mUkMc8cZOk7oAjW4msWEmQ/640?wx_fmt=png" alt=""></p>
+<p>在数据中心和云计算中，利用率是至关重要的。Nvidia之所以因软件卓越而受到赞扬，部分原因是因为在GPU的一代代生命周期中，Nvidia不断更新低级软件，通过更智能地在芯片、芯片之间以及内存之间传输数据，提高了FLOPS的利用率。</p>
+<p>在当前大多数应用场景中，LLM推理的目标是作为实时助手，这意味着它必须实现足够高的吞吐量，以使用户能够真正使用它。人类平均阅读速度约为每分钟250个单词，但有些人的阅读速度高达每分钟1000个单词。这意味着你需要每秒输出至少8.33个标记，但更接近每秒输出33.33个标记以涵盖所有情况。</p>
+<p>根据数学计算，一个拥有万亿参数的密集模型在最新的Nvidia H100 GPU服务器上也无法实现这样的吞吐量，因为它需要更大的内存带宽。每生成一个标记，都需要将每个参数从内存加载到芯片中。然后将生成的标记输入到提示信息中，生成下一个标记。此外，用于注意机制的KV缓存也需要额外的带宽进行流式传输。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/V08icaMk7MVZLhevHQhcGeD8nwRN7uUNhWdkCPrFM7IoY6Ch2vlIVVmWguOcibA6td1fEsP2r5CPFsehP5kX9SeQ/640?wx_fmt=png" alt=""></p>
+<p>(该图表假定无法融合每个操作带来的低效率,注意力机制所需的内存带宽以及硬件开销等同于参数读取。实际上,即使使用Nvidia的FasterTransformer等“优化”库,总开销会更大)</p>
+<p>上面的图表显示了推理一个LLM所需的内存带宽，以实现足够高的吞吐量以为个体用户提供服务。图表显示，即使使用8个H100 GPU，也无法以每秒33.33个标记的速度为拥有万亿参数的密集模型提供服务。此外，8个H100 GPU在每秒20个标记的情况下的FLOPS利用率仍然不到5%，导致推理成本非常高。因此，目前对于8路张量并行的H100系统，存在着约3000亿前馈参数的推理约束。</p>
+<p>然而，OpenAI使用A100 GPU实现了人类的阅读速度，并且使用超过万亿参数的模型，以每1,000个标记仅需0.06美元的低价格广泛提供服务。这是因为模型是稀疏的，即并非每个参数都被使用。</p>
+<p>让我们来讨论一下GPT-4模型架构、训练基础设施、推理基础设施、参数数量、训练数据集组成、标记数量、层次数量、并行策略、多模态视觉编码器、不同工程权衡背后的思考过程、独特的实施技术，以及他们如何减轻与大规模模型推理相关的一些最大瓶颈。</p>
+<h4 id="模型架构"><strong>模型架构</strong></h4>
+<p>GPT-4的规模是GPT-3的10倍以上。我们认为它在120个层中拥有大约1.8万亿个参数，而GPT-3只有大约1750亿个参数。</p>
+<p>OpenAI通过使用混合专家（MoE）模型来保持成本合理。如果您对MoE不熟悉，请阅读我们六个月前关于广义GPT-4架构和训练成本的帖子。</p>
+<p>此外，OpenAI在其模型中使用了16个专家，每个专家的MLP参数约为1110亿个。每次前向传递有2个专家进行路由。</p>
+<p>虽然文献中对于选择将每个标记路由到哪些专家的先进路由算法进行了很多讨论，但据说OpenAI的算法相当简单，适用于当前的GPT-4模型。</p>
+<p>此外，大约有550亿个共享参数用于注意力机制。</p>
+<p>每次前向传递的推理（生成1个标记）仅利用了约2800亿个参数和560 TFLOP的计算。这与纯密集模型每次前向传递所需的约1.8万亿个参数和3700 TFLOP形成了对比。</p>
+<h4 id="数据集构成"><strong>数据集构成</strong></h4>
+<p>OpenAI训练了GPT-4使用大约13万亿个标记。鉴于CommonCrawl中包含约5万亿个高质量标记的RefinedWeb数据，这是有道理的。作为参考，Deepmind的Chinchilla模型和Google的PaLM模型分别使用了约1.4万亿个标记和约7800亿个标记进行训练。据称，即使PaLM 2也是基于约5万亿个标记进行训练。</p>
+<p>这个数据集不包含13万亿个独特的标记。相反，由于缺乏高质量的标记，该数据集包含多个时期。对于基于文本的数据有2个时期，对于基于代码的数据有4个时期。有趣的是，这远远不及Chinchilla的最优解，表明需要对模型进行双倍数量的标记训练。这表明在网络上获取易得的标记的数量有限。高质量的文本标记有1000倍之多，而音频和视频则更多，但获取它们并不像网页抓取那么简单。</p>
+<p>还有来自ScaleAI和内部的数百万行指令微调数据。不幸的是，我们在RLHF数据方面找不到太多信息。预训练阶段的上下文长度（seqlen）为8k。GPT-4的32k seqlen版本是在预训练后对8k进行微调得到的。</p>
+<p>在集群上，批次大小逐渐在几天内逐步增加，但到最后，OpenAI使用的批次大小为6000万！当然，由于并非每个专家都能看到所有标记，这“仅仅”是每个专家的批次大小为750万个标记。</p>
+<h4 id="并行策略"><strong>并行策略</strong></h4>
+<p>将所有的A100 GPU并行化的策略非常重要。他们采用了8路张量并行，因为这是NVLink的限制。此外，我们听说他们还使用了15路流水线并行。从理论上讲，在考虑数据通信和计算时间时，这太多的流水线了，但如果他们受限于内存容量，那么这是有道理的。</p>
+<p>仅仅通过流水线+张量并行，每个GPU的参数在FP16下就占用了约30GB。一旦加上KV缓存和开销，从理论上讲，如果OpenAI的大部分GPU都是40GB的A100，那么这是有道理的。他们可能使用了ZeRo阶段1。他们可能还使用了块级FSDP或混合共享数据并行。</p>
+<p>至于为什么他们没有使用完整模型的FSDP，可能是因为更高的通信开销。虽然OpenAI的大多数节点之间具有高速网络连接，但并非所有节点之间都是如此。我们相信至少一些集群的带宽要低得多。</p>
+<p>我们不明白他们是如何在如此高的流水线并行度下避免每个批次产生巨大的延迟。很可能他们只是吸收了这个成本。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/V08icaMk7MVZLhevHQhcGeD8nwRN7uUNhLBJNyvoCfp7xUHmneOx4FXLD9AUDaRicrW4Isyh8ltlFCL4iaTG80Xicw/640?wx_fmt=png" alt=""></p>
+<h4 id="heading">**</h4>
+<h4 id="训练费用"><strong>训练费用</strong></h4>
+<p>OpenAI用于GPT-4的训练FLOPS约为2.15e25，使用了约25,000个A100 GPU进行了90到100天的训练，利用率约为32%至36%。极低的利用率部分是由于大量的故障导致需要重新启动检查点。</p>
+<p>上述提到的延迟代价极高。另一个原因是在这么多GPU之间进行全局归约的代价极高。如果我们的猜测是正确的，那么集群实际上是许多较小集群的组合，在它们之间的网络连接非常薄弱，即在集群的各个部分之间的非阻塞连接速度为800G/1.6T，但这些部分之间的连接速度只有200G/400G。如果他们在云中的成本为每个A100的小时费用约为1美元，仅此次训练的成本将约为6300万美元。这还不包括所有的实验、训练失败的运行和其他成本，如数据收集、RLHF、统计等。由于这些因素，实际成本要高得多。</p>
+<p>此外，这意味着您需要有人购买芯片/网络/数据中心，承担资本支出，并将其租给您使用。今天，使用约8,192个H100在大约55天内进行预训练的成本约为2150万美元，每个H100的小时费用为2美元。</p>
+<p>请注意，我们相信到今年年底将有9家公司拥有更多的H100。这些公司并不会将所有H100都用于单次训练运行，但那些使用所有H100进行训练的公司将会有更大规模的模型。Meta将在今年年底拥有超过100,000个H100，但其中相当一部分将分布在他们的数据中心进行推理。他们最大的单个集群仍将超过25,000个H100。到今年年底，许多公司将拥有足够的计算资源来训练一个与GPT-4规模相当的模型。</p>
+<h4 id="混合专家模式的权衡"><strong>混合专家模式的权衡</strong></h4>
+<p>MoE是一种在推理过程中减少参数数量的绝佳方法，同时仍然增加参数数量，这对于每个训练标记来说是必需的，因为需要编码更多的信息。这是必要的，因为获取足够高质量的标记非常困难。如果OpenAI真的试图达到Chinchilla的最佳状态，他们将不得不在训练标记上训练2倍的数量。</p>
+<p>话虽如此，OpenAI做出了多个权衡。例如，MoE在推理过程中非常难处理，因为模型的每个部分并不在每个标记生成时都被利用。这意味着在使用其他部分时，某些部分可能处于休眠状态。对于为用户提供服务，这真的会对利用率造成很大的影响。</p>
+<p>研究人员已经证明使用64到128个专家比使用16个专家的损失更好，但这仅仅是研究结果。选择较少的专家有多个原因。OpenAI选择16个专家的一个原因是更多的专家在许多任务上难以进行泛化。更多的专家也可能更难实现收敛。在如此大规模的训练中，OpenAI选择在专家数量上更为保守。</p>
+<p>此外，使用较少的专家还有助于他们的推理基础设施。在转向专家混合推理架构时，存在许多困难的权衡。让我们从LLMs的推理基本权衡开始，然后再转向OpenAI面临的困境和他们所做的选择。</p>
+<h4 id="推理的权衡"><strong>推理的权衡</strong></h4>
+<p>在开始之前，我们想指出，我们与所有的LLM公司交流后发现，Nvidia的FasterTransformer推理库非常糟糕，TensorRT更糟糕。无法使用Nvidia的模板并进行修改意味着人们需要从零开始创建自己的解决方案。如果你是Nvidia的工作人员，你需要尽快改进LLM推理的这个问题，否则事实上将成为一个开放的工具，可以更容易地添加第三方硬件支持。大规模模型的浪潮正在来临。如果在推理中没有软件优势，并且仍然需要手动编写内核，那么AMD的MI300和其他硬件将有更大的市场。</p>
+<p>对于大型语言模型的推理，存在3个主要的权衡，涉及批处理大小（同时为多个用户提供服务的数量）和使用的芯片数量。</p>
+<ol>
+<li>
+<p>**延迟 ** - 模型必须以合理的延迟响应。人们不希望在等待输出开始流动到聊天应用程序中之前等待几秒钟。预加载（输入令牌）和解码（输出令牌）需要不同的处理时间。</p>
+</li>
+<li>
+<p><strong>吞吐量</strong>  - 模型必须输出每秒钟一定数量的令牌。对于人类使用，大约需要每秒钟30个令牌。较低和较高的吞吐量对于其他各种用例也可以接受。</p>
+</li>
+<li>
+<p><strong>利用率</strong>  - 运行模型的硬件必须实现高利用率，否则成本太高。尽管较高的延迟和较低的吞吐量可以用于将更多的用户请求分组，并实现更高的利用率，但这使得情况变得更加困难。</p>
+</li>
+</ol>
+<p>LLM推理的关键是平衡两个主要因素，即内存带宽和计算。简化来说，每个参数都必须读取，并且与之相关联的有2个FLOP。因此，大多数芯片的比例（H100 SXM仅具有3TB/s的内存带宽，但具有2,000 TFLOP/s的FP8）在批处理大小为1的推理中完全不平衡。如果只为一个用户提供服务，批处理大小为1，那么为每个令牌生成流式传输所需的内存带宽将占据推理时间的主导地位，而计算时间几乎可以忽略不计。</p>
+<p>要将大型语言模型有效地扩展到多个用户，批处理大小必须大于1。多个用户分摊参数读取成本。例如，在批处理大小为256或512时，每个内存字节的读取对应512 FLOP/s或1024 FLOP/s。这个比例更接近H100的内存带宽与FLOPS之间的比例。这有助于实现更高的利用率，但代价是更高的延迟。</p>
+<p>许多人认为LLM推理的一个主要瓶颈是内存容量，因为模型的大小限制了它可以适应的芯片数量，但这是不正确的。虽然大型模型需要多个芯片进行推理，较高的内存容量使其适应的芯片数量减少，但最好使用比所需容量更多的芯片，以便将延迟降低，增加吞吐量，并使用更大的批处理大小以实现越来越高的利用率。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/V08icaMk7MVZLhevHQhcGeD8nwRN7uUNhuRBl1TfaOR38oXibbVnzzKk8GefqGKP0K2xTOD53M8hAVBmF8HVB1hQ/640?wx_fmt=png" alt=""></p>
+<p>Google在他们的PaLM推理论文中展示了这些权衡。然而，值得注意的是，这是针对像PaLM这样的稠密模型，而不是像GPT4这样的稀疏模型。</p>
+<p>如果一个应用程序需要最低的延迟，我们需要应用更多的芯片，并以尽可能多的方式对模型进行分区。较低的延迟通常可以通过较小的批处理大小实现，但较小的批处理大小也会导致更差的MFU（利用率），从而导致每个令牌的总成本（以芯片秒或美元计）更高。</p>
+<p>如果一个应用程序需要离线推理，而延迟不是一个问题，主要目标是最大化每个芯片的吞吐量（即最小化每个令牌的总成本）。增加批处理大小是最高效的，因为较大的批处理通常会导致更好的MFU（利用率），但某些在小批处理大小下不高效的分区策略在批处理大小增大时变得高效。</p>
+<p>更多的芯片和更大的批处理大小是最便宜的，因为它们提高了利用率，但同时也引入了第三个变量，即网络时间。将模型分配到多个芯片上的某些方法对于延迟来说更加高效，但与利用率有一定的权衡。</p>
+<p>内存加载部分的时间和非attention计算时间与模型大小成正比，与芯片数量成反比。然而，对于给定的分区布局，芯片间通信所需的时间随着使用的芯片数量减少得更慢（或根本不减少），因此随着芯片数量的增加，这成为一个越来越重要的瓶颈。</p>
+<p>虽然今天我们只是简要讨论一下，但应该注意的是，随着批处理大小和序列长度的增长，KV缓存的内存需求会急剧增加。</p>
+<p>如果一个应用程序需要生成具有长注意力上下文的文本，那么推理时间将大大增加。对于具有多头注意力的500B+模型，注意力KV缓存会变得很大：对于批处理大小为512和上下文长度为2048，KV缓存总共需要3TB的容量，这是模型参数大小的3倍。芯片上的内存需要从芯片外的内存中加载这个KV缓存，而在此期间，芯片的计算核心基本上处于空闲状态。</p>
+<p>较长的序列长度对内存带宽和内存容量尤其具有挑战性。OpenAI的16k序列长度的GPT 3.5 Turbo和32k序列长度的GPT 4要昂贵得多，因为它们由于内存限制无法利用更大的批处理大小。较小的批处理大小导致较低的硬件利用率。此外，随着序列长度的增加，KV缓存也会增大。KV缓存无法在用户之间共享，因此需要进行单独的内存读取，进一步限制了内存带宽。稍后会详细介绍MQA的更多内容。</p>
+<h4 id="gpt-4-推理权衡和基础设施"><strong>GPT-4 推理权衡和基础设施</strong></h4>
+<p>以上所有内容对于GPT-4的推理来说都很困难，因为作为Mixture of Experts（MoE）的模型架构引入了一整套新的困难。每个标记生成的前向传递可以路由到不同的专家集合。这在吞吐量、延迟和利用率的权衡方面引入了一种新的困境，尤其是在较大的批次大小下。</p>
+<p>OpenAI的GPT-4拥有16个专家，每个前向传递路由到其中的2个专家。这意味着如果批次大小为8，每个专家的参数读取可能只有批次大小为1。更糟糕的是，这可能意味着一个专家的批次大小为8，而其他专家的批次大小可能为4、1或0。每个标记生成，路由算法都会将前向传递发送到不同的方向，导致标记之间的延迟以及专家批次大小出现显著的变化。</p>
+<p>推理基础设施是OpenAI选择采用较少专家的主要原因之一。如果他们选择更多的专家，内存带宽将更加成为推理的瓶颈。OpenAI的推理集群通常达到4k+的批次大小，这意味着即使在专家之间进行最佳负载均衡，专家们的批次大小也只有约500。这需要非常大量的使用才能实现。</p>
+<p>我们了解到OpenAI在一个由128个GPU组成的集群上运行推理。他们在多个数据中心和地理位置拥有多个这样的集群。推理采用8路张量并行和16路管道并行。每个由8个GPU组成的节点仅拥有约130B的参数，或者在FP16模式下每个GPU不到30GB，在FP8/int8模式下不到15GB。这使得推理可以在40GB的A100上运行，前提是所有批次中的KV缓存大小不会膨胀得太大。</p>
+<p>包含各种专家的各个层不会在不同的节点之间分割，因为这会使网络流量过于不规则，并且在每个标记生成之间重新计算KV缓存的代价会过高。对于任何未来的MoE模型扩展和条件路由，最大的困难是如何处理KV缓存的路由问题。</p>
+<p>模型的层数为120，因此在15个不同的节点之间进行简单的分配，但由于第一个节点需要进行数据加载和嵌入，所以在推理集群的头节点上放置较少的层是有道理的。此外，有一些关于推测解码的传闻，我们稍后会讨论，但我们不确定是否相信这些传闻。这也可以解释为什么头节点需要包含较少的层。</p>
+<h4 id="gpt-4-推理成本"><strong>GPT-4 推理成本</strong></h4>
+<p>尽管GPT-4的前向参数仅为175B的Davinchi模型的1.6倍，但其成本是Davinchi模型的3倍。这主要是由于GPT-4需要更大的集群和较低的利用率所致。</p>
+<p>我们认为，在128个A100进行GPT-4 8k序列长度的推理过程中，每1,000个标记的成本为0.0049美元，而在128个H100进行GPT-4 8k序列长度的推理过程中，每1,000个标记的成本为0.0021美元。需要注意的是，我们假设有良好的高利用率，并且保持批次大小较大。</p>
+<p>这可能是一个错误的假设，因为很明显OpenAI有时利用率非常低。我们假设OpenAI会在低峰时段关闭集群，并重新利用这些节点来从检查点中恢复训练，用于较小的测试模型，尝试各种新技术。这有助于降低推理成本。如果OpenAI不这样做，他们的利用率将更低，我们的成本估计将翻倍以上。</p>
+<h4 id="多查询注意力"><strong>多查询注意力</strong></h4>
+<p>MQA是其他所有人都在做的事情，但我们想指出OpenAI也在做。简而言之，只需要一个头部，而且可以显著减少KV缓存的内存容量。即便如此，32k长度的GPT-4绝对无法在40GB的A100上运行，而8k的批次大小也受到限制。如果没有MQA，8k长度的模型将在批次大小上受到显著限制，甚至到了不经济的程度。</p>
+<h4 id="连续批处理"><strong>连续批处理</strong></h4>
+<p>OpenAI 实现了可变批处理大小和连续批处理。这样做是为了在最大延迟和优化推理成本之间达到一定的平衡。如果您对这个概念不熟悉，可以阅读 AnyScale 的这个内容：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/V08icaMk7MVZLhevHQhcGeD8nwRN7uUNhWFzAWvaOgXQLPiaY7X2ACeia8ibXDnic3VDL1m3RF6fqYKtGiaoJoU7QVvg/640?wx_fmt=png" alt=""></p>
+<p>使用静态批处理完成四个序列。在第一次迭代（左边），每个序列从提示令牌（黄色）生成一个令牌（蓝色）。经过几次迭代（右边），完成的序列因为在不同的迭代中发出了它们的序列结束令牌（红色），所以它们的大小各不相同。尽管序列3在两次迭代后完成，但静态批处理意味着GPU在批处理中的最后一个序列完成之前处于未充分利用的状态（在这个例子中是序列2在六次迭代后完成）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/V08icaMk7MVZLhevHQhcGeD8nwRN7uUNhic5yFbic5kYlBJ8Z3DHev8af33xxtqRqd5whiavAhe6P4JYLvcwcRbgOw/640?wx_fmt=png" alt=""></p>
+<p>使用连续批处理完成七个序列。左侧显示了单次迭代后的批次，右侧显示了经过多次迭代后的批次。一旦一个序列发出一个序列结束令牌，我们会插入一个新的序列来取代它，例如序列S5、S6和S7。这样可以实现更高的GPU利用率，因为GPU不需要等待所有序列完成后才开始新的序列。</p>
+<h4 id="猜测解码"><strong>猜测解码</strong></h4>
+<p>我们从一些可靠的消息来源得知，OpenAI在GPT-4的推理过程中使用了猜测解码（speculative decoding）。我们不确定是否应该相信这个说法。从令牌到令牌的推理时间的一般变化以及在执行简单的检索任务与执行更复杂任务时的差异似乎表明这是可能的，但是有太多的变量无法确定。为了确保，我们将在此处使用“加速LLM推理的分阶段猜测解码”一文中的一些文本，并进行适当的修改和补充。</p>
+<p>使用LLM通常分为两个阶段。首先是预填充（prefill）阶段，将提示语通过模型运行以生成KV缓存和第一个输出的对数几率（可能的令牌输出的概率分布）。这通常很快，因为整个提示语可以并行处理。</p>
+<p>第二个阶段是解码。从输出的对数几率中选择一个令牌，并将其反馈到模型中，模型会为下一个令牌生成对数几率。这个过程会重复进行，直到生成所需数量的令牌。由于解码必须按顺序进行，每次计算单元都需要流式传输权重以生成单个令牌，因此这个阶段的算术强度（即计算的浮点运算数/内存带宽字节）在小批次中非常低。因此，解码通常是自回归生成中最耗费资源的部分。这就是为什么在OpenAI的API调用中，输入令牌比输出令牌更便宜的原因。</p>
+<p>猜测解码的基本思想是使用一个较小、更快的草稿模型预先解码多个令牌，然后将它们作为一个批次输入到正式模型中。如果草稿模型的预测是正确的，即与较大的模型达成一致，那么可以使用单个批次解码多个令牌，这样可以节省大量的内存带宽和时间。</p>
+<p>然而，如果较大的模型拒绝了草稿模型预测的令牌，那么剩余的批次将被丢弃，算法会自然地恢复到标准的逐令牌解码方式。猜测解码可能还会伴随着拒绝抽样方案，用于从原始分布中进行抽样。请注意，这仅在带宽成为瓶颈的小批次设置中才有用。</p>
+<p>猜测解码通过牺牲计算资源来换取带宽。有两个关键原因使得猜测解码成为一个有吸引力的性能优化目标。首先，它不会降低模型质量。其次，它所提供的优势通常与其他方法无关，因为它的性能来自于将顺序执行转换为并行执行。</p>
+<p>目前的猜测方法是为批次预测一个单独的序列。然而，这种方法在大批次规模或草稿模型对齐度较低时无法很好地扩展。直观地说，两个模型在长连续的令牌序列上达成一致的概率是指数级低的，这意味着随着算术强度的增加，猜测解码的收益会迅速减少。</p>
+<p>我们认为如果OpenAI在使用猜测解码，他们可能只会在长度约为4个令牌的序列中使用。另外，有人猜测GPT-4降低质量的整个阴谋可能是因为他们允许正式模型接受猜测解码模型中概率较低的序列。另外有人猜测bard使用猜测解码，因为谷歌在向用户发送完整序列之前会等待序列全部生成，但我们不相信这种猜测是正确的。</p>
+<h4 id="heading-1"></h4>
+<h4 id="视觉多模态"><strong>视觉多模态</strong></h4>
+<p>GPT-4的视觉多模态能力相对于领先的研究来说是最不引人注目的部分。当然，目前还没有任何人将多模态LLM的研究商业化。</p>
+<p>GPT-4的视觉编码器与文本编码器是分开的，但存在交叉注意力。据我们所知，该架构类似于Flamingo。这使得GPT-4的参数数量增加了。在文本预训练之后，通过另外约2万亿个标记进行微调。</p>
+<p>对于视觉模型，OpenAI原本想从头开始训练，但该模型还不成熟，因此他们决定通过从文本开始进行降低风险。</p>
+<p>下一个模型GPT-5据说将从头开始训练视觉，并且能够自主生成图像。此外，它还能够处理音频。</p>
+<p>视觉能力的一个主要目的是使自主代理能够阅读网页并转录图像和视频中的内容。他们训练的数据包括联合数据（渲染的LaTeX/文本），网页的屏幕截图，YouTube视频：采样帧，并使用Whisper进行转录。</p>
+<p>有趣的是，对于所有这些对LLM过度优化的内容来说，视觉模型的IO成本与文本模型不同。在文本模型中，数据加载非常便宜，就像我们在关于亚马逊云危机的文章中所描述的那样。而在视觉模型中，数据加载的IO成本高出约150倍。每个标记的数据加载约为600字节，而不是文本的4字节。目前在图像压缩方面有很多工作正在进行。</p>
+<p>这对于正在针对2到3年后LLM的用例和比例进行硬件优化的硬件供应商来说非常重要。他们可能会发现自己处于一个每个模型都具备强大的视觉和音频功能的世界。他们可能会发现他们的架构不太适应这种情况。总的来说，架构肯定会进一步发展，超越当前我们所看到的基于文本的稠密模型和/或MoE模型的简化形式。</p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
