@@ -1,0 +1,1389 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>ChatGLM-6B模型结构组件源码阅读 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+	<meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">ChatGLM-6B模型结构组件源码阅读</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              July 24, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/kJguDvfjOGDn9gwibhoTbVlEvvSz4U87lEqWs6jiaWuPjDvlrLkuLIsFVQbj8gA6IRWwVPaheNkUyTrImPeqUBbQ/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/Eof4KrB1uWydrxw87pVDUg">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<h4 id="一前言">一、前言</h4>
+<p>本文将介绍ChatGLM-6B的模型结构组件源码。</p>
+<p>代练链接：https://huggingface.co/THUDM/chatglm-6b/blob/main/modeling_chatglm.py</p>
+<h4 id="二激活函数">二、激活函数</h4>
+<pre><code>@torch.jit.script  
+def gelu_impl(x):  
+    &quot;&quot;&quot;OpenAI's gelu implementation.&quot;&quot;&quot;  
+    return 0.5 * x * (1.0 + torch.tanh(0.7978845608028654 * x *  
+                                       (1.0 + 0.044715 * x * x)))  
+  
+  
+def gelu(x):  
+    return gelu_impl(x)  
+</code></pre>
+<h4 id="三位置编码">三、位置编码</h4>
+<h4 id="31rope原理简介">3.1、RoPE原理简介</h4>
+<p>ChatGLM-6B的位置编码采用的旋转位置编码（详细推导过程见原文：ROPE），简单来说其目的就是构建一个包含相对位置信息的Attention矩阵，其公式如下：</p>
+<p>式中，、分别表示注意力机制中的query和key，、分别表示两个位置，表示位置i处处理的矩阵，其中的形式为：</p>
+<p>原作者提到，由于非常稀疏，直接用矩阵乘法来实现会很浪费算力，推荐通过下述方式来实现RoPE：</p>
+<h4 id="32chatglm-6b中rope代码实现">3.2、ChatGLM-6B中RoPE代码实现</h4>
+<p>这里直接上代码阅读</p>
+<pre><code>class RotaryEmbedding(torch.nn.Module):  
+    def __init__(self, dim, base=10000, precision=torch.half, learnable=False):  
+        super().__init__()  
+        inv_freq = 1. / (base ** (torch.arange(0, dim, 2).float() / dim))  
+        inv_freq = inv_freq.half()  
+        self.learnable = learnable  
+        if learnable:  
+            self.inv_freq = torch.nn.Parameter(inv_freq)  
+            self.max_seq_len_cached = None  
+        else:  
+            self.register_buffer('inv_freq', inv_freq)  
+            self.max_seq_len_cached = None  
+            self.cos_cached = None  
+            self.sin_cached = None  
+        self.precision = precision  
+  
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys,  
+                              error_msgs):  
+        pass  
+  
+    def forward(self, x, seq_dim=1, seq_len=None):  
+        if seq_len is None:  
+            seq_len = x.shape[seq_dim]  
+        if self.max_seq_len_cached is None or (seq_len &gt; self.max_seq_len_cached):  
+            self.max_seq_len_cached = None if self.learnable else seq_len  
+            # 在计算旋转嵌入之前，根据当前的嵌入维度和基数计算频率因子 inv_freq。将其转换为半精度数据类型（如果指定的 precision 为 bfloat16，则转换为单精度）。  
+            t = torch.arange(seq_len, device=x.device, dtype=self.inv_freq.dtype)  
+            # 使用 爱因斯坦求和函数 einsum 将 t 和 inv_freq 相乘，得到频率矩阵 freqs。  
+            freqs = torch.einsum('i,j-&gt;ij', t, self.inv_freq)  
+            # 通过在频率矩阵 freqs 中进行重复和拼接操作，生成旋转嵌入矩阵 emb，其维度为 [seq_len, 2 * dim]。  
+            emb = torch.cat((freqs, freqs), dim=-1).to(x.device)  
+            if self.precision == torch.bfloat16:  
+                emb = emb.float()  
+  
+            # 将旋转嵌入矩阵 emb 分别进行余弦和正弦运算。  
+            cos_cached = emb.cos()[:, None, :]  
+            sin_cached = emb.sin()[:, None, :]  
+            if self.precision == torch.bfloat16:  
+                cos_cached = cos_cached.bfloat16()  
+                sin_cached = sin_cached.bfloat16()  
+            if self.learnable:  
+                return cos_cached, sin_cached  
+            self.cos_cached, self.sin_cached = cos_cached, sin_cached  
+        # 按照序列长度截取  
+        return self.cos_cached[:seq_len, ...], self.sin_cached[:seq_len, ...]  
+</code></pre>
+<h4 id="四注意力层">四、注意力层</h4>
+<h4 id="412d位置编码">4.1、2D位置编码</h4>
+<p>ChatGLM-6B代码中这一层采用的位置编码是GLM的中提出的2D位置编码，详细原理见原文：GLM: General Language Model Pretraining with Autoregressive Blank Infilling，其原理图如下图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/kJguDvfjOGDn9gwibhoTbVlEvvSz4U87ltkVE48FdYtqVUXwfOWZHQusDCSIEMG7hRPyzw1uenLXWd73TomvibXA/640?wx_fmt=png" alt=""></p>
+<p>输入的序列是，片段和片段、被随机MASK，原始的输入序列则变为，如上图(a)和(b)所示。将三个片段拼接得到模型的输入，模型的输出则是被遮蔽掉的片段，如上图(c)所示。这里使用了2种位置编码：第一种编码为整个输入嵌入位置信息，能够表示MASK片段在原始输入中的位置;第二种位置编码则是为MASK片段内的tokens输入位置信息。</p>
+<h4 id="42注意力机制">4.2、注意力机制</h4>
+<p>ChatGLM-6B相比标准的自注意力机制在Q和K中注入了RoPE位置信息。</p>
+<ul>
+<li>
+<p>标准自注意力机制<strong>attention_fn</strong> ：</p>
+<p>def attention_fn(<br>
+        self,<br>
+        query_layer,<br>
+        key_layer,<br>
+        value_layer,<br>
+        attention_mask,<br>
+        hidden_size_per_partition,<br>
+        layer_id,<br>
+        layer_past=None,<br>
+        scaling_attention_score=True,<br>
+        use_cache=False,<br>
+):<br>
+    # 考虑过去的信息<br>
+    if layer_past is not None:<br>
+        past_key, past_value = layer_past<br>
+        key_layer = torch.cat((past_key, key_layer), dim=0)<br>
+        value_layer = torch.cat((past_value, value_layer), dim=0)</p>
+<p>    # seqlen, batch, num_attention_heads, hidden_size_per_attention_head<br>
+    seq_len, b, nh, hidden_size = key_layer.shape</p>
+<p>    if use_cache:<br>
+        present = (key_layer, value_layer)<br>
+    else:<br>
+        present = None</p>
+<p>    # 对查询层进行缩放操作，即将其除以（隐藏层大小的平方根乘以查询层的缩放系数）。这是为了控制注意力得分的尺度。<br>
+    query_key_layer_scaling_coeff = float(layer_id + 1)<br>
+    if scaling_attention_score:<br>
+        query_layer = query_layer / (math.sqrt(hidden_size) * query_key_layer_scaling_coeff)</p>
+<p>    # ===================================<br>
+    # Raw attention scores. [b, np, s, s]<br>
+    # ===================================</p>
+<p>    # # 注意力分数的输出形状: [batch_size, num_heads, seq_length, seq_length]<br>
+    output_size = (query_layer.size(1), query_layer.size(2), query_layer.size(0), key_layer.size(0))</p>
+<p>    # 形状重塑：[seq_length, batch_size, num_heads, head_dim] -&gt; [seq_length, batch_size*num_heads, head_dim]<br>
+    # [sq, b, np, hn] -&gt; [sq, b * np, hn]<br>
+    query_layer = query_layer.view(output_size[2], output_size[0] * output_size[1], -1)<br>
+    # [sk, b, np, hn] -&gt; [sk, b * np, hn]<br>
+    key_layer = key_layer.view(output_size[3], output_size[0] * output_size[1], -1)</p>
+<p>    matmul_result = torch.empty(<br>
+        output_size[0] * output_size[1],<br>
+        output_size[2],<br>
+        output_size[3],<br>
+        dtype=query_layer.dtype,<br>
+        device=query_layer.device,<br>
+    )<br>
+    # 计算原始的注意力得分，通过转置和重塑操作，将查询、键和值的张量形状调整为合适的形状。<br>
+    matmul_result = torch.baddbmm(<br>
+        matmul_result,<br>
+        query_layer.transpose(0, 1),  # [b * np, sq, hn]<br>
+        key_layer.transpose(0, 1).transpose(1, 2),  # [b * np, hn, sk]<br>
+        beta=0.0,<br>
+        alpha=1.0,<br>
+    )</p>
+<p>    # 重塑形状为：[batch_size,num_head,seq_length,seq_length]<br>
+    attention_scores = matmul_result.view(*output_size)</p>
+<p>    # 如果指定了缩放的掩码 softmax（scale_mask_softmax），则将注意力得分传递给缩放的掩码 softmax 函数进行处理，以获得归一化的注意力概率。<br>
+    # 否则，将应用 softmax 操作，并根据需要填充一个较大的负数值（-10000.0）来屏蔽无效位置。<br>
+    if self.scale_mask_softmax:<br>
+        self.scale_mask_softmax.scale = query_key_layer_scaling_coeff<br>
+        attention_probs = self.scale_mask_softmax(attention_scores, attention_mask.contiguous())<br>
+    else:<br>
+        # 对注意力分数进行mask<br>
+        if not (attention_mask == 0).all():<br>
+            # if auto-regressive, skip<br>
+            attention_scores.masked_fill_(attention_mask, -10000.0)<br>
+        dtype = attention_scores.type()<br>
+        attention_scores = attention_scores.float()<br>
+        attention_scores = attention_scores * query_key_layer_scaling_coeff</p>
+<p>        attention_probs = F.softmax(attention_scores, dim=-1)</p>
+<p>        attention_probs = attention_probs.type(dtype)</p>
+<p>    # =========================<br>
+    # Context layer. [sq, b, hp]<br>
+    # =========================</p>
+<p>    # value_layer -&gt; context layer.<br>
+    # [sk, b, np, hn] &ndash;&gt; [b, np, sq, hn]</p>
+<p>    # context layer shape: [b, np, sq, hn]<br>
+    output_size = (value_layer.size(1), value_layer.size(2), query_layer.size(0), value_layer.size(3))</p>
+<p>    # change view [sk, b * np, hn]<br>
+    value_layer = value_layer.view(value_layer.size(0), output_size[0] * output_size[1], -1)</p>
+<p>    # 对注意力分数进行mask<br>
+    # change view [b * np, sq, sk]<br>
+    attention_probs = attention_probs.view(output_size[0] * output_size[1], output_size[2], -1)<br>
+    # matmul: [b * np, sq, hn]<br>
+    context_layer = torch.bmm(attention_probs, value_layer.transpose(0, 1))<br>
+    # change view [b, np, sq, hn]<br>
+    context_layer = context_layer.view(*output_size)<br>
+    # [b, np, sq, hn] &ndash;&gt; [sq, b, np, hn]<br>
+    context_layer = context_layer.permute(2, 0, 1, 3).contiguous()<br>
+    # [sq, b, np, hn] &ndash;&gt; [sq, b, hp]<br>
+    new_context_layer_shape = context_layer.size()[:-2] + (hidden_size_per_partition,)<br>
+    # 重塑上下文层<br>
+    context_layer = context_layer.view(*new_context_layer_shape)<br>
+    outputs = (context_layer, present, attention_probs)</p>
+<p>    return outputs</p>
+</li>
+<li>
+<p>SelfAttention的目的是为了捕捉序列中的位置信息，应用RoPE将位置信息注入Q和K。 <br>
+class SelfAttention(torch.nn.Module):<br>
+    def <strong>init</strong>(self, hidden_size, num_attention_heads,<br>
+                 layer_id, hidden_size_per_attention_head=None, bias=True,<br>
+                 params_dtype=torch.float, position_encoding_2d=True):<br>
+        super(SelfAttention, self).<strong>init</strong>()</p>
+<p>        self.layer_id = layer_id<br>
+        self.hidden_size = hidden_size<br>
+        self.hidden_size_per_partition = hidden_size<br>
+        self.num_attention_heads = num_attention_heads<br>
+        self.num_attention_heads_per_partition = num_attention_heads<br>
+        self.position_encoding_2d = position_encoding_2d<br>
+        self.rotary_emb = RotaryEmbedding(<br>
+            self.hidden_size // (self.num_attention_heads * 2)<br>
+            if position_encoding_2d<br>
+            else self.hidden_size // self.num_attention_heads,<br>
+            base=10000,<br>
+            precision=torch.half,<br>
+            learnable=False,<br>
+        )</p>
+<p>        self.scale_mask_softmax = None</p>
+<p>        if hidden_size_per_attention_head is None:<br>
+            self.hidden_size_per_attention_head = hidden_size // num_attention_heads<br>
+        else:<br>
+            self.hidden_size_per_attention_head = hidden_size_per_attention_head</p>
+<p>        self.inner_hidden_size = num_attention_heads * self.hidden_size_per_attention_head</p>
+<p>        # Strided linear layer.<br>
+        self.query_key_value = skip_init(<br>
+            torch.nn.Linear,<br>
+            hidden_size,<br>
+            3 * self.inner_hidden_size,<br>
+            bias=bias,<br>
+            dtype=params_dtype,<br>
+        )</p>
+<p>        self.dense = skip_init(<br>
+            torch.nn.Linear,<br>
+            self.inner_hidden_size,<br>
+            hidden_size,<br>
+            bias=bias,<br>
+            dtype=params_dtype,<br>
+        )</p>
+<p>    @staticmethod<br>
+    def attention_mask_func(attention_scores, attention_mask):<br>
+        attention_scores.masked_fill_(attention_mask, -10000.0)<br>
+        return attention_scores</p>
+<p>    def split_tensor_along_last_dim(self, tensor, num_partitions,<br>
+                                    contiguous_split_chunks=False):<br>
+        &ldquo;&ldquo;&ldquo;Split a tensor along its last dimension.<br>
+        Arguments:<br>
+            tensor: input tensor.<br>
+            num_partitions: number of partitions to split the tensor<br>
+            contiguous_split_chunks: If True, make each chunk contiguous<br>
+                                    in memory.<br>
+        &quot;&rdquo;&rdquo;<br>
+        # Get the size and dimension.<br>
+        last_dim = tensor.dim() - 1<br>
+        last_dim_size = tensor.size()[last_dim] // num_partitions<br>
+        # Split.<br>
+        tensor_list = torch.split(tensor, last_dim_size, dim=last_dim)<br>
+        # Note: torch.split does not create contiguous tensors by default.<br>
+        if contiguous_split_chunks:<br>
+            return tuple(chunk.contiguous() for chunk in tensor_list)</p>
+<p>        return tensor_list</p>
+<p>    def forward(<br>
+            self,<br>
+            hidden_states: torch.Tensor,<br>
+            position_ids,<br>
+            attention_mask: torch.Tensor,<br>
+            layer_id,<br>
+            layer_past: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,<br>
+            use_cache: bool = False,<br>
+            output_attentions: bool = False,<br>
+    ):<br>
+        &quot;&rdquo;&quot;<br>
+        hidden_states: [seq_len, batch, hidden_size]<br>
+        attention_mask: [(1, 1), seq_len, seq_len]<br>
+        &quot;&quot;&quot;</p>
+<p>        # [seq_len, batch, 3 * hidden_size]<br>
+        mixed_raw_layer = self.query_key_value(hidden_states)</p>
+<p>        # [seq_len, batch, 3 * hidden_size] &ndash;&gt; [seq_len, batch, num_attention_heads, 3 * hidden_size_per_attention_head]<br>
+        new_tensor_shape = mixed_raw_layer.size()[:-1] + (<br>
+            self.num_attention_heads_per_partition,<br>
+            3 * self.hidden_size_per_attention_head,<br>
+        )<br>
+        mixed_raw_layer = mixed_raw_layer.view(*new_tensor_shape)</p>
+<p>        # [seq_len, batch, num_attention_heads, hidden_size_per_attention_head]<br>
+        (query_layer, key_layer, value_layer) = self.split_tensor_along_last_dim(mixed_raw_layer, 3)</p>
+<p>        # 根据是否使用二维位置编码，对查询和键应用旋转嵌入，并根据位置信息进行索引操作。<br>
+        if self.position_encoding_2d:<br>
+            q1, q2 = query_layer.chunk(2, dim=(query_layer.ndim - 1))<br>
+            k1, k2 = key_layer.chunk(2, dim=(key_layer.ndim - 1))<br>
+            cos, sin = self.rotary_emb(q1, seq_len=position_ids.max() + 1)<br>
+            position_ids, block_position_ids = position_ids[:, 0, :].transpose(0, 1).contiguous(), \<br>
+                                               position_ids[:, 1, :].transpose(0, 1).contiguous()<br>
+            q1, k1 = apply_rotary_pos_emb_index(q1, k1, cos, sin, position_ids)<br>
+            q2, k2 = apply_rotary_pos_emb_index(q2, k2, cos, sin, block_position_ids)<br>
+            # 拼接嵌入不同位置信息的query和key，这样query和key中包含了两种位置信息<br>
+            query_layer = torch.concat([q1, q2], dim=(q1.ndim - 1))<br>
+            key_layer = torch.concat([k1, k2], dim=(k1.ndim - 1))<br>
+        else:<br>
+            # RoPE<br>
+            position_ids = position_ids.transpose(0, 1)<br>
+            cos, sin = self.rotary_emb(value_layer, seq_len=position_ids.max() + 1)<br>
+            # [seq_len, batch, num_attention_heads, hidden_size_per_attention_head]<br>
+            query_layer, key_layer = apply_rotary_pos_emb_index(query_layer, key_layer, cos, sin, position_ids)</p>
+<p>        # 调用 attention_fn 方法计算注意力得分和上下文层，其中使用了注意力函数的代码块<br>
+        # [seq_len, batch, hidden_size]<br>
+        context_layer, present, attention_probs = attention_fn(<br>
+            self=self,<br>
+            query_layer=query_layer,<br>
+            key_layer=key_layer,<br>
+            value_layer=value_layer,<br>
+            attention_mask=attention_mask,<br>
+            hidden_size_per_partition=self.hidden_size_per_partition,<br>
+            layer_id=layer_id,<br>
+            layer_past=layer_past,<br>
+            use_cache=use_cache<br>
+        )</p>
+<p>        output = self.dense(context_layer)</p>
+<p>        outputs = (output, present)</p>
+<p>        if output_attentions:<br>
+            outputs += (attention_probs,)</p>
+<p>        return outputs  # output, present, attention_probs</p>
+</li>
+</ul>
+<h4 id="五glu层">五、GLU层</h4>
+<p>根据代码，GLU形式化表示为：</p>
+<pre><code>class GEGLU(torch.nn.Module):  
+    def __init__(self):  
+        super().__init__()  
+        self.activation_fn = F.gelu  
+  
+    def forward(self, x):  
+        # dim=-1 breaks in jit for pt&lt;1.10  
+        x1, x2 = x.chunk(2, dim=(x.ndim - 1))  
+        return x1 * self.activation_fn(x2)  
+  
+  
+class GLU(torch.nn.Module):  
+    def __init__(self, hidden_size, inner_hidden_size=None,  
+                 layer_id=None, bias=True, activation_func=gelu, params_dtype=torch.float):  
+        super(GLU, self).__init__()  
+        self.layer_id = layer_id  
+        self.activation_func = activation_func  
+  
+        # Project to 4h.  
+        self.hidden_size = hidden_size  
+        if inner_hidden_size is None:  
+            inner_hidden_size = 4 * hidden_size  
+        self.inner_hidden_size = inner_hidden_size  
+        self.dense_h_to_4h = skip_init(  
+            torch.nn.Linear,  
+            self.hidden_size,  
+            self.inner_hidden_size,  
+            bias=bias,  
+            dtype=params_dtype,  
+        )  
+        # Project back to h.  
+        self.dense_4h_to_h = skip_init(  
+            torch.nn.Linear,  
+            self.inner_hidden_size,  
+            self.hidden_size,  
+            bias=bias,  
+            dtype=params_dtype,  
+        )  
+  
+    def forward(self, hidden_states):  
+        &quot;&quot;&quot;  
+        hidden_states: [seq_len, batch, hidden_size]  
+        &quot;&quot;&quot;  
+  
+        # [seq_len, batch, inner_hidden_size]  
+        intermediate_parallel = self.dense_h_to_4h(hidden_states)  
+  
+        intermediate_parallel = self.activation_func(intermediate_parallel)  
+  
+        output = self.dense_4h_to_h(intermediate_parallel)  
+  
+        return output  
+</code></pre>
+<h4 id="六glmblock">六、GLMBlock</h4>
+<p>根据代码，GLMBlock由Layer Norm、Self Attention、Layer Norm和GLU模块构成。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/kJguDvfjOGDn9gwibhoTbVlEvvSz4U87lmKIyPP80FbB2Y1YrwvOgW5TowbNPuNia1r3c9R9hQX6dPkchVbQdF8g/640?wx_fmt=png" alt=""></p>
+<pre><code>class GLMBlock(torch.nn.Module):  
+    def __init__(  
+            self,  
+            hidden_size,  
+            num_attention_heads,  
+            layernorm_epsilon,  
+            layer_id,  
+            inner_hidden_size=None,  
+            hidden_size_per_attention_head=None,  
+            layernorm=LayerNorm,  
+            use_bias=True,  
+            params_dtype=torch.float,  
+            num_layers=28,  
+            position_encoding_2d=True  
+    ):  
+        super(GLMBlock, self).__init__()  
+        # Set output layer initialization if not provided.  
+  
+        self.layer_id = layer_id  
+  
+        # LayerNorm层  
+        self.input_layernorm = layernorm(hidden_size, eps=layernorm_epsilon)  
+        # 是否使用2维位置编码  
+        self.position_encoding_2d = position_encoding_2d  
+  
+        # 自注意力层  
+        self.attention = SelfAttention(  
+            hidden_size,  
+            num_attention_heads,  
+            layer_id,  
+            hidden_size_per_attention_head=hidden_size_per_attention_head,  
+            bias=use_bias,  
+            params_dtype=params_dtype,  
+            position_encoding_2d=self.position_encoding_2d  
+        )  
+  
+        # LayerNorm层  
+        self.post_attention_layernorm = layernorm(hidden_size, eps=layernorm_epsilon)  
+  
+        self.num_layers = num_layers  
+  
+        # GLU层  
+        self.mlp = GLU(  
+            hidden_size,  
+            inner_hidden_size=inner_hidden_size,  
+            bias=use_bias,  
+            layer_id=layer_id,  
+            params_dtype=params_dtype,  
+        )  
+  
+    def forward(  
+            self,  
+            hidden_states: torch.Tensor,  
+            position_ids,  
+            attention_mask: torch.Tensor,  
+            layer_id,  
+            layer_past: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,  
+            use_cache: bool = False,  
+            output_attentions: bool = False,  
+    ):  
+        &quot;&quot;&quot;  
+        hidden_states: [seq_len, batch, hidden_size]  
+        attention_mask: [(1, 1), seq_len, seq_len]  
+        &quot;&quot;&quot;  
+  
+        # 输入进行Layer Norm  
+        # [seq_len, batch, hidden_size]  
+        attention_input = self.input_layernorm(hidden_states)  
+  
+        # 自注意力  
+        attention_outputs = self.attention(  
+            attention_input,  
+            position_ids,  
+            attention_mask=attention_mask,  
+            layer_id=layer_id,  
+            layer_past=layer_past,  
+            use_cache=use_cache,  
+            output_attentions=output_attentions  
+        )  
+  
+        attention_output = attention_outputs[0]  
+  
+        outputs = attention_outputs[1:]  
+  
+        # Residual connection.  
+        alpha = (2 * self.num_layers) ** 0.5  
+        # 执行注意力残差连接  
+        hidden_states = attention_input * alpha + attention_output  
+        # 对注意力残差连接后的输出进行层归一化  
+        mlp_input = self.post_attention_layernorm(hidden_states)  
+  
+        # 使用GLU层对归一化后的输出进行非线性变换  
+        mlp_output = self.mlp(mlp_input)  
+  
+        # 执行GLU残差连接  
+        output = mlp_input * alpha + mlp_output  
+  
+        if use_cache:  
+            outputs = (output,) + outputs  
+        else:  
+            outputs = (output,) + outputs[1:]  
+  
+        return outputs  # hidden_states, present, attentions  
+</code></pre>
+<h4 id="七chatglmpretrainedmodel">七、ChatGLMPreTrainedModel</h4>
+<p>这一块主要看看其中的<strong>MASK</strong> 和<strong>Position_ids</strong></p>
+<h4 id="71chatglm-6b的mask">7.1、ChatGLM-6B的Mask</h4>
+<p>ChatGLM-6B采用prefix-LM的Mask，其对于输入的前缀使用<strong>双向注意力</strong> ，对于后续的生成部分则是<strong>Causal Mask</strong> 。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/kJguDvfjOGDn9gwibhoTbVlEvvSz4U87lEqWs6jiaWuPjDvlrLkuLIsFVQbj8gA6IRWwVPaheNkUyTrImPeqUBbQ/640?wx_fmt=png" alt=""></p>
+<pre><code>def get_masks(self, input_ids, device):  
+    batch_size, seq_length = input_ids.shape  
+    # context_lengths记录了batch中每个样本的真实长度  
+    context_lengths = [seq.tolist().index(self.config.bos_token_id) for seq in input_ids]  
+    # 生成causal mask，即下三角以及对角线为1，上三角为0  
+    attention_mask = torch.ones((batch_size, seq_length, seq_length), device=device)  
+    attention_mask.tril_()  
+    # 将前缀部分的注意力改为双向注意力  
+    for i, context_length in enumerate(context_lengths):  
+        attention_mask[i, :, :context_length] = 1  
+    attention_mask.unsqueeze_(1)  
+    attention_mask = (attention_mask &lt; 0.5).bool()  
+          
+    return attention_mask  
+</code></pre>
+<h4 id="72chatglm-6b的position_ids">7.2、ChatGLM-6B的Position_ids</h4>
+<pre><code>def get_position_ids(self, input_ids, mask_positions, device, use_gmasks=None):  
+    &quot;&quot;&quot;  
+    input_ids: [batch_size, seq_length]  
+    mask_positions: [batch_size]，由于GLM系列中会使用[Mask]或[gMask]标志，mask_positions就是指这些标注的具体位置  
+    &quot;&quot;&quot;  
+    batch_size, seq_length = input_ids.shape  
+    if use_gmasks is None:  
+        use_gmasks = [False] * batch_size  
+    # context_lengths：未被padding前，batch中各个样本的长度  
+    context_lengths = [seq.tolist().index(self.config.bos_token_id) for seq in input_ids]  
+    # 2维位置编码  
+    if self.position_encoding_2d:  
+        # [0,1,2,...,seq_length-1]  
+        position_ids = torch.arange(seq_length, dtype=torch.long, device=device).unsqueeze(0).repeat(batch_size, 1)  
+        # 将原始输入后所有位置的postion id都设置为[Mask]或者[gMask]的位置id  
+        for i, context_length in enumerate(context_lengths):  
+            position_ids[i, context_length:] = mask_positions[i]  
+        # 原始输入的位置编码全部设置为0，待生成的位置添加顺序的位置id  
+        # 例如：[0,0,0,0,1,2,3,4,5]  
+        block_position_ids = [torch.cat((  
+            torch.zeros(context_length, dtype=torch.long, device=device),  
+            torch.arange(seq_length - context_length, dtype=torch.long, device=device) + 1  
+        )) for context_length in context_lengths]  
+        block_position_ids = torch.stack(block_position_ids, dim=0)  
+        # 将postion_ids和block_position_ids堆叠在一起，用于后续的参数传入；  
+        # 在注意力层中，还有将这个position_ids拆分为两部分  
+        position_ids = torch.stack((position_ids, block_position_ids), dim=1)  
+    else:  
+        position_ids = torch.arange(seq_length, dtype=torch.long, device=device).unsqueeze(0).repeat(batch_size, 1)  
+        for i, context_length in enumerate(context_lengths):  
+            if not use_gmasks[i]:  
+                position_ids[i, context_length:] = mask_positions[i]  
+  
+    return position_ids  
+</code></pre>
+<h4 id="八chatglmmodel">八、ChatGLMModel</h4>
+<p>这一块主要是模型的各部件的组合结构，直接看源码：</p>
+<pre><code>class ChatGLMModel(ChatGLMPreTrainedModel):  
+ def __init__(self, config: ChatGLMConfig, empty_init=True):  
+        super().__init__(config)  
+        if empty_init:  
+            init_method = skip_init  
+        else:  
+            init_method = default_init  
+        # recording parameters  
+        self.max_sequence_length = config.max_sequence_length  
+        self.hidden_size = config.hidden_size  
+        self.params_dtype = torch.half  
+        self.num_attention_heads = config.num_attention_heads  
+        self.vocab_size = config.vocab_size  
+        self.num_layers = config.num_layers  
+        self.layernorm_epsilon = config.layernorm_epsilon  
+        self.inner_hidden_size = config.inner_hidden_size  
+        self.hidden_size_per_attention_head = self.hidden_size // self.num_attention_heads  
+        self.position_encoding_2d = config.position_encoding_2d  
+        self.pre_seq_len = config.pre_seq_len  
+        self.prefix_projection = config.prefix_projection  
+  
+        self.word_embeddings = init_method(  
+            torch.nn.Embedding,  
+            num_embeddings=self.vocab_size, embedding_dim=self.hidden_size,  
+            dtype=self.params_dtype  
+        )  
+        self.gradient_checkpointing = False  
+  
+        def get_layer(layer_id):  
+            return GLMBlock(  
+                self.hidden_size,  
+                self.num_attention_heads,  
+                self.layernorm_epsilon,  
+                layer_id,  
+                inner_hidden_size=self.inner_hidden_size,  
+                hidden_size_per_attention_head=self.hidden_size_per_attention_head,  
+                layernorm=LayerNorm,  
+                use_bias=True,  
+                params_dtype=self.params_dtype,  
+                position_encoding_2d=self.position_encoding_2d,  
+                empty_init=empty_init  
+            )  
+  
+        self.layers = torch.nn.ModuleList(  
+            [get_layer(layer_id) for layer_id in range(self.num_layers)]  
+        )  
+  
+        # Final layer norm before output.  
+        self.final_layernorm = LayerNorm(self.hidden_size, eps=self.layernorm_epsilon)  
+  
+        &quot;&quot;&quot;  
+        pre_seq_len 为prompt部分长度，这部分仅编码，无反向传播  
+  
+        &quot;&quot;&quot;  
+        if self.pre_seq_len is not None:  
+            for param in self.parameters():  
+                param.requires_grad = False  
+            self.prefix_tokens = torch.arange(self.pre_seq_len).long()  
+            self.prefix_encoder = PrefixEncoder(config)  
+            self.dropout = torch.nn.Dropout(0.1)  
+  
+  
+    def get_prompt(self, batch_size, device, dtype=torch.half):  
+        &quot;&quot;&quot;  
+        prompt 编码  
+          
+        &quot;&quot;&quot;  
+        prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(device)  
+        past_key_values = self.prefix_encoder(prefix_tokens).type(dtype)  
+        past_key_values = past_key_values.view(  
+            batch_size,  
+            self.pre_seq_len,  
+            self.num_layers * 2,  
+            self.num_attention_heads,  
+            self.hidden_size // self.num_attention_heads  
+        )  
+        # seq_len, b, nh, hidden_size  
+        past_key_values = self.dropout(past_key_values)  
+        past_key_values = past_key_values.permute([2, 1, 0, 3, 4]).split(2)  
+        # past_key_values = [(v[0], v[1]) for v in past_key_values]  
+        return past_key_values  
+  
+  
+ def forward(  
+            self,  
+            input_ids: Optional[torch.LongTensor] = None,  
+            position_ids: Optional[torch.LongTensor] = None,  
+            attention_mask: Optional[torch.Tensor] = None,  
+            past_key_values: Optional[Tuple[Tuple[torch.Tensor, torch.Tensor], ...]] = None,  
+            inputs_embeds: Optional[torch.LongTensor] = None,  
+            use_cache: Optional[bool] = None,  
+            output_attentions: Optional[bool] = None,  
+            output_hidden_states: Optional[bool] = None,  
+            return_dict: Optional[bool] = None,  
+    ) -&gt; Union[Tuple[torch.Tensor, ...], BaseModelOutputWithPast]:  
+        .....  
+        &quot;&quot;&quot;  
+ past_key_values机制是重要的机制，其可以防止模型在文本生成任务中重新计算上一次迭代  
+  中已经计算好的上下文的值，大大提高了模型在文本生成任务中的计算效率。但要特别注意的是，  
+    在第一次迭代时由于不存在上一次迭代返回的past_key_values值，因此第一次迭代时  
+    past_key_values值为None。  
+    past_key_values 中每个元素的dim :  
+    num_layers * seq_len * batch_size * nh * hidden_size_per_head  
+        &quot;&quot;&quot;  
+        if past_key_values is None:  
+            if self.pre_seq_len is not None:  
+                past_key_values = self.get_prompt(batch_size=input_ids.shape[0], device=input_ids.device,  
+                                                  dtype=inputs_embeds.dtype)  
+            else:  
+                past_key_values = tuple([None] * len(self.layers))  
+  
+            if attention_mask is None:  
+                attention_mask = self.get_masks(  
+                    input_ids,  
+                    device=input_ids.device  
+                )  
+  
+  
+            if position_ids is None:  
+    &quot;&quot;&quot;  
+    如果只有MASK无gMASK，则mask_positions 为第一个MASK的起始位置，  
+    如果有gMASK, 则mask_positions 为第一个gMASK的起始位置  
+    e.g.  
+    gMASK = 130001  
+    MASK = 130000  
+    seqs = [[11,22,MASK,33,MASK]]  
+    --&gt; mask_positions:[2] use_gmask = [False]  
+  
+    gMASK = 130001  
+    MASK = 130000  
+    seqs = seqs = [[11,22,MASK,33,MASK, gMASK, 55, 66, gMASK, 77]]  
+    --&gt; mask_positions:[5] use_gmask = [True]  
+      
+    把位置id结合mask位置信息由get_position_ids计算（为父类ChatGLMPreTrainedModel的方法）  
+    在使用2d position coding 时，position_ids dim = batch_size * 2 * seq_length   
+    第二维包含 position_id 和 block_position_id   
+    &quot;&quot;&quot;  
+                MASK, gMASK = self.config.mask_token_id, self.config.gmask_token_id  
+                seqs = input_ids.tolist()  
+  
+                mask_positions, use_gmasks = [], []  
+                for seq in seqs:  
+                    mask_token = gMASK if gMASK in seq else MASK  
+                    use_gmask = mask_token == gMASK  
+                    mask_positions.append(seq.index(mask_token))  
+                    use_gmasks.append(use_gmask)  
+  
+                position_ids = self.get_position_ids(  
+                    input_ids,  
+                    mask_positions=mask_positions,  
+                    device=input_ids.device,  
+                    use_gmasks=use_gmasks  
+                )  
+  
+        if self.pre_seq_len is not None and attention_mask is not None:  
+            prefix_attention_mask = torch.ones(batch_size, 1, input_ids.size(-1), self.pre_seq_len).to(  
+                attention_mask.device)  
+            prefix_attention_mask = (prefix_attention_mask &lt; 0.5).bool()  
+            attention_mask = torch.cat((prefix_attention_mask, attention_mask), dim=3)  
+  
+        &quot;&quot;&quot;  
+        输入的embedding在这里进行了转置   
+        batch_size * seq_len * hidden_size -&gt; seq_len * batch_size * hidden_size  
+        &quot;&quot;&quot;  
+        # [seq_len, batch, hidden_size]  
+        hidden_states = inputs_embeds.transpose(0, 1)  
+  
+        presents = () if use_cache else None  
+        all_self_attentions = () if output_attentions else None  
+        all_hidden_states = () if output_hidden_states else None  
+  
+        if attention_mask is None:  
+            attention_mask = torch.zeros(1, 1, device=input_ids.device).bool()  
+        else:  
+            attention_mask = attention_mask.to(hidden_states.device)  
+  
+              
+  for i, layer in enumerate(self.layers):  
+  
+            if output_hidden_states:  
+                all_hidden_states = all_hidden_states + (hidden_states,)  
+            layer_past = past_key_values[i]  
+  
+            if self.gradient_checkpointing and self.training:  
+                layer_ret = torch.utils.checkpoint.checkpoint(  
+                    layer,  
+                    hidden_states,  
+                    position_ids,  
+                    attention_mask,  
+                    torch.tensor(i),  
+                    layer_past,  
+                    use_cache,  
+                    output_attentions  
+                )  
+            else:  
+                layer_ret = layer(  
+                    hidden_states,  
+                    position_ids=position_ids,  
+                    attention_mask=attention_mask,  
+                    layer_id=torch.tensor(i),  
+                    layer_past=layer_past,  
+                    use_cache=use_cache,  
+                    output_attentions=output_attentions  
+                )  
+  
+            hidden_states = layer_ret[0]  
+  
+            if use_cache:  
+                presents = presents + (layer_ret[1],)  
+  
+            if output_attentions:  
+                all_self_attentions = all_self_attentions + (layer_ret[2 if use_cache else 1],)  
+  
+        # Final layer norm.  
+        hidden_states = self.final_layernorm(hidden_states)  
+  
+        if output_hidden_states:  
+            all_hidden_states = all_hidden_states + (hidden_states,)  
+  
+        if not return_dict:  
+            return tuple(v for v in [hidden_states, presents, all_hidden_states, all_self_attentions] if v is not None)  
+  
+&quot;&quot;&quot;  
+ 经过多个glm block堆叠，最后通过一个layernorm  
+&quot;&quot;&quot;  
+        return BaseModelOutputWithPast(  
+            last_hidden_state=hidden_states,  
+            past_key_values=presents,  
+            hidden_states=all_hidden_states,  
+            attentions=all_self_attentions,  
+        )  
+</code></pre>
+<p>如有不详细之处，还望一起交流学习。</p>
+<h4 id="参考文献">参考文献</h4>
+<ol>
+<li>
+<p>GLM: General Language Model Pretraining with Autoregressive Blank Infilling)</p>
+</li>
+<li>
+<p>modeling_chatglm.py · THUDM/chatglm-6b at main (huggingface.co)</p>
+</li>
+<li>
+<p>Transformer升级之路：2、博采众长的旋转式位置编码 - 科学空间|Scientific Spaces (kexue.fm)</p>
+</li>
+</ol>
+<pre><code>**进技术交流群请添加AINLP小助手微信（id: ainlp2)**   
+
+
+**请备注具体方向+所用到的相关技术点** 
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+
+
+
+**关于AINLP** 
+
+AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+
+**阅读至此了，分享、点赞、在看三选一吧🙏** 
+</code></pre>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
