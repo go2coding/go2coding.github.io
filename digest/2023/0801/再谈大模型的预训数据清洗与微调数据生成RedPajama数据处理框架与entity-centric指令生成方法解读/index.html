@@ -1,0 +1,866 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>再谈大模型的预训数据清洗与微调数据生成：RedPajama数据处理框架与entity-centric指令生成方法解读 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+	<meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">再谈大模型的预训数据清洗与微调数据生成：RedPajama数据处理框架与entity-centric指令生成方法解读</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 1, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh1UECnWuVAGFPoauYs0icWmPxflMagtdEFY5SsjhXAhUBVvyb2RYrue6wibO3tmyhachJpmDouAxYw/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/fXmia8LilOKEATblkc3snw">老刘说NLP</a></p>
+<p>今天是7月29日周日，北京，大雨，我们继续来看看一些有趣的话题。‍‍</p>
+<p>数据工程是一个十分有趣且有挑战性的工作，在大模型、知识图谱中均十分重要，我们可以吃出关注这方面的工作。</p>
+<p>我们在前面多篇文章中讲述了预训练数据以及微调数据的处理代表开源方案，包括CCNET预训练数据清洗，以及基于self-instruct, self-qa、wizard-llm、ultra-chat等多个微调数据方案。</p>
+<p>我们今天继续讲讲数据方面的事情，一方面介绍微调数据的方案，ShenNong-TCM-LLM：实体为中心的自指令微调数据扩充，<strong>其启发点在于，如何基于知识图谱来进行微调数据的构造。</strong></p>
+<p>另一方面，在预训练数据方案上，介绍llama数据的复现项目SlimPajama，其是RedPajama的627Btoken的清理和重复版本，<strong>其对不同类型的数据进行了不同程度的清洗，在拥有64个CPU内核的机器上，处理1.21T的RedPajama标记数据集耗时约2.5天，其启发点在于，其中涉及到一个完整的数据清洗流程以及minhash去重方案，这个值得借鉴</strong> 。</p>
+<p>这两个代表工作都很有借鉴启发意义，供大家参考。</p>
+<h4 id="一先看以实体为中心的指令微调数据生成方法">一、先看以实体为中心的指令微调数据生成方法</h4>
+<p>为推动LLM在中医药领域的发展和落地，提升LLM的在中医药方面的知识与回答医学咨询的能力，同时推动大模型赋能中医药传承，推出ShenNong中医药大规模语言模型。</p>
+<p>模型基座上，以LlaMA为底座，采用LoRA (rank=16)微调得到。基于训练数据为中医药指令数据集ShenNong_TCM_Dataset。</p>
+<p>在训练数据构造上，垂直领域相较于通用领域的不同之处在于其一般是知识密集性的，而这些知识一般是围绕一些实体的。所以，我们提出实体为中心的自指令方法entity-centric self-instruct，即围绕垂直领域中的核心实体，以及各种不同的意图场景，进行指令的生成，调用ChatGPT得到11w+的围绕中医药的指令数据。</p>
+<p>这个entity-centric self-instruct来源于self-instruct，原始的版本是以主题和领域为核心，生成一些主题/技能或者领域上的promt。比如：</p>
+<p>一般的system_prompt，目标是涵盖各个主题领域：topic_list</p>
+<pre><code>system_prompt += &quot;1. 主题多样化，涵盖各个领域，例如：&quot; + &quot;、&quot;.join(random.sample(topic_list, 10)) + &quot;等。\n&quot;  
+</code></pre>
+<p>entity-centric self-instruct则要求，其涵盖不同的实体：entity_list</p>
+<pre><code>system_prompt += &quot;1. 主题多样化，涵盖不同的中医实体，例如：&quot; + &quot;、&quot;.join(random.sample(entity_list, 10)) + &quot;等。\n&quot;  
+</code></pre>
+<p>我们可以从中提供的prompt构造方式上来看其实现细节，其实际上就是使用了知识图谱的实体名称：</p>
+<pre><code>def return_random_prompt(kg_file=None):  
+    system_prompt = &quot;你需要尽可能给出多样化的，与中医(中国传统医学),中药等相关的，任务指令和对应的回答。我们将用于人工评估ChatGPT模型对指令的完成情况。要求:\n&quot;   
+    # generate random topics  
+    entity_list = []  
+    with open(kg_file, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:  
+        for line in f:  
+            line = line.strip().split(&quot; &quot;)  
+            for w in line:  
+                w = w.strip()  
+                if &quot;symmap_chemical&quot; in w:  
+                    continue  
+                if &quot;chemical_&quot; in w:  
+                    continue  
+                if &quot;SMIT&quot; in w:  
+                    continue  
+                entity_list.append(w)  
+    # system_prompt += &quot;1. 主题多样化，涵盖各个领域，例如：&quot; + &quot;、&quot;.join(random.sample(topic_list, 10)) + &quot;等。\n&quot;  
+    system_prompt += &quot;1. 主题多样化，涵盖不同的中医实体，例如：&quot; + &quot;、&quot;.join(  
+        random.sample(entity_list, 10)  
+    ) + &quot;等。\n&quot;  
+    # generate random tasks  
+    task_list = [&quot;开放式生成&quot;, &quot;分类&quot;, &quot;问答&quot;, &quot;编辑&quot;, &quot;摘要&quot;,  
+                 &quot;写作&quot;, &quot;分析&quot;, &quot;常识推理&quot;, &quot;写文献&quot;,  
+                 &quot;抽取&quot;, &quot;推荐&quot;, &quot;问诊&quot;, &quot;文献标题生成&quot;, &quot;诊断&quot;, &quot;方剂推荐&quot;, &quot;治疗推荐&quot;]  
+    system_prompt += &quot;2. 表述多样化，结合真实问题；指令类型多样化，例如：&quot; + &quot;、&quot;.join(random.sample(task_list, 10)) + &quot;等。\n&quot;  
+    # other requirements  
+    system_prompt += &quot;3. 如果遇到无法处理的指令（只靠文本无法回答），给出无法处理的回复。\n&quot;  
+    system_prompt += &quot;4. 除非特别要求，请使用中文，指令可以是命令句、疑问句、或其他合适的类型。\n&quot;  
+    system_prompt += &quot;5. 为指令生成一个适当且涉及真实情况的&lt;input&gt;，不应该只包含简单的占位符。&lt;input&gt;应提供实质性的内容，具有挑战性。字数不超过&quot; + str(  
+        random.randint(80, 120)) + &quot;字。\n&quot;  
+    system_prompt += &quot;6. &lt;output&gt;应该是对指令的适当且真实的回应，不能只回复答应或拒绝请求。如果需要额外信息才能回复时，请努力预测用户意图并尝试回复。&lt;output&gt;的内容应少于&quot; + str(512) + &quot;字。\n\n&quot;  
+    system_prompt += &quot;请给出满足条件的5条JSON格式数据：\n&quot;  
+    return system_prompt  
+</code></pre>
+<p>其中，涉及到的中医知识图谱为TCM_KG，：https://github.com/ywjawmw/TCM_KG为基础进行构建，图谱数据样例为：</p>
+<pre><code>喜热饮 胃中虚火证 证候  
+病在肛门外肿突而硬 初发期 证候  
+腹痛 心经积热证 证候  
+水红花子 SMIT13500 symmap_chemical  
+槲寄生 SMIT01519 symmap_chemical  
+SMIT16807 Liver Tender chemical_MM  
+当归 SMIT05129 symmap_chemical  
+SMIT10590 Cough Nonproductive chemical_MM  
+高热烦渴 热毒炽盛证 证候  
+SMIT05979 Sharp Headache chemical_MM  
+艾叶 SMIT05580 symmap_chemical  
+檀香 SMIT15645 symmap_chemical  
+花椒 SMIT00086 symmap_chemical  
+拒按 气滞血瘀证 证候  
+辣椒 SMIT05174 symmap_chemical  
+SMIT11035 Abdomen Discomfort chemical_MM  
+SMIT12696 Common Cold chemical_MM  
+肠道热盛 肠道实热证 证候  
+反应迟钝 寒盛阳衰证 证候  
+疲乏 血瘀 证候  
+干姜 SMIT00507 symmap_chemical  
+骨碎补 SMIT10266 symmap_chemical  
+苔薄黄 阴虚火炎证 证候  
+阳痿 仙茅 中药  
+马兜铃 SMIT13155 symmap_chemical  
+SMIT11873 Bronchial Asthma chemical_MM  
+瞿麦 SMIT02387 symmap_chemical  
+</code></pre>
+<p>形成的知识图谱neo4j如下：<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh1UECnWuVAGFPoauYs0icWmxVYYLQEdLnWCMKnseWZRg5fMQ6dBE3iaXhTWqDX65fVG9Rqv2wf2fpw/640?wx_fmt=png" alt=""></p>
+<p>最终形成的微调数据如下：</p>
+<pre><code>{  
+    &quot;query&quot;: &quot;患者出现半身不遂症状，没有其他症状。请推荐中药。要求：1. 请考虑所有症状。2. 请根据输出一步步的推理过程。&quot;,  
+    &quot;response&quot;: &quot;感谢您的提问。根据您提供的信息，患者出现了半身不遂症状，没有其他症状。这种情况可能是由于脑血管疾病引起的，因此，我会基于这个症状推荐一些中药。\n\n首先，我们需要了解患者症状的具体表现，例如  
+  是左侧或右侧不遂，上肢或下肢不遂等等。这些信息可以帮助我们确定病变的位置。\n\n其次，我们需要考虑患者的体质和病史，例如是否存在高血压、高血脂、糖尿病等慢性疾病。这些病史可能影响治疗方案的选择。\n\n在了解完这些信息之后，我们可以考虑以下中药：\n\n1. 通络活血类中药：如桃仁、红花、川芎、丹参等。这类中药可以促进血液循环，舒展血管，从而改善半身不遂症状。\n\n2. 祛风化痰类中药：如天麻、钩藤、白芍、半夏等。这类中药可以缓解病情，减轻症状，特别是对于因风痰阻塞引起的不遂症状更为有效。\n\n3. 补肾益气类中药：如枸杞子、黄精、淫羊藿、菟丝子等。这类中药可以增强身体的免疫力，提高机体的抗病能力，对于慢性病史较长的患者有一定的帮助。\n\n需要注意的是，中药的选择需要考虑具体情况，因此建议患者在就医前咨询专业医生的意见。同时，中药治疗需要长期坚持，不能轻易停药，否则可能会导致病情反复。&quot;  
+}  
+</code></pre>
+<p>地址：https://github.com/michael-wzhu/ShenNong-TCM-LLM</p>
+<h4 id="二再看redpajama预训练数据清洗方案">二、再看RedPajama预训练数据清洗方案‍‍‍‍‍‍‍‍‍</h4>
+<p>SlimPajama是RedPajama的627Btoken的清理和重复版本，其对不同类型的数据进行了不同程度的清洗，如下表所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh1UECnWuVAGFPoauYs0icWmUWP5PXF0dbawEibYyBksibvOOQiaHnS4wYLVcTc4ArDmMtqOKgbkMY56w/640?wx_fmt=png" alt=""></p>
+<p>项目地址：https://github.com/Cerebras/modelzoo/blob/main/modelzoo/transformers/data_processing/slimpajama</p>
+<p>按照如下的清洗策略，在拥有64个CPU内核的机器上，处理1.21T的RedPajama标记数据集耗时约2.5天。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh1UECnWuVAGFPoauYs0icWmPxflMagtdEFY5SsjhXAhUBVvyb2RYrue6wibO3tmyhachJpmDouAxYw/640?wx_fmt=png" alt=""></p>
+<p>具体细节如下：</p>
+<p><strong>1、进行NFC归一化</strong></p>
+<p>为去除非统一字符，采用NFC归一化处理，使字母后面的组合字符变成单个组合字符。 其次，过滤短文档。RedPajama有1.86%的源文件包含下载不当或长度较短的内容，将这些内容纳入训练数据并无益处。在去除标点符号、空格符号、换行符和制表符后，过滤掉了少于200个字符的文档。</p>
+<p><strong>2、进行文本去重</strong></p>
+<p>执行全局的数据集数据去重（在语料库内部和语料库之间），使用datasketch库，并进行了进一步优化，以减少内存消耗和提高并行性。</p>
+<p>细节的，数据去重包括多个阶段：</p>
+<p><strong>1）MinHash生成</strong></p>
+<p>MinHash生成是一个非常缓慢的过程。我们建议在创建MinHashLSH 索引前单独运行该过程。为了计算每篇文档的MinHash对象，我们会将每篇文档中的进行小写转换，并删除标点符号、连续空格、换行符和制表符。然后，构建一个13-gram的列表，这些词组随后会被用作创建文档签名的特征，并添加到 MinHashLSH 索引中。</p>
+<p>关于MinHash，我们经常会遇到多维度的特征向量（用于表征一个集合或文档），有的可能十几个特征，有的可能成百上千，对于两个特征向量，常常需要计算它们之间的相似度（如文档的相似性），计算的方法有很多，以Jaccard，</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh1UECnWuVAGFPoauYs0icWm2uBt9zXZtfhxlzNfsttQbAAbOAfdbicxFs3viaIVlXB266NPLice32MOg/640?wx_fmt=png" alt=""></p>
+<p>其中，c是A,B中共同非零的特征个数，a,b分别为A,B中非零的特征个数。</p>
+<p>但是，如果每一维特征之间都要一一计算，这样的话随着特征维度的增加，计算复杂度会大幅上升，并且，我们真正关心的不是局部某个特征的差异，而是全局两个特征向量。因此，就考虑将原本非常大的特征向量映射到一个低维空间上，使得低维空间中两个向量之间的相似性接近原始特征向量的相似性，这就是MinHash的思想，得到的低维空间向量就是hash值。如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh1UECnWuVAGFPoauYs0icWm1zjJ3MOBXDGfyseGZ8WLIQfxlcN3Sd92X36WuMX63Fiafr8LUQwibYAQ/640?wx_fmt=png" alt=""></p>
+<p>其算法大体思路是：**采用一种hash函数，将元素的位置均匀打乱，然后将新顺序下每个集合第一个元素作为该集合的特征值，首先，对文档(A,B,C,D)对应特征的行进行重排列，取排列后每列（对应文档）的第一个非零值即为MinHash；重复多次1-2步骤，得到原特征向量的新表示，称signature，即降维后的新向量；计算两个signature之间相等值的比例，即得到近似Jaccard相似度。</p>
+<p>更详细的，可以参考：https://blog.gentlecp.com/article/15176.html，或者对应论文：https://cs.brown.edu/courses/cs253/papers/nearduplicate.pdf</p>
+<p>MinHash有个重要参数num_perm，即Hash置换函数设定个数，默认为128 维，如果需要提高精度，可以提高该数值，比如设置num_perm=256。</p>
+<p>全部的参数如下：</p>
+<pre><code>num_perm(int, optional)：哈希置换函数设定个数，如果hashvalues有值，那么该参数将被忽略。  
+seed(int, optional)：MinHash中随机种子。  
+hashobj(optional)：MinHash的哈希方程式。  
+hashvalues(numpy.array or list, optional)：哈希内部状态。若使用另外已经存在状态的MinHash，哈希初始化会更快。  
+permutations (optional)：哈希置换函数的参数。如果有已经存在状态的MinHash，会更快。  
+</code></pre>
+<p>下面是MinHash和jaccard的一个具体的例子。</p>
+<pre><code># coding=utf-8  
+from datasketch import MinHash  
+## 下面给顶两个文档data1, data2，每个文档的列表是所采用的特征（可以是分词结果，关键词集合，也可以是ngram结果）  
+data1 = ['minhash', 'is', 'a', 'probabilistic', 'data', 'structure', 'for',  
+        'estimating', 'the', 'similarity', 'between', 'datasets']  
+data2 = ['minhash', 'is', 'a', 'probability', 'data', 'structure', 'for',  
+        'estimating', 'the', 'similarity', 'between', 'documents']  
+m1, m2 = MinHash(), MinHash()  
+for d in data1:  
+    m1.update(d.encode('utf8'))  
+for d in data2:  
+    m2.update(d.encode('utf8'))   
+print(&quot;m2 MinHash&quot;, m2.hashvalues)     
+ m2 MinHash [   3749336  339931219  113505080  311917730    1735256  278730948  
+  249258812  306660385  386953741  423518424  236032842  607298570  
+  490287863  115094987  290874010   58384851   91673879   59969429  
+  312640790  143955678  198731659  261202638   54507159  125434160  
+   93863906   16071831  260431759  316407020  261463262 1414798772  
+ 1004656905  206326676  176707072  490982219  296255275  180270267  
+   89979232  111646838  240537181  342142234  620096571  885551337  
+  108622637  663383944  205778805   73027438  132285593  375422674  
+ 1436377075  484486034  252946215   87331021  542874901  979802008  
+   72863372    5334374  179471924  672911886   14648640  656664915  
+  185261334  707014827   10055390   48164330  430379235  622471011  
+  822143071  365346353  210165943  658287422  415249929  133327723  
+   47467434   65465220  205526851  355123251  210188509  233114503  
+   95255415  635505003   77230410  728119369  335976341  414322122  
+  145049437   23974405  192082432  134970138   74453127   73828439  
+  602513435  237597480  256398728  478669232  117369863  609846029  
+  967420222   43573138  602788439   38867682  492453226   79870237  
+  115244974   52793063  380909371  717134668  670904950  902925009  
+  209528426  203379681  384745433  230332484  768614371  440444133  
+  177181803   77874438   14187457  943516627  473827979  212418520  
+   23192819   67476139  365982808  541286878  306721294  182775228  
+  224801095  431216497]     
+## 比较jaccard的相似度防范  
+s1 = set(data1)     
+s2 = set(data2)     
+actual_jaccard = float(len(s1.intersection(s2)))/float(len(s1.union(s2)))    
+print(&quot;Estimated Jaccard for data1 and data2 is&quot;, m1.jaccard(m2))  
+print(&quot;Actual Jaccard for data1 and data2 is&quot;, actual_jaccard)    
+  
+## 对比结果，从下面的结果上来看，相似度计算的结果很接近。  
+Estimated Jaccard for data1 and data2 is 0.7109375     
+Actual Jaccard for data1 and data2 is 0.7142857142857143    
+</code></pre>
+<p><strong>2）生成重复对</strong></p>
+<p>在这一步中，建立MinHashLSH索引并对其进行查询，以找到近似的重复文档，并使用0.8的Jaccard相似性阈值来确定一对文档是否应被视为重复文档。</p>
+<p>关于这一部分的内容，可以参考：https://www.jianshu.com/p/535c537a5766</p>
+<p>该工作指出，MinHash降低了两个高维向量之间的计算复杂性，但对大量的向量之间进行两两比较，如果每个都直接比较，复杂度是O(N^2)，N是向量个数），是否有一种方法，将潜在的可能相似度高的向量聚在一起，将相似度低的向量分开。</p>
+<p>LSH(Locality Sensitive Hashing)做的就是这个事情，其基本思想为：<strong>不需要去比对所有的文档，将所有的文档(columns) hash到许多桶中，形成候选匹配对，只有同一个桶中的signature会进行匹配。</strong></p>
+<pre><code>MinHashLSH(threshold=0.9, num_perm=128, weights=(0.5, 0.5), params=None)  
+  
+参数：  
+threshold (float)：Jaccard 距离阈值设定，默认为0.9  
+num_perm (int, optional)：哈希置换函数设定个数，在weighted-MinHash中为样本规模大小。  
+weights (tuple, optional)：优化Jaccard 阈值，能够弹性选择。  
+params (tuple, optional)：bands 的数量与规模大小。  
+</code></pre>
+<p>例如，具体的例子如下：</p>
+<pre><code>from datasketch import MinHash, MinHashLSH  
+set1 = set(['minhash', 'is', 'a', 'probabilistic', 'data', 'structure', 'for',  
+            'estimating', 'the', 'similarity', 'between', 'datasets'])  
+set2 = set(['minhash', 'is', 'a', 'probability', 'data', 'structure', 'for',  
+            'estimating', 'the', 'similarity', 'between', 'documents'])  
+set3 = set(['minhash', 'is', 'probability', 'data', 'structure', 'for',  
+            'estimating', 'the', 'similarity', 'between', 'documents'])  
+m1 = MinHash(num_perm=128)  
+m2 = MinHash(num_perm=128)  
+m3 = MinHash(num_perm=128)  
+for d in set1:  
+    m1.update(d.encode('utf8'))  
+for d in set2:  
+    m2.update(d.encode('utf8'))  
+for d in set3:  
+    m3.update(d.encode('utf8'))  
+      
+# 建立 LSH index  
+lsh = MinHashLSH(threshold=0.5, num_perm=128)  
+lsh.insert(&quot;m2&quot;, m2)  
+lsh.insert(&quot;m3&quot;, m3)  
+result = lsh.query(m1)  
+print(&quot;Approximate neighbours with Jaccard similarity &gt; 0.5&quot;, result)  
+  
+## 结果：  
+Approximate neighbours with Jaccard similarity &gt; 0.5 ['m3', 'm2']  
+</code></pre>
+<p><strong>3）构建重复网络并去重</strong></p>
+<p>找到重复文件对后，例如(A, B)、(A, C)、(A, E)，可以形成一个由（A, B, C, E）组成的簇，并只保留组件中的一个文档。</p>
+<p>在使用工具上，通过对networkx(<a href="https://networkx.org">https://networkx.org</a>)、graphtool(<a href="https://graph-tool.skewed.de">https://graph-tool.skewed.de</a>)和networkit(<a href="https://networkit.github.io">https://networkit.github.io</a>)的性能和内存消耗进行评估，发现networkit 专为处理大型图而设计，并具有极高的并行性，执行效率最高，所以选择了这种做法。</p>
+<p>如下图所示：</p>
+<pre><code>def construct_graph(set_of_duplicate_pairs):  
+    G = nk.Graph()  
+    mapper = {}  
+    for pair in tqdm.tqdm(set_of_duplicate_pairs):  
+        node1_name, node2_name = pair  
+        if node1_name not in mapper:  
+            mapper[node1_name] = G.addNode()  
+        if node2_name not in mapper:  
+            mapper[node2_name] = G.addNode()  
+        G.addEdge(mapper[node1_name], mapper[node2_name])  
+    return G, mapper  
+  
+def find_connected_components(G):  
+    cc = nk.components.ConnectedComponents(G)  
+    cc.run()  
+    return cc.getComponents(), cc.numberOfComponents()  
+</code></pre>
+<p>其思想在于构建连通图，将默认为存在通路的节点彼此之间相似，从而完成去重操作。</p>
+<p><strong>4、数据打乱与数据混合</strong></p>
+<p>混合不同来源的数据，并打乱顺序，以避免任何排序偏差。沿用了&quot;how-to-shuffle-a-big-dataset &ldquo;中的 &ldquo;pile 2-pass shuffling algorithm &ldquo;实现。</p>
+<pre><code>-- First pass  
+create empty piles p[0], ..., p[M - 1]  
+for i = 0, ..., n - 1 do  
+  j := uniform random draw from {0, ..., M - 1}  
+  append x[i] to pile p[j]  
+  
+-- Second pass (perhaps done lazily)  
+for j = 0, ..., M - 1 do  
+  shuffle p[j] in RAM with Fisher-Yates or whatever is convenient  
+  append p[j] to output file  
+</code></pre>
+<p>关于这一块，可以参考：https://blog.janestreet.com/how-to-shuffle-a-big-dataset/</p>
+<p><strong>5、将数据集分为训练集和验证集</strong></p>
+<p>在这一步中，完成2次数据打乱并创建一个holdout集合。为了加快进程，将源数据分割成块并做并行处理。</p>
+<p><strong>6、针对保留集进行重复训练</strong></p>
+<p>为了确保训练集和holdout之间没有重叠，为了消除训练集的污染，采用SHA256哈希算法来查找训练集和holdout之间的精确匹配。然后，将精确匹配的数据从训练集中进行过滤。</p>
+<h4 id="总结">总结</h4>
+<p>在微调数据的处理方面，本文介绍了ShenNong-TCM-LLM，实体为中心的自指令微调数据扩充，我们可以从中了解到，如何基于知识图谱来进行微调数据的构造，这个解答了我们之前对“实体为中心的自指令微调数据扩充”的概念疑惑。</p>
+<p>在预训练数据的处理方面，本文介绍了llama数据的复现项目SlimPajama，其启发点在于，其中涉及到一个完整的数据清洗流程以及minhash去重方案，这些都值得我们借鉴。</p>
+<p>数据工程是一个十分有趣且有挑战性的工作，在大模型、知识图谱中均十分重要，我们可以吃出关注这方面的工作。</p>
+<h4 id="参考文献">参考文献</h4>
+<p>1、https://github.com/michael-wzhu/ShenNong-TCM-LLM</p>
+<p>2、https://github.com/Cerebras/modelzoo/blob/main/modelzoo/transformers/data_processing/slimpajama</p>
+<p>3、https://blog.janestreet.com/how-to-shuffle-a-big-dataset/</p>
+<p>4、https://www.jianshu.com/p/535c537a5766</p>
+<p>5、https://blog.gentlecp.com/article/15176.html</p>
+<p>6、https://cs.brown.edu/courses/cs253/papers/nearduplicate.pdf</p>
+<h4 id="关于我们">关于我们</h4>
+<p>老刘，刘焕勇，NLP开源爱好者与践行者，主页：https://liuhuanyong.github.io。</p>
+<p>老刘说NLP，将定期发布语言资源、工程实践、技术总结等内容，欢迎关注。</p>
+<p><strong>对于想加入更优质的知识图谱、事件图谱实践、相关分享的，可关注公众号，在后台菜单栏中点击会员社区-&gt;会员入群加入。</strong></p>
+<p>​​​​​</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,2164 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>大模型部署框架FastLLM实现细节解析 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+	<meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">大模型部署框架FastLLM实现细节解析</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 1, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/SdQCib1UzF3sIT0NnaGtO6QiaKHbbVwicZd9fgoQFfpWxibjOOPx2KaQsYXV91G2trbmg4fMoHTujd3cdTT4wNKvvQ/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/GNykZoC7Z5NrgsiAdawDkg">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/SdQCib1UzF3sIT0NnaGtO6QiaKHbbVwicZdoiasaTlCP4v3ic9aibPKlw3vUPSPaXgpWbb8cribeyWQLBU86kIws0typw/640?wx_fmt=png" alt=""></p>
+<h4 id="0x0-前言">0x0. 前言</h4>
+<p>接着 <a href="http://mp.weixin.qq.com/s?__biz=MjM5ODkzMzMwMQ==&amp;mid=2650438167&amp;idx=5&amp;sn=d258c5ca5b88ec26ae765f130f52cd19&amp;chksm=becdfc4d89ba755b3a6086a70cb7329c22658a431f6db32781ef9da767a541469fbae41008fa&amp;scene=21#wechat_redirect">大模型部署框架 FastLLM 简要解析</a> 这篇文章首先梳理了一下FastLLM的调用链和关键的数据结构，然后解析了 FastLLM 的一些实现细节和CPU/GPU后端实现采用的优化技巧。</p>
+<h4 id="0x1-调用链和数据结构解析">0x1. 调用链和数据结构解析</h4>
+<p>以chatglm-6b的支持为例，函数入口在 <a href="https://github.com/ztxz16/fastllm/blob/master/src/models/chatglm.cpp#L626">https://github.com/ztxz16/fastllm/blob/master/src/models/chatglm.cpp#L626</a> ，这里的 input
+就是输入的 context（string类型）。然后 <a href="https://github.com/ztxz16/fastllm/blob/master/src/models/chatglm.cpp#L633">https://github.com/ztxz16/fastllm/blob/master/src/models/chatglm.cpp#L633</a> 这行代码对 input
+进行 tokenizer encode并构造好inputIds
+，再构造好attentionMask
+之后就可以给Forward函数推理，拿到推理结果之后再使用tokenizer进行decode得到输出。</p>
+<p>在这里，inputIds
+和attentionMask
+都是Data数据类型，类比于PyTorch的Tensor，来对输入数据以及device，shape等信息进行统一管理。下面的代码展示了Data数据结构的定义，源码在：https://github.com/ztxz16/fastllm/blob/master/include/fastllm.h#L201-L286</p>
+<pre><code>class Data {  
+    public:  
+        bool lockInCPU = false; // 如果lock在CPU上，那么不允许移动到其余设备  
+        WeightType weightType = WeightType::NONE; // 权重类型，NONE代表非权重（或未知权重）  
+  
+        DataType dataType = DataType::FLOAT32; // 数据类型  
+        int unitSize, unitSizeDiv = 1; // 单个元素的字节数 = unitSIze / unitSizeDiv  
+  
+        std::vector &lt;int&gt; dims; // 数据形状  
+        std::vector &lt;uint64_t&gt; strides; // 跨度  
+  
+        uint64_t expansionSize = 0; // 扩容后的尺寸  
+        uint64_t expansionBytes = 0; // 扩容后的字节数  
+        std::vector &lt;int&gt; expansionDims; // 预扩容的形状  
+        uint8_t *cpuData = nullptr; // 数据指针  
+  
+     void *cudaData = nullptr;  
+        std::vector &lt;void*&gt; extraCudaData;  
+  
+        void *deviceData = nullptr;  
+        std::vector &lt;void*&gt; extraDeviceData;  
+  
+        DataDevice dataDevice = DataDevice::CPU;  
+  
+        // 这两个参数用于量化，对FLOAT数据不适用  
+        int perChannelAxis = -1; // 沿哪个轴分通道量化，-1代表没有分通道  
+        std::vector &lt;LowBitConfig&gt; perChannelsConfigs; // perChannelsConfigs[i]代表第i个通道的min, max; 如果没有分通道，perChannelsConfigs[0]代表全局min, max  
+        std::vector &lt;float&gt; scales, mins;  
+        std::vector &lt;int&gt; zeros;  
+        std::vector &lt;int&gt; weightSum; // 作为权重时，有时候需要存一些和加速计算  
+  
+        std::string fileName;  
+        long long filePos;  
+        std::shared_ptr&lt;FileMmap&gt; m_file;  
+  
+        Data () {};  
+  
+        Data (DataType type);  
+  
+        Data (DataType type, const std::vector &lt;int&gt; &amp;dims); // 构造函数  
+  
+        // 构造函数，创建好之后从data复制数据  
+        // data中是原始数据，如果type不是float那么需要量化  
+        Data (DataType type, const std::vector &lt;int&gt; &amp;dims, const std::vector &lt;float&gt; &amp;data);  
+  
+        ~Data(); // 析构函数  
+  
+        Data (const Data &amp;ori); // 深拷贝  
+  
+        void CopyFrom(const Data &amp;ori); // 复制  
+  
+        uint64_t GetBytes() const; // 获取总字节数  
+  
+        void Allocate(); // 分配内存  
+  
+        void Allocate(float v); // 分配内存并初始化  
+  
+        void Expansion(const std::vector &lt;int&gt; &amp;dims); // 预扩容到相应尺寸  
+  
+        void MallocSpace(uint64_t size); // 在设备上分配  
+  
+        void FreeSpace(); // 回收设备上的内存  
+  
+        void UpdateUnitSize(); // 更新unitSize  
+  
+        void Resize(const std::vector &lt;int&gt; &amp;dims); // 更改尺寸  
+  
+        void Reshape(const std::vector &lt;int&gt; &amp;dims); // 更改尺寸,但不修改数据  
+  
+        uint64_t Count(int i) const; // dims[i] * strides[i]  
+  
+        void PrintShape() const; // 输出形状  
+  
+        void Print() const; // 输出  
+  
+        void CalcWeightSum(); // 计算WeightSum  
+  
+        void ToDevice(DataDevice device); // 移动到指定device  
+  
+        void ToDevice(void *device);  
+  
+        void set_file(std::shared_ptr&lt;FileMmap&gt; file) {  
+            m_file = file;  
+        }  
+    };  
+</code></pre>
+<p>在Forward函数里面，以Data为核心载体，运行chatglm-6b模型的流程，具体包含如下的一些算子：https://github.com/ztxz16/fastllm/blob/master/include/fastllm.h#L346-L408 。以Permute为例我们浏览下它的实现：</p>
+<pre><code>void Permute(const Data &amp;input, const std::vector&lt;int&gt; &amp;axis, Data &amp;output) {  
+        Data axisData = Data(DataType::INT32PARAM, {(int)axis.size()});  
+        axisData.Allocate();  
+        for (int i = 0; i &lt; axisData.Count(0); i++) {  
+            ((int32_t*)axisData.cpuData)[i] = axis[i];  
+        }  
+        curExecutor-&gt;Run(&quot;Permute&quot;, {  
+                {&quot;input&quot;, (Data*)&amp;input}, {&quot;axis&quot;, &amp;axisData}, {&quot;output&quot;, (Data*)&amp;output}  
+        }, {}, {});  
+    }  
+</code></pre>
+<p>这里的curExecutor负责根据FastLLM编译开启的后端选项把算子Dispatch到不同的device进行执行，{&ldquo;input&rdquo;, (Data*)&amp;input}, {&ldquo;axis&rdquo;, &amp;axisData}, {&ldquo;output&rdquo;, (Data*)&amp;output}}
+这行代码表示的是一个DataDict对象，也就是一个值为data的字典，原始定义为typedef std::map &lt;std::string, Data*&gt; DataDict;
+。接着我们看一下curExecutor的定义和实现：</p>
+<pre><code>namespace fastllm {  
+    class Executor {  
+    private:  
+        std::vector &lt;BaseDevice*&gt; devices;  
+        std::map &lt;std::string, float&gt; profiler;  
+  
+    public:  
+        Executor (); // 创建默认的Executor  
+  
+        ~Executor(); // 析构  
+  
+        void ClearDevices(); // 清空 devices  
+  
+        void AddDevice(BaseDevice *device); // 增加一个device  
+  
+        // 运行一个op  
+        void Run(const std::string &amp;opType, const fastllm::DataDict &amp;datas, const fastllm::FloatDict &amp;floatParams,  
+                 const fastllm::IntDict &amp;intParams);  
+  
+        void ClearProfiler();  
+  
+        void PrintProfiler();  
+    };  
+}  
+</code></pre>
+<p>从Executor类的定义我们可以判断它负责了在设定的devices上根据opType和输入数据等执行Op的前向计算，也就是Run这个接口。由于Executor类是FastLLM的调度核心实现，所以我们来详细解析一下它的实现。</p>
+<pre><code>namespace fastllm {  
+    Executor::Executor() {  
+        this-&gt;devices.clear();  
+#ifdef USE_CUDA  
+        // 将一个指向 CudaDevice 类对象的指针插入到 devices 向量的末尾。  
+        // 这里通过 new 运算符创建了一个 CudaDevice 对象，并将返回的指针进行类型转换为 BaseDevice* 类型。  
+        this-&gt;devices.push_back((BaseDevice*) new CudaDevice());  
+#endif  
+        this-&gt;devices.push_back((BaseDevice*) new CpuDevice());  
+    }  
+  
+    Executor::~Executor() {  
+        // 释放 devices 向量中的每个指针元素所占用的内存。  
+        for (int i = 0; i &lt; devices.size(); i++) {  
+            delete devices[i];  
+        }  
+    }  
+  
+    void Executor::ClearDevices() {  
+        // this-&gt;devices 指的是当前对象的 devices 成员，即指向 BaseDevice 类对象的指针向量。  
+        this-&gt;devices.clear();  
+    }  
+      
+    // 该函数用于向 devices 向量中添加一个指向 BaseDevice 类对象的指针。  
+    void Executor::AddDevice(fastllm::BaseDevice *device) {  
+        this-&gt;devices.push_back(device);  
+    }  
+  
+    void Executor::Run(const std::string &amp;opType, const fastllm::DataDict &amp;datas, const fastllm::FloatDict &amp;floatParams,  
+                       const fastllm::IntDict &amp;intParams) {  
+        // 创建一个 st 变量，用于记录函数开始执行的时间。  
+        auto st = std::chrono::system_clock::now();  
+        // 创建一个布尔变量 lockInCPU，用于记录是否将数据锁定在 CPU 上。  
+        bool lockInCPU = false;  
+        // 在第一个 for 循环中，遍历数据字典 datas，查找是否有 &quot;___batch&quot; 后缀的参数，  
+        // 并根据情况设置 lockInCPU 的值。it.first 是数据字典中的键（key），it.second   
+        // 是对应的值（value）。如果存在 &quot;___batch&quot; 后缀的参数，则将 lockInCPU 设置为  
+        // 对应数据的 lockInCPU 属性（布尔值），否则设置为当前数据的 lockInCPU 属性。  
+        for (auto &amp;it: datas) {  
+            if (intParams.find(it.first + &quot;___batch&quot;) != intParams.end()) {  
+                int batch = intParams.find(it.first + &quot;___batch&quot;)-&gt;second;  
+                for (int i = 0; i &lt; batch; i++) {  
+                    lockInCPU |= ((Data**)it.second)[i]-&gt;lockInCPU;  
+                }  
+            } else {  
+                lockInCPU |= it.second-&gt;lockInCPU;  
+            }  
+        }  
+        // 第二个 for 循环遍历 devices 向量中的所有设备指针 device。  
+        // 在循环中，首先检查 lockInCPU 是否为真，并且当前设备的类型不是 &quot;cpu&quot;，  
+        // 如果是，则跳过当前设备（continue）。这个检查是为了保证数据锁定在 CPU 上时，只执行 CPU 设备上的操作。  
+        for (auto device: devices) {  
+            if (lockInCPU &amp;&amp; device-&gt;deviceType != &quot;cpu&quot;) {  
+                continue;  
+            }  
+            // 然后，通过调用 device-&gt;CanRun(opType, datas, floatParams, intParams)   
+            // 检查当前设备是否可以运行指定的操作 opType。如果可以运行，则进行以下操作：  
+            if (device-&gt;CanRun(opType, datas, floatParams, intParams)) {  
+                // 第三个 for 循环遍历数据字典 datas，如果存在 &quot;___batch&quot; 后缀的参数，  
+                // 则将对应数据转移到当前设备上；否则，将当前数据转移到当前设备上。  
+                for (auto &amp;it: datas) {  
+                    if (intParams.find(it.first + &quot;___batch&quot;) != intParams.end()) {  
+                        int batch = intParams.find(it.first + &quot;___batch&quot;)-&gt;second;  
+                        for (int i = 0; i &lt; batch; i++) {  
+                            ((Data**)it.second)[i]-&gt;ToDevice((void *) device);  
+                        }  
+                    } else {  
+                        it.second-&gt;ToDevice((void *) device);  
+                    }  
+                }  
+                // 调用 device-&gt;Reshape(opType, datas, floatParams, intParams)   
+                // 进行形状推导，device上的形状推导调用了opType对应的op的形状推导，  
+                // 并且被各个不同的op重写。  
+                device-&gt;Reshape(opType, datas, floatParams, intParams);  
+                // 对opType对应的这个算子进行推理。  
+                device-&gt;Run(opType, datas, floatParams, intParams);  
+                break;  
+            }  
+        }  
+        // 最后，计算操作运行时间，并将其加入 profiler 成员变量，用于性能分析。  
+        float spend = GetSpan(st, std::chrono::system_clock::now());  
+        profiler[opType] += spend;  
+    }  
+      
+    // 清除profile的信息  
+    void Executor::ClearProfiler() {  
+        profiler.clear();  
+    }  
+      
+    // 打印profile信息，也即输出每个层的运行时间和模型的总运行时间  
+    void Executor::PrintProfiler() {  
+        float sum = 0.0;  
+        for (auto &amp;it : profiler) {  
+            printf(&quot;%s spend %f\n&quot;, it.first.c_str(), it.second);  
+            sum += it.second;  
+        }  
+        printf(&quot;total spend %f\n&quot;, sum);  
+    }  
+}  
+</code></pre>
+<p>自此，前向计算就顺利完成了，再把推理结果给 tokenizer 解码就结束了，整体的调度执行流程是很简单明了的。</p>
+<h4 id="0x2-tokenizer-解析">0x2. tokenizer 解析</h4>
+<p>接着，我们来解析一下tokenizer的实现。先看一下tokenizer的定义（https://github.com/ztxz16/fastllm/blob/master/include/fastllm.h#L287-L310）：</p>
+<pre><code>struct Tokenizer {  
+        struct TrieNode {  
+            int tokenId;  
+            std::map &lt;int, TrieNode*&gt; next;  
+            TrieNode();  
+        };  
+        TrieNode *root;  
+  
+        std::unordered_map &lt;int, std::string&gt; tokenToStringDict;  
+  
+        Tokenizer ();  
+  
+        ~Tokenizer();  
+  
+        void Clear(); // 清空分词器  
+  
+        void Insert(const std::string &amp;s, int tokenId); // 插入一个token  
+  
+        Data Encode(const std::string &amp;s); // 编码  
+  
+        std::string Decode(const Data &amp;data); // 解码  
+  
+        std::string DecodeTokens(const std::vector &lt;int&gt; &amp;tokens); // 解码  
+    };  
+</code></pre>
+<p>我们从实现来看tokenizer的细节：</p>
+<pre><code>   // 这是 Tokenizer 类的嵌套结构 TrieNode 的构造函数的实现。  
+   // 在构造函数中，将 tokenId 成员变量的值初始化为 -999999。  
+   // 这个值在构造函数中被硬编码，它是作为一个特殊标记来使用的。  
+  Tokenizer::TrieNode::TrieNode() {  
+        this-&gt;tokenId = -999999;  
+    }  
+      
+    // Tokenizer 类的构造函数的实现。  
+    // 在构造函数中，通过 new 运算符创建一个新的 TrieNode 对象，  
+    // 并将其指针赋值给 root 成员变量。这样，构造函数创建了一个空的字典树，  
+    // 并将其根节点指针存储在 root 中。  
+    Tokenizer::Tokenizer() {  
+        root = new TrieNode();  
+    }  
+      
+    // Tokenizer 类的析构函数的实现。  
+    // 在析构函数中，首先调用 Clear() 函数，用于释放动态分配的资源和清空数据。  
+    // 然后，调用 delete 运算符释放通过 new 运算符创建的 root 对象的内存，从而释放整个字典树的内存。  
+    Tokenizer::~Tokenizer() {  
+        Clear();  
+        delete root;  
+    }  
+      
+    // 这是 Tokenizer 类的成员函数 Clear() 的定义，用于清空分词器并释放动态分配的资源。  
+    void Tokenizer::Clear() {  
+        // 创建一个指向 TrieNode 的指针向量 q，用于辅助遍历字典树。  
+        std::vector &lt;TrieNode*&gt; q;  
+        // 将字典树的根节点 root 加入 q 向量，作为遍历的起始点。  
+        q.push_back(root);  
+        // 开始遍历 q 向量中的节点，这是一个广度优先搜索（BFS）的过程。  
+        for (int i = 0; i &lt; q.size(); i++) {  
+            // 取出当前遍历到的节点 now。  
+            TrieNode *now = q[i];  
+            // 对当前节点 now 的所有子节点进行遍历。  
+            for (auto it : now-&gt;next) {  
+                // 将当前节点 now 的子节点加入 q 向量中，以便继续遍历子节点的子节点。  
+                q.push_back(it.second);  
+            }  
+        }  
+        // 当遍历完成后，q 向量中包含了字典树中的所有节点。  
+        // 创建一个新的 TrieNode 对象，并将其指针赋值给 root 成员变量，表示创建了一个空的字典树。  
+        root = new TrieNode();  
+        //  清空 tokenToStringDict 映射表，以确保所有 token 的映射被清空。  
+        tokenToStringDict.clear();  
+    }  
+      
+    // 这是 Tokenizer 类的成员函数 Insert 的定义，用于向分词器中插入一个 token。  
+    void Tokenizer::Insert(const std::string &amp;s, int tokenId) {  
+        // 创建一个指向 TrieNode 的指针 now，并将其初始化为指向字典树的根节点 root。  
+        TrieNode *now = this-&gt;root;  
+        // 开始遍历输入的字符串 s 中的每个字符。  
+        for (int i = 0; i &lt; s.size(); i++) {  
+            // 检查当前字符 s[i] 是否已经存在于当前节点 now 的 next 映射表中。  
+            // 如果当前字符 s[i] 不存在于当前节点 now 的子节点中，  
+            // 在 now-&gt;next 中添加新的子节点，该子节点的键为当前字符 s[i] 的编码值，  
+            // 值为指向新创建的 TrieNode 对象的指针。这表示在字典树中添加了一个新的字符节点。  
+            if (now-&gt;next.find(s[i]) == now-&gt;next.end()) {  
+                now-&gt;next[s[i]] = new TrieNode();  
+            }  
+            // 将 now 移动到下一个字符 s[i] 对应的节点，以便继续处理下一个字符。  
+            now = now-&gt;next[s[i]];  
+        }  
+        // 遍历完成后，now 将指向字典树中最后一个字符的节点。  
+        // 设置当前节点的 tokenId 成员变量，表示当前节点代表一个 token，  
+        // 并使用传入的 tokenId 值来标识该 token。  
+        now-&gt;tokenId = tokenId;  
+        // 将传入的 tokenId 和对应的字符串 s 添加到 tokenToStringDict   
+        // 映射表中，用于后续的解码过程。  
+        tokenToStringDict[tokenId] = s;  
+    }  
+      
+    // 这是 Tokenizer 类的成员函数 Encode 的定义，用于对输入的字符串 s 进行编码。  
+    Data Tokenizer::Encode(const std::string &amp;s) {  
+        // 创建一个浮点数向量 v，用于存储编码结果。该向量将存储找到的 token 对应的 tokenId 值。  
+        std::vector &lt;float&gt; v;  
+        // 开始遍历输入的字符串 s 中的每个字符。  
+        for (int i = 0; i &lt; s.size(); i++) {  
+            // 创建两个整数变量 tokenId 和 pos，  
+            // 用于记录找到的 token 的 tokenId 值和 token 的结束位置。  
+            int tokenId = -999999, pos = i - 1;  
+            // 创建一个指向 TrieNode 的指针 now，并将其初始化为指向字典树的根节点 root。  
+            TrieNode *now = this-&gt;root;  
+            // 从当前字符 s[i] 开始继续遍历字符串 s。  
+            for (int j = i; j &lt; s.size(); j++) {  
+              // 检查当前字符 s[j] 是否存在于当前节点 now 的 next 映射表中。  
+              // 如果存在，表示当前字符构成了一个 token 的一部分，继续遍历子节点。  
+                if (now-&gt;next.find(s[j]) != now-&gt;next.end()) {  
+                    // 将 now 移动到下一个字符 s[j] 对应的节点。  
+                    now = now-&gt;next[s[j]];  
+                    // 检查当前节点 now 是否代表一个 token，即它的 tokenId 是否有效。  
+                    if (now-&gt;tokenId != -999999) {  
+                        // 如果当前节点代表一个 token，将 tokenId 和当前位置 j 存储到   
+                        // tokenId 和 pos 变量中，以便记录找到的 token 的信息。   
+                        tokenId = now-&gt;tokenId;  
+                        pos = j;  
+                    }  
+                } else { // 如果当前字符不再是 token 的一部分，退出内层循环，继续外层循环。  
+                    break;  
+                }  
+            }  
+            // 如果 pos 大于等于当前位置 i，表示找到了一个 token。  
+            // 这里 pos 存储了找到的 token 的结束位置，i 移动到 pos 处，以便继续遍历下一个字符。  
+            if (pos &gt;= i) {  
+                i = pos;  
+                v.push_back(tokenId);  
+                //printf(&quot;%d &quot;, tokenId);  
+            }  
+        }  
+        //printf(&quot;\n&quot;);  
+        // 遍历完成后，v 向量中存储了输入字符串中所有找到的 token 对应的 tokenId 值。  
+        // 创建一个 Data 对象并返回，表示编码的结果。这里 Data 是一个数据结构，  
+        // 用于存储数据及其相关信息。编码结果是一个一维浮点数数组，  
+        // 表示输入字符串中所有找到的 token 对应的 tokenId 值。  
+        return Data (DataType::FLOAT32, {1, (int)v.size()}, v);  
+    }  
+      
+    // 这是 Tokenizer 类的成员函数 DecodeTokens 的定义，  
+    // 用于对输入的 token 数组进行解码，将 token 转换回原始的字符串。  
+    std::string Tokenizer::DecodeTokens(const std::vector&lt;int&gt; &amp;tokens) {  
+        // 创建一个空字符串 ret，用于存储解码结果。  
+        std::string ret = &quot;&quot;;  
+        // 开始遍历输入的 token 数组 tokens。  
+        for (int i = 0; i &lt; tokens.size(); i++) {  
+            // 获取当前 token 对应的原始字符串 s，通过查询 tokenToStringDict 映射表，  
+            // 将 tokens[i] 转换回字符串。  
+            std::string s = tokenToStringDict[tokens[i]];  
+            // 判断当前 token 是否需要特殊处理：  
+            // 如果 s 是类似 &quot;&lt;0xHH&gt;&quot; 格式的 token（其中 HH 表示十六进制数），  
+            // 则需要将其转换为对应的字符。首先，提取 HH，然后将其转换为对应的字符，  
+            // 并用空格代替原始的 token。  
+            if (s.size() == 6 &amp;&amp; s.substr(0, 3) == &quot;&lt;0x&quot; &amp;&amp; s.back() == '&gt;') {  
+                int c = 0;  
+                for (int i = 3; i &lt; 5; i++) {  
+                    c *= 16;  
+                    if (s[i] &gt;= '0' &amp;&amp; s[i] &lt;= '9') {  
+                        c += (s[i] - '0');  
+                    } else {  
+                        c += (s[i] - 'A' + 10);  
+                    }  
+                }  
+  
+                s = &quot; &quot;;  
+                s[0] = c;  
+            }  
+            // 根据不同的 token 进行解码：  
+            if (s == &quot;&lt;n&gt;&quot;) {  
+                ret += &quot;\n&quot;;  
+            } else if (s == &quot;&lt;|tab|&gt;&quot;) {  
+                ret += &quot;\t&quot;;  
+            } else {  
+                ret += s;  
+            }  
+        }  
+          
+        // 将特殊字符 &quot;\xE2\x96\x81&quot;（UTF-8 编码）替换为空格 &quot; &quot;，这是用于表示空格的特殊字符。  
+        std::string blank = &quot;&quot;;  
+        blank += 226, blank += 150, blank += 129;  
+        while (true) {  
+            std::string::size_type pos(0);  
+            if ((pos = ret.find(blank)) != std::string::npos)  
+                ret.replace(pos, blank.length(), &quot; &quot;);  
+            else break;  
+        }  
+        // 检查是否有 &quot;&lt;|blank_数字&gt;&quot; 格式的特殊 token，如果有，将其解码成对应数量的空格字符。  
+        int pos = ret.find(&quot;&lt;|blank_&quot;);  
+        if (pos != -1) {  
+            int space_num = atoi(ret.substr(8, ret.size() - 10).c_str());  
+            return std::string(space_num, ' ');  
+        }  
+  
+        return ret;  
+    }  
+  
+    std::string Tokenizer::Decode(const Data &amp;data) {  
+        std::vector &lt;int&gt; tokens;  
+        for (int i = 0; i &lt; data.Count(0); i++) {  
+            tokens.push_back((int) ((float *) data.cpuData)[i]);  
+        }  
+        return DecodeTokens(tokens);  
+    }  
+</code></pre>
+<p>上面的：</p>
+<pre><code>if (pos != -1) {  
+            int space_num = atoi(ret.substr(8, ret.size() - 10).c_str());  
+            return std::string(space_num, ' ');  
+        }  
+</code></pre>
+<p>这行代码应该是有bug，假设 ret 的值为 &ldquo;Hello&lt;|blank_4&gt;world!&quot;，那么在解码时，pos 将是 8，而 space_num 将是 4。然后，函数将返回 &quot; &ldquo;，即包含四个空格字符的字符串。在这种情况下，特殊 token &ldquo;&lt;|blank_4&gt;&rdquo; 被成功解码成了四个空格字符，但是Hello和world!这部分被删掉了。所以最终的解码结果是不对的，需要修正一下。</p>
+<p>对tokenizer的解析可以发现，在c++中使用字典树数据结构来实现tokenizer是相对比较简单方便的。</p>
+<p>接下来，我们对CPU后端和GPU后端的算子实现进行解析。</p>
+<h4 id="0x3-cpu后端算子实现">0x3. CPU后端算子实现</h4>
+<p>主要就是对这个文件进行解析：https://github.com/ztxz16/fastllm/blob/master/src/devices/cpu/cpudevice.cpp 。</p>
+<h4 id="辅助函数">辅助函数</h4>
+<pre><code>   // 这是 CpuDevice 类的成员函数 Malloc 的定义，用于在 CPU 上分配一块内存空间。  
+    bool CpuDevice::Malloc(void **ret, size_t size) {  
+        *ret = (void*)new uint8_t [size];  
+        return true;  
+    }  
+      
+    // 这是 CpuDevice 类的成员函数 Free 的定义，用于在 CPU 上释放之前分配的内存。  
+    bool CpuDevice::Free(void *ret) {  
+        delete[] (uint8_t*)ret;  
+        return true;  
+    }  
+      
+    // 这是 CpuDevice 类的成员函数 CopyDataFromCPU 的定义，用于将数据从 CPU 拷贝到指定的设备上。  
+    // 这里什么都不做，直接返回true。  
+    bool CpuDevice::CopyDataFromCPU(void *dst, void *src, size_t size) {  
+        return true;  
+    }  
+      
+    // 这是 CpuDevice 类的成员函数 CopyDataToCPU 的定义，用于将数据从指定的设备拷贝到 CPU 上。  
+    bool CpuDevice::CopyDataToCPU(void *dst, void *src, size_t size) {  
+        return true;  
+    }  
+  
+// 如果定义了 __AVX__ 和 __AVX2__，那么会启用第一个 DotU8U8 函数和 DotU4U8 函数。  
+// 如果只定义了 __AVX__，但没有定义 __AVX2__，那么会启用第二个 DotU8U8 函数和 DotU4U8 函数。  
+  
+#ifdef __AVX__  
+#ifdef __AVX2__  
+    // 这是一段使用了 Intel AVX2 指令集（Advanced Vector Extensions 2）的代码，  
+    // 用于计算两个8位无符号整数数组的点积。  
+    // 定义了一个函数 DotU8U8，它接受两个指向 8 位无符号整数的指针 a 和 b，  
+    // 以及一个整数 n。这个函数的目的是计算数组 a 和 b 的点积，其中数组的长度为 n。  
+    int DotU8U8(uint8_t *a, uint8_t *b, int n) {  
+        // 初始化一个 256 位的整数向量 acc，所有位都设置为零。这个向量用于存储点积的累加值。  
+        __m256i acc = _mm256_setzero_si256();  
+        //  初始化两个变量，i 用于循环计数，ans 用于存储最后的结果。  
+        int i = 0;  
+        int ans = 0;  
+        // 等这几行代码初始化了一些常量向量  
+        const __m256i lowMask = _mm256_set1_epi8(0xf);  
+        const __m256i ones = _mm256_set1_epi16(1);  
+        const __m256i ones8 = _mm256_set1_epi8(1);  
+        const __m256i xors = _mm256_set1_epi8(-128);  
+        // 这是一个循环，每次处理 32 个元素。这是因为 AVX2 可以同时处理 32 个 8 位整数。  
+        for (; i + 31 &lt; n; i += 32) {  
+            // 这两行代码从数组 a 和 b 中加载数据到 256 位的向量 bx 和 by。  
+            __m256i bx = _mm256_loadu_si256((const __m256i *) (a + i));  
+            __m256i by = _mm256_loadu_si256((const __m256i *) (b + i));  
+              
+            // 这行代码将 by 中的每个元素减去 128，这对应于上面表达式中的 ((int)b[i] - 128)。  
+            by = _mm256_xor_si256(by, xors);  
+            // 这行代码对于那些原本是 0 的元素（在减去 128 后变为 -128 的元素）加 1，  
+            // 以避免后续乘法操作时的溢出。  
+            by = _mm256_add_epi8(by, _mm256_and_si256(_mm256_cmpeq_epi8(by, xors), ones8));  
+              
+            //  这行代码将 bx 中的符号应用到 by 中，对应于上面表达式中的 ((int8_t*)a)[i]。  
+            by = _mm256_sign_epi8(by, bx);  
+            // 这行代码将 bx 中的所有非零元素变为 1，这是为了在后续的乘法操作中保持 by 中元素的原值。  
+            bx = _mm256_sign_epi8(bx, bx);  
+              
+            // 这行代码先对 bx 和 by 进行乘法运算（这对应于上面表达式中的 * 操作），  
+            // 然后再与 acc 进行加法操作（这对应于上面表达式中的 += 操作）。  
+            acc = _mm256_add_epi32(acc, _mm256_madd_epi16(_mm256_maddubs_epi16(bx, by), ones));  
+        }  
+        // 这是另一个循环，用于处理数组中剩余的元素（数量小于 32）。  
+        // 这些元素通过常规的方式计算点积，然后累加到 ans 中。  
+        for (; i &lt; n; i++) {  
+            ans += ((int8_t*)a)[i] * ((int)b[i] - 128);  
+        }  
+          
+        // 最后，将 acc 中的所有元素相加，然后再加上 ans，返回最终的结果。  
+        return ans + I32sum(acc);  
+    };  
+#else  
+    // 定义了一个函数 DotU8U8，它接受两个指向 8 位无符号整数的指针 a 和 b，  
+    // 以及一个整数 n。这个函数的目的是计算数组 a 和 b 的点积，其中数组的长度为 n。  
+    int DotU8U8(uint8_t *a, uint8_t *b, int n) {  
+        // 初始化一个 256 位的整数向量 acc，所有位都设置为零。这个向量用于存储点积的累加值。  
+        __m256i acc = _mm256_setzero_si256();  
+  
+        int i = 0;  
+        int ans = 0;  
+        // 这是一个循环，每次处理 32 个元素。这是因为 AVX 可以同时处理 32 个 8 位整数。  
+        for (; i + 31 &lt; n; i += 32) {  
+            // 这两行代码从数组 a 和 b 中加载数据到 256 位的向量 bx 和 by。  
+            __m256i bx = _mm256_loadu_si256((const __m256i *) (a + i));  
+            __m256i by = _mm256_loadu_si256((const __m256i *) (b + i));  
+              
+            // 接下来的四行代码将 bx 和 by 中的 8 位整数扩展为 16 位整数。  
+            // 这是因为在后续的乘法和累加操作中，如果仍然使用 8 位整数，可能会发生溢出。  
+            __m256i mx0 = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(bx, 0));  
+            __m256i mx1 = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(bx, 1));  
+  
+            __m256i my0 = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(by, 0));  
+            __m256i my1 = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(by, 1));  
+              
+            // 这两行代码首先对 mx0 和 my0，以及 mx1 和 my1 进行乘法累加操作，  
+            // 然后再与 acc 进行加法操作，结果存储在 acc 中。  
+            acc = _mm256_add_epi32(acc, _mm256_madd_epi16(mx0, my0));  
+            acc = _mm256_add_epi32(acc, _mm256_madd_epi16(mx1, my1));  
+        }  
+        //  这是另一个循环，用于处理数组中剩余的元素（数量小于 32）。  
+        // 这些元素通过常规的方式计算点积，然后累加到 ans 中。  
+        for (; i &lt; n; i++) {  
+            ans += a[i] * b[i];  
+        }  
+          
+        // 最后，将 acc 中的所有元素相加，然后再加上 ans，返回最终的结果。  
+        return ans + I32sum(acc);  
+    };  
+#endif  
+    // 它接受两个指向 8 位无符号整数的指针 a 和 b，以及一个整数 n。  
+    // 这个函数的目的是计算数组 a 和 b 的点积，其中数组的长度为 n。  
+    int DotU4U8(uint8_t *a, uint8_t *b, int n) {  
+        // 初始化一个 256 位的整数向量 acc，所有位都设置为零。这个向量用于存储点积的累加值。  
+        __m256i acc = _mm256_setzero_si256();  
+  
+        int i = 0;  
+        int ans = 0;  
+        // 初始化两个常量向量，lowMask 中的每个元素都是 0xf，ones 中的每个元素都是 1。  
+        const __m256i lowMask = _mm256_set1_epi8(0xf);  
+        const __m256i ones = _mm256_set1_epi16(1);  
+        for (; i + 31 &lt; n; i += 32) {  
+            // 从数组 a 中加载 16 个元素到 128 位的向量 orix 中。  
+            // 这里 i / 2 的原因是每个元素实际上只有 4 位。  
+            __m128i orix = _mm_loadu_si128((const __m128i *) (a + i / 2));  
+            // 将 orix 中的元素分成高 4 位和低 4 位，然后将它们合并成一个 256 位的向量 bytex。  
+            __m256i bytex = _mm256_set_m128i(_mm_srli_epi16(orix, 4), orix);  
+            // 使用按位与操作，取 bytex 中的每个元素的低 4 位，结果存储在 bx 中。  
+            __m256i bx = _mm256_and_si256(lowMask, bytex);  
+            // 从数组 b 中加载数据到 256 位的向量 by。  
+            __m256i by = _mm256_loadu_si256((const __m256i *) (b + i));  
+            // 这行代码首先进行了两个向量的乘法累加操作，然后再与 acc 进行加法操作，结果存储在 acc 中。  
+            acc = _mm256_add_epi32(acc, _mm256_madd_epi16(_mm256_maddubs_epi16(by, bx), ones));  
+        }  
+        for (; i &lt; n; i++) {  
+            ans += a[i] * b[i];  
+        }  
+  
+        return ans + I32sum(acc);  
+    };  
+#endif  
+</code></pre>
+<p>在启用AVX2进行点积计算时，有一个特殊的操作就是把b[i]转换为有符号的整数并减掉128。我没太懂这个操作的意义是什么，问了一下gpt4获得了如下的回答：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/SdQCib1UzF3sIT0NnaGtO6QiaKHbbVwicZdibBrq9v5UVjrbwRiaicTW7NYXLH62rwocn29CH5mIzCo7rLE0cXw4mquA/640?wx_fmt=png" alt="">然后这里有个疑问是在DotU4U8的实现中调用的指令应该是AVX2的指令集，但确是在AVX2宏关闭时调用的，不清楚这里是否会有bug。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/SdQCib1UzF3sIT0NnaGtO6QiaKHbbVwicZd9fgoQFfpWxibjOOPx2KaQsYXV91G2trbmg4fMoHTujd3cdTT4wNKvvQ/640?wx_fmt=png" alt="">上述函数中涉及到大量的intel Intrinsics指令细节，读者想详细了解可以参考官方文档：https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html 。</p>
+<h4 id="cpuembedding-算子解析">CpuEmbedding 算子解析</h4>
+<pre><code>// CpuEmbedding 算子的形状推导函数，这个函数接受四个参数：  
+// 一个 std::string 类型的 opType，两个字典类型的 datas 和 floatParams，以及一个 intParams。  
+void CpuEmbedding::Reshape(const std::string &amp;opType, const fastllm::DataDict &amp;datas,  
+                               const fastllm::FloatDict &amp;floatParams, const fastllm::IntDict &amp;intParams) {  
+        // 这三行代码从 datas 字典中查找键为 &quot;input&quot;、&quot;output&quot; 和 &quot;weight&quot; 的元素，  
+        // 并将找到的元素的值赋给 input、output 和 weight。  
+        // 这里的 &quot;input&quot;、&quot;output&quot; 和 &quot;weight&quot; 可以理解为嵌入层的输入、输出和权重。  
+        Data &amp;input = *(datas.find(&quot;input&quot;)-&gt;second);  
+        Data &amp;output = *(datas.find(&quot;output&quot;)-&gt;second);  
+        Data &amp;weight = *(datas.find(&quot;weight&quot;)-&gt;second);  
+          
+        // 这行代码检查 weight 的维度数量是否为 2。如果不是，就会抛出一个错误。  
+        AssertInFastLLM(weight.dims.size() == 2, &quot;Embedding's weight's dim should be 2.\n&quot;);  
+        // 这行代码检查 weight 的数据类型是否为 FLOAT32 或 BFLOAT16。如果不是，就会抛出一个错误。  
+        AssertInFastLLM(weight.dataType == DataType::FLOAT32 ||  
+                        weight.dataType == DataType::BFLOAT16, &quot;Embedding's weight's type should be float32 or bfloat16.\n&quot;);  
+        // 这行代码检查 input 的数据类型是否为 FLOAT32。如果不是，就会抛出一个错误。  
+        AssertInFastLLM(input.dataType == DataType::FLOAT32, &quot;Embedding's input's type should be float32.\n&quot;);  
+          
+        // 这行代码将 weight 的 weightType 属性设置为 EMBEDDING。  
+        weight.weightType = WeightType::EMBEDDING;  
+        // 这行代码从 weight 的维度中提取词汇大小（vocabSize）和嵌入大小（embSize）。  
+        int vocabSize = weight.dims[0], embSize = weight.dims[1];  
+        // 这两行代码将 embSize 添加到 input 的维度中，形成一个新的维度。  
+        std::vector &lt;int&gt; dims = input.dims;  
+        dims.push_back(embSize);  
+          
+        // 这两行代码将 output 的数据类型设置为 FLOAT32，并重新调整其维度。  
+        output.dataType = DataType::FLOAT32;  
+        output.Resize(dims);  
+    }  
+      
+    // 这是一个名为 CpuEmbedding::Run 的函数，它在某个名为 CpuEmbedding 的类中被定义。  
+    // 这个函数接受四个参数：一个 std::string 类型的 opType，  
+    // 两个字典类型的 datas 和 floatParams，以及一个 intParams。  
+    // 这个函数的主要任务是执行嵌入层（Embedding layer）的运算。  
+    // 嵌入层通常用于将离散型特征（例如词汇）转换为连续的向量表示。  
+    // 具体的实现方法是，对于每个输入的索引，从权重矩阵中查找对应的行，  
+    // 然后将其复制到输出矩阵的对应位置。  
+    void CpuEmbedding::Run(const std::string &amp;opType, const fastllm::DataDict &amp;datas,  
+                               const fastllm::FloatDict &amp;floatParams, const fastllm::IntDict &amp;intParams) {  
+        // 这三行代码从 datas 字典中查找键为 &quot;input&quot;、&quot;output&quot; 和 &quot;weight&quot; 的元素，  
+        // 并将找到的元素的值赋给 input、output 和 weight。  
+        // 这里的 &quot;input&quot;、&quot;output&quot; 和 &quot;weight&quot; 可以理解为嵌入层的输入、输出和权重。  
+        Data &amp;input = *(datas.find(&quot;input&quot;)-&gt;second);  
+        Data &amp;output = *(datas.find(&quot;output&quot;)-&gt;second);  
+        Data &amp;weight = *(datas.find(&quot;weight&quot;)-&gt;second);;  
+  
+        output.Allocate(); // 这行代码为 output 分配内存。  
+          
+        // 这行代码从 weight 的维度中提取词汇大小（vocabSize）和嵌入大小（embSize）。  
+        int vocabSize = weight.dims[0], embSize = weight.dims[1];  
+        // 这行代码计算 input 的长度。  
+        uint64_t inputLen = input.Count(0);  
+        // 这行代码获取 input 的数据，并将其转换为浮点数的指针。  
+        float *inputData = (float*)input.cpuData;  
+          
+        // 接下来的代码根据内存模式和权重的数据类型的不同，分别处理了四种情况。  
+        // 这四种情况可以归纳为两个大类：内存模式和权重的数据类型。  
+        // 内存模式：如果 GetLowMemMode() 返回 true，则表示处于低内存模式。  
+        // 在这种模式下，权重数据不会一次性全部加载到内存中，而是每次只加载需要的部分。  
+        // 否则，权重数据会全部加载到内存中。  
+        if (GetLowMemMode()) {  
+            FILE *fi = fopen(weight.fileName.c_str(), &quot;rb&quot;);  
+            // 权重的数据类型：如果权重的数据类型为 FLOAT32，则使用浮点数进行计算。  
+            // 如果权重的数据类型为 BFLOAT16，则使用 16 位浮点数进行计算。  
+            if (weight.dataType == DataType::FLOAT32) {  
+                float *outputData = (float *) output.cpuData;  
+                for (int i = 0; i &lt; inputLen; i++) {  
+                    // 这行代码从 inputData 中取出第 i 个元素，并将其四舍五入到最近的整数。  
+                    int token = (int) (inputData[i] + 1e-9);  
+                    // 这两行代码将文件指针移动到第 token 行的开始位置。  
+#if defined(_WIN32) or defined(_WIN64)  
+                    _fseeki64(fi, (long long)token * embSize * sizeof(float) + weight.filePos, 0);  
+#else  
+                    fseek(fi, (long long)token * embSize * sizeof(float) + weight.filePos, 0);  
+#endif  
+                    // 这行代码从文件中读取 embSize 个浮点数，并将它们存储在 outputData 的对应位置。  
+                    int ret = fread(outputData + i * embSize, sizeof(float), embSize, fi);  
+                }  
+            } else {  
+                // 如果权重的数据类型为 BFLOAT16，则使用 16 位浮点数进行计算。  
+                // 这部分代码的逻辑与 FLOAT32 部分的逻辑类似，只是多了一个步骤：  
+                // 将 16 位的浮点数转换为 32 位的浮点数。  
+                uint16_t *outputData = (uint16_t *) output.cpuData;  
+                uint16_t *weightData = new uint16_t[embSize];  
+                for (int i = 0; i &lt; inputLen; i++) {  
+                    int token = (int) (inputData[i] + 1e-9);  
+#if defined(_WIN32) or defined(_WIN64)  
+                    _fseeki64(fi, (long long)token * embSize * sizeof(uint16_t) + weight.filePos, 0);  
+#else  
+                    fseek(fi, (long long)token * embSize * sizeof(uint16_t) + weight.filePos, 0);  
+#endif  
+                    int ret = fread(weightData, sizeof(uint16_t), embSize, fi);  
+                    for (int j = 0; j &lt; embSize; j++) {  
+                        outputData[i * embSize * 2 + j * 2] = 0;  
+                        outputData[i * embSize * 2 + j * 2 + 1] = weightData[j];  
+                    }  
+                }  
+                delete[] weightData;  
+            }  
+            // 最后，fclose(fi); 这行代码关闭了文件。  
+            fclose(fi);  
+        } else {  
+            if (weight.dataType == DataType::FLOAT32) {  
+                // 这两行代码获取 output 和 weight 的数据，并将它们转换为浮点数的指针。  
+                float *outputData = (float *) output.cpuData;  
+                float *weightData = (float *) weight.cpuData;  
+                for (int i = 0; i &lt; inputLen; i++) {  
+                    int token = (int) (inputData[i] + 1e-9);  
+                    // 这行代码从 weightData 中复制 embSize 个浮点数到 outputData 的对应位置。  
+                    // 这里的 token 是索引，embSize 是嵌入向量的长度。  
+                    memcpy(outputData + i * embSize, weightData + token * embSize, embSize * sizeof(float));  
+                }  
+            } else {  
+                uint16_t *outputData = (uint16_t *) output.cpuData;  
+                uint16_t *weightData = (uint16_t *) weight.cpuData;  
+                for (int i = 0; i &lt; inputLen; i++) {  
+                    int token = (int) (inputData[i] + 1e-9);  
+                    for (int j = 0; j &lt; embSize; j++) {  
+                        outputData[i * embSize * 2 + j * 2] = 0;  
+                        outputData[i * embSize * 2 + j * 2 + 1] = weightData[token * embSize + j];  
+                    }  
+                }  
+            }  
+        }  
+    }  
+</code></pre>
+<h4 id="cpulayernormop-解析">CpuLayerNormOp 解析</h4>
+<pre><code>void CpuLayerNormOp::Run(const std::string &amp;opType, const fastllm::DataDict &amp;datas,  
+                             const fastllm::FloatDict &amp;floatParams, const fastllm::IntDict &amp;intParams) {  
+        // 这四行代码从 datas 字典中查找键为 &quot;input&quot;、&quot;output&quot;、&quot;gamma&quot; 和 &quot;beta&quot; 的元素，  
+        // 并将找到的元素的值赋给 input、output、gamma 和 beta。  
+        // 这里的 &quot;input&quot; 是层归一化的输入，&quot;output&quot; 是输出，  
+        // &quot;gamma&quot; 和 &quot;beta&quot; 是用于对归一化后的结果进行缩放和移位的可学习参数。  
+        Data &amp;input = *(datas.find(&quot;input&quot;)-&gt;second);  
+        Data &amp;output = *(datas.find(&quot;output&quot;)-&gt;second);  
+        Data &amp;gamma = *(datas.find(&quot;gamma&quot;)-&gt;second);  
+        Data &amp;beta = *(datas.find(&quot;beta&quot;)-&gt;second);  
+          
+        // 这行代码为 output 分配内存。  
+        output.Allocate();  
+          
+        // 这行代码从 intParams 字典中查找键为 &quot;axis&quot; 的元素。  
+        // 如果找到，则使用找到的值作为归一化的轴；否则，使用默认值 -1。在层归一化中，轴通常是特征维度。  
+        int axis = intParams.find(&quot;axis&quot;) != intParams.end() ? intParams.find(&quot;axis&quot;)-&gt;second : -1;  
+        // 这两行代码计算 input 的维度数，并将 axis 转换为非负数。  
+        // 这是为了处理负数的轴值，因为在 Python 中，轴可以是负数，表示从后向前数的位置。  
+        int dimsLen = input.dims.size();  
+        axis = (axis % dimsLen + dimsLen) % dimsLen;  
+          
+        // 这三行代码计算 outer、channels 和 inner。  
+        // outer 是归一化操作的外部维度的元素总数，channels 是归一化操作的轴的大小，  
+        // inner 是归一化操作的内部维度的元素总数。  
+        int outer = input.Count(0) / input.Count(axis);  
+        int channels = input.dims[axis];  
+        int inner = input.strides[axis];  
+          
+        // 这行代码为 mean 和 var 分配内存，它们用于存储每个归一化组的均值和方差。  
+        float *mean = new float[inner], *var = new float[inner];  
+        float *inputData = (float *) input.cpuData;  
+        float *outputData = (float *) output.cpuData;  
+        float *gammaData = (float *) gamma.cpuData;  
+        float *betaData = (float *) beta.cpuData;  
+          
+        // 在这个条件下，每个通道只有一个元素，所以可以并行地对每个通道进行层归一化。  
+        if (inner == 1) {  
+            // 这是一个循环，对 input 中的每一个外部元素进行处理。  
+            for (int i = 0; i &lt; outer; i++) {  
+                // 这行代码定义了三个浮点数变量，分别用于存储均值、平方和和方差。  
+                float mean = 0.f, s2 = 0.f, var = 0.f;  
+                int j = 0;  
+                // 这是一段条件编译的代码，只有在目标平台为 ARM 架构时才会编译和执行。  
+                // 这段代码使用了 ARM 架构的 SIMD 指令来加速计算。  
+#ifdef __aarch64__  
+                float32x4_t sums = vdupq_n_f32(0.0);  
+                    float32x4_t sums2 = vdupq_n_f32(0.0);  
+                    for (; j + 3 &lt; channels; j += 4) {  
+                        float32x4_t vi = vld1q_f32(inputData + j);  
+                        sums = vaddq_f32(sums, vi);  
+                        sums2 = vaddq_f32(sums2, vmulq_f32(vi, vi));  
+                    }  
+                    mean = sums[0] + sums[1] + sums[2] + sums[3];  
+                    s2 = sums2[0] + sums2[1] + sums2[2] + sums2[3];  
+#endif  
+#ifdef __AVX2__  
+                // 这是另一段条件编译的代码，只有在目标平台支持 AVX2 指令集时才会编译和执行。  
+                // 这段代码使用了 AVX2 的 SIMD 指令来加速计算。  
+                __m256 sum_vec = _mm256_setzero_ps();  
+                __m256 squared_sum_vec = _mm256_setzero_ps();  
+  
+                for (; j &lt; channels - 7; j += 8) {  
+                    __m256 data_vec = _mm256_loadu_ps(inputData + j);  
+                    sum_vec = _mm256_add_ps(sum_vec, data_vec);  
+  
+                    __m256 squared_data_vec = _mm256_mul_ps(data_vec, data_vec);  
+                    squared_sum_vec = _mm256_add_ps(squared_sum_vec, squared_data_vec);  
+                }  
+  
+                float sum_array[8];  
+                _mm256_storeu_ps(sum_array, sum_vec);  
+                mean = sum_array[0] + sum_array[1] + sum_array[2] + sum_array[3] +  
+                            sum_array[4] + sum_array[5] + sum_array[6] + sum_array[7];  
+  
+                float squared_sum_array[8];  
+                _mm256_storeu_ps(squared_sum_array, squared_sum_vec);  
+                s2 = squared_sum_array[0] + squared_sum_array[1] +  
+                                    squared_sum_array[2] + squared_sum_array[3] +  
+                                    squared_sum_array[4] + squared_sum_array[5] +  
+                                    squared_sum_array[6] + squared_sum_array[7];  
+#endif  
+                // 这是一个循环，对 input 中剩余的每一个通道进行处理。  
+                for (; j &lt; channels; j++) {  
+                    mean += inputData[j];  
+                    s2 += inputData[j] * inputData[j];  
+                }  
+                // 这两行代码计算了均值和方差。  
+                mean /= channels;  
+                var = sqrt(s2 / channels - mean*mean + 1e-10);  
+                // 接下来是对output的每一个通道进行并行处理  
+                j = 0;  
+#ifdef __aarch64__  
+                float32x4_t means = vdupq_n_f32(mean);  
+                    float32x4_t vars = vdupq_n_f32(1.0 / var);  
+                    for (; j + 3 &lt; channels; j += 4) {  
+                        float32x4_t va = vld1q_f32(gammaData + j), vb = vld1q_f32(betaData + j);  
+                        float32x4_t vi = vld1q_f32(inputData + j);  
+                        float32x4_t vo = vaddq_f32(vmulq_f32(vmulq_f32(vsubq_f32(vi, means), vars), va), vb);  
+                        vst1q_f32(outputData + j, vo);  
+                    }  
+#endif  
+                for (; j &lt; channels; j++) {  
+                    float a = gammaData[j], b = betaData[j];  
+                    outputData[j] = (inputData[j] - mean) / var * a + b;  
+                }  
+                  
+                // 这两行代码更新了 inputData 和 outputData 的指针位置，  
+                // 以便在下一轮循环中处理下一个外部元素。  
+                inputData += channels;  
+                outputData += channels;  
+            }  
+            return;  
+        } else {  
+            // 这段代码同样是执行层归一化（Layer Normalization）操作，但这次的操作更为通用，  
+            // 能处理 inner 不等于 1 的情况，即每个通道有多个元素的情况。  
+            // 这是一个循环，对 input 中的每一个外部元素进行处理。  
+            for (int i = 0; i &lt; outer; i++) {  
+                // 这两行代码将 mean 和 var 数组的所有元素初始化为 0。  
+                std::fill(mean, mean + inner, 0.f);  
+                std::fill(var, var + inner, 0.f);  
+                // 这行代码定义了一个指针 inputWalk，指向 inputData。  
+                float *inputWalk = inputData;  
+                // 这是一个循环，对每个通道进行处理。  
+                for (int j = 0; j &lt; channels; j++) {  
+                   // 这是一个嵌套循环，对每个通道内的每个元素进行处理。  
+                    for (int k = 0; k &lt; inner; k++) {  
+                        // 这行代码将当前元素的值加到对应的 mean 中，然后 inputWalk 指针向后移动。  
+                        mean[k] += *inputWalk++;   
+                    }  
+                }  
+                // 这是另一个循环，计算每个通道的均值。  
+                for (int k = 0; k &lt; inner; k++) {  
+                    mean[k] /= channels;  
+                }  
+                // 方差类似  
+                inputWalk = inputData;  
+                for (int j = 0; j &lt; channels; j++) {  
+                    for (int k = 0; k &lt; inner; k++) {  
+                        float x = (*inputWalk++) - mean[k];  
+                        var[k] += x * x;  
+                    }  
+                }  
+                for (int k = 0; k &lt; inner; k++) {  
+                    var[k] = sqrt(var[k] / channels + 1e-5);  
+                }  
+                  
+                // 计算输出也是类似  
+                inputWalk = inputData;  
+                float *outputWalk = outputData;  
+                for (int j = 0; j &lt; channels; j++) {  
+                    float a = gammaData[j], b = betaData[j];  
+                    for (int k = 0; k &lt; inner; k++) {  
+                        *outputWalk++ = ((*inputWalk++) - mean[k]) / var[k] * a + b;  
+                    }  
+                }  
+  
+                inputData += channels * inner;  
+                outputData += channels * inner;  
+            }  
+            delete[] mean;  
+            delete[] var;  
+        }  
+    }  
+</code></pre>
+<h4 id="cpulinearop-解析">CPULinearOp 解析</h4>
+<p>最后简单读一下CPULinearOp这个算子。</p>
+<pre><code>void CpuLinearOp::Run(const std::string &amp;opType, const fastllm::DataDict &amp;datas,  
+                          const fastllm::FloatDict &amp;floatParams, const fastllm::IntDict &amp;intParams) {  
+//auto st = std::chrono::system_clock::now();  
+        Data &amp;input = *(datas.find(&quot;input&quot;)-&gt;second);  
+        Data &amp;output = *(datas.find(&quot;output&quot;)-&gt;second);  
+        Data &amp;weight = *(datas.find(&quot;weight&quot;)-&gt;second);  
+        Data &amp;bias = *(datas.find(&quot;bias&quot;)-&gt;second);  
+  
+        output.Allocate(0.0f);  
+        int n = input.Count(0) / input.dims.back();  
+        int m = input.dims.back();  
+        int k = output.dims.back();  
+          
+        // 这段代码处理权重数据类型为FLOAT32的情况。首先，它将输入、权重、输出和  
+        // 偏置数据的指针分别转换为 float* 类型的指针。对于偏置数据，如果其维度长度大于0，  
+        // 则获取其数据指针，否则设为nullptr。  
+        if (weight.dataType == DataType::FLOAT32) {  
+            float *inputData = (float *) input.cpuData;  
+            float *weightData = (float *) weight.cpuData;  
+            float *outputData = (float *) output.cpuData;  
+            float *biasData = bias.dims.size() &gt; 0 ? (float *) bias.cpuData : nullptr;  
+              
+            // 接下来，计算需要的线程数（threadNum）。这里用的是用户设定的线程数  
+            //（通过 GetThreads() 获得）。然后，每个线程负责的任务数（per）  
+            // 为 k（输出数据的最后一个维度）除以线程数。cur 用来表示当前任务的起始位置。  
+            int threadNum = GetThreads();  
+            int per = k / threadNum;  
+            int cur = 0;  
+            // 接着，创建线程池（通过 GetPool() 获取）和用于保存线程任务的std::future数组。  
+            // 对于每个线程，确定其需要处理的任务范围（从 cur 到 end），然后提交线程任务。  
+            // 线程任务是通过调用 FloatLinearPart 函数来执行的，该函数需要输入数据、  
+            // 权重数据、偏置数据、输出数据、输入维度（n）、权重维度（m）、输出维度（k）  
+            // 以及任务范围（从 cur 到 end）作为参数。  
+            auto pool = GetPool();  
+            std::vector &lt;std::future &lt;void&gt; &gt; futures;  
+            for (int i = 0; i &lt; threadNum - 1; i++) {  
+                int end = cur + per + (cur + per * (threadNum - i) &lt; k);  
+                futures.push_back(pool-&gt;Submit(FloatLinearPart, inputData, weightData, biasData, outputData,  
+                                                  n, m, k, cur, end));  
+                cur = end;  
+            }  
+              
+            // 然后，主线程也执行一部分任务，处理范围为从 cur 到 k。  
+            FloatLinearPart(inputData, weightData, biasData, outputData, n, m, k, cur, k);  
+            // 最后，主线程等待所有子线程完成工作。通过调用 std::future::get()   
+            // 方法来阻塞主线程，直到对应的子线程完成任务。  
+            // 这样，可以保证所有的线程任务都完成后，主线程才继续执行。  
+            for (int i = 0; i &lt; futures.size(); i++) {  
+                futures[i].get();  
+            }  
+        } else if (weight.dataType == DataType::FLOAT16) {  
+            float *inputData = (float *) input.cpuData;  
+            uint16_t *weightData = (uint16_t *) weight.cpuData;  
+            float *outputData = (float *) output.cpuData;  
+            float *biasData = bias.dims.size() &gt; 0 ? (float *) bias.cpuData : nullptr;  
+#ifdef __ARM_FEATURE_FP16_VECTOR_ARITHMETIC  
+            uint16_t *temp = new uint16_t[n * m];  
+            for (int i = 0; i &lt; n * m; i++) {  
+                temp[i] = float_to_half(inputData[i]);  
+            }  
+            inputData = (float*)temp;  
+#endif  
+            int threadNum = GetThreads();  
+            int per = k / threadNum;  
+            int cur = 0;  
+            auto pool = GetPool();  
+            std::vector &lt;std::future &lt;void&gt; &gt; futures;  
+            for (int i = 0; i &lt; threadNum - 1; i++) {  
+                int end = cur + per + (cur + per * (threadNum - i) &lt; k);  
+                futures.push_back(pool-&gt;Submit(Float16LinearPart, inputData, weightData, biasData, outputData,  
+                                                  n, m, k, cur, end));  
+                cur = end;  
+            }  
+  
+            Float16LinearPart(inputData, weightData, biasData, outputData, n, m, k, cur, k);  
+            for (int i = 0; i &lt; futures.size(); i++) {  
+                futures[i].get();  
+            }  
+#ifdef __ARM_FEATURE_FP16_VECTOR_ARITHMETIC  
+            delete[] temp;  
+#endif  
+        } else if (weight.dataType == DataType::INT8) { // 这段代码处理权重数据类型为 INT8 的情况。  
+            // 这段代码首先对输入、权重、输出和偏置数据的指针进行类型转换，  
+            // 并根据偏置数据的维度是否大于0来决定是否获取偏置数据的指针。然后，它计算了权重数据的总和。  
+            float *inputData = (float *) input.cpuData;  
+            uint8_t *weightData = (uint8_t *) weight.cpuData;  
+            float *outputData = (float *) output.cpuData;  
+            float *biasData = bias.dims.size() &gt; 0 ? (float *) bias.cpuData : nullptr;  
+            weight.CalcWeightSum();  
+              
+            // 之后，代码创建一个std::vector&lt;LowBitConfig&gt;对象，  
+            // LowBitConfig是一个用于存储数据量化信息的类，包括最小值、最大值、位宽和零点。  
+            // 这些信息是通过遍历输入数据获得的。  
+            std::vector &lt;LowBitConfig&gt; inputConfigs;  
+            for (int i = 0; i &lt; n; i++) {  
+                float minValue = 1e9, maxValue = -1e9;  
+                for (int j = 0; j &lt; m; j++) {  
+                    minValue = std::min(minValue, inputData[i * m + j]);  
+                    maxValue = std::max(maxValue, inputData[i * m + j]);  
+                }  
+                inputConfigs.push_back(LowBitConfig(minValue, maxValue, 8, 0));  
+            }  
+            // 接着，创建一个std::vector&lt;uint8_t&gt;对象uinput，并将其大小设置为输入数据的大小（n * m）。  
+            // uinput中的每个元素都是输入数据元素经过inputConfigs中对应配置信息量化后的结果。  
+            // 注意这里的量化过程可能会根据是否定义了__AVX2__进行不同的处理。  
+            std::vector &lt;uint8_t&gt; uinput;  
+            uinput.resize(n * m);  
+            for (int i = 0; i &lt; n * m; i++) {  
+#ifdef __AVX2__  
+                uinput[i] = inputConfigs[i / m].quantization(inputData[i]);  
+                uinput[i] = (uinput[i] + !uinput[i]) ^ 128;  
+#else  
+                uinput[i] = inputConfigs[i / m].quantization(inputData[i]);  
+#endif  
+            }  
+              
+            // 随后，调用MultiplyMultiThread函数，使用多线程并行计算uinput和weightData的乘积，  
+            // 并将结果存储在outputData中。  
+            MultiplyMultiThread(uinput.data(), weightData, (int32_t*)outputData, n, m, k, GetThreads());  
+            // 这段代码的目的是把在使用INT8进行量化计算时由于量化造成的误差进行修正，  
+            // 使得结果更接近于使用浮点数进行计算的结果。也就是反量化过程。  
+            for (int i = 0; i &lt; n; i++) {  
+                // 这一步中，对于每一个输入向量（i从0到n），代码首先初始化inputSum为0，  
+                // 然后遍历输入向量的每个元素（j从0到m），将元素值加到inputSum上。  
+                // 如果定义了__AVX2__，则在加到inputSum之前，元素值会先与128进行异或操作。  
+                uint32_t inputSum = 0;  
+                for (int j = 0; j &lt; m; j++) {  
+#ifdef __AVX2__  
+                    inputSum += uinput[i * m + j] ^ 128;  
+#else  
+                    inputSum += uinput[i * m + j];  
+#endif  
+                }  
+                  
+                // 接下来，代码遍历每个输出元素（j从0到k），并按照以下步骤进行调整和缩放：  
+                for (int j = 0; j &lt; k; j++) {  
+                    // 首先，获取输出元素的原始值value。  
+                    int value = ((int32_t*)outputData)[i * k + j];  
+#ifdef __AVX2__  
+                    // 如果定义了__AVX2__，则value会增加128 * weight.weightSum[j]、  
+                    // 128 * inputSum，并减去m * 128 * 128。  
+                    value += (128 * weight.weightSum[j]);  
+                    value += (128 * inputSum);  
+                    value -= m * 128 * 128;  
+#endif  
+                    value -= weight.weightSum[j] * inputConfigs[i].zeroPoint;  
+                    value -= inputSum * weight.perChannelsConfigs[j].zeroPoint;  
+                    value += (int)inputConfigs[i].zeroPoint * weight.perChannelsConfigs[j].zeroPoint * m;  
+                    outputData[i * k + j] = weight.perChannelsConfigs[j].scale * inputConfigs[i].scale * value +  
+                                            (biasData == nullptr ? 0.0 : biasData[j]);  
+                }  
+            }  
+        } else if (weight.dataType == DataType::INT4 || weight.dataType == DataType::INT4_NOZERO) {  
+            float *inputData = (float *) input.cpuData;  
+            uint8_t *weightData = (uint8_t *) weight.cpuData;  
+            float *outputData = (float *) output.cpuData;  
+            float *biasData = bias.dims.size() &gt; 0 ? (float *) bias.cpuData : nullptr;  
+            weight.CalcWeightSum();  
+  
+            std::vector &lt;LowBitConfig&gt; inputConfigs;  
+            for (int i = 0; i &lt; n; i++) {  
+                float minValue = 1e9, maxValue = -1e9;  
+                for (int j = 0; j &lt; m; j++) {  
+                    minValue = std::min(minValue, inputData[i * m + j]);  
+                    maxValue = std::max(maxValue, inputData[i * m + j]);  
+                }  
+                inputConfigs.push_back(LowBitConfig(minValue, maxValue, 8, 0));  
+            }  
+            std::vector &lt;uint8_t&gt; uinput;  
+            uinput.resize(n * m);  
+            for (int i = 0; i &lt; n * m; i++) {  
+                uinput[i] = inputConfigs[i / m].quantization(inputData[i]);  
+            }  
+#ifdef __AVX__  
+            uint8_t *temp = new uint8_t[32];  
+            for (int i = 0; i &lt; n; i++) {  
+                for (int j = 0; j + 31 &lt; m; j += 32) {  
+                    memcpy(temp, uinput.data() + i * m + j, 32);  
+                    for (int k = 0; k &lt; 16; k++) {  
+                        uinput[i * m + j + k] = temp[k * 2 + 1];  
+                        uinput[i * m + j + k + 16] = temp[k * 2];  
+                    }  
+                }  
+            }  
+            delete[] temp;  
+#endif  
+            if (weight.dataType == DataType::INT4) {  
+                MultiplyInt4MultiThread(uinput.data(), weightData, (int32_t *) outputData, n, m, k,  
+                                        weight.weightSum.data(), weight.zeros.data(), weight.scales.data(), biasData,  
+                                        inputConfigs, GetThreads());  
+            } else {  
+                MultiplyInt4NoZeroMultiThread(uinput.data(), weightData, (int32_t *) outputData, n, m, k,  
+                                        weight.weightSum.data(), weight.mins.data(), weight.scales.data(), biasData,  
+                                        inputConfigs, GetThreads());  
+            }  
+        } else {  
+            ErrorInFastLLM(&quot;Linear error: unsupport weight's dataType.\n&quot;);  
+        }  
+//float spend = GetSpan(st, std::chrono::system_clock::now());  
+//float gops = (float)n * m * k / spend / 1e9;  
+// printf(&quot;n = %d, m = %d, k = %d, spend %f s, gops = %f\n&quot;, n, m, k, spend, gops);  
+    }  
+</code></pre>
+<p>在上面的实现中，MultiplyMultiThread完成了对量化输入的计算，我们看一下它的实现细节：</p>
+<pre><code>//a = [n, m], b = [k, m], c = aT(b') = [n, k]  
+    void MultiplyMultiThread(uint8_t *a, uint8_t *b, int32_t *c, int n, int m, int k, int threadNum) {  
+        int per = k / threadNum;  
+        int cur = 0;  
+        if (threadNum == 1) {  
+            Multiply(a, b + cur * m, c + cur, n, m, k - cur, k);  
+        } else {  
+            auto pool = GetPool();  
+            std::vector&lt;std::future&lt;void&gt; &gt; futures;  
+            for (int i = 0; i &lt; threadNum; i++) {  
+                int end = cur + per + (cur + per * (threadNum - i) &lt; k);  
+                if (i == threadNum - 1) {  
+                    end = k;  
+                }  
+                futures.push_back(pool-&gt;Submit(Multiply, a, b + cur * m, c + cur, n, m, end - cur, k));  
+                cur = end;  
+            }  
+            for (int i = 0; i &lt; futures.size(); i++) {  
+                futures[i].get();  
+            }  
+        }  
+    }  
+</code></pre>
+<p>可以看到这段代码仍然是在用线程池来启动多个线程完成计算，核心部分是Multiply函数，这个函数的实现细节：</p>
+<pre><code>   //a = [n, m], b = [k, m], c = aT(b') = [n, k]  
+    void Multiply(uint8_t *a, uint8_t *b, int32_t *c, int n, int m, int k, int kstride) {  
+#ifdef __ARM_FEATURE_DOTPROD  
+        int block = 0;  
+        for (; block &lt; n; block++) {  
+            uint8_t *weightWalk = b;  
+            uint8_t *inputStart = a + block * m;  
+  
+            for (int i = 0; i &lt; k; i++) {  
+                int value = 0;  
+                uint8_t *inputWalk = inputStart;  
+                int j = 0;  
+                uint32x4_t sum0 = {0, 0, 0, 0};  
+                for (; j + 31 &lt; m; j += 32) {  
+                    uint8x16_t vi = vld1q_u8(inputWalk);  
+                    uint8x16_t vi0 = vld1q_u8(inputWalk + 16);  
+                    uint8x16_t vw = vld1q_u8(weightWalk);  
+                    uint8x16_t vw0 = vld1q_u8(weightWalk + 16);  
+                    sum0 = vdotq_u32(sum0, vi, vw);  
+                    sum0 = vdotq_u32(sum0, vi0, vw0);  
+                    inputWalk += 32;  
+                    weightWalk += 32;  
+                }  
+  
+                value += sum0[0] + sum0[1] + sum0[2] + sum0[3];  
+                for (; j &lt; m; j++) {  
+        value += (int)(*(weightWalk++)) * (*(inputWalk++));  
+       }  
+                c[block * kstride + i] = value;  
+            }  
+        }  
+#elif defined(__aarch64__)  
+        int block = 0;  
+        for (; block &lt; n; block++) {  
+            uint8_t *weightWalk = b;  
+            uint8_t *inputStart = a + block * m;  
+  
+            for (int i = 0; i &lt; k; i++) {  
+                int value = 0;  
+                uint8_t *inputWalk = inputStart;  
+  
+                int per = 64;  
+                int cnt = m / per;  
+                int sur = m % per;  
+  
+                uint32x4_t sum = {0};  
+                uint16x8_t temp = {0};  
+                uint16x8_t temp1 = {0};  
+                uint16x8_t temp2 = {0};  
+                uint16x8_t temp3 = {0};  
+                uint16x8_t temp4 = {0};  
+                uint16x8_t temp5 = {0};  
+                uint16x8_t temp6 = {0};  
+                uint16x8_t temp7 = {0};  
+  
+                while (cnt--) {  
+                    temp = vmull_u8(vld1_u8(inputWalk), vld1_u8(weightWalk));  
+                    temp1 = vmull_u8(vld1_u8(inputWalk + 8), vld1_u8(weightWalk + 8));  
+                    temp2 = vmull_u8(vld1_u8(inputWalk + 16), vld1_u8(weightWalk + 16));  
+                    temp3 = vmull_u8(vld1_u8(inputWalk + 24), vld1_u8(weightWalk + 24));  
+                    temp4 = vmull_u8(vld1_u8(inputWalk + 32), vld1_u8(weightWalk + 32));  
+                    temp5 = vmull_u8(vld1_u8(inputWalk + 40), vld1_u8(weightWalk + 40));  
+                    temp6 = vmull_u8(vld1_u8(inputWalk + 48), vld1_u8(weightWalk + 48));  
+                    temp7 = vmull_u8(vld1_u8(inputWalk + 56), vld1_u8(weightWalk + 56));  
+  
+                    sum = vpadalq_u16(sum, temp);  
+                    sum = vpadalq_u16(sum, temp1);  
+                    sum = vpadalq_u16(sum, temp2);  
+                    sum = vpadalq_u16(sum, temp3);  
+                    sum = vpadalq_u16(sum, temp4);  
+                    sum = vpadalq_u16(sum, temp5);  
+                    sum = vpadalq_u16(sum, temp6);  
+                    sum = vpadalq_u16(sum, temp7);  
+  
+                    inputWalk += per;  
+                    weightWalk += per;  
+                }  
+  
+                value += (sum[0] + sum[1] + sum[2] + sum[3]);  
+                while (sur--) {  
+                    value += (int)(*(weightWalk++)) * (*(inputWalk++));  
+                }  
+  
+                c[block * kstride + i] = value;  
+            }  
+        }  
+#elif defined(__AVX__)  
+        int block = 0;  
+        for (; block &lt; n; block++) {  
+            uint8_t *weightWalk = b;  
+            uint8_t *inputStart = a + block * m;  
+  
+            for (int i = 0; i &lt; k; i++) {  
+                uint8_t *inputWalk = inputStart;  
+  
+                c[block * kstride + i] = DotU8U8(inputWalk, weightWalk, m);  
+                weightWalk += m;  
+            }  
+        }  
+#else  
+        int block = 0;  
+     for (; block &lt; n; block++) {  
+      uint8_t *weightWalk = b;  
+      uint8_t *inputStart = a + block * m;  
+  
+      for (int i = 0; i &lt; k; i++) {  
+       int value = 0;  
+       uint8_t *inputWalk = inputStart;  
+       for (int j = 0; j &lt; m; j++) {  
+        value += (int)(*(weightWalk++)) * (*(inputWalk++));  
+       }  
+  
+       c[block * kstride + i] = value;  
+      }  
+     }  
+#endif  
+    }  
+</code></pre>
+<p>这段代码实现了两个矩阵的乘法。输入的两个矩阵是 (a) 和 (b)，结果矩阵是 (c)。矩阵 (a) 的形状是 ([n, m])，矩阵 (b) 的形状是 ([k, m])，所以矩阵 (c = a^T b) 的形状是 ([n, k])。</p>
+<p>在这段代码中，使用了不同的方法进行矩阵乘法，取决于系统是否支持特定的优化硬件指令。</p>
+<ol>
+<li>
+<p>如果系统支持 ARMv8.2 的点积指令（__ARM_FEATURE_DOTPROD
+），那么会使用这个指令进行矩阵乘法。在这种情况下，每次会同时处理32个元素，这样可以加速计算。</p>
+</li>
+<li>
+<p>如果系统支持 ARMv8（<strong>aarch64</strong>
+），但不支持 ARMv8.2 的点积指令，那么会使用 NEON SIMD 指令进行矩阵乘法。在这种情况下，每次会同时处理64个元素。</p>
+</li>
+<li>
+<p>如果系统支持 AVX（<strong>AVX</strong>
+），那么会使用 AVX 指令进行矩阵乘法。在这种情况下，会使用 DotU8U8
+函数来计算向量的点积。</p>
+</li>
+<li>
+<p>如果系统不支持上述任何一种优化指令，那么会使用基础的方法进行矩阵乘法。在这种情况下，每次只处理一个元素。</p>
+</li>
+</ol>
+<p>这段代码的优化部分主要利用了 SIMD（单指令多数据）的并行化特性，通过同时处理多个元素来加速计算。而选择使用哪种优化方法，取决于系统支持哪种硬件指令。</p>
+<p>CPU后端的算子解析就暂时讲到这里，我们发现CPU的算子实现不仅考虑了Intel CPU也考虑了Arm端的优化，这也是FastLLM可以在Arm边缘端部署大模型的原因。</p>
+<h4 id="0x4-gpu后端算子实现">0x4. GPU后端算子实现</h4>
+<p>GPU后端算子实现在 <a href="https://github.com/ztxz16/fastllm/blob/master/src/devices/cuda/cudadevice.cpp">https://github.com/ztxz16/fastllm/blob/master/src/devices/cuda/cudadevice.cpp</a> 和 <a href="https://github.com/ztxz16/fastllm/blob/master/src/devices/cuda/fastllm-cuda.cu">https://github.com/ztxz16/fastllm/blob/master/src/devices/cuda/fastllm-cuda.cu</a> 。我们还是挑几个算子来讲解。</p>
+<h4 id="cudallamarotateposition2dop">CudaLlamaRotatePosition2DOp</h4>
+<p>LLama的ROPE实现在：https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py#L92-L126 。</p>
+<pre><code># 这个类是用来创建旋转位置编码（Rotary Position Embedding）的。  
+# Llama模型引入了旋转位置编码，以改进长序列处理的性能。  
+class LlamaRotaryEmbedding(torch.nn.Module):  
+    # 这是类的初始化方法，接收四个参数：dim（嵌入的维度），max_position_embeddings  
+    # （最大的位置嵌入长度，默认为2048），base（基数，默认为10000）和device（设备类型，例如CPU或GPU）。  
+    def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None):  
+        super().__init__()  
+        self.dim = dim # 将输入的dim参数保存到self.dim属性中。  
+        # # 将输入的max_position_embeddings参数保存到self.max_position_embeddings属性中。  
+        self.max_position_embeddings = max_position_embeddings  
+        # 将输入的base参数保存到self.base属性中。  
+        self.base = base  
+        # 计算逆频率并保存到变量inv_freq中。逆频率是一种用于位置编码的技巧，  
+        # 它可以帮助模型更好地捕捉位置信息。  
+        inv_freq = 1.0 / (self.base ** (torch.arange(0, self.dim, 2).float().to(device) / self.dim))  
+        # 将inv_freq保存到模型的缓存中。register_buffer是PyTorch nn.Module的一个方法，  
+        # 它用于保存一些不需要计算梯度的变量。  
+        self.register_buffer(&quot;inv_freq&quot;, inv_freq, persistent=False)  
+  
+        # Build here to make `torch.jit.trace` work.  
+        # 调用_set_cos_sin_cache方法，预先计算并保存正弦和余弦的缓存值。  
+        self._set_cos_sin_cache(  
+            seq_len=max_position_embeddings, device=self.inv_freq.device, dtype=torch.get_default_dtype()  
+        )  
+      
+    # 这是一个私有方法，接收三个参数：seq_len（序列长度），device（设备类型）和dtype（数据类型）  
+    def _set_cos_sin_cache(self, seq_len, device, dtype):  
+        # 将输入的seq_len参数保存到self.max_seq_len_cached属性中。  
+        self.max_seq_len_cached = seq_len  
+        # 生成一个长度为max_seq_len_cached的序列，并保存到变量t中。  
+        t = torch.arange(self.max_seq_len_cached, device=device, dtype=self.inv_freq.dtype)  
+          
+        # 使用外积计算频率和t的乘积，结果保存到变量freqs中。  
+        freqs = torch.einsum(&quot;i,j-&gt;ij&quot;, t, self.inv_freq)  
+        # Different from paper, but it uses a different permutation in order to obtain the same calculation  
+        # 将频率的两份副本拼接在一起，结果保存到变量emb中。  
+        emb = torch.cat((freqs, freqs), dim=-1)  
+        # 计算emb的余弦值，然后将结果保存到模型的缓存中。  
+        self.register_buffer(&quot;cos_cached&quot;, emb.cos()[None, None, :, :].to(dtype), persistent=False)  
+        # 计算emb的正弦值，然后将结果保存到模型的缓存中。  
+        self.register_buffer(&quot;sin_cached&quot;, emb.sin()[None, None, :, :].to(dtype), persistent=False)  
+      
+    # 这是模型的前向传播方法，接收两个参数：x（输入数据）和seq_len（序列长度）。  
+    def forward(self, x, seq_len=None):  
+        # x: [bs, num_attention_heads, seq_len, head_size]  
+        # 如果输入的序列长度大于缓存的最大序列长度，那么调用_set_cos_sin_cache方法，更新缓存。  
+        if seq_len &gt; self.max_seq_len_cached:  
+            self._set_cos_sin_cache(seq_len=seq_len, device=x.device, dtype=x.dtype)  
+          
+        # 返回对应输入位置的正弦和余弦值。这些值将用于旋转位置编码。  
+        return (  
+            self.cos_cached[:, :, :seq_len, ...].to(dtype=x.dtype),  
+            self.sin_cached[:, :, :seq_len, ...].to(dtype=x.dtype),  
+        )  
+  
+def apply_rotary_pos_emb(q, k, cos, sin, position_ids):  
+    # The first two dimensions of cos and sin are always 1, so we can `squeeze` them.  
+    cos = cos.squeeze(1).squeeze(0)  # [seq_len, dim]  
+    sin = sin.squeeze(1).squeeze(0)  # [seq_len, dim]  
+    cos = cos[position_ids].unsqueeze(1)  # [bs, 1, seq_len, dim]  
+    sin = sin[position_ids].unsqueeze(1)  # [bs, 1, seq_len, dim]  
+    q_embed = (q * cos) + (rotate_half(q) * sin)  
+    k_embed = (k * cos) + (rotate_half(k) * sin)  
+    return q_embed, k_embed  
+</code></pre>
+<p>CudaLlamaRotatePosition2DOp对应的就是上面的Python代码。</p>
+<pre><code>void CudaLlamaRotatePosition2DOp::Run(const std::string &amp;opType, const fastllm::DataDict &amp;datas,  
+                                     const fastllm::FloatDict &amp;floatParams, const fastllm::IntDict &amp;intParams) {  
+        Data &amp;data = *(datas.find(&quot;input&quot;)-&gt;second);  
+        Data &amp;positionIds = *(datas.find(&quot;positionIds&quot;)-&gt;second);  
+        Data &amp;sinData = *(datas.find(&quot;sin&quot;)-&gt;second);  
+        Data &amp;cosData = *(datas.find(&quot;cos&quot;)-&gt;second);  
+        int rotaryDim = intParams.find(&quot;rotaryDim&quot;) != intParams.end() ? intParams.find(&quot;rotaryDim&quot;)-&gt;second : 128;  
+  
+        FastllmCudaLlamaRotatePosition2D(data, positionIds, sinData, cosData, rotaryDim);  
+    }  
+</code></pre>
+<p>这里调用的是FastllmCudaLlamaRotatePosition2D这个函数，它的实现和解析如下：</p>
+<pre><code>// 这是一个在 GPU 上运行的 CUDA 函数，用于执行 Llama 模型的位置编码旋转操作。  
+// data：输入的数据，这个数据将会被旋转。  
+// positionIds：位置编码的数据。  
+// sinData，cosData：用于旋转的 sin 和 cos 值。  
+// rotaryDim：旋转的维度。  
+bool FastllmCudaLlamaRotatePosition2D(fastllm::Data &amp;data, const fastllm::Data &amp;positionIds,  
+                                      const fastllm::Data &amp;sinData, const fastllm::Data &amp;cosData, int rotaryDim) {  
+    // 使用 FastllmCudaPrepareInput 函数将输入的数据从 CPU 复制到 GPU。  
+    // 这个函数会返回一个指向 GPU 内存的指针。                                    
+    float *cudaData = (float *) FastllmCudaPrepareInput(data);  
+    float *cudaPositionIds = (float *) FastllmCudaPrepareInput(positionIds);  
+    float *cudaSin = (float *) FastllmCudaPrepareInput(sinData);  
+    float *cudaCos = (float *) FastllmCudaPrepareInput(cosData);  
+      
+    // 计算旋转操作需要的一些参数，包括 outer，spatial，bs，len，n 和 m。  
+    // 这些参数是用于确定 CUDA 核函数的执行配置和一些数据操作的。  
+    int outer = data.dims[0] * data.dims[1];  
+    int spatial = data.Count(2);  
+    int bs = data.dims[0], len = data.dims[1];  
+    int n = data.dims[2], m = data.dims[3];  
+    // 调用 CUDA 核函数 FastllmLlamaRotatePosition2DKernel 来在 GPU 上执行位置编码的旋转操作。  
+    // &lt;&lt;&lt;outer * n, min(rotaryDim, m / 2)&gt;&gt;&gt; 是 CUDA 中定义并行线程块和线程的语法，  
+    // outer * n 是线程块的数量，min(rotaryDim, m / 2) 是每个线程块中的线程数量。  
+    // 核函数的参数包括之前准备的数据和一些计算参数。  
+    FastllmLlamaRotatePosition2DKernel &lt;&lt;&lt; outer * n, min(rotaryDim, m / 2) &gt;&gt;&gt; (cudaData, cudaPositionIds, cudaSin, cudaCos,  
+                                                                                 len, bs, spatial, n, m,  
+                                                                                 (int)positionIds.dims.back(), (int)sinData.dims[1], rotaryDim);  
+  
+    // 使用 FastllmCudaFinishInput 函数释放 positionIds，sinData 和 cosData 在 GPU 上的内存。  
+    // 这些数据在这个函数中不再需要。  
+    FastllmCudaFinishInput(positionIds, cudaPositionIds);  
+    FastllmCudaFinishInput(sinData, cudaSin);  
+    FastllmCudaFinishInput(cosData, cudaCos);  
+    // 使用 FastllmCudaFinishOutput 函数将旋转后的数据从 GPU 复制回 CPU。  
+    // 这个函数也会释放 data 在 GPU 上的内存。  
+    FastllmCudaFinishOutput(data, cudaData);  
+    return true;  
+}  
+</code></pre>
+<p>最后再解析下这个cuda kernel。</p>
+<pre><code>// float *data：输入数据，大小为 [bs, len, n, m]，其中 bs 是批量大小，  
+// len 是序列长度，n 是头的数量，m 是每个头的维度。  
+// float *positionIds：位置编码的索引，大小为 [bs, len]。  
+// float *sin 和 float *cos：预先计算的正弦和余弦值，用于旋转编码。  
+// int len, int bs, int spatial, int n, int m：输入数据的各个维度大小。  
+// int partStride 和 int sinCosStride：用于索引 positionIds 和 sin/cos 的步长。  
+// int rotateDim：旋转维度。  
+__global__ void FastllmLlamaRotatePosition2DKernel(float *data, float *positionIds, float *sin, float *cos,  
+                                                   int len, int bs, int spatial, int n, int m, int partStride, int sinCosStride, int rotateDim) {  
+    // 首先，计算出当前线程应处理的位置 o，长度 l 和批次 b。  
+    int o = (blockIdx.x / n);  
+    int l = o % len;  
+    int b = o / len;  
+    int j = threadIdx.x;  
+    // 然后，根据 positionIds 获取对应的旋转角度的正弦值 curSin 和余弦值 curCos。  
+    int index = (int) (positionIds[b * partStride + l]);  
+  
+    float curSin = sin[index * sinCosStride + j];  
+    float curCos = cos[index * sinCosStride + j];  
+    float *d = (float *) data + o * spatial + j;  
+    int i = blockIdx.x % n;  
+    // 接着，获取输入数据对应位置的值 va 和 vb。  
+    float va = d[i * m], vb = d[i * m + m / 2];  
+    // 最后，根据旋转矩阵的公式，计算旋转后的值，并将结果写回输入数据中。  
+    d[i * m] = va * curCos - vb * curSin;  
+    d[i * m + m / 2] = va * curSin + vb * curCos;  
+}  
+</code></pre>
+<p>直接看这个cuda kernel可能比较难理解，可以结合https://github.com/ztxz16/fastllm/blob/master/src/devices/cpu/cpudevice.cpp#L2204-L2233 这里的cpu实现来看，这样来看设置batch * seq_length * n个block，每个block处理m个元素就是比较合理直观的。</p>
+<pre><code>void CpuLlamaRotatePosition2DOp::Run(const std::string &amp;opType, const fastllm::DataDict &amp;datas,  
+                                    const fastllm::FloatDict &amp;floatParams, const fastllm::IntDict &amp;intParams) {  
+        Data &amp;data = *(datas.find(&quot;input&quot;)-&gt;second);  
+        Data &amp;positionIds = *(datas.find(&quot;positionIds&quot;)-&gt;second);  
+        Data &amp;sinData = *(datas.find(&quot;sin&quot;)-&gt;second);  
+        Data &amp;cosData = *(datas.find(&quot;cos&quot;)-&gt;second);  
+        int rotaryDim = intParams.find(&quot;rotaryDim&quot;) != intParams.end() ? intParams.find(&quot;rotaryDim&quot;)-&gt;second : 128;  
+  
+        int bs = data.dims[0], len = data.dims[1];  
+        int spatial = data.Count(2);  
+        int n = data.dims[2], m = data.dims[3];  
+        int stride = (int)sinData.dims[1];  
+        for (int b = 0; b &lt; bs; b++) {  
+            for (int l = 0; l &lt; len; l++) {  
+                int index = (int) ((float *) positionIds.cpuData)[b * positionIds.dims.back() + l];  
+                float *sin = ((float *) sinData.cpuData) + stride * index;  
+                float *cos = ((float *) cosData.cpuData) + stride * index;  
+                float *d = (float *) data.cpuData + (b * len + l) * spatial;  
+                for (int i = 0; i &lt; n; i++) {  
+                    for (int j = 0; j &lt; rotaryDim &amp;&amp; j &lt; m / 2; j++) {  
+                        float a = d[j], b = d[j + m / 2];  
+                        d[j] = a * cos[j] - b * sin[j];  
+                        d[j + m / 2] = a * sin[j] + b * cos[j];  
+                    }  
+  
+                    d += m;  
+                }  
+            }  
+        }  
+    }  
+</code></pre>
+<p>FastLLM在cuda上的实现不算高校，不过优点在于它支持了完整的int8和int4量化的计算，有兴趣的读者可以自行研究这部分kernel实现。</p>
+<h4 id="0x5-llmsamping解析">0x5. LLMSamping解析</h4>
+<p>在 chatglm-6b 的实现中，在前向推理完成后以及tokenizer解码之前有一个根据logits取label的过程：https://github.com/ztxz16/fastllm/blob/master/src/models/chatglm.cpp#L267-L279 。</p>
+<pre><code>if (generationConfig.IsSimpleGreedy()) {  
+            // 对 logits 进行 TopK 操作，将结果存储在 topk 中。  
+            // 这里的 TopK 操作是找到 logits 中最大的 K 个值，这里 K=1，所以是找到最大值。  
+            TopK(logits, topk, 1);   
+            topk.ToDevice(DataDevice::CPU);  
+            for (int b = 0; b &lt; batch; b++) {  
+                int base = (maxLen - 1) * batch + b; // 计算基础索引值 base。  
+                // 将 topk 中对应索引的值取整并添加到 lastRet 中。  
+                lastRet.push_back((int) (((float *) topk.cpuData)[base * 2] + 1e-3));  
+            }  
+        } else {  
+            for (int b = 0; b &lt; batch; b++) {  
+                int base = (maxLen - 1) * batch + b; // 计算基础索引值 base。  
+                // 使用 LLMSampling 方法进行抽样，将结果添加到 lastRet 中。  
+                lastRet.push_back(LLMSampling(logits, base, generationConfig, lastTokens.units[b]));  
+            }  
+        }  
+</code></pre>
+<p>LLMSampling是一种常见的在序列生成任务中，根据不同的需求，使用不同的策略生成序列的方法。我们这里来研究一下它的实现。它的实现在：https://github.com/ztxz16/fastllm/blob/master/src/fastllm.cpp#L874-L916 。</p>
+<pre><code>// 这段代码是一个用于从给定的 logits（通常表示预测的概率分布）进行采样的函数，  
+// 采样策略主要受 GenerationConfig 和 LastTokensUnit 参数的影响。  
+int LLMSampling(Data &amp;logits, int outerOffset,  
+                    const GenerationConfig &amp;config, const LastTokensUnit &amp;tokens) {  
+        // 将 logits 数据从当前设备转移到 CPU。  
+        logits.ToDevice(DataDevice::CPU);  
+        // 从 logits 的维度中获取词汇量 vocabSize。  
+        int vocabSize = logits.dims.back();  
+        // 计算 base 指针，指向要处理的 logits 的开始位置。  
+        float *base = ((float*)logits.cpuData) + outerOffset * vocabSize;  
+          
+        // 判断 config.repeat_penalty 是否不等于1，如果不等于1，  
+        // 则对 tokens.tokenSet 中每个 id 对应的 base[id] 值进行修改。  
+        if (fabs(config.repeat_penalty - 1.0) &gt; 1e-6) {  
+            for (int id : tokens.tokenSet) {  
+                base[id] = (base[id] &lt; 0 ? base[id] * config.repeat_penalty : base[id] / config.repeat_penalty);  
+            }  
+        }  
+        // 计算温度的倒数 invTemp。  
+        float invTemp = 1.0f / config.temperature;  
+        // 定义一个向量 v，用于存储 &lt;logit值，索引&gt;。  
+        std::vector &lt;std::pair &lt;float, int&gt; &gt; v;  
+        // 遍历每个 logit，将其值乘以 invTemp，并存入 v 中。  
+        for (int i = 0; i &lt; vocabSize; i++) {  
+            v.push_back(std::make_pair(-base[i] * invTemp, i));  
+        }  
+        // 计算 topk，它是词汇量 vocabSize 和 config.top_k 中的较小值。  
+        int topk = std::min(vocabSize, config.top_k);  
+        // 对 v 中的前 topk 个元素进行排序。  
+        std::partial_sort(v.begin(), v.begin() + topk, v.end());  
+        // 初始化 psum 和 maxValue，maxValue 是 v 中最大的元素。  
+        float psum = 0.0, maxValue = -v.begin()-&gt;first;  
+        // 定义一个向量 ps，用于存储处理后的概率。  
+        std::vector &lt;float&gt; ps;  
+        // 遍历 v 中的前 topk 个元素，将其值取 exp 并减去 maxValue，存入 ps，同时更新 psum。  
+        for (int i = 0; i &lt; topk; i++) {  
+            ps.push_back(expf(-v[i].first - maxValue));  
+            psum += ps.back();  
+        }  
+        float curSum = 0.0;  
+        // 遍历 ps，将其每个元素除以 psum 并更新 curSum，  
+        // 当 curSum 大于 config.top_p 时，更新 topk 并退出循环。  
+        for (int i = 0; i &lt; topk; i++) {  
+            ps[i] /= psum;  
+            curSum += ps[i];  
+            if (curSum &gt; config.top_p) {  
+                topk = i + 1;  
+                break;  
+            }  
+        }  
+        // 生成一个随机数 rnd。  
+        float rnd = fastllmRandom.randP();  
+        curSum = 0.0;  
+        // 遍历 ps 中的前 topk 个元素，将其累加到 curSum，  
+        // 当 curSum 大于 rnd 或者达到最后一个元素时，  
+        // 返回对应 v[i].second，也就是返回采样得到的 id。  
+        for (int i = 0; i &lt; topk; i++) {  
+            curSum += ps[i];  
+            if (curSum &gt; rnd || i == topk - 1) {  
+                return v[i].second;  
+            }  
+        }  
+        // 如果以上步骤都没有返回，那么返回 -1。  
+        return -1;  
+    }  
+</code></pre>
+<p>LLMSampling实现了一种基于温度和惩罚的采样策略，用于从给定的 logits 中选择一个 id。这种采样的方法可以控制输出文本的多样性。</p>
+<h4 id="0x6-总结">0x6. 总结</h4>
+<p>接着 <a href="http://mp.weixin.qq.com/s?__biz=MjM5ODkzMzMwMQ==&amp;mid=2650438167&amp;idx=5&amp;sn=d258c5ca5b88ec26ae765f130f52cd19&amp;chksm=becdfc4d89ba755b3a6086a70cb7329c22658a431f6db32781ef9da767a541469fbae41008fa&amp;scene=21#wechat_redirect">大模型部署框架 FastLLM 简要解析</a> 这篇文章首先梳理了一下FastLLM的调用链和关键的数据结构，然后解析了 FastLLM 的一些实现细节和CPU/GPU后端实现采用的优化技巧。</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>阅读至此了，分享、点赞、在看三选一吧🙏</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

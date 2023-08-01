@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>也看面向中文媒体创作的领域微调大模型：MediaGPT及运营领域模型MediaLLaMA的实现方式解读 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+	<meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">也看面向中文媒体创作的领域微调大模型：MediaGPT及运营领域模型MediaLLaMA的实现方式解读</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 1, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjkKm5ZeibhicW2xvpibibLOegGAuj65PNibZiaUUIHF52650GUjxnqOgTlExRibyOe6WdC7zic9PZbeHAu8w/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/L8H_vRP8O-DtSzHa6LMlLw">老刘说NLP</a></p>
+<p>大语言模型（LLM）在生成高质量文本和基于大量数据（包括媒体领域）进行预测方面表现出了很不错的能力。然而，在实际应用中，媒体用例与LLM通用应用之间的差异日益明显，尤其是中文。</p>
+<p>近期的工作**《MediaGPT : A Large Language Model For Chinese Media》**  一文研究了媒体领域专用LLM与通用LLM相比的独特性，设计了多样化的任务指令类型以满足该领域的特定要求，并构建了针对媒体领域的独特数据集。</p>
+<p>并在此提出了针对中文媒体领域的特定领域LLM-MediaGPT，通过特定领域数据和专家SFT数据进行训练，通过在验证集上进行人类专家评估和强模型评估，证明了MediaGPT在各种中文媒体领域任务上的表现优于主流模型，并验证了领域数据和领域定义的提示类型对于构建有效的特定领域LLM的重要性。</p>
+<p>这个工作相对来说，较为严谨，而除了这种较为规范的媒体微调模型之外，也有一个偏向媒体运营的MediaGPT，曾用名Media LLaMA，借助ChatGPT收集了一批<strong>关于抖音运营、短视频创作、巨量千川投放、直播运营和直播话术技巧等领域知识问题的分析和回答，并利用这些数据对模型进行指令微调</strong> ，使模型习得如何将自媒体知识应用到实际场景中。</p>
+<p>这两个工作，都是面向媒体领域的，都具有借鉴意义。前者关于训练数据的构造、类别的设计、针对人工评估和大模型打分的评估优化，后者给出的针对自媒体领域的self-instruct流程也可进一步加深印象。</p>
+<p>本文对该两个工作进行介绍，供大家一起参考。</p>
+<h4 id="一mediagp针对中文媒体创作的微调大模型">一、MediaGP：针对中文媒体创作的微调大模型</h4>
+<p>论文地址：https://arxiv.org/abs/2307.10930</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjkKm5ZeibhicW2xvpibibLOegGVjZgd0ibg9saLvSnlSSRcTEibJP9a9dPacoFEmL8qwia1pk1n8qciay8SA/640?wx_fmt=png" alt=""></p>
+<p><strong>1、训练数据的设计与构造</strong></p>
+<p>训练数据包括用于预训练的非结构化数据和用于微调的数据。其中：</p>
+<p>预训练数据方面，选择了2000年以来所有有影响力的中文媒体的公开数据，以及有官方背景的有影响力的英文媒体的公开数据，共计约250GB。</p>
+<p>这些数据源均由高度专业的媒体从业人员制作，具有较高的质量和可信度，涵盖了与中国媒体相关的广泛主题和领域，如政治、经济、文化、社会、体育、娱乐、科技、卫生、教育和国际事务等。其中还包括一些来自官方媒体的英文文本，可以帮助我们的LLM学习跨语言知识和技能。</p>
+<p>微调（SFT）数据方面，<strong>为了让MediaGPT更好地学习媒体领域的主要任务，调查了国内十多家媒体公司或部门的专家意见，并根据国内媒体从业人员在编辑、写作和出版等工作流程中的主要需求，设计了四大类、80多具体小类（包括观点创作、文章转写、媒体理解以及其他QA）SFT数据。</strong> 【这个思路很有意思，如何从实际需求出发来建立体系】。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjkKm5ZeibhicW2xvpibibLOegGjKdE7I7EuRJtxcw7ra5uxkd3zwGXStIKJEqWjnMPwicAKTBtY5FKhPQ/640?wx_fmt=png" alt=""></p>
+<p>例如：</p>
+<p><strong>Opinion creation观点创作</strong> ，要求MediaGPT在不偏离提示所给事实的前提下生成更多内容，如添加观点、阐述立场等。典型的业务场景包括：根据主题生成提纲、生成评论文章等。</p>
+<p><strong>Article transcription文章转写</strong> ，要求MediaGPT在不添加观点或修改事实的情况下，根据提示给出的信息创建内容，如根据稿件生成新闻脚本、新闻文体转写、摘要文章写作等。</p>
+<p><strong>Media understanding媒体理解</strong> ，要求MediaGPT在不添加观点或修改事实的情况下，理解并提取提示所给信息的内容或要素，如标题生成、新闻要素提取等。</p>
+<p><strong>Other QA其他QA</strong> ，即一些额外的常识QA样本，以提高MediaGPT的概括能力和涌现能力。</p>
+<p>在构建这些教学样本的过程中力求使MediaGPT的创作更加专业。<strong>在以媒体创作为主的SFT样本中，使用现实世界中的优秀媒体文章作为输出，让人或代码生成输入。</strong> ，其根据模板化的方式进行SFT数据的生成，如下表所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjkKm5ZeibhicW2xvpibibLOegGAuj65PNibZiaUUIHF52650GUjxnqOgTlExRibyOe6WdC7zic9PZbeHAu8w/640?wx_fmt=png" alt=""></p>
+<p><strong>2、模型选用与效果</strong></p>
+<p>在模型选用方面，该工作采用了两种流行的生成式开源LLM：BLOOMZ-7B和LLaMA-7B，随着实验的深入，发现LLaMA-7B的性能始终优于BLOOMZ-7B。因此，最终采用LLaMA-7B。</p>
+<p>但由于其生成中文文本的能力有限。为了解决这个问题并提高编码效率，建议用额外的中文词库来扩充LLaMA词库，并使用扩充词库的模型。通过将中文标引符与原有的LLaMA标引符相结合，最终创建了中文LLaMAto ken字符，包含约50k个token。</p>
+<p>在预训练之后，使用两个不同的SFT数据集进行了微调。<strong>在开源数据集上进行微调的版本称为MediaGPT-generalSFT，在中文媒体领域数据集上进行微调的版本称为MediaGPT-domainSFT。</strong></p>
+<p>在模型评估方面，这个也很有趣，<strong>对生成式大语言模型进行定量评估具有挑战性，因为没有一个单一的维度可以直接衡量其性能。大多数客观方法使用选择题或判断题，但中文媒体大语言模型的主要目标是处理主观和开放式问题，如写作和创意。这类问题最好由人工来评估，但这种方法费时费力。最近的一些研究使用强模型作为裁判，由模型来选择哪个模型更好，这虽然略微降低了评价成本，但也严重影响了可信度。</strong></p>
+<p>首先，在评估数据和模型选用方面，收集了数十位媒体领域专家的意见，选取了中国媒体场景中的几个典型案例进行评估，包括人工评估和强模型评估，并为评估任务开发了特定领域的数据集。</p>
+<p>具体的，每个主要类别包含约100个问题。答案由四种不同的LLM生成，分别是ChatGPT-3.5、ERNIEBot、MediaGPT-generalSFT和MediaGPT-domainSFT。</p>
+<p><strong>值得注意的是，约有2%的ERNIE答案因为一些安全问题而拒绝回答。</strong></p>
+<p>其次，在性能评估指标方面，提出了三个性能评估指标，以量化模型在每种情况下的输出质量和相关性：平均排名（Rank-n的平均值）、Rank-n（该模型排名第一、第二、第三或第四的次数）和比较胜率（成对比较情况下的获胜概率）。</p>
+<p>在人工评估方面，邀请了十几位记者和编辑作为媒体领域的专家，对随机半评估集的结果进行评估。</p>
+<p>评估标准的设定也很重要，该工作在评估过程之前，首先请十几位专家中最资深的几位根据新闻价值和编辑标准制定了评估标准。例如，<strong>对于&quot;观点创作&quot;任务，标准包括五个一般评价维度和每个子任务的具体维度。对于文章转录任务，标准主要包括四个一般评价维度和各子任务的具体维度。</strong> ，但具体细节并未给出，这个可以后期跟进。</p>
+<p>在强模型评估方面，由于传统的参考指标，如BLEU和ROUGE，与人类判断的相关性相对较低，所以并不十分适用，所以最总使用GPT-4作为评估模型，并提出了媒体域LLM的评估提示集。</p>
+<p>但我们在前面的文章中说过，基于强模型评估存在有效性和可靠性问题，所以在此基础上使用四种技术来提高评价的稳定性和精确性（实验表明是有有效的），具体地：</p>
+<p><strong>其一，在给定评价模型的LLM生成的答案列表的第一个位置插入空答案文本，以防止答案顺序造成的评价偏差；</strong><br>
+<strong>其二，出于上述同样的原因，随机混合其他答案的顺序；</strong></p>
+<p><strong>其三，用普通名称引用每个答案，以避免因引用名称的附加含义而造成混乱</strong> ；</p>
+<p><strong>其四，对答案进行排序而不是打分，以尽量减少评价模型带来的不稳定性</strong> 。</p>
+<p><strong>3、模型效果</strong></p>
+<p>人工专家评测的结果如表2所示，</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjkKm5ZeibhicW2xvpibibLOegGsyzVH2Uz5c51u0rWEdJgCSXa9VDAyyZZXiaAxXwTApA74ZFs7rWYWXA/640?wx_fmt=png" alt=""></p>
+<p>可以看出，在新闻专业性标准下，MediaGPT-domainSFT的平均率、Rank-1率和胜率都是最高的。MediaGPT-domainSFT在以下两个方面表现出色：</p>
+<p>1)理解新闻领域的问题，并以主流媒体的角色始终如一地制作答案。</p>
+<p>2)制作出更符合新闻形式的内容，避免过度生硬。然而，MediaGPT-domainSFT仍有一些不足之处，如有时会忽略问题的细节，以过度概念化的方式写作。</p>
+<p>其观察到的一些结论也很有趣，其发现，<strong>作为主流模型，ChatGPT-3.5和ERNIEBot的最大特点在于对问题细微差别的细致理解和清晰的表述逻辑。但这也是一把双刃剑，ChatGPT-3.5和ERNIEBot的逻辑和表达方式往往过于公式化，有时无法将某些抽象的话题与新闻时事联系起来</strong> 。</p>
+<p>此外，<strong>与ChatGPT-3.5相比，ERNIEBot的不足之处在于回答时间较短，逻辑性较差，而且有时倾向于回避敏感的话题，而这对于新闻写作至关重要，可能不符合必要的使用要求。</strong></p>
+<p>至于MediaGPT-generalSFT，其最大的问题是经常生成格式错误的结果。这表明LLM无法区分每种新闻体裁，并强调了<strong>领域SFT的重要性。</strong></p>
+<p>强模型评估的结果如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjkKm5ZeibhicW2xvpibibLOegGqlktVpybTwmN0sXPm1p1gibYlR8jictLX4DXk8juXhNS5llOXqmUBfCw/640?wx_fmt=png" alt=""></p>
+<p>结果表明，MediaGPT在中文媒体领域任务中表现较好。MediaGPT-generalSFT和MediaGPT-domainSFT的对比证明，DS-LLM的性能稳步提高，并与SFT数据的使用相关。</p>
+<p>从另一个角度上讲，该实验表明，经过微调的评估提示可以使强模型评估达到与人类专家判断相似的结果。最终的判断结果也与人类的判断结果非常相似，这进一步证明了提示调整的价值。<strong>但不可否认的是，尽管强模型评估具有快速和可扩展的优势，但其本身性能的不稳定性仍然给强模型评估的使用带来了一定的风险。</strong></p>
+<h4 id="二media-llama针对中文自媒体运营的微调大模型">二、Media LLaMA:针对中文自媒体运营的微调大模型</h4>
+<p>项目地址：https://github.com/IMOSR/MediaGPT</p>
+<p>MediaGPT，一个针对自媒体领域进行特殊训练的模型，曾用名Media LLaMA，借助ChatGPT收集了一批<strong>关于抖音运营、短视频创作、巨量千川投放、直播运营和直播话术技巧等领域知识问题的分析和回答，并利用这些数据对模型进行指令微调</strong> ，使模型习得如何将自媒体知识应用到实际场景中。</p>
+<p>在模型基座方面，目前公开media-alpaca-lora-7b-beta0.1: 以Chinese-LLaMA-7B为基础，未经过自媒体语料连续训练，使用通用指令和自媒体指令进行SFT。</p>
+<p>具体训练脚本参照：https://github.com/IMOSR/MediaGPT/blob/master/train/finetune_media_alpaca_lora.ipynb</p>
+<p><strong>1、训练数据的设计与构造</strong></p>
+<p>在微调数据方面，将一些关于抖音运营、短视频创作、巨量千川投放、直播运营等领域的问题输入ChatGPT，并让其生成对每个问题的回答。</p>
+<p>具体实现方式如下，依旧采用的是self-instruct的思路：</p>
+<p>可以从：https://github.com/IMOSR/MediaGPT/blob/master/generate_data/prompt_tiktok.py中得到解释。</p>
+<p>通过解析自媒体相关的pdf文本，并设定最大长度max_content=8000，将每页的pdf文本进行拼接，即：</p>
+<pre><code>context_str_ = context_str + documents[i].page_content  
+</code></pre>
+<p>形成上下文context_str后，送入return_random_prompt中进行指令泛化，其核心在于针对给定的上下文来，并引入in context learning直接生成instruction与output对。</p>
+<pre><code>def generate_data(directory_path):  
+  loader = DirectoryLoader(directory_path, glob='*.pdf', loader_cls=PyPDFLoader)  
+  documents = loader.load()  
+  context_str = &quot;&quot;  
+  file_index = 0  
+  max_content = 8000  
+  for i in range(0, len(documents)):  
+      try:  
+          context_str_ = context_str + documents[i].page_content  
+          if len(context_str_) &gt; max_content:  
+            response = openai.ChatCompletion.create(  
+              model=&quot;gpt-3.5-turbo-16k&quot;,  # here we use `gpt-3.5-turbo` model, while Stanford-Alpaca uses `text-davinci-003`  
+              messages=[  
+                {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: return_random_prompt(context_str)},  
+              ]  
+            )  
+            output_file = open(&quot;data/tiktok_data_%d.json&quot; % file_index, 'w', encoding=&quot;utf8&quot;)  
+            print(response[&quot;choices&quot;][0][&quot;message&quot;][&quot;content&quot;])  
+            output_file.write(response[&quot;choices&quot;][0][&quot;message&quot;][&quot;content&quot;] + '\n')  
+            output_file.close()  
+            file_index+=1  
+            context_str = documents[i].page_content  
+  
+          else:  
+            context_str = context_str_  
+      except Exception as e:  
+        import traceback  
+        print( traceback.format_exc())  
+        print(&quot;error&quot;, &quot; document :&quot;, i)  
+        time.sleep(60)  
+      print(&quot;document :&quot;, i)  
+</code></pre>
+<p>其对应的prompt构造方式如下：</p>
+<pre><code>def return_random_prompt(context_str):  
+  system_prompt = &quot;下面给出的上下文是抖音带货的运营、主播话术和直播间选品等相关的教学内容脚本，你需要尽可能给出多样化的任务指令、上下文和对应的回答。我们将用于人工评估ChatGPT模型对指令的完成情况。&quot; \  
+                  &quot;-------------------------------------------------\n&quot;\  
+                  &quot;%s\n&quot;\  
+                  &quot;-------------------------------------------------\n&quot; \  
+                  &quot;要求:\n&quot;  
+  
+  
+  system_prompt += &quot;1. 主题多样化，涵盖各个方面，从学员角度提问，问题都是跟实际问题相关的。\n&quot;  
+  task_list = [&quot;开放式生成&quot;, &quot;分类&quot;, &quot;问答&quot;, &quot;编辑&quot;, &quot;摘要&quot;, &quot;写作&quot;, &quot;分析&quot;,  &quot;抽取&quot;, &quot;推荐&quot;, &quot;直播话术生成&quot;]  
+  system_prompt += &quot;2. 表述多样化，结合真实问题；指令类型多样化，例如：&quot; + &quot;、&quot;.join(task_list) + &quot;等。\n&quot;  
+  
+  # other requirements  
+  system_prompt += &quot;3. 如果遇到无法处理的指令（只靠文本无法回答），给出无法处理的回复。\n&quot;  
+  system_prompt += &quot;4. 所有回答尽可能的一点一点的罗列清晰，有教学意义，回答给出例子详细说明。\n&quot;  
+  system_prompt += &quot;5. 所有回答都要解释。\n&quot;  
+  system_prompt += &quot;7. 除非特别要求，请使用中文，指令可以是命令句、疑问句、或其他合适的类型。\n&quot;  
+  system_prompt += &quot;8. 为指令生成一个适当且涉及真实情况的&lt;instruction&gt;，不应该只包含简单的占位符。&lt;instruction&gt;应提供实质性的内容，具有挑战性。\n&quot;  
+  system_prompt += &quot;9. &lt;input&gt;为空。\n&quot;  
+  system_prompt += &quot;10. &lt;output&gt;应该是对指令的适当且真实的回应，&lt;input&gt;是指令所引用的上下文都为空，不能只回复答应或拒绝请求。如果需要额外信息才能回复时，请努力预测用户意图并尝试回复。&lt;output&gt;的内容应少于&quot; + str(random.randint(400, 512)) + &quot;字。\n\n&quot;  
+  
+  system_prompt += &quot;请给出满足条件的10条JSON格式数据，输出格式和样例如下，对于输出结果请检查json格式的准确性，并修正结果：\n&quot;  
+  system_prompt += &quot;例如：&quot;  
+  
+  system_prompt += &quot;&quot;&quot; [  
+  {  
+    &quot;instruction&quot;: &quot;我们如何在日常生活中减少用水？&quot;,  
+    &quot;input&quot;: &quot;&quot;,  
+    &quot;output&quot;: &quot;1. 使用节水装置，如节水淋浴喷头和水龙头。 \\n2. 使用水箱或水桶收集家庭废水，例如洗碗和洗浴。 \\n3. 在社区中提高节水意识。 \\n4. 检查水管和灌溉系统的漏水情况，并及时修复它们。 \\n5. 洗澡时间缩短，使用低流量淋浴头节约用水。 \\n6. 收集雨水，用于园艺或其他非饮用目的。 \\n7. 刷牙或擦手时关掉水龙头。 \\n8. 减少浇水草坪的时间。 \\n9. 尽可能多地重复使用灰水（来自洗衣机、浴室水槽和淋浴的水）。 \\n10. 只购买能源效率高的洗碗机和洗衣机。&quot;  
+  },  
+  {  
+    &quot;instruction&quot;: &quot;编辑文章，使其更吸引读者。&quot;,  
+    &quot;input&quot;: &quot;&quot;,  
+    &quot;output&quot;: &quot;自主机器人是计算机控制的机器，被编程执行特定任务而不需要任何人类输入，从而实现了新的效率、精确度和可靠性水平。自主机器人在各个行业中被越来越广泛地应用，从制造业，它们可以使用精度和一致的质量组装复杂的组件，到医疗保健，可以协助进行医疗测试和处理，再到安全，可以监控大面积地区，保障人们和财产的安全。自主机器人还可以减少在危险或有害环境中的错误和增加安全，在工业流程的检查或维修期间等。由于其多样性，自主机器人将彻底改变我们工作方式的方式，使任务变得更加简单、快速，最终更加愉悦。&quot;  
+  },  
+  {  
+    &quot;instruction&quot;: &quot;政府可以采取哪些策略来减少空气污染？&quot;,  
+    &quot;input&quot;: &quot;&quot;,  
+    &quot;output&quot;: &quot;1. 实施强制的车辆排放标准和基于激励的计划，以降低车辆的碳足迹。\\n2. 增加公共交通工具，减少公众对车辆的依赖。\\n3. 增加对空气污染的影响的认识，鼓励市民减少污染物的生成。\\n4. 投资于可再生能源的研究和开发，如太阳能和风能。\\n5. 在工厂和发电厂安装空气污染控制装置，例如洗涤器。\\n6. 对车辆和工厂使用清洁燃料。\\n7. 实施更好的城市规划和控制拓展。\\n8. 改善农业效率，减少化肥和杀虫剂的使用。\\n9. 种植更多的树木以减少空气污染。\\n10. 减少木材、煤炭和生物质的燃烧。&quot;  
+  }  
+  ]  
+  
+ &quot;&quot;&quot;  
+  return system_prompt%context_str  
+</code></pre>
+<p>最终，形成的SFT数据如下：</p>
+<pre><code>[  
+  {  
+    &quot;instruction&quot;: &quot;请问在抖音带货的过程中如何保证流量的稳定增长？&quot;,  
+    &quot;input&quot;: &quot;&quot;,  
+    &quot;output&quot;: &quot;为了确保流量的稳定增长，在整个开播过程中，需要保持匀速匀量的投放策略。比如每隔半个小时发布一定数量的短视频，或者每隔15分钟发布一定数量的短视频。投放期间要定下来，按照这个匀速匀量的策略进行操作。这样可以稳定地吸引流量并避免突然增减的情况发生。&quot;  
+  },  
+  {  
+    &quot;instruction&quot;: &quot;在抖音带货中，如何通过短视频引流来达到流量稳定的效果？&quot;,  
+    &quot;input&quot;: &quot;&quot;,  
+    &quot;output&quot;: &quot;为了实现流量稳定的效果，可以通过定时投放短视频的方式进行引流。比如每隔半个小时发布一定数量的短视频，保持匀速匀量的投放。这样可以让流量稳定地进入直播间，避免流量的波动和不稳定。&quot;  
+  },  
+  {  
+    &quot;instruction&quot;: &quot;在投放短视频引流的策略中，如何进行预热和预告？&quot;,  
+    &quot;input&quot;: &quot;&quot;,  
+    &quot;output&quot;: &quot;在进行短视频引流投放时，可以通过预热和预告来增加开篇的热度。无论是提前两个小时投放四个视频，还是提前一个小时投放两条视频，都可以在这个时间段内让流量猛增上去。预告和预热的目的是让直播开场时引爆更大的流量，让直播迅速冲起来。&quot;  
+  },  
+  {  
+    &quot;instruction&quot;: &quot;投放短视频引流时，如何选择投放目标？&quot;,  
+    &quot;input&quot;: &quot;&quot;,  
+    &quot;output&quot;: &quot;在短视频引流投放中，推荐选择主页浏览量作为投放目标。主页浏览量被发现是投入产出比最高的一种玩法，它可以用较少的钱办更多的事。通过将流量引导到主页，可以进一步增加曝光和转化的机会，提升整体的价值和效果。&quot;  
+  }  
+]  
+</code></pre>
+<p><strong>2、模型效果</strong></p>
+<pre><code>Human:  
+  
+请介绍一下抖音带货的运营策略  
+  
+Assistant:  
+抖音带货的运营策略可以从以下几个方面进行：   
+1.了解目标受众，根据受众的兴趣和需求来选择适合的产品；  
+2.与优质的主播合作，提高直播间的影响力和吸引力；  
+3.利用抖音平台的特点，如短视频引流和直播间互动等，将产品销售地带向用户；  
+4.定期分析数据，了解用户对产品的反应和偏好，根据数据调整运营策略；  
+5.与供应商和品牌建立良好的合作关系，以获得更优惠的佣金和商品资源。  
+  
+  
+Human:  
+  
+如何做好停留模型来补充销量和转化？  
+  
+Assistant:  
+要在直播间中做好停留模型的补充，可以考虑以下方面：  
+1.提供有吸引力的内容，给观众带来更多的价值和信息，增加他们停留的动机和感兴趣；  
+2.与观众进行互动，回答他们的问题，建立良好的交流和互动关系；  
+3.提供购买商品的便利，如设置商品链接、提醒观众下单等，增加转化率。  
+4.提供与直播内容相关的其他内容，如教程、折扣促销等，吸引观众的关注和参与。  
+</code></pre>
+<p>该项目同样给我们的借鉴点在于，再次给出了一个垂直领域微调的数据构造方式（self-instruct），并且针对自媒体领域的数据适应。</p>
+<h4 id="总结">总结</h4>
+<p>本文主要介绍了关于媒体领域的微调模型，包括《MediaGPT : A Large Language Model For Chinese Media》以及MediaGPT，一个针对自媒体领域进行特殊训练的模型。</p>
+<p>这两个工作，都是面向媒体领域的，都具有借鉴意义。前者关于训练数据的构造、类别的设计、针对人工评估和大模型打分的评估优化，后者给出的针对自媒体领域的self-instruct流程也可进一步加深印象。</p>
+<p>针对更进一步的细节，我们可以更进一步的跟进，并对关于数据构造、评估体系上更进一步的思考。</p>
+<h4 id="参考文献">参考文献</h4>
+<p>1、https://arxiv.org/abs/2307.10930</p>
+<p>2、https://github.com/IMOSR/MediaGPT</p>
+<h4 id="关于我们">关于我们</h4>
+<p>老刘，刘焕勇，NLP开源爱好者与践行者，主页：https://liuhuanyong.github.io。</p>
+<p>老刘说NLP，将定期发布语言资源、工程实践、技术总结等内容，欢迎关注。</p>
+<p><strong>对于想加入更优质的知识图谱、事件图谱实践、相关分享的，可关注公众号，在后台菜单栏中点击会员社区-&gt;会员入群加入。</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
