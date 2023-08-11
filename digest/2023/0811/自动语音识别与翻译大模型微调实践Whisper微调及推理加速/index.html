@@ -1,0 +1,981 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>自动语音识别与翻译大模型微调实践：Whisper微调及推理加速 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">自动语音识别与翻译大模型微调实践：Whisper微调及推理加速</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 11, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/A81xRpb54x6m3Nuoiad0czicuN9ibODzRI7LArzDjMHtNCEuXJ3gxOSsYcq2Xoibw7k1j1HCSTdRMJx6HMkvc3Lickw/640?wx_fmt=gif" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/86e0eeNhCF-7PmHg_Fw-jQ">老刘说NLP</a></p>
+<blockquote>
+<h4 id="openai-开源的-whisper-项目号称英文语音识别能力已达到人类水平且支持其它-98-种语言的自动语音辨识whisper-所提供的自动语音识与翻译任务它们能将各种语言的语音变成文本也能将这些文本翻译成英文本篇文章主要的目的是为了对-whisper-模型使用-lora-进行微调还支持-ctranslate2-加速推理">OpenAI 开源的 Whisper 项目号称英文语音识别能力已达到人类水平，且支持其它 98 种语言的自动语音辨识。Whisper 所提供的自动语音识与翻译任务，它们能将各种语言的语音变成文本，也能将这些文本翻译成英文。本篇文章主要的目的是为了对 Whisper 模型使用 Lora 进行微调，还支持 CTranslate2 加速推理。</h4>
+<blockquote>
+<h4 id="一基础环境">一、基础环境</h4>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<h4 id="二模型选型">二、模型选型</h4>
+<h4 id="三安装环境">三、安装环境</h4>
+<h4 id="四准备sft数据">四、准备SFT数据</h4>
+<h4 id="五微调模型">五、微调模型</h4>
+<h4 id="五合并模型">五、合并模型</h4>
+<h4 id="七评估模型">七、评估模型</h4>
+<h4 id="八推理预测">八、推理预测</h4>
+<h4 id="九推理加速">九、推理加速</h4>
+<h4 id="十web界面部署">十、Web界面部署</h4>
+<h4 id="-今日ai资讯看点"># 今日AI资讯看点</h4>
+</blockquote>
+</blockquote>
+<h4 id="一基础环境-1">一、基础环境</h4>
+<ul>
+<li>
+<p>GPU A100 40GB * 1</p>
+</li>
+<li>
+<p>Ubuntu 18.04</p>
+</li>
+<li>
+<p>Python 3.8</p>
+</li>
+<li>
+<p>Miniconda 3</p>
+</li>
+<li>
+<p>Pytorch 1.13.1</p>
+</li>
+</ul>
+<h4 id="二模型选型-1">二、模型选型</h4>
+<p>本次微调期望看到 Whisper 最优性能，所以我选用的版本是 openai/whisper-large-v2 。当然您使用浅尝的话可以选以下几个版本：</p>
+<ul>
+<li>
+<p>openai/whisper-tiny</p>
+</li>
+<li>
+<p>openai/whisper-base</p>
+</li>
+<li>
+<p>openai/whisper-small</p>
+</li>
+<li>
+<p>openai/whisper-medium</p>
+</li>
+</ul>
+<h4 id="三安装环境-1">三、安装环境</h4>
+<ul>
+<li>
+<p>首先安装的是 Pytorch 的 GPU 版本，以下介绍两种安装 Pytorch 的方式，只需要选择一种即可。使用 miniconda 安装 Pytorch 环境。如已安装，请跳过。</p>
+<p>conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.6 -c pytorch -c nvidia</p>
+</li>
+<li>
+<p>安装所需的依赖库</p>
+<p>python -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</p>
+</li>
+</ul>
+<h4 id="四准备-sft-数据">四、准备 SFT 数据</h4>
+<p>** SFT 数据集** 是一个 jsonlines 的数据列表，也就是每一行都是一个 JSON 数据，数据格式如下。数据集下载地址：<strong><a href="https://openslr.elda.org/resources/33/data_aishell.tgz">https://openslr.elda.org/resources/33/data_aishell.tgz</a></strong> ，包括训练集和测试集。</p>
+<pre><code>{  
+   &quot;audio&quot;: {  
+      &quot;path&quot;: &quot;dataset/jiaenqiu.wav&quot;  
+   },  
+   &quot;sentence&quot;: &quot;我写了一封长长的情书，填对了地址，却选错了时间。&quot;,  
+   &quot;language&quot;: &quot;Chinese&quot;,  
+   &quot;sentences&quot;: [  
+      {  
+         &quot;start&quot;: 0,  
+         &quot;end&quot;: 2.38,  
+         &quot;text&quot;: &quot;我写了一封长长的情书，&quot;  
+      },  
+      {  
+         &quot;start&quot;: 2.4,  
+         &quot;end&quot;: 5.4,  
+         &quot;text&quot;: &quot;填对了地址，却选错了时间。&quot;  
+      }  
+   ],  
+   &quot;duration&quot;: 5.4  
+}  
+</code></pre>
+<blockquote>
+<p>注意：</p>
+<ul>
+<li>如果不使用时间戳训练，可以不包含 sentences 字段数据。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>如果只有一种语言的数据，可以不包含 language 字段数据。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>如果训练空语音数据，sentences 字段为[]，sentence 字段为&quot;&quot;，language 字段可以不存在。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>数据可以不包含标点符号，但微调后模型会损失添加符号能力。</li>
+</ul>
+</blockquote>
+<h4 id="五微调模型-1">五、微调模型</h4>
+<p>准备好数据之后，就可以开始微调模型了。训练最重要的两个参数分别是：</p>
+<ul>
+<li>
+<p>&ndash;base_model 指定微调的 Whisper 模型路径。我是提前在 HuggingFace 下载，使用参数指定本地路径，同时 &ndash;local_files_only 设置为 True。</p>
+</li>
+<li>
+<p>&ndash;output_path 是训练时保存的 Lora 检查点路径。因为我们使用 Lora 微调模型。如果显存足够，最好将 &ndash;use_8bit 设置为 False，这样训练速度快很多。<br>
+其他更多的参数请查看脚本 finetune.py。</p>
+</li>
+</ul>
+<h4 id="单卡训练">单卡训练</h4>
+<p>单卡训练命令如下，Windows 系统可以不添加 CUDA_VISIBLE_DEVICES 参数。</p>
+<pre><code>CUDA_VISIBLE_DEVICES=0 python finetune.py --base_model=openai/whisper-large-v2 --local_files_only=True --output_dir=output/ --train_data=dataset/train_2.json --test_data=dataset/test_2.json  
+</code></pre>
+<p>输出日志如下：</p>
+<pre><code>{'loss': 0.9098, 'learning_rate': 0.000999046843662503, 'epoch': 0.01}  
+{'loss': 0.5898, 'learning_rate': 0.0009970611012927184, 'epoch': 0.01}  
+{'loss': 0.5583, 'learning_rate': 0.0009950753589229333, 'epoch': 0.02}  
+{'loss': 0.5469, 'learning_rate': 0.0009930896165531485, 'epoch': 0.02}  
+{'loss': 0.5959, 'learning_rate': 0.0009911038741833634, 'epoch': 0.03}  
+------------------------------------------------  
+训练数据：13,4424，测试数据：7176  
+===============================================================  
+trainable params: 81,1776 || all params: 3857,2480 || trainable%: 2.1045470760500753  
+===============================================================  
+</code></pre>
+<h4 id="finetunepy-部分代码">finetune.py 部分代码</h4>
+<pre><code>add_arg(&quot;train_data&quot;,    type=str, default=&quot;dataset/train.json&quot;,       help=&quot;训练数据集的路径&quot;)  
+add_arg(&quot;test_data&quot;,     type=str, default=&quot;dataset/test.json&quot;,        help=&quot;测试数据集的路径&quot;)  
+add_arg(&quot;base_model&quot;,    type=str, default=&quot;openai/whisper-tiny&quot;,      help=&quot;Whisper的基础模型&quot;)  
+add_arg(&quot;output_dir&quot;,    type=str, default=&quot;output/&quot;,                  help=&quot;训练保存模型的路径&quot;)  
+add_arg(&quot;warmup_steps&quot;,  type=int, default=50,      help=&quot;训练预热步数&quot;)  
+add_arg(&quot;logging_steps&quot;, type=int, default=100,     help=&quot;打印日志步数&quot;)  
+add_arg(&quot;eval_steps&quot;,    type=int, default=1000,    help=&quot;多少步数评估一次&quot;)  
+add_arg(&quot;save_steps&quot;,    type=int, default=1000,    help=&quot;多少步数保存模型一次&quot;)  
+add_arg(&quot;num_workers&quot;,   type=int, default=8,       help=&quot;读取数据的线程数量&quot;)  
+add_arg(&quot;learning_rate&quot;, type=float, default=1e-3,  help=&quot;学习率大小&quot;)  
+add_arg(&quot;min_audio_len&quot;, type=float, default=0.5,   help=&quot;最小的音频长度，单位秒&quot;)  
+add_arg(&quot;max_audio_len&quot;, type=float, default=30,    help=&quot;最大的音频长度，单位秒&quot;)  
+add_arg(&quot;use_adalora&quot;,   type=bool,  default=True,  help=&quot;是否使用AdaLora而不是Lora&quot;)  
+add_arg(&quot;fp16&quot;,          type=bool,  default=True,  help=&quot;是否使用fp16训练模型&quot;)  
+add_arg(&quot;use_8bit&quot;,      type=bool,  default=False, help=&quot;是否将模型量化为8位&quot;)  
+add_arg(&quot;timestamps&quot;,    type=bool,  default=False, help=&quot;训练时是否使用时间戳数据&quot;)  
+add_arg(&quot;local_files_only&quot;, type=bool, default=False, help=&quot;是否只在本地加载模型，不尝试下载&quot;)  
+add_arg(&quot;num_train_epochs&quot;, type=int, default=3,      help=&quot;训练的轮数&quot;)  
+add_arg(&quot;language&quot;,      type=str, default=&quot;Chinese&quot;, help=&quot;设置语言，可全称也可简写，如果为None则训练的是多语言&quot;)  
+add_arg(&quot;task&quot;,     type=str, default=&quot;transcribe&quot;, choices=['transcribe', 'translate'], help=&quot;模型的任务&quot;)  
+add_arg(&quot;augment_config_path&quot;,         type=str, default=None, help=&quot;数据增强配置文件路径&quot;)  
+add_arg(&quot;resume_from_checkpoint&quot;,      type=str, default=None, help=&quot;恢复训练的检查点路径&quot;)  
+add_arg(&quot;per_device_train_batch_size&quot;, type=int, default=8,    help=&quot;训练的batch size&quot;)  
+add_arg(&quot;per_device_eval_batch_size&quot;,  type=int, default=8,    help=&quot;评估的batch size&quot;)  
+add_arg(&quot;gradient_accumulation_steps&quot;, type=int, default=1,    help=&quot;梯度累积步数&quot;)  
+  
+# 获取Whisper的数据处理器，这个包含了特征提取器、tokenizer  
+processor = WhisperProcessor.from_pretrained(args.base_model,  
+                                             language=args.language,  
+                                             task=args.task,  
+                                             no_timestamps=not args.timestamps,  
+                                             local_files_only=args.local_files_only)  
+  
+# 读取数据  
+train_dataset = CustomDataset(data_list_path=args.train_data,  
+                              processor=processor,  
+                              language=args.language,  
+                              timestamps=args.timestamps,  
+                              min_duration=args.min_audio_len,  
+                              max_duration=args.max_audio_len,  
+                              augment_config_path=args.augment_config_path)  
+test_dataset = CustomDataset(data_list_path=args.test_data,  
+                             processor=processor,  
+                             language=args.language,  
+                             timestamps=args.timestamps,  
+                             min_duration=args.min_audio_len,  
+                             max_duration=args.max_audio_len)  
+print(f&quot;训练数据：{len(train_dataset)}，测试数据：{len(test_dataset)}&quot;)  
+  
+# 获取Whisper模型  
+model = WhisperForConditionalGeneration.from_pretrained(args.base_model,  
+                                                        load_in_8bit=args.use_8bit,  
+                                                        device_map=device_map,  
+                                                        local_files_only=args.local_files_only)  
+  
+# 量化模型  
+model = prepare_model_for_kbit_training(model)  
+  
+print('加载LoRA模块...')  
+if args.resume_from_checkpoint:  
+    print(f'adding LoRA modules...')  
+    target_modules = [&quot;k_proj&quot;, &quot;q_proj&quot;, &quot;v_proj&quot;, &quot;out_proj&quot;, &quot;fc1&quot;, &quot;fc2&quot;]  
+    print(target_modules)  
+    config = AdaLoraConfig(init_r=12, target_r=4, beta1=0.85, beta2=0.85, tinit=200, tfinal=1000, deltaT=10,  
+                               lora_alpha=32, lora_dropout=0.1, orth_reg_weight=0.5, target_modules=target_modules)  
+    model = get_peft_model(model, config)  
+output_dir = os.path.join(args.output_dir, os.path.basename(args.base_model))  
+  
+# 定义训练参数  
+training_args = \  
+    Seq2SeqTrainingArguments(output_dir=output_dir,  # 保存检查点和意志的目录  
+                             per_device_train_batch_size=args.per_device_train_batch_size,  # 训练batch_size大小  
+                             per_device_eval_batch_size=args.per_device_eval_batch_size,  # 评估batch_size大小  
+                             gradient_accumulation_steps=args.gradient_accumulation_steps,  # 训练梯度累计步数  
+                             learning_rate=args.learning_rate,  # 学习率大小  
+                             warmup_steps=args.warmup_steps,  # 预热步数  
+                             num_train_epochs=args.num_train_epochs,  # 微调训练轮数  
+                             save_strategy=&quot;steps&quot;,  # 指定按照步数保存检查点  
+                             evaluation_strategy=&quot;steps&quot;,  # 指定按照步数评估模型  
+                             load_best_model_at_end=True,  # 指定是否在结束时加载最优模型  
+                             fp16=args.fp16,  # 是否使用半精度训练  
+                             report_to=[&quot;tensorboard&quot;],  # 指定使用tensorboard保存log  
+                             save_steps=args.save_steps,  # 指定保存检查点的步数  
+                             eval_steps=args.eval_steps,  # 指定评估模型的步数  
+                             save_total_limit=5,  # 只保存最新检查点的数量  
+                             optim='adamw_torch',  # 指定优化方法  
+                             ddp_find_unused_parameters=False if ddp else None,  # 分布式训练设置  
+                             dataloader_num_workers=args.num_workers,  # 设置读取数据的线程数量  
+                             logging_steps=args.logging_steps,  # 指定打印log的步数  
+                             remove_unused_columns=False,  # 删除模型不需要的数据列  
+                             label_names=[&quot;labels&quot;])  # 与标签对应的输入字典中的键列表  
+  
+# 开始训练  
+trainer.train(resume_from_checkpoint=args.resume_from_checkpoint)  
+  
+# 保存最后的模型  
+trainer.save_state()  
+if training_args.local_rank == 0 or training_args.local_rank == -1:  
+    model.save_pretrained(os.path.join(output_dir, &quot;checkpoint-final&quot;))  
+</code></pre>
+<h4 id="六合并模型">六、合并模型</h4>
+<p>微调完成之后会有两个模型，第一个是 Whisper 基础模型，第二个是 Lora 模型，需要把这两个模型合并之后才能之后的操作。两个参数：</p>
+<ul>
+<li>
+<p>&ndash;lora_model 是训练结束后保存的 Lora 模型路径，就是检查点文件夹路径</p>
+</li>
+<li>
+<p>&ndash;output_dir 是合并后模型的保存目录</p>
+<p>python merge_lora.py &ndash;lora_model=output/whisper-large-v2/checkpoint-best/ &ndash;output_dir=models/</p>
+</li>
+</ul>
+<h4 id="七评估模型-1">七、评估模型</h4>
+<p>执行以下程序进行评估模型，最重要的两个参数分别是。</p>
+<ul>
+<li>
+<p>&ndash;model_path 是合并后的模型路径，同时也支持直接使用 Whisper 原模型，例如直接指定 openai/whisper-large-v2</p>
+</li>
+<li>
+<p>&ndash;metric 是评估方法，例如：字错率 cer 和词错率 wer。</p>
+<p>python evaluation.py &ndash;model_path=models/whisper-large-v2-finetune &ndash;metric=wer</p>
+</li>
+<li>
+<p>提示：没有微调的模型，可能输出带有标点符号，影响准确率</p>
+</li>
+</ul>
+<h4 id="知识拓展">知识拓展</h4>
+<p>在 LLM 评估中，CER（Character Error Rate）和 WER（Word Error Rate）是两个常用的指标，用于评估文本生成任务中的错误率。</p>
+<ul>
+<li>
+<p>CER（Character Error Rate）是用于衡量生成文本中字符级别错误的指标。它计算生成文本与参考文本之间的字符差异率，表示为错误字符的数量除以参考文本的总字符数。CER 的值越低，表示生成文本与参考文本越接近。</p>
+</li>
+<li>
+<p>WER（Word Error Rate）是用于衡量生成文本中词级别错误的指标。它计算生成文本与参考文本之间的词差异率，表示为错误词的数量除以参考文本的总词数。WER 的值越低，表示生成文本与参考文本越接近。</p>
+</li>
+<li>
+<p>中文一般用 CER 来表示字错率，原因：计算的时候谁不是按：中文的一个字符 = 英文的一个 Word。英文，因为最小单元是 Word，语音识别应该用&quot;词错误率&quot;（WER）；中文，因为最小单元是字符，语音识别应该用“字符错误率”（CER）。</p>
+</li>
+</ul>
+<h4 id="二者区别">二者区别</h4>
+<ul>
+<li>
+<p>CER 是在字符级别上评估错误率，而 WER 是在词级别上评估错误率。</p>
+</li>
+<li>
+<p>CER 关注的是字符的插入、删除和替换错误，而 WER 关注的是词的插入、删除和替换错误。</p>
+</li>
+<li>
+<p>CER 更加细粒度，能够捕捉到字符级别的错误，而 WER 更加高层次，考虑了词级别的错误。</p>
+</li>
+<li>
+<p>CER 和 WER 能够反映生成文本与参考文本之间的差异和错误。它们是评估文本生成质量的重要指标，常用于语音识别、机器翻译等任务的性能评估，可以帮助量化系统的准确性和错误率。一般来说，较低的 CER 和 WER 值表示生成的文本更接近参考文本，表示系统性能更好。</p>
+</li>
+</ul>
+<h4 id="八推理预测-1">八、推理预测</h4>
+<p>执行以下程序进行语音识别，使用 transformers 直接调用微调后的模型或 Whisper 原模型预测，只适合推理短音频，长语音还是参考 infer_ct2.py 方式。</p>
+<ul>
+<li>
+<p>&ndash;audio_path 指定的是要预测的音频路径</p>
+</li>
+<li>
+<p>&ndash;model_path 指定的是合并后的模型路径，同时也支持直接使用 Whisper 原模型，例如直接指定 openai/whisper-large-v2</p>
+<p>python infer_tfs.py &ndash;audio_path=dataset/jiaenqiu.wav &ndash;model_path=models/whisper-large-v2-finetune<br>
+python infer_ct2.py &ndash;audio_path=dataset/long.wav &ndash;model_path=models/whisper-large-v2-finetune</p>
+</li>
+</ul>
+<h4 id="九推理加速-1">九、推理加速</h4>
+<p>尝试过直接使用 Whisper 模型推理是比较慢的，所以提供了推理加速。主要是使用 CTranslate2 进行加速，首先要转换模型，把合并后的模型转换为 CTranslate2 模型。</p>
+<pre><code>ct2-transformers-converter --model models/whisper-large-v2-finetune --output_dir models/whisper-large-v2-finetune-ct2 --copy_files tokenizer.json --quantization float16  
+</code></pre>
+<ul>
+<li>
+<p>&ndash;model 参数指定的是合并后的模型路径，同时也支持直接使用 Whisper 原模型，例如直接指定 openai/whisper-large-v2</p>
+</li>
+<li>
+<p>&ndash;output_dir 参数指定的是转换后的 CTranslate2 模型路径</p>
+</li>
+<li>
+<p>&ndash;quantization 参数指定的是量化模型大小，不希望量化模型可直接去掉此参数</p>
+<p>python infer_ct2.py &ndash;audio_path=dataset/jiaenqiu.wav &ndash;model_path=models/whisper-large-v2-finetune-ct2</p>
+</li>
+<li>
+<p>&ndash;audio_path 参数指定的是要预测的音频路径</p>
+</li>
+<li>
+<p>&ndash;model_path 指定的是转换后的 CTranslate2 模型 输出结果：</p>
+<h2 id="local_files_onlytrue">&mdash;&mdash;&mdash;&ndash;  Configuration Arguments &mdash;&mdash;&mdash;&ndash;<br>
+audio_path: dataset/jiaenqiu.wav<br>
+model_path: models/whisper-large-v2-finetune-ct2<br>
+language: zh<br>
+use_gpu: True<br>
+use_int8: False<br>
+beam_size: 10<br>
+num_workers: 1<br>
+vad_filter: False<br>
+local_files_only: True</h2>
+<p>[0.0 - 5.2]：我写了一封长长的情书，填对了地址，却选错了时间。</p>
+</li>
+</ul>
+<h4 id="十web-界面部署">十、Web 界面部署</h4>
+<p>启动命令：</p>
+<pre><code>python infer_server.py --model_path=models/whisper-large-v2-finetune-ct2  
+</code></pre>
+<ul>
+<li>Web界面地址<br>
+http://127.0.0.1:5000</li>
+</ul>
+<h4 id="heading"></h4>
+<p>引用：https://github.com/yeyupiaoling</p>
+<h4 id="heading-1"></h4>
+<p><strong>后续我会对微调前后的模型做一次全面性能测试，敬请关注➕</strong></p>
+<h4 id="heading-2"></h4>
+<h4 id="今日ai资讯-20230810-星期四-六月廿四日">今日AI资讯 2023.08.10 星期四 六月廿四日</h4>
+<ul>
+<li>
+<p>奇虎360智脑4.0整体能力1个月提升近15%</p>
+</li>
+<li>
+<p>奇虎360与8家企业签署大模型战略应用合作协议</p>
+</li>
+<li>
+<p>面向大型语言模型多维基准测试工具AgentBench</p>
+</li>
+<li>
+<p>福布斯发布云计算100强榜单，OpenAI第一</p>
+</li>
+<li>
+<p>旷视FaceID人身核验引入视觉大模型</p>
+</li>
+<li>
+<p>科大讯飞与电信签署协议：展开大模型、云计算等业务合作</p>
+</li>
+<li>
+<p>中国电信柯瑞文：正在深入研究通用大模型 下半年会看到成果</p>
+</li>
+<li>
+<p>Spotify：向更多地区推出AI DJ功能</p>
+</li>
+</ul>
+<h4 id="heading-3"></h4>
+<p><strong>欢迎关注，一起进步一起成长</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/A81xRpb54x6m3Nuoiad0czicuN9ibODzRI7LArzDjMHtNCEuXJ3gxOSsYcq2Xoibw7k1j1HCSTdRMJx6HMkvc3Lickw/640?wx_fmt=gif" alt=""></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
