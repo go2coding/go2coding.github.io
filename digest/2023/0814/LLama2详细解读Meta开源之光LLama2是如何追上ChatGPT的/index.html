@@ -1,0 +1,762 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>LLama2详细解读Meta开源之光LLama2是如何追上ChatGPT的？ | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">LLama2详细解读Meta开源之光LLama2是如何追上ChatGPT的？</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 14, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffhqAB7c9tJvHWuy7but9gUhFjEXOjheuz3fYTKneEZIaibDhfAFYD9lw/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/C-SQuchrJfg5ZxRmcrmRSA">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p>今天分享Meta的Llama 2: Open Foundation and Fine-Tuned Chat Models：LLAMA2:开源的基础和微调后的聊天大语言模型。Meta开源模型在除了代码能力外都追平或者超过了ChatGPT的水平，它做了很多工作提升大模型的能力和安全性。<strong>其利用<strong><strong>更高质量的数据来训练模型</strong></strong>，同时<strong><strong>利用强化学习迭代多次来优化模型效果</strong></strong>是使其追上ChatGPT的最强大的法宝</strong> 。同时目前如何对大模型进行强化学习放出来的文章也不多，本文给出非常多的RLHF实验和结果给大家进行参考，方便社区后续进行相关实验。<strong>总之LLaMA2是大模型开源之光，它以一己之力促进了整个LLM开源社区的发展，后续可能在其基础上也会有真正的更大更好的中文开源大模型出来，它的经验也值得大家去学习。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffDfBw2ib4kYn0UEjQia8iaJibu7dSGXMOj6Y05NjejicW25AF8r0icjT7Sy9A/640?wx_fmt=png" alt=""></p>
+<h4 id="一概述">一、概述****</h4>
+<p><strong>Title:</strong> Llama 2: Open Foundation and Fine-Tuned Chat Models</p>
+<p><strong>论文地址：</strong> Llama 2: Open Foundation and Fine-Tuned Chat Models</p>
+<p><strong>代码：</strong> <a href="https://github.com/facebookresearch/llama">https://github.com/facebookresearch/llama</a></p>
+<p><strong>官网：</strong> <a href="https://ai.meta.com/llama/">https://ai.meta.com/llama/</a></p>
+<h4 id="1-motivation">1 Motivation</h4>
+<ol>
+<li>
+<p>开源的LLM chat模型效果还不太好，还没一个开源大模型能和闭源模型（例如chatgpt）能比的。</p>
+</li>
+<li>
+<p>ChatGPT是闭源的，LLM的有用性和安全性如何改进这一类论文还不是特别多。</p>
+</li>
+</ol>
+<h4 id="2-methods">2 Methods</h4>
+<h4 id="21-整体架构">2.1 整体架构</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffOL4nJCgnvlINZV2WIv7v79BAFhEOL0ctiaIKOa5H8gexVpNzGlkGKTw/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1:</strong> 参考InstructGPT[1]，主要还是分为三个步骤（预训练、SFT、RLHF），其中RLHF用了两个Reward Model（Safety Reward Model、Helpful Reward Model），<strong>创新性地引入两个Reward模型，在保证安全性的同时，保持很好的有用性。</strong></p>
+<p><strong>总结2:</strong> 在RLHF阶段，不断<strong>迭代优化****奖励模型</strong> 与<strong>增强模型能力</strong> 对于确保奖励模型保持在分布范围内至关重要，本文后面的实验中，看到从最开始与chatgpt对比只有10%的胜率，用了本文提到的SFT和迭代RLHF后，胜率可高达60%。</p>
+<p><strong>总结3：</strong> Rejection Sampling（拒绝采样）：强化学习方法的一种，每次采样多个结果，选取最佳的k个结果构建新的训练数据，更新梯度，同时迭代优化模型效果。</p>
+<h4 id="22-发布llama2和llama2-chat">2.2 发布LLAMA2和LLAMA2-CHAT</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffAMWJyQiaBzmvjpNHPxmKCW65gkicS61bibaPW74LhzSWfFHqCDGHCN3hw/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1：</strong> 本次同时发布了基座模型LLAMA2和Chat模型LLAMA2-CHAT，参数在7B、13B、70B都有。</p>
+<p><strong>总结2：</strong> 在新的公开的混合数据来训练，语料库的大小增加了40%，将型的上下文长度增加了一倍，采用了分组查询注意力机制。</p>
+<h4 id="23-llama2和llma1训练情况对比">2.3 LLAMA2和LLMA1训练情况对比</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffIEVndWQ44bP6cHeqiceJS6mDgJ4qlh7jFU0ibic62ozD8WBCMf1j2ulOA/640?wx_fmt=png" alt=""></p>
+<p><strong>说明：</strong> Llama 2系列模型。所有模型都使用4M token进行训练。其中更大的模型34B和70B模型使用分组查询注意力（GQA）来提高推理可扩展性，7B和13B还是通用的注意力机制。</p>
+<p><strong>总结1:</strong> 相对于llama1，llama2的窗口长度翻倍，训练tokens翻倍。</p>
+<p><strong>总结2:</strong> 使用分组查询注意（GQA）来<strong>提高推理可扩展性</strong> 。</p>
+<p><strong>Grouped Query Attention：</strong> 在常规的注意力机制中，我们<strong>通常将一个查询与一组键（key）和值（value）进行匹配</strong> ，以便在执行各种任务（如翻译、问答等）时聚焦于相关信息。而在 &ldquo;grouped query attention&rdquo; 中，<strong>将多个查询作为一个组一起进行处理，从而引入了查询组之间的交互</strong> 。这种注意力机制的一个应用场景是在多轮对话理解中，例如问答系统或对话生成模型。在多轮对话中，每一轮对话可以被视为一个查询组，其中每个查询表示一个轮次的输入。通过引入 &ldquo;grouped query attention&rdquo;，模型可以更好地捕捉到不同轮次之间的信息流动和上下文关联，从而更准确地理解和生成响应。总之，&ldquo;grouped query attention&rdquo; 是一种注意力机制的变种，用于处理多组查询之间的交互，<strong>特别适用于多轮对话理解等场景，有助于提高模型的上下文理解和信息交互能力。</strong></p>
+<h4 id="3-conclusion">3 Conclusion</h4>
+<h4 id="31-整体情况远超开源大模型除代码能力外追上了chatgpt">3.1 整体情况：远超开源大模型，除代码能力外追上了ChatGPT</h4>
+<p>1.<strong>与开源模型对比：</strong> 发布了<strong>7B，13B，34B，70B</strong> 的模型，在<strong>大多数评测基准上，LLaMA2模型优于开源聊天模型</strong> ，详情如下图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ff2cYiaPSUiaU82SVwPSicia0XjnewK2V0xy12mftJKIHY7udSkicxDr2lfdA/640?wx_fmt=png" alt=""></p>
+<p><strong>大模型评价维度：</strong> 一般从代码，常识推理，世界知识，阅读理解，数学，比较热的几个数据集包括MMLU，BBH，AGI Eval等方面来评估。</p>
+<p>2.<strong>与闭源模型对比</strong> ：<strong>有用性和安全性</strong> 都不错，<strong>除了代码能力，其他能力接近ChatGPT</strong> ，可能是<strong>ChatGPT的合适替代品</strong> ：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffy6r7vHpjYcO6ZAdibibnSl91VuC424CtQ3wfC8YicFaS9ymYjp9ysCWxw/640?wx_fmt=png" alt=""></p>
+<p>3.<strong>详细描述了我们对Llama 2-Chat进行微调和安全改进的方法</strong> ，以使社区能够在我们的工作基础上再接再厉，并为LLM的负责任的发展做出贡献。</p>
+<h4 id="32-llama2的helpfulness表现">3.2 LLAMA2的Helpfulness表现</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffibiamh4rnB5maxA0gs2XlUZOPum2U8ZkqmGNZ5NVyk78gnsyODu0vAAw/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1：</strong> LLama-2 70b模型与chatgpt-0301的<strong>GSB评分为35.9:31.5:32.5</strong> ，Llama2-70b有用性比ChatGPT-0301还要好点。</p>
+<p><strong>总结2:</strong> GPT4自动评估，绿色区域表明，LLama-2的模型更好，为了消除平局，使用了赢/（赢+输）来计算分数。</p>
+<h4 id="33-llama2的safety表现">3.3 LLAMA2的Safety表现</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffz0WHia7tadpC0XYzNkqibWFJKyYXUNXTWxrBibiavcX8XKGLkHUlpjjmCQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结：</strong> Llama-2 70b-chat违反安全的比例低于5%，比ChatGPT0301高于5%还要好，尽管评测有一定局限性。</p>
+<h4 id="二预训练和fine-tuning">二、预训练和Fine-tuning</h4>
+<h4 id="1-预训练训练loss变化情况">1 预训练训练loss变化情况</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffxFNialGXJVe6AkajnwjCasTerGAc5b19sAGx6r1yv1fibSyWsTynaHrg/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1:</strong> 对比Llama1，PPL最终是到1.6左右，这里Llama2-70B到1.5了。</p>
+<p><strong>总结2:</strong> 观察到进行2T tokens预训练后，<strong>模型仍然没有任何饱和迹象</strong> ，还能继续加数据继续训！！！</p>
+<p><strong>总结3:</strong> tokenizer方法和LLAMA1一样，包括：BPE编码，SentencePiece切词，32K。</p>
+<h4 id="2-有监督sft关键是高质量的数据">2 有监督SFT关键是高质量的数据</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ff7P85lJiaJ4jKsK4s4ZNxGc4t7vWnXiayhPuKGZ8qVs0beg7mY1wKiapDQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结：</strong>  SFT数据的质量比数量更重要，本文发现开源的一些数据量比较大，但是多样性和质量都不太好，本文最终收集了<strong>27540条高质量的数据来训练，效果有明显的改善</strong> 。</p>
+<h4 id="3-人类偏好数据收集百万级别">3 人类偏好数据收集（百万级别）</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffpLEqibicQNtEcNRO5BLvqvdO7flHGMKomBnPgrwCiaYFTMtn9FHJ7QrpQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1：</strong> 收集了现有的开源的和meta收集的数据集，总共290万，其中Meta整理了141万。</p>
+<p><strong>总结2：</strong> 人类偏好的标签包括2种反馈，chosen或者rejected，感觉不是特别细。</p>
+<p><strong>总结3：</strong> 还分析了各种偏好数据的比较的次数、每个对话的平均轮次、每个例子、每个提示和每个回答的平均token数等指标。</p>
+<h4 id="4-各种大模型在meta偏好数据上的表现">4 各种大模型在Meta偏好数据上的表现</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ff1LLicMFN3mrDp8HbL4FDYjQZicDDicibQUiaSHLZL45GBHjoeJiakmWXsEZQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1: GPT4在人类偏好数据集上效果都比较高。</strong> GPT4没有在Meta数据集上训练过，但是效果也是比较好的，但是比经过Meta数据训练的RM的效果还是要差一些。</p>
+<p><strong>总结2: 经过人类偏好数据集训练的Reward model能大幅提升在该领域的偏好效果。</strong> 在Meta Safety以及Meta Helpful数据集上，经过对应场景数据训练的RM，Safety RM和Helpfulness RM在各自的领域都是最好的，比GPT4都要好。</p>
+<h4 id="5-reward-model效果和模型尺寸的关系">5 Reward model效果和模型尺寸的关系</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffiabiaZYhUEPpawicEibb4lqzCfNARPjSWtvqPyeC8ARzlQCN0ibP0LLtgdQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结：</strong> 数据越多，模型越大效果越好，70b的Reward模型更好的概率在80%+，13b的Reward模型更高的概率在75%-76%左右。</p>
+<h4 id="6-rl迭代训练ppo和rejection-sampling-fine-tuning是关键的制胜法宝">6 RL迭代训练（PPO和Rejection sampling fine-tuning）是关键的制胜法宝</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffzRRTtox7gT8OYpgOBibh33AqlW0RnLXMGbkuKqpficWodqicW2qfLANHA/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1:</strong> 在强化学习阶段，不断迭代优化模型效果，主要探索了两种不同的RL算法来迭代优化，PPO和Rejection Sampling fine-tuning算法。</p>
+<p><strong>总结2: Rejection Sampling fine-tuning</strong> 是一种从模型生成多个候选输出，通过奖励机制选择最佳输出，并将选定的输出用于梯度更新和微调的方法。这个方法在之前的研究基础上进行了拓展，使得模型可以通过选择的输出来进一步优化自身。</p>
+<p><strong>总结3:</strong> 拒绝采样和ppo的不同。宽度：在拒绝采样中，该模型为给定的提示探索K个样本，而PPO只探索1个样本。深度：在PPO中，在步骤t的训练期间，样本是上一步梯度更新后t-1的更新模型策略的函数。在拒绝采样微调中，我们在应用类似于SFT的微调之前，根据模型的初始策略对收集新数据集的所有输出进行采样。由于应用了迭代模型更新，两个RL算法之间的基本差异不那么明显。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffLT1xLKdGqcvRdD92CSMGibTxqa0zhsK9e5hPw39qibHEdT5q2oYRmibmQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffHyZqHO83QyUU50T7nicoGTzuPbHWYDTRrWOypIqsoPOryMAPXibHWbsA/640?wx_fmt=png" alt=""></p>
+<p><strong>结论：</strong> 拒绝采样可以从多个样本中，选择更好的样本来训练迭代模型，采样的个数越多，效果越好。同时温度系数越高，多样性越高效果越越好。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffVZrlcf84CGMxmYMvkHMkukYqnoT2LAWDvOVgW3Q2OT9z1aM9A0siblA/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1:</strong> 只在70B的LLAMA2-CHAT上使用了拒绝采样，其他小模型都是从大模型蒸馏过去。</p>
+<p><strong>总结2:</strong>  总共RL迭代了5轮，在RLHF（V4）之前，只使用拒绝采样微调，之后，我们按顺序将两者结合起来，在再次采样之前在结果的拒绝采样checkpoint上应用PPO。</p>
+<h4 id="7-利用gatt方法来提升多轮问答中对系统指令的遵循能力">7 利用GAtt方法来提升多轮问答中对系统指令的遵循能力</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffhqAB7c9tJvHWuy7but9gUhFjEXOjheuz3fYTKneEZIaibDhfAFYD9lw/640?wx_fmt=png" alt=""></p>
+<p><strong>说明</strong> ：在多轮问答中，经常会忘记系统指令，如左图所示忘记用emojis来回答的指令，后面用GAtt技术优化后，右边有明显改善。</p>
+<p><strong>GAtt方法</strong> ：感觉是一种新的attention方法，对于第一条指令或者系统指令提供的注意力更强。</p>
+<h4 id="8-llama2-chat的演变过程rlhf迭代5轮的变化情况效果非常强">8 LLAMA2-CHAT的演变过程（RLHF迭代5轮的变化情况），效果非常强！</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffWBt2E4VtAWjz0argFbEzZDvQYbkEO8Yff5jsjSVMplbSWNuK0iaYMhQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1:</strong> RLHF总共迭代了5次，每次迭代都有提升，其中前4次用的是拒绝采样来训练，v5用上了ppo提升更大。</p>
+<p><strong>总结2:</strong> RLHF带来的提升是比较明显的，从对chatgpt10%的胜率提升到了60%+。</p>
+<h4 id="9-人工评估有用性">9 人工评估有用性</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffQ0hBGd7CH9FUYOCFCYiaqTvaf9iaE0HlXEOtORBaGt3GFBbRibrtGyc4A/640?wx_fmt=png" alt=""></p>
+<p><strong>总结:</strong> 在helpfulness prompts上，比其他开源模型效果要更好，甚至比闭源的chatgpt都要好一点。</p>
+<h4 id="三safety">三、Safety</h4>
+<h4 id="1-在训练数据中引入更安全的数据">1 在训练数据中引入更安全的数据</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffqLXNibVTYdHqXMGE3KYEOuGsWRFuPg0BLDAtPBHBIF7iagd19q3icTwBA/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1:</strong> 安全的数据越多，效果越好，helpfulness保持稳定</p>
+<p><strong>总结2:</strong> 随着更多安全训练数据的添加，较低的安全RM分数（即最不安全的回答）逐渐消失，代表安全分非常低的结果越来越少。</p>
+<h4 id="2-利用context-distillation方法提升安全性">2 利用Context distillation方法提升安全性</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffBm8MSlPrudoSgnyxh8abXXeH5qRrXxB8YbfYibG56yedrzskh118fiaQ/640?wx_fmt=png" alt=""></p>
+<p><strong>Context distillation方法：</strong> 指在上下文中引入额外限制提升安全性的方法，这里提供了两种方法如下：</p>
+<p><strong>方法1:</strong> Generic Preprompt：提升回答中不应该包括任何有害的、不道德、或者有偏见的内容。</p>
+<p><strong>方法2:</strong> Preprompt with Answer Template：给出答案的模版，指导可能不安全的行为该如何回答。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffg3JjJbqDgTkaccxBQxBb4e8Iicf9C409CZjfofRcURVWTeLeueMECPw/640?wx_fmt=png" alt=""></p>
+<p><strong>结论1:</strong> 采取通用的预提示方法（Generic Preprompt）会提高安全RM分数，但带有定制答案模板的预提示（Preprompt with answer Template）会更有帮助。</p>
+<p><strong>结论2:</strong> 随着原始安全分的增加，Context Distillation带来的提升越来越小，甚至对高分数的样本带来负面影响，所以本文只在能提升安全分的样本上使用context distillation技术。</p>
+<h4 id="3-red-teaming">3 Red Teaming</h4>
+<p><strong>目的1：</strong> 被动风险识别可能不太够，这里还提出要主动风险识别来优化，本文把他叫做Red Teaming，主要用于分析哪些情况下可能会造成毒性的结果。</p>
+<p><strong>目的2:</strong> 安全是一个长尾问题，即使非常不频繁的case也会导致严重的后果。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ff0ibGZZ5GdbWawvh5vZnVG8Nvnq0uEcwgpLrlnRyw1L1ibmpXyaia3icNcw/640?wx_fmt=png" alt=""></p>
+<p><strong>发现的llm攻击特点：</strong></p>
+<p>• [早期模型]更有可能生成不安全的响应，而没有注意到它们包含有问题的内容。[稍晚的模型]能够发现有问题的内容，但是还是无法避免不输出。[最新模型]能够解决这些问题。</p>
+<p>• 创意写作请求（歌曲、故事、诗歌等）可能会让他生成之前会强烈反对的内容（逃避监管机制，生成不安全的内容）。</p>
+<p>• 在积极的上下文中嵌入有问题的请求，例如使用积极、进取、富有能量的问题进行掩盖，是最有效的攻击方法。</p>
+<h4 id="heading"></h4>
+<h4 id="4-safety-evaluation-of-llama-2-chat">4 Safety Evaluation of Llama 2-Chat</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24fftkZWhoOy9ASTJibpF7fxwo6AVClVkEaer62KJIicGDFYibiby4ajKNn1nQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结：</strong> 不同尺寸的LLAMA2系列模型中，都有更好的安全性，同时有用性也非常不错。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffoD84oY16PC6cF9wKf0CobE8ic1SJ2e88ZjTgs9ia1Ba3EYVytJnalgzw/640?wx_fmt=png" alt=""></p>
+<p><strong>总结：</strong> 多轮问答的有害性比单轮问答的有害性对别，增加比较多，但是LLAMA2系列模型都比其他模型好，34b的模型有点奇怪，本文也没有开源。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffTbMJzbiaT1PdJFNyXTbasUyCYkzIiaSwHYibm7Rl9ZPNapmiagogiaTB1GA/640?wx_fmt=png" alt=""></p>
+<p><strong>总结：</strong> 比较了多个角度，包括有害的，非法的，低质量三大类情况下个模型的违反比例，LLAMA2系列表现都不错，34b的模型表现有点奇怪没有开源。</p>
+<h4 id="四discussion">四、Discussion</h4>
+<h4 id="heading-1"></h4>
+<h4 id="1-sft模型到rlhf方法给reward-model-score分布带来的变化">1 SFT模型到RLHF方法给Reward model score分布带来的变化</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffKRCnriavnRhRSetKN2CInr922XqbNUO56fG7vic7WC2uww0EusxEfhYw/640?wx_fmt=png" alt=""></p>
+<p><strong>总结：</strong> 最还是的mix数据训练的SFT，低分数的比较多，随着利用标注数据，效果有了明显的提升，同时利用RLHF，获得高分数的样本越来越多，说明效果越来越好。</p>
+<h4 id="2-rlhf降低模型结果的了多样性">2 RLHF降低模型结果的了多样性</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffFibIaRTj4Nufwk4ibdgbadhYMibsczVQSkPuLSlMPJGu44HPedBJCBpOA/640?wx_fmt=png" alt=""></p>
+<p><strong>总结1：</strong> 温度越高，多样性越好，但是做了RLHF后，多样性有了明显的下降。</p>
+<p><strong>总结2:</strong> Creative Prompts还能维持较高的多样性，同时上文也提到，可能更容易被攻击，所以感觉多样性和有毒性确实是一个需要权衡的过程。</p>
+<h4 id="五思考与总结">五、思考与总结</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24fff4EhapTUauePWiax9rOdLkAQZha560ClcY8mleRhVIoatTDfn5k8A0w/640?wx_fmt=png" alt=""></p>
+<p><strong>总结：</strong> 本文主要从预训练、Fine-tuning、Safety这几个角度来介绍了LLAMA2，其中<strong>引入高质量的数据，多次迭代优化Reward Model是非常关键的一步</strong> 。</p>
+<p><strong>总结1: 训练数据质量非常重要。</strong> 相对于多而质量不高的数据，SFT过程中，收集27540条高质量的数据就能有非常大的提升。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffWBt2E4VtAWjz0argFbEzZDvQYbkEO8Yff5jsjSVMplbSWNuK0iaYMhQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结2: RLHF对对齐人类观念还是非常重要的。</strong> LLAMA2使用RLHF迭代训练后，对chatgpt的胜率从开始的10%的胜率提升到了60%+。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffiabiaZYhUEPpawicEibb4lqzCfNARPjSWtvqPyeC8ARzlQCN0ibP0LLtgdQ/640?wx_fmt=png" alt=""></p>
+<p><strong>总结3:</strong> <strong>模型越大，数据量越多，Reward Model的效果就越好。</strong></p>
+<p><strong>总结4:</strong> <strong>提升安全性可以在训练数据，SFT，RLHF多个方面进行优化。</strong> 引入更安全的数据，可以降低毒性非常高的结果。引入RLHF，可以进一步提高输出结果的Reward Model分数。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffg3JjJbqDgTkaccxBQxBb4e8Iicf9C409CZjfofRcURVWTeLeueMECPw/640?wx_fmt=png" alt=""></p>
+<p><strong>总结5:</strong> <strong>引入Context distillation方法也可以有效的提升安全性。</strong> 通用的不能输出毒性结果的指令能够带来一定提升，同时对毒性结果进行后处理，能够更进一步提升安全性。</p>
+<p><strong>总结6:</strong> <strong>多轮问答比单论问答有更高的出现毒性回答的概率。</strong> 本文利用GAtt方法来优化多轮问答的安全性。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrOjOY61sKByVgYXr2mM24ffFibIaRTj4Nufwk4ibdgbadhYMibsczVQSkPuLSlMPJGu44HPedBJCBpOA/640?wx_fmt=png" alt=""></p>
+<p><strong>总结7:</strong> <strong>安全性和多样性是需要权衡的。</strong> 在看到RLHF对齐人类观念的同时，也要看到其多样性牺牲比较大。同时如果多样性比较高，也使其更有可能产生不安全的内容。</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>阅读至此了，分享、点赞、在看三选一吧🙏</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
