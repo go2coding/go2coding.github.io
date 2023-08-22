@@ -1,0 +1,959 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>图解大模型微调系列之：大模型低秩适配器LoRA（原理篇） | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">图解大模型微调系列之：大模型低秩适配器LoRA（原理篇）</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 22, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfNRBp1zBHDGauEcAL0BA4ic9cBVfHvvZJPJqPpbkdBkdmrMUS6Hicmpyg/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/dgD0Mr5kG0RR2mswjkaB6w">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p>关于LORA部分的讲解，我们将分为**“原理篇”和“源码篇”** 。</p>
+<p>在原理篇中，我们将通过<strong>图解</strong> 的方式，详细分析LoRA怎么用、为什么能奏效、存在哪些优劣势等核心问题。特别是当你在学习LoRA时，如果对“秩”的定义和作用方式感到迷惑，那么本文也许能提供一些具象化的解读方式。</p>
+<p>在源码篇中，我们<strong>将一起剖析微软LoRA源码，并帮助大家在google colab平台上使用免费GPU，搭建LoRA微调环境</strong> ，使得每个人可以亲自动手跑一遍原生LoRA代码，加深对LoRA运作机制的理解（不要钱的快乐才是真快乐）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfJjKcV4P7gv8eZ2ricZ68bR18bQh8yznHjvyFbzS0hV906rDxzhs0rUA/640?wx_fmt=png" alt=""></p>
+<h4 id="一全参数微调">一、全参数微调</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYf38ictkA5Suscz0X7EkhibwVBy5oVa4ibG847SDRXaKHbiadXp4muic5LUZw/640?wx_fmt=png" alt=""></p>
+<p>我们知道，微调的含义，就是把已经训练好的模型（pretrained model）拿来，给它吃特定的下游任务数据，使得模型在预训练权重上继续训练，直至满足下游任务性能标准。预训练模型就像一个<strong>特征提取器</strong> ，能够基于先前训练数据中学到的经验，为我们提取有效的特征，大大提升下游任务的训练效果和收敛速度。</p>
+<p><strong>全量微调</strong> 指的是，在下游任务的训练中，对预训练模型的每一个参数都做更新。例如图中，给出了Transformer的Q/K/V矩阵的全量微调示例，对每个矩阵来说，在微调时，其d*d
+个参数，都必须参与更新。</p>
+<p>全量微调的显著缺点是，<strong>训练代价昂贵</strong> 。例如GPT3的参数量有175B，我等单卡贵族只能望而却步，更不要提在微调中发现有bug时的覆水难收。同时，由于模型在预训练阶段已经吃了足够多的数据，收获了足够的经验，因此我<strong>只要想办法给模型增加一个额外知识模块，让这个小模块去适配我的下游任务，模型主体保持不变（freeze）即可。</strong></p>
+<p>那这样的知识小模块，具体要怎么添加呢？</p>
+<h4 id="二adapter-tuning与prefix-tuning">二、Adapter Tuning与Prefix Tuning</h4>
+<p>我们来看在LoRA出现前，两种主流的局部微调办法：Adapter Tuning与Prefix Tuning。这也是LoRA的原始论文中，重点比对的两种微调方式。</p>
+<h4 id="21-adapter-tuning">2.1 Adapter Tuning</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfPCbw8la0Lapnaph9XxXkSjuGtmra5fphQZMDPyf5Pt2eVriaFU4c24A/640?wx_fmt=png" alt=""></p>
+<p>Adapter Tuning的方法有很多种，这里我们举出Houlsby et al. ,2019提出的方法，这也是LoRA论文中提及这项技术时所引用的第一篇文章。</p>
+<p>图例中的左边是一层Transformer Layer结构，其中的Adapter就是我们说的“额外知识模块”；右边是Adatper的具体结构。<strong>在微调时，除了Adapter的部分，其余的参数都是被冻住的（freeze）</strong> ，这样我们就能有效降低训练的代价。Adapter的内部架构不是本文所述的重点，这里我们就不再介绍了。</p>
+<p>但这样的设计架构存在一个<strong>显著劣势：添加了Adapter后，模型整体的层数变深，会增加训练速度和推理速度</strong> ，原因是：</p>
+<ul>
+<li>
+<p>需要耗费额外的运算量在Adapter上</p>
+</li>
+<li>
+<p>当我们采用并行训练时（例如Transformer架构常用的张量模型并行），Adapter层会产生额外的通讯量，增加通讯时间</p>
+</li>
+</ul>
+<h4 id="22-prefix-tuning">2.2 Prefix Tuning</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfibAs03hVLl2brzYmDH2QVVVUH6ZuKPQNmJicjq5bCGY9icCdbd7GTRxdA/640?wx_fmt=png" alt=""></p>
+<p>Prefix Tuning的方法也有很多种，这里我们选取Li&amp;Liang,2021这一篇进行简述。在这篇中，作者通过对输入数据增加前缀（prefix）来做微调。当然，prefix也可以不止加载输入层，还可以加在Transformer Layer输出的中间层，感兴趣的朋友可以查找论文自行研究。</p>
+<p>如图所示，对于<strong>GPT这样的生成式模型</strong> ，在输入序列的最前面加入prefix token，图例中加入2个prefix token，在实际应用中，prefix token的个数是个超参，可以根据模型实际微调效果进行调整。<strong>对于BART这样的Encoder-Decoder架构模型</strong> ，则在x和y的前面同时添加prefix token。<strong>在后续微调中，我们只需要冻住模型其余部分，单独训练prefix token相关的参数即可，每个下游任务都可以单独训练一套prefix token。</strong></p>
+<p><strong>那么prefix的含义是什么呢</strong> ？prefix的作用是引导模型提取x相关的信息，进而更好地生成y。例如，我们要做一个<strong>summarization</strong> 的任务，那么经过微调后，prefix就能领悟到当前要做的是个“总结形式”的任务，然后引导模型去x中提炼关键信息；如果我们要做一个<strong>情感分类</strong> 的任务，prefix就能引导模型去提炼出x中和情感相关的语义信息，以此类推。这样的解释可能不那么严谨，但大家可以大致体会一下prefix的作用。</p>
+<p>Prefix Tuning虽然看起来方便，但也存在以下两个<strong>显著劣势</strong> ：</p>
+<ul>
+<li>
+<p>较难训练，且模型的效果并不严格随prefix参数量的增加而上升，这点在原始论文中也有指出</p>
+</li>
+<li>
+<p>会使得输入层有效信息长度减少。为了节省计算量和显存，我们一般会固定输入数据长度。增加了prefix之后，留给原始文字数据的空间就少了，因此可能会降低原始文字中prompt的表达能力。</p>
+</li>
+</ul>
+<h4 id="三什么是lora">三、什么是LoRA</h4>
+<p>总结一下，<strong>全参数微调太贵，Adapter Tuning存在训练和推理延迟，Prefix Tuning难训且会减少原始训练数据中的有效文字长度</strong> ，那是否有一种微调办法，能改善这些不足呢？</p>
+<p>在这样动机的驱动下，作者提出了<strong>LoRA (Low-Rank Adaptation，低秩适配器)</strong>  这样一种微调方法。我们先抛开对“低秩”、“适配器”这样抽象词语的解释，我们先来看LoRA长什么样，要怎么用。在下一节中，我们再来详细解释“低秩”作用的原理。</p>
+<h4 id="31-lora整体架构">3.1 LoRA整体架构</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfEIOyicDoibXDFH7OaQVPvnicBLe1GmEKucTKVc9TE2YibpsZ26lFbVIIBw/640?wx_fmt=png" alt=""></p>
+<p><strong>图中左侧表示“全参数finetune”的场景</strong> 。我们将参数分成了两个部分：</p>
+<ul>
+<li>
+<p>：预训练权重</p>
+</li>
+<li>
+<p>：finetune增量权重</p>
+</li>
+</ul>
+<p>之所以这么拆分，是因为<strong>全参数finetune可以理解成“冻住的预训练权重” + “微调过程中产生的权重更新量”</strong> 。 设输入为，输出为，则有：</p>
+<p><strong>图中右侧表示“LoRA finetune”的场景</strong> 。在LoRA中，我们用矩阵A和B来<strong>近似</strong> 表达：</p>
+<ul>
+<li>
+<p>：低秩矩阵，其中被称为“秩”，对采用高斯初始化。</p>
+</li>
+<li>
+<p>：低秩矩阵，对B采用零初始化。</p>
+</li>
+</ul>
+<p>经过这样一番拆分，我们将改写成的形式，使得微调参数量从d<em>d
+降低至2</em>r*d
+，同时不改变输出数据的维度，即在LoRA下我们有:</p>
+<p>另外，在原论文中提到过对于两个低秩矩阵，会用<strong>超参****（一个常数）</strong> 来做调整，但没有说明这个超参的作用位置。在读完LoRA的源码后，我发现这个超参是作为scaling rate直接和低秩矩阵相乘的，也就是<strong>最终的输出为</strong> ：</p>
+<p>在实操中，一般取，例如在LoRA源码对GPT2微调，做NLG任务时，就取。<strong>我们会在后文详细介绍这个scaling rate的作用，以及“秩”的具体含义。</strong></p>
+<h4 id="a和b的初始化方法">A和B的初始化方法</h4>
+<p>需要注意的是，这里对采用高斯初始化，对采用零初始化的目的是，让训练刚开始时的值为0，这样不会给模型带来额外的噪声。那么你可能想问，<strong>那我对<strong><strong>做零初始化，对</strong></strong>做高斯初始化行不行呢？反正看起来只要让****初始化为0就行？</strong></p>
+<p>针对这个问题，我在github issue上找到了LoRA一作的回答：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfWKdgfVqtXI9MpbdkVo2H9icrbxwHNkbxicWGzic4Thbc1Yib15mDRP5n0g/640?wx_fmt=png" alt=""></p>
+<p>简单来说，当前作者还没有发现转换初始化方式产生的显著区别，只要这两者中任意一者为0，另一者不为0即可。</p>
+<h4 id="32-lora的训练和推理过程">3.2 LoRA的训练和推理过程</h4>
+<p>在3.1中，<strong>我们介绍了LoRA的整体架构</strong> ：在原始预训练矩阵的旁路上，用低秩矩阵A和B来近似替代增量更新。你可以在你想要的模型层上做这样的操作，比如Transformer中的、MLP层的权重、甚至是Embedding部分的权重。在LoRA原始论文中，只对Attention部分的参数做了低秩适配，但在实际操作中，我们可以灵活根据需要设置实验方案，找到最佳的适配方案（有钱万事通）。</p>
+<h4 id="321-训练">3.2.1 训练</h4>
+<p>在<strong>训练过程</strong> 中，我们固定住预训练权重，只对低秩矩阵和进行训练。<strong>在保存权重时，我们只需保存低秩矩阵的部分即可</strong> 。按照LoRA论文中的统计，这样的操作使得在微调GPT3 175B时，显存消耗从1.2TB降至350GB；当r=4时，最终保存的模型从350GB降至35MB，极大降低了训练的开销。</p>
+<p>关于训练部分，我们再来看一个有趣的问题：总体上来看，LoRA对显存的节约是显著的，但是在训练的每一时刻，LoRA都能做到节省显存吗？</p>
+<p>考虑backward时对计算梯度，根据（为了敲公式方便，暂时忽略掉一项），我们有：</p>
+<p>注意这一项，你会发现，它和预训练权重的维度d*d
+一模一样，也就是为了计算的梯度，我们需要用到和全参数微调过程中一样大小的中间值结果。<strong>因此对LoRA来说，这一层的峰值显存，和全量微调基本是一致的</strong> （算上一项的话则高于全量微调）。</p>
+<p><strong>但是为什么LoRA又能从整体上降低显存使用呢</strong> ，因为：</p>
+<ul>
+<li>
+<p>LoRA并不是作用在模型的每一层，例如论文里的LoRA只作用在attention部分</p>
+</li>
+<li>
+<p>LoRA虽然会导致某一层的峰值显存高于全量微调，但计算完梯度后，这个中间结果就可以被清掉了，不会一致保存</p>
+</li>
+<li>
+<p>当待训练权重从d<em>d
+降为2</em>r*d
+时，需要保存的optimizer states也减少了（那可是fp32）。</p>
+</li>
+</ul>
+<h4 id="322-推理">3.2.2 推理</h4>
+<p>在<strong>推理过程</strong> 中，我们按照的方式，<strong>合并低秩矩阵和预训练权重，然后正常做forward推理。这样我们完全不会更改模型的架构，因此不会像Adapter Tuning一样产生推理上的延时</strong> 。下图展示了论文中的实验效果，推理时长的单位是milliseconds，可以发现，LoRA的推理速度显著高于Adapter Tuning。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfL1KelRUCx4a8n5UQnysHYlphMybDiajHjbOhXAavTkf3o93UupCuZkA/640?wx_fmt=png" alt=""></p>
+<p>在<strong>切换不同下游任务</strong> 时，我们可以灵活从中移除低秩权重的部分。例如我们先做下游任务A，做完后通过合并权重，并单独保留低秩权重。当我们切换到下游任务B时，我们可以通过从中减去低秩权重部分，然后再开启新的LoRA微调。也就是说，<strong>每个下游任务，都可以有自己的一套低秩权重。</strong></p>
+<p><strong>你可能想问，在每次微调结束后，我一定要把低秩权重合进****中吗？我可以将“预训练权重”和“低秩权重”分开存储吗？</strong> 当然没问题啦，LoRA是很灵活的，你完全可以根据自身需要，改写代码，决定权重的保存方式，只要掌握一个核心原则：不管是合还是不合，你总有办法能区分出预训练和LoRA的部分，就行。在源码解读篇中，我们会再详细来看这点。</p>
+<p>恭喜你！到这一步你已经掌握了LoRA的架构，是不是很简单，是不是跃跃欲试？但是，作为一名合格的炼丹师，为了能对训练过程更好debug，我们还要需要更深入研究LoRA的原理。</p>
+<h4 id="四lora低秩适配的原理">四、LoRA低秩适配的原理</h4>
+<p>在前文中，我们曾反复提到“秩”的概念，并说明LoRA的秩即为超参，同时，我们也不断强调是的近似。<strong>在这一节中，我们将具象化地来看看“秩”，并说明为何是“近似”，在了解这些后，我们就能来解读超参****的作用，并掌握一定的炼丹感觉了</strong> 。</p>
+<h4 id="41-什么是秩">4.1 什么是秩</h4>
+<p>我们首先来看一个矩阵A：</p>
+<pre><code>A = [[1, 2, 3],  
+     [2, 4, 6],  
+     [3, 6, 9]]  
+</code></pre>
+<p>该矩阵中，row2 = row1 * 2，row3 = row1*3，也就是说，矩阵中的每一行，都可以通过第一行线性表示。</p>
+<p>我们再来看一个矩阵B：</p>
+<pre><code>B = [[1, 2, 3],  
+     [7, 11, 5],  
+     [8, 13, 8]]  
+</code></pre>
+<p>该矩阵中，任意一行，总可以用其他两行的线性组合来表示。</p>
+<p>我们最后再来看一个矩阵C：</p>
+<pre><code>C = [[1, 0, 0],  
+     [0, 1, 0],  
+     [0, 0, 1]]  
+</code></pre>
+<p>该矩阵中，任意一行，都不能从其余行的线性组合中推导而来。</p>
+<p>调用np.linalg.matrix_rank
+函数，我们可以算出任意矩阵的秩，上面三个矩阵的秩分别为：</p>
+<pre><code>A = np.array(A)  
+B = np.array(B)  
+C = np.array(C)  
+  
+print(&quot;Rank of A:&quot;, np.linalg.matrix_rank(A)) # 1  
+print(&quot;Rank of B:&quot;, np.linalg.matrix_rank(B)) # 2  
+print(&quot;Rank of C:&quot;, np.linalg.matrix_rank(C)) # 3  
+</code></pre>
+<p>对矩阵A来说，由于只要掌握其中的任意一行，其余行都可以由这一行线性推导而来，因此A的秩是1。</p>
+<p>对矩阵B来说，由于只要掌握其中的任意两行，其余行都可以由这两行线性组合推导而来，因此B的秩是2。</p>
+<p>对矩阵C来说，由于必须完全掌握三行，才能得到完整的C，因此C的秩是3。</p>
+<p>看到这里，你是不是已经对秩有了感性的理解了？<strong>秩表示的是矩阵的信息量</strong> 。如果矩阵中的某一维，总可以通过其余维度线性推导而来，那么对模型来说，这一维的信息是冗余的，是重复表达的。对A和B的情况，我们称为<strong>秩亏（rank deficient）</strong> ，对C的情况，我们称为<strong>满秩（full rank）</strong> 。更严谨的数学定义，大家可以参考《线性代数》（狗头）。</p>
+<p>有了对秩的这层认识，我们自然会想到，<strong>全参数微调中的增量权重<strong><strong>可能也存在冗余的信息，因此我们并不需要用完整的</strong></strong>d*d
+尺寸来表示它。</strong> 那么，我们要如何找出中真正有用的特征维度呢？<strong>SVD分解（奇异值分解）</strong> ，可以帮我们解决这个问题</p>
+<h4 id="42-svd分解">4.2 SVD分解</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfxNHIEWm5XNOQherkJ4B0KJ2ZjoWWK0CXPfH3tHLBTQvbkUY4gwoIdg/640?wx_fmt=png" alt=""></p>
+<p>如图，矩阵是我们需要做信息量检查的矩阵。假设在输入数据的特征空间中，<strong>存在一组正交的单位向量</strong> ，经过的变换后，它们变成另一组正交向量，其中<strong>也是一组正交的单位向量</strong> ，分别表示对应方向上的模。上面这一顿变幻，可以写成：</p>
+<p>稍加改写，就有：</p>
+<p>不难发现，<strong>中隐含了对“信息量”的提示</strong> 。在本例中经过的转换投射到上时，强调了在1方向上蕴含的信息。</p>
+<p>现在再宽泛一些，如果我们能找到这样的一组和，并令矩阵的值从大到小进行排列，那么我们不就能对进行拆解，同时在拆解过程中，找出所强调的那些特征方向了吗？也就是说：</p>
+<p><strong>当我们找到这样的<strong><strong>矩阵后，我们再从这三者中取出对应的top r 行（或列），不就相当于关注到了</strong></strong>最强调的那几维特征，进而就能用更低维的矩阵，来近似表达****了？</strong> 按这种思维拆解M的方法，我们称为<strong>SVD分解（奇异值分解）</strong> 。在本篇里我们不讲述它的具体方法，感兴趣的朋友们，欸，又可以参考《线性代数》。</p>
+<p>我们再通过一个代码例子，更直观地感受一下这种近似，大家注意看下注释（例子改编自：https://medium.com/@Shrishml/lora-low-rank-adaptation-from-the-first-principle-7e1adec71541）</p>
+<pre><code>import torch  
+import numpy as np  
+torch.manual_seed(0)  
+  
+# ------------------------------------  
+# n：输入数据维度  
+# m：输出数据维度  
+# ------------------------------------  
+n = 10  
+m = 10  
+  
+# ------------------------------------  
+# 随机初始化权重W  
+# 之所以这样初始化，是为了让W不要满秩，  
+# 这样才有低秩分解的意义  
+# ------------------------------------  
+nr = 10  
+mr = 2  
+W = torch.randn(nr,mr)@torch.randn(mr,nr)  
+  
+# ------------------------------------  
+# 随机初始化输入数据x  
+# ------------------------------------  
+x = torch.randn(n)  
+  
+# ------------------------------------  
+# 计算Wx  
+# ------------------------------------  
+y = W@x  
+print(&quot;原始权重W计算出的y值为:\n&quot;, y)  
+  
+# ------------------------------------  
+# 计算W的秩  
+# ------------------------------------  
+r= np.linalg.matrix_rank(W)  
+print(&quot;W的秩为: &quot;, r)  
+  
+# ------------------------------------  
+# 对W做SVD分解  
+# ------------------------------------  
+U, S, V = torch.svd(W)  
+  
+# ------------------------------------  
+# 根据SVD分解结果，  
+# 计算低秩矩阵A和B  
+# ------------------------------------  
+U_r = U[:, :r]  
+S_r = torch.diag(S[:r])  
+V_r = V[:,:r].t()  
+  
+B = U_r@S_r # shape = (d, r)  
+A = V_r     # shape = (r, d)  
+  
+# ------------------------------------  
+# 计算y_prime = BAx  
+# ------------------------------------  
+y_prime = B@A@x  
+  
+print(&quot;SVD分解W后计算出的y值为:\n&quot;, y)  
+  
+print(&quot;原始权重W的参数量为: &quot;, W.shape[0]*W.shape[1])  
+print(&quot;低秩适配后权重B和A的参数量为: &quot;, A.shape[0]*A.shape[1] + B.shape[0]*B.shape[1])  
+</code></pre>
+<p>输出结果为：</p>
+<pre><code>原始权重W计算出的y值为:  
+ tensor([ 3.3896,  1.0296,  1.5606, -2.3891, -0.4213, -2.4668, -4.4379, -0.0375,  
+        -3.2790, -2.9361])  
+W的秩为:  2  
+SVD分解W后计算出的y值为:  
+ tensor([ 3.3896,  1.0296,  1.5606, -2.3891, -0.4213, -2.4668, -4.4379, -0.0375,  
+        -3.2790, -2.9361])  
+原始权重W的参数量为:  100  
+低秩适配后权重B和A的参数量为:  40  
+</code></pre>
+<p><strong>参数量变少了，但并不影响最终输出的结果</strong> 。通过这个例子，大家是不是能更好体会到低秩矩阵的作用了呢～</p>
+<h4 id="43-lora低秩适配">4.3 LoRA低秩适配</h4>
+<p>好，那既然SVD分解这么有效，那我直接对做SVD，找到对应的低秩矩阵，不就大功告成了吗？</p>
+<p><strong>想法虽然好，但困难是明显的：能直接做SVD的前提是****是确定的</strong> ，而现实中作为全参数微调中的权重增量，如果你不全参数微调一遍，又怎么能知道长什么样呢？而如果你做了全量微调，那还要低秩适配做什么呢？</p>
+<p>欸，你可能又想：那我能不能对预训练权重做SVD呢，因为是确定的呀。</p>
+<p><strong>想法虽然好，但逻辑是不合理的：我们说过，微调的目的是给模型注入和下游任务相关的领域新知识</strong> 。也就是说，和<strong>的表达含义是不同的，前者是新知识，后者是旧知识</strong> ，我们的目的是要去新知识中拆解信息量丰富的维度。</p>
+<p>好，<strong>那既然通过数学方法直接做SVD行不通，那就让模型自己去学怎么做SVD吧</strong> ！因此LoRA最终的低秩适配策略是：我把秩当成一个超参，再让模型自己去学低秩矩阵，这不就简单又省事吗！</p>
+<p>行，到这里我们已经具象化地了解了LoRA低秩适配的原理了，也知道和所表达含义的差异了，<strong>现在，我们可以来看前文遗留的问题：超参****是什么意思？</strong></p>
+<h4 id="44-超参">4.4 超参</h4>
+<p>我们先来看论文对的解释：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfNRBp1zBHDGauEcAL0BA4ic9cBVfHvvZJPJqPpbkdBkdmrMUS6Hicmpyg/640?wx_fmt=png" alt=""></p>
+<p>这段话大致意思是说，在我们采用Adam做优化器时，调整的作用就相当于调整learning rate。一般而言，我们把设置为我们第一次做实验时设置的，然后就把固定下来，之后只调整即可，这样做的好处是当我们尝试不同的时，我们不需要再去调整别的超参了。</p>
+<p>不知道大家第一次读到这段话是什么感受，反正我是没有读懂。google搜了一遍，也没找到具体的解释。直到我按顺序捋了一遍LoRA低秩适配的设计思想后，我好像领悟了一些，下面我来谈谈我的个人见解。</p>
+<p>首先，回顾一下我们的输出计算方法为：</p>
+<p>其中，表示预训练权重（旧知识），表示增量权重的近似（新知识）。<strong>理论上说，当<strong><strong>较小时，我们提取的是</strong></strong>中信息含量最丰富的维度，此时信息精炼，但不全面；当<strong><strong>较大时，我们的低秩近似越逼近</strong></strong>，此时信息更加全面，但带来的噪声也越多（含有很多冗余无效的信息）。</strong></p>
+<p>基于这个猜想，当我们第一次做实验时，我们会尽量把调得大些，例如32、64，并假设在这个秩下，低秩权重已经非常近似了，因此这时我们设置，意味着我们假定LoRA低秩微调的效果和全参数微调持平。</p>
+<p>那么接下来，我们肯定就要往小的进行尝试了。这时我们把固定住，意味着随着的减小，会越来越大，我们这样做的原因是：</p>
+<p><em><strong>当</strong></em><em>越小时，低秩矩阵表示的信息精炼，但不全面。我们通过调大</em>***，来放大forward过程中新知识对模型的影响。**</p>
+<p><em><strong>当</strong></em><em>越小时，低秩矩阵表示的信息精炼，噪声/冗余信息少，此时梯度下降的方向也更加确信，所以我们可以通过调大</em>***，适当增加梯度下降的步伐，也就相当于调整learning rate了。**</p>
+<p>好，到这里，我们已经一起学完了LoRA低秩适配的核心思想了。我们前面说过，因为无法用SVD做直接分解，所以作者寄希望于LoRA能**“学习”** 到真正的低秩分解矩阵，但是怎么证明LoRA学到的东西就和SVD分解出来的东西有关系呢？接下来，我们一起来解读作者的实验。</p>
+<h4 id="五lora实验验证低秩矩阵的有效性">五、LoRA实验：验证低秩矩阵的有效性</h4>
+<h4 id="51-整体效果">5.1 整体效果</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfaPSAypR1dAMnYTupL7GQ2icQmDQIaNficqrQd0GdPmal5HZUjZ1ibZbjg/640?wx_fmt=png" alt=""></p>
+<p>首先，作者将LoRA和其余微调方法（全参数微调，Adatper Tuning等）做了比较。纵列表示不同的微调模型，横列表示不同的数据集，加粗部分表示最好的效果指标。可以发现，无论是在各个数据集微调准确率指标上，还是在最后平均微调准确率指标上（Avg.），LoRA都取得了不错的表现，而且它可训练的参数量也非常小。</p>
+<h4 id="52-低秩矩阵信息量验证">5.2 低秩矩阵信息量验证</h4>
+<p>我们前面说过，当越小时，低秩矩阵所含的信息越精炼，但同时也可能越不全面。那么到底要取多少才合适呢？</p>
+<h4 id="521-直接验证不同r值下的微调效果">5.2.1 直接验证不同r值下的微调效果</h4>
+<p>尽管理论上我们可以在模型的任意一层嵌入低秩适配器（比如Embedding， Attention，MLP等），但LoRA中只选咋在Attention层嵌入，并做了相关实验（论文中也鼓励读者可以多做别的尝试），我们来看下Attention层的实验效果：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfD0sZO8weIYibPl2MOf1icy96wbq1J9XXOibibjgP6quOCX6y7cEr18XyTw/640?wx_fmt=png" alt=""></p>
+<p>WikiSQL
+和MultiNLI
+是用于微调的数据集，Weight Type指明在Attention的哪一部分做了低秩适配。可以发现，于的效果几乎持平，甚至还略优于。这更加说明了“低秩”的有效性。<strong>为了更具象化地验证这一点，我们进一步来看<strong><strong>和</strong></strong>这两个低秩空间的相交程度。</strong></p>
+<h4 id="522-不同低秩空间的相交程度">5.2.2 不同低秩空间的相交程度</h4>
+<p>假设和分别是在和下训练出来的低秩矩阵，我们现在想做这么一件事：</p>
+<ul>
+<li>
+<p>从中取出个信息最丰富的维度（其中）</p>
+</li>
+<li>
+<p>从中取出个信息最丰富的维度（其中）</p>
+</li>
+<li>
+<p>计算这个维度和个维度的相交程度，以此来确定两个低秩矩阵间信息的重合度</p>
+</li>
+</ul>
+<p><strong>欸那我怎么找出top个信息最丰富的维度呢？别忘了，我们有SVD方法</strong> ，且这回和都是确定的了。所以，我们可以对低秩矩阵，再做SVD分解，然后分别得到这两者的右奇异矩阵（也就是前文说的），但LoRA论文里，用来表示右奇异矩阵，那么我们也入乡随俗把，令：</p>
+<ul>
+<li>
+<p>表示的右奇异矩阵，表示该右奇异矩阵信息量最丰富的个维度（复习一下前文，根据判断信息含量）</p>
+</li>
+<li>
+<p>表示的右奇异矩阵，表示该右奇异矩阵信息量最丰富的个维度。</p>
+</li>
+</ul>
+<p>好，明确了这些定义后，我们可以来看的个特征维度，与的个特征维度的相交程度计算了，这个相交指标也被称为&quot;<strong>Grassmann distance</strong> &ldquo;。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfxqicvWAxPIonh5GMY0wEhn62YuTJYJQjTrszkGs2bV4NEUQR97F35jA/640?wx_fmt=png" alt=""></p>
+<p>从上式可知，相交程度（Grassmann distance）位于之间，该值越大，表示相应的两个子空间越相似。感兴趣的朋友，可以参考论文附录G部分的相关证明。我们这里只关注结论。</p>
+<p>好，把这个指标计算完了，那就可视化一波呗，所以作者继续给出了如下四张图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfSJOBPVfENe4IW4lD6DY3cM8NkbqG9azb53Q8zK5RopHUglTOcr7Slw/640?wx_fmt=png" alt=""></p>
+<p>不知道你们第一次看到这张图是什么感觉，反正我是没看懂（欸这话怎么感觉在哪听过一次）。所以以下又是我（不负责任）的解读。</p>
+<p>首先，作者是在上都做了低秩分解，所以1、3图和2、4图分别为一组，我们就选1、3图来看吧。</p>
+<p>其次，<strong>作者做这个实验的目的，其实是想看高秩空间中到底包含了多少低秩空间的信息，这样才能解释为什么<strong><strong>和</strong></strong>的效果基本持平</strong> 。</p>
+<p>所以作者在计算Grassmann distance和绘制图表时的逻辑是：</p>
+<ul>
+<li>
+<p>对，当时，我想和的进行相似度计算，这样我就能知道，中最丰富的那1维信息，究竟包含了多少在的中。</p>
+</li>
+<li>
+<p>对，当时，我想和的进行相似度计算，这样我就能知道，中最丰富的那2维信息，究竟包含了多少在的中。</p>
+</li>
+<li>
+<p>以此类推，因为我想验证的是大秩空间()对小秩空间()的包含程度，所以时，我只绘制的部分，其余部分不绘制。所以才有了图1中，左下角的那一片空白。</p>
+</li>
+<li>
+<p>那的部分，也就是小秩空间对大秩空间中top维度的包含程度，虽然我没绘制在图1里，但我可以单独拿出来绘制在图3中。所以图3其实是图1左下角缺失部分的填充。</p>
+</li>
+</ul>
+<p>好，解释完这一点，我们再具体来看图例。<strong>颜色越浅，表示相似度越高</strong> 。在图1中，我们不难发现这一行的颜色是最浅的，随着的增加，颜色逐渐变深。这说明小秩空间中，信息量越高的那几维特征，和大秩空间的相交度越高，因此它们也是小秩空间表现能持平大秩空间的主要原因，<strong>这也更加论证了作者所说的“低秩”的有效性。</strong></p>
+<p>看到这个图表结论，你可能有一个疑惑：不是说取的是信息最丰富的8个维度，而取的是信息最丰富的64个维度吗？那么它们的前8个维度应该是一样的啊！所以随着的增加，空间重合度不是应该越来越大吗？怎么是图表的结果是越来越小呢？</p>
+<p>这是因为“取的是信息最丰富的8个维度，而取的是信息最丰富的64个维度”这个现象，是我们的理想，而当模型真正学出来时却不是这样。<strong>模型会尽可能往信息最丰富的维度学，但不能保证<strong><strong>取多少，最终学出来的一定就是客观存在的</strong></strong>的top r，只能说当r取的比较小时，模型更有可能贴近真正的top r；当r取比较大时，模型学出的是部分有价值的信息和一些噪声，而这个实验则刚好论证了这一点。</strong></p>
+<p>如果理解了这一点，接下来我们可以更好来解读下一个实验了：<strong>模型不同的层，它们的r要如何设置呢？</strong></p>
+<h4 id="523-不同层的r值设置">5.2.3 不同层的r值设置</h4>
+<p>前面我们看到，**LoRA作用在了<strong><strong>和</strong></strong>上，那么对于这两个不同的矩阵，**<strong>值设置上是否也有不同的讲究呢？</strong></p>
+<p>为了解答这一点，作者又设计了一个实验：对三个矩阵，每个矩阵分别设置两组不同的随机种子，跑出两组不同的低秩矩阵，计算这两组低秩矩阵的Grassmann distance，结果如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfyI0tRA5mCGscM2pIzeOSz5PAaGNVicha0K4iaYLVdWbAnuOZuul2tPpA/640?wx_fmt=png" alt=""></p>
+<p>按我们之前说明的，两组并不是完美学出客观存在的的top 64维最丰富的信息，而是“部分有效的信息+一些噪声”，基于此我们不难想到：两组都能学到的信息，大概率就是有用的信息了。所以我们对这两组也做了相似度的计算，从左图中可以看出，的top 10的颜色最浅，在这以内的，可能就是较为有效的信息了。根据这样的分析结果，我们也能对模型的不同部分采用不同的秩。</p>
+<h4 id="524-预训练权重-vs-微调权重">5.2.4 预训练权重 VS 微调权重</h4>
+<p>之前我们说过，<strong>预训练权重<strong><strong>是旧知识，微调权重</strong></strong>是新知识。所以正常来说，<strong><strong>中应该会有一些</strong></strong>没有关注到的部分。所以，我们也有必要论证我们训出的低秩矩阵是不是符合了这一点。</strong> 作者设计的实验结果如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO0UHFbnHuWAyYJPXSiaaBYfMlh4z3dibLTFWccwMURHgOWgsGUVVFoBbcm66TD46J0iaBFbMoBpglmw/640?wx_fmt=png" alt=""></p>
+<p>其中表示训练出来的用低秩矩阵近似的结果，不是前文所说的客观存在。</p>
+<p>我们来解读一下这个实验：</p>
+<ul>
+<li>
+<p>首先看表格的最下行，分别对预训练权重，增量权重计算范数，<strong>我们可以将这个指标粗略地理解为****中蕴含的全量信息量。</strong></p>
+</li>
+<li>
+<p>接下来，我们求指标，这里我们共有6组值：前3个来自时，矩阵的奇异值分解结果，后三个以此类推。<strong>因此<strong><strong>表示：把预训练权重</strong></strong>分别投影到<strong><strong>这三者的低秩近似特征空间中去，去计算投影过后</strong></strong>在对应特征空间的信息量。</strong> 如果和对应特征空间越相似，则值越大。</p>
+</li>
+</ul>
+<p>光看概念是不是有些迷糊，那我们来找个具体指标解读一下吧：</p>
+<ul>
+<li>
+<p>首先来看61.95和21.67这一组。61.95表示预训练权重本身具有的信息量，21.67表示把投影到自己的低秩空间后的信息量（投影到低秩空间必然会产生信息损失）。</p>
+</li>
+<li>
+<p>再来看0.32和0.02这一组。0.32表示预训练权重投影到增量权重的的低秩空间后的信息量，0.02同理类推。可以看出，含义新知识的增量权重与随机权重相比，和预训练权重还是有一定相关性的。</p>
+</li>
+<li>
+<p>最后，我们再来看6.91和0.32。预训练权重投影到增量权重的低秩空间后，信息量从61.95降为0.32，<strong>说明预训练权重（旧知识）和增量权重（新知识）的分布间还是存在显著差异的。</strong> 6.91表示增量权重本身的信息量。<strong>因此21.95 = 6.91/0.32这个值，恰好能表示增量权重对预训练权重中那些没有强调的信息的放大程度。</strong> 秩越小，放大程度越明显。</p>
+</li>
+</ul>
+<p>好！关于LoRA的原理介绍，我们就一起学习到这里了。大家可能发现这篇文章花了比较多的篇幅再实验介绍上，一方面通过实验，可以帮助我们更好理解低秩的含义和作用；另一方面，我个人觉得LoRA实验的结果不是很好读，所以想花些时间多钻研下。那么在下一篇中，我们再来解读下LoRA的代码实现吧！</p>
+<h4 id="六参考">六、参考</h4>
+<p>1、https://arxiv.org/pdf/2106.09685.pdf<br>
+2、https://github.com/microsoft/LoRA<br>
+3、https://medium.com/@Shrishml/lora-low-rank-adaptation-from-the-first-principle-7e1adec71541<br>
+4、https://blog.sciencenet.cn/blog-696950-699432.html<br>
+5、https://kexue.fm/archives/9590/comment-page-1</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>阅读至此了，分享、点赞、在看三选一吧🙏</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
