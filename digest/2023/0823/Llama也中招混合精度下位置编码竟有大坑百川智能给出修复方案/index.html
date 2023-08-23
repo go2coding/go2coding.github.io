@@ -1,0 +1,785 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>Llama也中招，混合精度下位置编码竟有大坑，百川智能给出修复方案 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">Llama也中招，混合精度下位置编码竟有大坑，百川智能给出修复方案</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 23, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vDIWrDXrZpcn9P7skfTZRiarzel6HLPDRbsLOBibkubKeITyWatiauCng/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 深度学习与NLP  来源： <a href="https://mp.weixin.qq.com/s/ALkM5cF-8JE8OFiYjvbslA">深度学习与NLP</a></p>
+<p>来源 | 机器之心 ID | almosthuman2014</p>
+<p>位置编码技术是一种能够让神经网络建模句子中 Token 位置信息的技术。在 Transformer 大行其道的时代，由于 Attention 结构无法建模每个 token 的位置信息，位置编码（Position embedding) 成为 Transformer 非常重要的一个组件。研究人员也提出了各种各样的位置编码方案来让网络建模位置信息，Rope 和 Alibi 是目前最被广泛采纳的两种位置编码方案。</p>
+<p>然而最近来自百川智能的研究发现，Rope 和 alibi 位置编码的主流实现在低精度（尤其是 bfloat16) 下存在位置编码碰撞的 bug, 这可能会影响模型的训练和推理。而且目前大部分主流开源模型的实现都存在该问题，连 llama 官方代码也中招了。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48XHskiaG74hJqBd6HgC6J4DcQJegupgRVoOMWAM2yTfwjzwVIy3Bn5Bg/640?wx_fmt=png" alt=""></p>
+<p><strong>还得从位置编码算法说起</strong></p>
+<p>为了弄清楚这个问题，得先从位置编码的算法原理说起，在 Transformer 结构中，所有 Attention Block 的输入都会先经过位置编码，再输入网络进行后续处理。纯粹的 Attention 结构是无法精确感知到每个 token 的位置信息的，而对于语言的很多任务来说，语句的顺序对语义信息的影响是非常大的，为了建模 token 之间的位置关系，Transfomer 原始论文中引入位置编码来建模位置信息。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48WEMbKKh7ricoslrGjAtfdc2IhrkDzInibgGZ6ibaibV1a0ECT7B8XxPNMA/640?wx_fmt=png" alt=""></p>
+<p>*图 1 - 施加 Positon Embedding 示意图。</p>
+<p>为了让模型更好地建模句子的位置信息，研究人员提出了多种位置编码方案，meta 开源的 llama [4] 模型采用了 Rope [5] 方案，使得 Rope 成为在开源社区被广泛采纳的一种位置编码方案。而 Alibi 编码因其良好的外推性也被广泛应用。</p>
+<p>了解低精度下的位置编码碰撞之前，先来回顾一下相关算法原理。</p>
+<p><strong>Sinusoidal 位置编码</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48PFQEPTB343geicSfibMarBVNgnLxVlWqGl7hnI3et8ibTK2PjMwOE8FrA/640?wx_fmt=png" alt=""></p>
+<p>这是 Transformer 原始论文中提出的位置编码方法。它通过使用不同频率的正弦和余弦函数来为每个位置产生一个独特的编码。选择三角函数来生成位置编码有两个良好的性质：</p>
+<p>1）编码相对位置信息，数学上可以证明 PE (pos+k) 可以被 PE (pos) 线性表示， 这意味着位置编码中蕴含了相对位置信息。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48pNatDb1J4QtynT1Z4Hiag0mDmcfBakGkyb6fwtV8ic871JNQZzcTbvhA/640?wx_fmt=png" alt=""></p>
+<p><em>图 2- 句子长度为 50 的位置编码，编码维度 128，每行代表一个 Position Embedding。</em></p>
+<p>2）远程衰减：不同位置的 position encoding 点乘结果会随着相对位置的增加而递减 [1]。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48ItxBkfomkYlH30EfaQCULmCKPT01VG1C05zhP66pfw9L6ic4YbSfV6A/640?wx_fmt=png" alt=""></p>
+<p><em>图 3 - 不同位置的位置编码点积可视化。</em></p>
+<p><strong>Rope</strong></p>
+<p>Rope 是目前开源社区应用最广泛的一种位置编码方案， 通过绝对位置编码的方式实现相对位置编码，在引入相对位置信息的同时保持了绝对位置编码的优势（不需要像相对位置编码一样去操作 attention matrix)。令 f_q, f_k 为 位置编码的函数，m 表示位置，x_m 表示该位置 token 对应的 embedding，我们希望经过位置编码后的 embedding 点积仅和相对位置有关，则可以有公式：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48g6Uya6JM9lfiaR94vHtibv7j55I0kOPFibJzFlyEiaS7dic1HicFcW3hpJHQ/640?wx_fmt=png" alt=""></p>
+<p>上面公式中 g 是某个函数，表示内积的结果只和 x_m 和 x_n 的值，以及二者位置的相对关系 (m-n) 有关在 2 维的情况下可以推导出（详细推导过程可参考原论文）：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48caKawvYXqReD4pmQpdRfpA4WnKibpC4yaZRLMica5JvK5EA0L0k35rBA/640?wx_fmt=png" alt=""></p>
+<p>因为矩阵乘法线性累加的性质，可以拓展到多维的情况可得：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu487iaH8mm6g1xpBP4XkD3L6mbeSUrT8bhHUj0FAciacDFUfEHPmcKyCCJw/640?wx_fmt=png" alt=""></p>
+<p>为了引入远程衰减的特性，Rope 中 \theta 的选取选择了 Transformer 原始论文中 sinusoidal 公式。</p>
+<p><strong>Alibi</strong></p>
+<p>Alibi 是谷歌发表在 ICLR2022 的一篇工作，Alibi 主要解决了位置编码外推效果差的痛点，算法思想非常的简单，而且非常直观。与直接加在 embedding 上的绝对位置编码不同，Alibi 的思想是在 attention matrix 上施加一个与距离成正比的惩罚偏置，惩罚偏置随着相对距离的增加而增加。在具体实现时，对于每个 head 会有一个超参 m 来控制惩罚偏置随着相对距离增加的幅度（斜率）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48YGXtobCe35xeaxGBHaPktYEG8dMCuqsdoiaSvyhP7eeTfRFUcAaQQ6Q/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vynUYzr34YZEGicngHf7BktLhp3HSuCJqMQq8sBRCVbkW4Jib3v8TUGw/640?wx_fmt=png" alt=""></p>
+<p><em>图 4 - Alibi attention bias 示意图</em></p>
+<p>论文结果显示 Alibi 极大的提升了模型的外推性能，16k token 的输入依然可以很好的支持。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48JDCJ9FLZnYoBN1liabibsAyvn0XFqOZnnTG0ne6VGJiaI4vSxFLibDdtbw/640?wx_fmt=png" alt=""></p>
+<p><em>图 5 - Alibi 外推效果对比。</em></p>
+<p><strong>混合精度下位置编码的 bug</strong></p>
+<p>从上面的算法原理中，不管是 rope 的 cos (m\theta) 还是 alibi 的 i-1（m, i 代表 postion id), 需要为每个位置生成一个整型的 position_id, 在上下文窗口比较大的时候，百川智能发现目前主流的位置编码实现在混合精度下都存在因为低精度（float16/bfloat16) 浮点数表示精度不足导致位置编码碰撞的问题。尤其当模型训练（推理）时上下文长度越来越长，低精度表示带来的位置编码碰撞问题越来越严重，进而影响模型的效果，下面以 bfloat16 为例来说明这个 bug。</p>
+<p><strong>浮点数表示精度</strong></p>
+<p>浮点数在计算机中表示由符号位（sign)，指数位 (exponent)，尾数位 (fraction) 三部分组成，对于一个常规的数值表示，可以由如下公式来计算其代表的数值（其中 offset 是指数位的偏置）：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu4894Q1pZEVKNQl0JsuK0OlLLDBdeFOlgmpiaf17IEmcOU2A0JdiaicbmCgA/640?wx_fmt=png" alt=""></p>
+<p>由公式可知，尾数位的长度决定了浮点数的表示精度。深度学习中常用的 float32/float16/bfloat16 内存中的表示分别如下图所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vDIWrDXrZpcn9P7skfTZRiarzel6HLPDRbsLOBibkubKeITyWatiauCng/640?wx_fmt=png" alt=""></p>
+<p><em>图 6- bfloat16 的表示格式</em></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48HgXAYeyonPQa0LoRibYsKc9LOZCDTrzYx1ibib85Ric6Kwqs424JLGM8xQ/640?wx_fmt=png" alt=""></p>
+<p><em>图 7- float16 的表示格式</em></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48hoFEHnmYoCiaZNDCvMPzvRVWISTqNLIIWUxpVTGzR0QYdynZjXJsib3A/640?wx_fmt=png" alt=""></p>
+<p>*图 8- float32 的表示格式</p>
+<p>可以看到 float16 和 bfloat16 相比于 float32 都牺牲了表示的精度，后续以 bfloat16 为例说明位置编码中存在的问题（float16 同理）。下表展示了 bfloat16 在不同数值范围（只截取整数部分）内的表示精度。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48EichTtZzEIia3DXibGBHlAGWAFnLOKHFkia5djRiaclGfwgqzJLTrqq1TCw/640?wx_fmt=png" alt=""></p>
+<p>可以看到当整数范围超过 256， bfloat16 就无法精确表示每一个整数，可以用代码验证一下表示精度带来的问题。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48edVo89NJ8IIyxQWx813zt3ibCMQudTRK1VOvoFjWeU2AEI3LwESsDYg/640?wx_fmt=png" alt=""></p>
+<p><strong>Rope&amp; Alibi 编码的问题</strong></p>
+<p>Meta 开源的 llama 模型采用了 Rope 的位置编码方式， 官方的实现（以及大部分的第三方 llama 系列模型）在 bfloat16 下存在精度问题带来的位置编码碰撞（不同位置的 token 在 bfloat16 下变成同一个数）。Llama 官方代码如下：</p>
+<pre><code>Python  
+class LlamaRotaryEmbedding(torch.nn.Module):  
+    def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None):  
+        super().__init__()  
+  
+        self.dim = dim  
+        self.max_position_embeddings = max_position_embeddings  
+        self.base = base  
+        inv_freq = 1.0 / (self.base ** (torch.arange(0, self.dim, 2).float().to(device) / self.dim))  
+        self.register_buffer(&quot;inv_freq&quot;, inv_freq, persistent=False)  
+  
+        # Build here to make `torch.jit.trace` work.  
+        self._set_cos_sin_cache(  
+            seq_len=max_position_embeddings, device=self.inv_freq.device, dtype=torch.get_default_dtype()  
+        )  
+  
+    def _set_cos_sin_cache(self, seq_len, device, dtype):  
+        self.max_seq_len_cached = seq_len  
+        t = torch.arange(self.max_seq_len_cached, device=device, dtype=self.inv_freq.dtype)  
+  
+        freqs = torch.einsum(&quot;i,j-&gt;ij&quot;, t, self.inv_freq)  
+        # Different from paper, but it uses a different permutation in order to obtain the same calculation  
+        emb = torch.cat((freqs, freqs), dim=-1)  
+        self.register_buffer(&quot;cos_cached&quot;, emb.cos()[None, None, :, :].to(dtype), persistent=False)  
+        self.register_buffer(&quot;sin_cached&quot;, emb.sin()[None, None, :, :].to(dtype), persistent=False)  
+  
+    def forward(self, x, seq_len=None):  
+        # x: [bs, num_attention_heads, seq_len, head_size]  
+        if seq_len &gt; self.max_seq_len_cached:  
+            self._set_cos_sin_cache(seq_len=seq_len, device=x.device, dtype=x.dtype)  
+  
+        return (  
+            self.cos_cached[:, :, :seq_len, ...].to(dtype=x.dtype),  
+            self.sin_cached[:, :, :seq_len, ...].to(dtype=x.dtype),  
+        )  
+</code></pre>
+<p>上面第 18 行核心一句根据输入序列长度生成每个位置的 positon idx 在 bfloat16 下产生位置碰撞。</p>
+<pre><code>Python  
+# self.inv_freq.dtype == torch.bfloat16 when bfloat16 is enabled during training  
+t = torch.arange(self.max_seq_len_cached, device=device, dtype=self.inv_freq.dtype)  
+</code></pre>
+<p>在实际训练时如果开了 bfloat16, self.inv_freq 的 dtype 会被转为 bfloat16, 可以通过简单的代码来看一下位置碰撞的问题。</p>
+<pre><code>Python  
+t = torch.arange(4096, dtype=torch.float32)  
+plt.scatter(t[-100:], t[-100:].to(torch.bfloat16).float(),s=0.8)  
+plt.xlabel('position in float32')  
+plt.ylabel('position in bfloat16'  
+</code></pre>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48qQ2BD0v9ibvdZrosayEYPd8hAgIcAxJiawJcXWeWRvFl9FfP6fiawb84A/640?wx_fmt=png" alt=""></p>
+<p>根据 bfloa16 的表示精度可知，训练（推理）时上下文长度越长，位置编码碰撞的情况越严重，长度为 8192 的上下文推理中，仅有大约 10% 的 token 位置编码是精确的，好在位置编码碰撞有局域性的特质，只有若干个相邻的 token 才会共享同一个 position Embedding, 在更大的尺度上，不同位置的 token 还是有一定的区分性。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu484xP8dnY8aoCRibWOMDHCJ41zueg1XEZpL1rt2dfXxtuibSdS4h8UuU8w/640?wx_fmt=png" alt=""></p>
+<p><em>图 10- 不同上下文窗口下位置编码精确 token 所占比例。</em></p>
+<p>除了 llama 模型，百川智能发现 alibi 位置编码也存在上述问题，原因依然在于生成整数的位置索引时会在低精度下产生碰撞问题。</p>
+<p><strong>修复方案</strong></p>
+<p><strong>Rope 修复</strong></p>
+<p>Rope 的修复相对简单，只需要保证在生成 position_id 的时候一定在 float32 的精度上即可。注意：</p>
+<p>float32 的 tensor register_buffer 后在训练时如果开启了 bfloat16, 也会被转为 bfloat16。</p>
+<pre><code>Python  
+class LlamaRotaryEmbedding(torch.nn.Module):  
+    def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None):  
+        super().__init__()  
+  
+        self.dim = dim  
+        self.max_position_embeddings = max_position_embeddings  
+        self.base = base  
+        self.inv_freq = 1.0 / (self.base ** (torch.arange(0, self.dim, 2).float().to(device) / self.dim))  
+  
+        # Build here to make `torch.jit.trace` work.  
+        self._set_cos_sin_cache(  
+            seq_len=max_position_embeddings, device=self.inv_freq.device, dtype=torch.get_default_dtype()  
+        )  
+  
+    def _set_cos_sin_cache(self, seq_len):  
+        self.max_seq_len_cached = seq_len  
+        t = torch.arange(self.max_seq_len_cached, device=self.inv_freq.device, dtype=torch.float32)  
+  
+        freqs = torch.outer(t, self.inv_freq)  
+        # Different from paper, but it uses a different permutation in order to obtain the same calculation  
+        emb = torch.cat((freqs, freqs), dim=-1)  
+        self.register_buffer(&quot;cos_cached&quot;, emb.cos()[None, None, :, :], persistent=False)  
+        self.register_buffer(&quot;sin_cached&quot;, emb.sin()[None, None, :, :], persistent=False)  
+  
+    def forward(self, x, seq_len=None):  
+        # x: [bs, num_attention_heads, seq_len, head_size]  
+        if seq_len &gt; self.max_seq_len_cached:  
+            self._set_cos_sin_cache(seq_len=seq_len, device=x.device, dtype=x.dtype)  
+  
+        return (  
+            self.cos_cached[:, :, :seq_len, ...].to(dtype=x.dtype),  
+            self.sin_cached[:, :, :seq_len, ...].to(dtype=x.dtype),  
+        )  
+</code></pre>
+<p><strong>Alibi 修复</strong></p>
+<ul>
+<li>
+<p>alibi 位置编码修复思路和 Rope 的修复思路一致，但因为 alibi 的 attention bias 直接加在 attention matrix 上面，如果按照上面的修复思路，attention matrix 的类型必须和 attention bias 一致，导致整个 attention 的计算都在 float32 类型上计算，这会极大的拖慢训练速度</p>
+</li>
+<li>
+<p>目前主流的 attention 加速方法 flashattention 不支持 attention bias 参数， 而 xformers 要求 attention bias 类型必须与 query.dtype 相同，因此像 rope 那样简单的将 attention bias 类型提升到 float32 将会极大的拖慢训练速度</p>
+</li>
+<li>
+<p>针对该问题百川智能提出了一种新的 alibi attention 方案， 整个 attention bias 依然在 bfloat16 类型上，类似于 sinusiodal 的远程衰减特质， 可以尽量保证临近 token 位置编码的精确性，对于相对距离过远的的 token 则可以容忍其产生一定的位置碰撞。原本的 alibi 实现则相反，相对距离越远的 token 表示越精确，相对距离越近的 token 则会碰撞</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vdJvmiak6dJI0b7licOj3YFvg5mlYocQOAunDTrAEUJLFTBcENiazW9sw/640?wx_fmt=png" alt=""></p>
+<p><em>图 11- 修复前后 alibi attention_bias 对照。</em></p>
+<p><strong>修复效果</strong></p>
+<p>百川智能仅在推理阶段对位置编码的精度问题进行修复【注：训练阶段可能也存在问题，取决于训练的具体配置和方法】，可以看到：</p>
+<p>a. 在长上下文的推理中，模型的 ppl 要显著优于修复前的 ppl</p>
+<p>b.Benchmark 上测试结果显示修复前后区别不大，可能是因为 benchmark 上测试文本长度有限，很少触发 Position embedding 的碰撞</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48APhcicWrXE2Gs8uJvL5y1UoLGCgshcJkwpPFXIuaNmhkwA6uMicb3jLQ/640?wx_fmt=png" alt=""></p>
+<p><em>Benchmark 对比</em></p>
+<p><strong>Perplexity</strong></p>
+<p>我们在通用的文本数据上对修改前后模型在中英文文本上的困惑度进行测试，效果如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48k8L6D3WtibkWu3CFgAgb6sEfKC87bPT8UMbg2JQ5EIDsukGvr1RngBA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48Lu3OQoraqkMxx4WS3kyytFYhrT7SWptqnKjSdMUbATXHXe6cCM7LkA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48JVhnOXWO4VIwJymdFeUWpGib8uyQr7bBBWL11dI3INseph5BuM8q14w/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48HcqRJ2Ribvic9ohsIoPibveTus1pd3SoicMcTRTwHibeJ0H8ric6dkjmDibicA/640?wx_fmt=png" alt=""></p>
+<p>[0] Dongxu Zhang, &amp; Dong Wang. (2015). Relation Classification via Recurrent Neural Network.</p>
+<p>[1] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, &amp; Illia Polosukhin. (2023). Attention Is All You Need.</p>
+<p>[2] Zihang Dai, Zhilin Yang, Yiming Yang, Jaime Carbonell, Quoc V. Le, &amp; Ruslan Salakhutdinov. (2019). Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context.</p>
+<p>[3] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, &amp; Peter J. Liu. (2020). Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer.</p>
+<p>[4] Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, &amp; Guillaume Lample. (2023). LLaMA: Open and Efficient Foundation Language Models.</p>
+<p>[5] Jianlin Su, Yu Lu, Shengfeng Pan, Ahmed Murtadha, Bo Wen, &amp; Yunfeng Liu. (2022). RoFormer: Enhanced Transformer with Rotary Position Embedding.</p>
+<p>[6] Ofir Press, Noah A. Smith, &amp; Mike Lewis. (2022). Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation.</p>
+<p>[7] Yutao Sun, Li Dong, Barun Patra, Shuming Ma, Shaohan Huang, Alon Benhaim, Vishrav Chaudhary, Xia Song, &amp; Furu Wei. (2022). A Length-Extrapolatable Transformer.</p>
+<p>[8] <a href="https://kazemnejad.com/blog/transformer_architecture_positional_encoding/">https://kazemnejad.com/blog/transformer_architecture_positional_encoding/</a></p>
+<p>[9] Shouyuan Chen, Sherman Wong, Liangjian Chen, &amp; Yuandong Tian. (2023). Extending Context Window of Large Language Models via Positional Interpolation.</p>
+<p>[10] <a href="https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_scaled_rope_allows_llama_models_to_have/">https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_scaled_rope_allows_llama_models_to_have/</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
