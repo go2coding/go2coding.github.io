@@ -1,0 +1,701 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>StableDiffusion基础：ControlNet之画风融合 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">StableDiffusion基础：ControlNet之画风融合</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              September 7, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAaYRmbEUMyJouib9VRBoMOQPQAFkWHlBxxWDiaQBbkTicKwuZ2ObIBJHww/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 萤火遛AI  来源： <a href="https://mp.weixin.qq.com/s/n1fJM_6oPbt2t7THoqXrSA">萤火遛AI</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAClENQrRb8fsEnXnqIcAghlhb1x2qkwRQ9eAOibicSlWZ2iaIvtXSm9hVw/640?wx_fmt=png" alt=""></p>
+<p>大家好，我是每天分享AI应用的萤火君！</p>
+<p>今天继续给大家分享 Stable Diffusiion 的基础能力：ControlNet 之画风融合。</p>
+<h4 id="基本介绍">基本介绍</h4>
+<p>首先我们来明确一个概念：什么是画风？</p>
+<p>我通过AI大模型获取了一个答案，自认为还比较容易理解：画风是指绘画的风格，包括作者对人物、布景等的绘画手法，线条处理，色彩、色调等其他方面的处理手法，以及动画创作者的作画风格等。</p>
+<p>本文用到的 ControlNet 类型是Shuffle，它的本意是洗牌、打散。Shuffle的预处理器会把图片中的元素扭曲组合，然后Shuffle模型会使用这些信息，结合其它SD控制参数一起生成图片。</p>
+<p>为了更直观的感受这个处理方法，我这里用Anything模型参考“蒙娜丽莎”生成了一张图片：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCA71ejSv4cekEIVpibsKAmeeDia1GNIUJHLRgBmf9J1EJOBUbXDc7xN7uw/640?wx_fmt=png" alt=""></p>
+<p>从上面这个例子，我们可以看到：生成图片参考了原图的色彩、色调和一些光影效果，以及部分元素（背景中高低起伏的地面），甚至人物的发型、姿势等特征，同时图片也受到大模型的很多约束，线条的处理，人物的面部、头发、服饰等都是Anything的二次元风格。</p>
+<p>绘制的图片既有参考图的部分风格，又有大模型的部分风格，两种风格出现在同一张图中，融合到了一起，所以我这里称之为画风融合。</p>
+<p>如果你感觉这个说法还是有点单薄，下面会有更多的示例。不过在此之前，我想先演示下 Shuffle 的用法，以便让大家能够更快地开始自己的创作。</p>
+<h4 id="使用方法">使用方法</h4>
+<p>对 ControlNet 缺乏概念的同学，还是要先去了解一些基础知识，参考这篇文章：<a href="http://mp.weixin.qq.com/s?__biz=MzkxNTUxNjU2OQ==&amp;mid=2247484198&amp;idx=1&amp;sn=7957b78f46239a7fdd40c3431d032495&amp;chksm=c15cbed0f62b37c66d758124a06a7b78d861c72c276469fca495c4b5f7fec48a92fa39bb9c25&amp;scene=21#wechat_redirect">Stable Diffusion基础：精准控制之ControlNet</a>。</p>
+<p>选择一个你喜欢的大模型，通过提示词描述你想要的画面，通过反向提示词做一些画面约束。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAZWIddjoPNPp22bIDy5ib9tcW2qYKqDXibuOmAmHw6hftEEcGAuU7MziaQ/640?wx_fmt=png" alt=""></p>
+<ul>
+<li>
+<p>随便选择一个采样器，这里选择一个比较新的 DPM++ 2M SDE Karras，速度和效果都比较好，采样步数在20-40。</p>
+</li>
+<li>
+<p>设置你想要生成图片的尺寸，数值越大生成越慢，一般不要超过1024；宽高比常见的有1:1、2:3、3:4、9:16等，宽高比过于悬殊，画面结构可能会崩坏，这里宽高采用了2:3的比例。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCA51s4q8NMduuhOiaQHCxI3x8wcAAOyvnFyII0xhKn69B9j7via9HJ1e7Q/640?wx_fmt=png" alt=""></p>
+<p>在ControlNet区域：</p>
+<ul>
+<li>
+<p>选择一个Unit，一般就是第一个；</p>
+</li>
+<li>
+<p>上传一张参考图片；</p>
+</li>
+<li>
+<p>勾选“启用”；勾选“完美匹配像素”，让预处理器自动识别参考图的分辨率；勾选“允许预览”，方便查看 Shuffle 预处理的结果。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAnxu4dtKLtyw7BcmX3xaRQs2JwyfEMAm3aib4ha0N3OtoWSegJkLC7gg/640?wx_fmt=png" alt=""></p>
+<ul>
+<li>
+<p>Control Type 这里勾选“Shuffle”；</p>
+</li>
+<li>
+<p>Shuffle的预处理器和模型都只有一种，勾选“Shuffle”后会自动加载；</p>
+</li>
+<li>
+<p>其它参数先使用默认值就可以。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAblpA65EXaoaL8PPQMTYic9skfAVDwAjI4U5iafTnmgPCHvogVClYrujg/640?wx_fmt=png" alt=""></p>
+<p>然后就可以去生成图片了。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAHTXYpib3nq46tibCOPkXhwlEoX2G9OCXILPqiaav8NmicicI6NBDvV40CYQ/640?wx_fmt=png" alt=""></p>
+<h4 id="绘图示例">绘图示例</h4>
+<p>下面是使用 Shuffle 绘制图片的一些示例。为了更全面地感受 Shuffle 的效果，我选择了多种风格的参考图，大模型使用了 AnythingV5 和 realisticVisionV51，它们分别是二次元模型和真实模型。</p>
+<p>下面3张图的顺序都是：参考图、AnythingV5、realisticVisionV51。</p>
+<p>如果你有兴趣，可以下载这些图片，然后在 Stable Diffusion WebUI 中查看图片生成参数，下载方法请查看文章最后部分。</p>
+<p>####<strong>赛博朋克</strong></p>
+<p>文生图，赛博朋克风格，Shuffle ControlNet。参考图中的光影效果深刻影响了生成的图片。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAN1NlDcxnN0nDA4Phrx2AOsU5pd4xxsfgiaFyqT454ibu5RPmJJahViapQ/640?wx_fmt=png" alt=""></p>
+<p>####<strong>古风仕女</strong></p>
+<p>文生图，女子，Shuffle ControlNet。除了色彩很像，看这两个小眼神，好像也受到了参考图的很大影响。在真实模型生成的图片中还出现了参考图中的一些花花草草。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCANTtPibwdr3Gg61dBfVlibw0uyYbeMicUdepL5juY7qlkE4HbmyLjN9FGA/640?wx_fmt=png" alt=""></p>
+<p>文生图，男子，Shuffle ControlNet。参考图是女子，也不影响生成男人。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAaYRmbEUMyJouib9VRBoMOQPQAFkWHlBxxWDiaQBbkTicKwuZ2ObIBJHww/640?wx_fmt=png" alt=""></p>
+<p>####<strong>水墨画</strong></p>
+<p>文生图，女孩，Shuffle ControlNet。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAYPZZglguq4Y4SgLdsFGTAZ7cWewJiatLndym0R0tLd0lcTxXGtxgmaw/640?wx_fmt=png" alt=""></p>
+<p>文生图，山水画，Shuffle ControlNet。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAx3EicaibxFJc0blSiaBB6nCnOjqiaq0RCUvwpE34ObBWWkiaUwQ4VIibb4eg/640?wx_fmt=png" alt=""></p>
+<p>####<strong>小说推文插画</strong></p>
+<p>文生图，女孩，Shuffle ControlNet。生成图片融合了一种很干净利索的感觉。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAgkGQkOuHYULKrf9kM1sJrgRaToUlyIK4a9WzRC4HicQ6PXlME4QHDow/640?wx_fmt=png" alt=""></p>
+<p>####<strong>工笔画风</strong></p>
+<p>文生图，女孩，Shuffle ControlNet。这个五颜六色的组合还挺搭的，没有庸俗感。</p>
+<p>地</p>
+<p>####<strong>蒙娜丽莎（图生图约束）</strong></p>
+<p>图生图，蒙娜丽莎，Shuffle ControlNet。</p>
+<p>使用图生图，较小的重绘幅度，约束画面的结构，但是色彩、色调都会使用参考图的。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAgPGtVzwfNvWaXxLiaaibHw8rOXNMm6KZkqMFcoicCG99ZSRkBuFxHBmzg/640?wx_fmt=png" alt=""></p>
+<p>####<strong>二次元（线稿约束）</strong></p>
+<p>文生图，女孩，Shuffle ControlNet + Lineart ControlNet。</p>
+<p>这里使用了 Lineart ControlNet 来约束画面，使得整体画面结构不变，只改变色彩和细节。</p>
+<p>Lineart的参考图片是下面这张：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAuVdVoUludkHXFV1mA9Ehq0gQbYp1VQvOibjJb5bXIjCL4lu6x9bpcFw/640?wx_fmt=png" alt=""></p>
+<p>下面这几张是添加 Shuffle 生成的图片：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCALUeHKmJdyfAPDdpkd9IuRukmeVNiaicGBVUKrjibt0jqjtzAzvKbZEibjA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAibWeBk8iamCpzPGAuumRYPpetIe7e6BWxibtLRktiadwwceDzhgYtibanmg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/NV6LbCSLRe1apcXibfuuLDbYQhpyApTCAA3loA2zbJibwT8iaKl3D5w6hp8wp4JFibTwdmxl7dorWicRMyn8oNAKibYw/640?wx_fmt=png" alt=""></p>
+<p>####<strong>总结</strong></p>
+<p>从出图示例我们可以看到，Shuffle 提供的画风融合能力主要在色彩、色调，以及参考图中部分元素和效果；生成图片的线条处理、人物的绘画手法还是主要由大模型来控制的。</p>
+<h4 id="资源下载">资源下载</h4>
+<p>本文使用的模型、插件，生成的图片，都已经上传到了我整理的SD绘画资源中，后续也会持续更新，如有需要，请关/注/公/众/号：萤火遛AI（yinghuo6ai），发消息：SD，即可获取下载地址。</p>
+<p>如果你还没有使用过Stable Diffusion WebUI，可以先看这几篇文章，了解下如何使用：</p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzkxNTUxNjU2OQ==&amp;mid=2247483860&amp;idx=1&amp;sn=fb71bbcbb2c0b8738ba9565ae2b5b0a1&amp;scene=21#wechat_redirect">手把手教你在本机安装Stable Diffusion秋叶整合包</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzkxNTUxNjU2OQ==&amp;mid=2247483929&amp;idx=1&amp;sn=bef0eba37d633184dd2747009094b6cd&amp;scene=21#wechat_redirect">手把手教你在云环境炼丹（部署Stable Diffusion WebUI）</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzkxNTUxNjU2OQ==&amp;mid=2247483996&amp;idx=1&amp;sn=fe33377344f03e3776e32f13f99e40fe&amp;scene=21#wechat_redirect">SDXL 1.0出图效果直逼Midjourney！手把手教你快速体验！</a></p>
+<h4 id="heading"></h4>
+<p>以上就是本文的主要内容了，如有问题，欢迎给我留言沟通交流。</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
