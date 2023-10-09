@@ -1,0 +1,777 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>时间序列预测方法汇总：从理论到实践（附Kaggle经典比赛方案） | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">时间序列预测方法汇总：从理论到实践（附Kaggle经典比赛方案）</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              October 9, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/jupejmznDCibZe42VhV7fwegAQdn7R1VD6ncGqCQ33fTbWCbkiaKhXxVibKs3MhhzSABiau7XwFaRje2xPTcIdS2Zg/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： Datawhale  来源： <a href="https://mp.weixin.qq.com/s/5VcYV5UlO_aVQIqzD7_kKQ">Datawhale</a></p>
+<p>Datawhale干货</p>
+<p><strong>编辑：于腾凯，校对：林亦霖</strong></p>
+<pre><code>来源：数据派THU**、** Python数据科学
+
+
+
+
+
+
+
+
+
+
+
+
+
+本文**约2300字** ，建议阅读**5****分钟** 
+
+本文分享一篇时间序列方法汇总的干货文章。
+</code></pre>
+<p>大家好，我是东哥。分享一篇时间序列方法汇总的干货文章，理论、实践全包括，附案例和实战链接。</p>
+<p>时间序列是我最喜欢研究的一种问题，这里我列一下时间序列最常用的方法，包括理论和实践两部分。理论部分大多是各路神仙原创的高赞解读，这里我就简单成呈现在这里，并附上链接。实践部分是质量较高的开源代码，方便大家快速上手。最后，附上一些 kaggle 比赛中比较经典的时序比赛的经典解法链接，供大家参考和学习。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/jupejmznDCibZe42VhV7fwegAQdn7R1VDib50X1XfC3RcdiatRuVwUiaZJLF9ahmYicWZzVxsss64HGgZ5icvOWgMCNQ/640?wx_fmt=png" alt=""></p>
+<p>时序问题都看成是回归问题，只是回归的方式（线性回归、树模型、深度学习等）有一定的区别。</p>
+<p>####<strong>传统时序建模</strong></p>
+<p>arima 模型是 arma 模型的升级版；arma 模型只能针对平稳数据进行建模，而 arima 模型需要先对数据进行差分，差分平稳后在进行建模。这两个模型能处理的问题还是比较简单，究其原因主要是以下两点：</p>
+<ul>
+<li>
+<p>arma/arima 模型归根到底还是简单的线性模型，能表征的问题复杂程度有限；</p>
+</li>
+<li>
+<p>arma 全名是自回归滑动平均模型，它只能支持对单变量历史数据的回归，处理不了多变量的情况。</p>
+</li>
+</ul>
+<p><strong>原理篇：</strong></p>
+<p><strong>写给你的金融时间序列分析：基础篇</strong></p>
+<p>重点介绍基本的金融时间序列知识和 arma 模型</p>
+<p><a href="https://zhuanlan.zhihu.com/p/38320827">https://zhuanlan.zhihu.com/p/38320827</a></p>
+<p><strong>金融时间序列入门【完结篇】 ARCH、GARCH</strong></p>
+<p>介绍更为高阶的 arch 和 garch 模型</p>
+<p><a href="https://zhuanlan.zhihu.com/p/21962996">https://zhuanlan.zhihu.com/p/21962996</a></p>
+<p><strong>实践篇：</strong></p>
+<p><strong>【时间序列分析】ARMA预测GDP的 python实现</strong></p>
+<p>arma 模型快速上手</p>
+<p><a href="https://zhuanlan.zhihu.com/p/54799648">https://zhuanlan.zhihu.com/p/54799648</a></p>
+<p><strong>machinelearningmastery.com</strong></p>
+<p>arch、garch模型快速建模</p>
+<p><a href="https://machinelearningmastery.com/develop-arch-and-garch-models-for-time-series-forecasting-in-python/">https://machinelearningmastery.com/develop-arch-and-garch-models-for-time-series-forecasting-in-python/</a></p>
+<p><strong>总结：</strong> 如果是处理单变量的预测问题，传统时序模型可以发挥较大的优势；但是如果问题或者变量过多，那么传统时序模型就显得力不从心了。</p>
+<p>####<strong>机器学习模型方法</strong></p>
+<p>这类方法以 lightgbm、xgboost 为代表，一般就是把时序问题转换为监督学习，通过特征工程和机器学习方法去预测；这种模型可以解决绝大多数的复杂的时序预测模型。支持复杂的数据建模，支持多变量协同回归，支持非线性问题。</p>
+<p>不过这种方法需要较为复杂的人工特征过程部分，特征工程需要一定的专业知识或者丰富的想象力。特征工程能力的高低往往决定了机器学习的上限，而机器学习方法只是尽可能的逼近这个上限。特征建立好之后，就可以直接套用树模型算法 lightgbm/xgboost，这两个模型是十分常见的快速成模方法，除此之外，他们还有以下特点：</p>
+<ul>
+<li>
+<p>计算速度快，模型精度高；</p>
+</li>
+<li>
+<p>缺失值不需要处理，比较方便；</p>
+</li>
+<li>
+<p>支持 category 变量；</p>
+</li>
+<li>
+<p>支持特征交叉。</p>
+</li>
+</ul>
+<p><strong>原理篇：</strong></p>
+<p><strong>提升树模型：Lightgbm 原理深入探究：</strong></p>
+<p>lightgbm 原理</p>
+<p><a href="https://blog.csdn.net/anshuai_aw1/article/details/83659932">https://blog.csdn.net/anshuai_aw1/article/details/83659932</a></p>
+<p><strong>xgboost 的原理没你想像的那么难：</strong></p>
+<p>xgboost 原理</p>
+<p><a href="https://www.jianshu.com/p/7467e616f227">https://www.jianshu.com/p/7467e616f227</a></p>
+<p><strong>实践篇：</strong></p>
+<p><strong>在 Python 中使用 Lightgbm：</strong></p>
+<p>lightgbm 模型实践</p>
+<p><a href="https://zhuanlan.zhihu.com/p/52583923">https://zhuanlan.zhihu.com/p/52583923</a></p>
+<p><strong>史上最详细的 XGBoost 实战：</strong></p>
+<p>xgboost 模型实践</p>
+<p><a href="https://zhuanlan.zhihu.com/p/31182879">https://zhuanlan.zhihu.com/p/31182879</a></p>
+<p><strong>总结：</strong> 通过一系列特征工程后，直接使用机器学习方法，可以解决大多数的复杂时序问题；不过这方法最大的缺点是特征工程可能会较为繁琐。</p>
+<p><strong>深度学习模型方法</strong></p>
+<p>这类方法以 LSTM/GRU、seq2seq、wavenet、1D-CNN、transformer为主。深度学习中的 LSTM/GRU 模型，就是专门为解决时间序列问题而设计的；但是 CNN 模型是本来解决图像问题的，但是经过演变和发展，也可以用来解决时间序列问题。总体来说，深度学习类模型主要有以下特点：</p>
+<ul>
+<li>
+<p>不能包括缺失值，必须要填充缺失值，否则会报错；</p>
+</li>
+<li>
+<p>支持特征交叉，如二阶交叉，高阶交叉等；</p>
+</li>
+<li>
+<p>需要 embedding 层处理 category 变量，可以直接学习到离散特征的语义变量，并表征其相对关系；</p>
+</li>
+<li>
+<p>数据量小的时候，模型效果不如树方法；但是数据量巨大的时候，神经网络会有更好的表现；</p>
+</li>
+<li>
+<p>神经网络模型支持在线训练。</p>
+</li>
+</ul>
+<p>实际上，基于实际预测问题，可以设计出各式各样的深度学习模型架构。假如我们预测的时序问题（如预测心跳频率），不仅仅只和统计类的数据有关，还和文本（如医师意见）以及图像（如心电图）等数据有关 ，我们就可以把 MLP、CNN、bert 等冗杂在一起，建立更强力的模型。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/jupejmznDCibZe42VhV7fwegAQdn7R1VDf41NYK95MllcEO5yibDQXZuoh8lt95xrklHKnHXEm4alIN05AelicSng/640?wx_fmt=jpeg&amp;tp=wxpic&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>图源：</p>
+<p><a href="https://www.kaggle.com/c/avito-demand-prediction/discussion/59880">https://www.kaggle.com/c/avito-demand-prediction/discussion/59880</a></p>
+<p><strong>理论篇：</strong></p>
+<p><strong>[干货] 深入浅出 LSTM 及其 Python 代码实现：</strong></p>
+<p>LSTM 原理</p>
+<p><a href="https://zhuanlan.zhihu.com/p/104475016">https://zhuanlan.zhihu.com/p/104475016</a></p>
+<p><strong>Seq2Seq 原理详解-早起的小虫子-博客园：</strong></p>
+<p>seq2seq 原理</p>
+<p><a href="https://www.cnblogs.com/liuxiaochong/p/14399416.html">https://www.cnblogs.com/liuxiaochong/p/14399416.html</a></p>
+<p><strong>Wavenet 原理与实现：</strong></p>
+<p>wavenet 原理</p>
+<p><a href="https://zhuanlan.zhihu.com/p/28849767">https://zhuanlan.zhihu.com/p/28849767</a></p>
+<p><strong>CNN 卷积神经网络如何处理一维时间序列数据：</strong></p>
+<p>1D-CNN 处理时序数据</p>
+<p><a href="https://www.ai8py.com/cnn-in-keras-for-time-sequences.html">https://www.ai8py.com/cnn-in-keras-for-time-sequences.html</a></p>
+<p><strong>Transformer for TimeSeries 时序预测算法详解：</strong></p>
+<p>transformer 时序预测</p>
+<p><a href="https://zhuanlan.zhihu.com/p/391337035">https://zhuanlan.zhihu.com/p/391337035</a></p>
+<p><strong>实践篇：</strong></p>
+<p><strong>seq2seq 模型的 python 实现-基于 seq2seq 模型的自然语言处理应用：</strong></p>
+<p>seq2seq 模型实现</p>
+<p><a href="https://dataxujing.github.io/seq2seqlearn/chapter3/">https://dataxujing.github.io/seq2seqlearn/chapter3/</a></p>
+<p><strong>machinelearningmastery.com：</strong></p>
+<p>LSTM 实践</p>
+<p><a href="https://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-pyth">https://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-pyth</a></p>
+<p><strong>Conv1d-WaveNet-Forecast Stock price：</strong></p>
+<p>wavenet 模型预测股票价格</p>
+<p><a href="https://www.kaggle.com/bhavinmoriya/conv1d-wavenet-forecast-stock-price">https://www.kaggle.com/bhavinmoriya/conv1d-wavenet-forecast-stock-price</a></p>
+<p><strong>towardsdatascience.com/：</strong></p>
+<p>transformer 时序预测数据</p>
+<p><a href="https://towardsdatascience.com/how-to-use-transformer-networks-to-build-a-forecasting-model-297f9270e630">https://towardsdatascience.com/how-to-use-transformer-networks-to-build-a-forecasting-model-297f9270e630</a></p>
+<p><strong>Keras documentation:</strong></p>
+<p>Timeseries classification with a Transformer model：transformer 处理时序数据分类</p>
+<p><a href="https://keras.io/examples/timeseries/timeseries_transformer_classification/">https://keras.io/examples/timeseries/timeseries_transformer_classification/</a></p>
+<p><strong>kaggle.com/fatmakursun/：</strong>****</p>
+<p>CNN 预测模型</p>
+<p><a href="https://www.kaggle.com/fatmakursun/predict-sales-time-series-with-cnn">https://www.kaggle.com/fatmakursun/predict-sales-time-series-with-cnn</a></p>
+<p><strong>总结：</strong> 深度学习模型可以解决基本上所有时序问题，而且模型可以自动学习特征工程，极大减少了人工；不过需要较高的模型架构能力。</p>
+<p>最后我再附上一些比较经典的数据挖掘比赛链接和解决方案，如果能够理解数据和代码，必会受益匪浅。如果大家对某个比赛解决方案十分感兴趣，我后续会详细解读。</p>
+<p><strong>1）网站流量预测：</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/jupejmznDCibZe42VhV7fwegAQdn7R1VDfAvrRGNK1eJq5CxJErOjouUGiaZ5UlfpklMLkicjrInebak5Dldcuoew/640?wx_fmt=png" alt=""></p>
+<p>RNN seq2seq 模型：</p>
+<p><a href="https://github.com/Arturus/kaggle-web-traffic">https://github.com/Arturus/kaggle-web-traffic</a></p>
+<p>xgboost 和 MLP 模型：</p>
+<p><a href="https://github.com/jfpuget/Kaggle/tree/master/WebTrafficPrediction">https://github.com/jfpuget/Kaggle/tree/master/WebTrafficPrediction</a></p>
+<p>kalman 滤波：</p>
+<p><a href="https://github.com/oseiskar/simdkalman">https://github.com/oseiskar/simdkalman</a></p>
+<p>CNN 模型：</p>
+<p><a href="https://github.com/sjvasquez/web-traffic-forecasting">https://github.com/sjvasquez/web-traffic-forecasting</a></p>
+<p><strong>2）餐厅客户量预测</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/jupejmznDCibZe42VhV7fwegAQdn7R1VD6ncGqCQ33fTbWCbkiaKhXxVibKs3MhhzSABiau7XwFaRje2xPTcIdS2Zg/640?wx_fmt=png" alt=""></p>
+<p>特征工程+lgb：</p>
+<p><a href="https://www.kaggle.com/plantsgo/solution-public-0-471-private-0-505">https://www.kaggle.com/plantsgo/solution-public-0-471-private-0-505</a></p>
+<p>特征工程+lgb：</p>
+<p><a href="https://www.kaggle.com/pureheart/1st-place-lgb-model-public-0-470-private-0-502">https://www.kaggle.com/pureheart/1st-place-lgb-model-public-0-470-private-0-502</a></p>
+<p><strong>3）开放通道预测</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/jupejmznDCibZe42VhV7fwegAQdn7R1VDPNtrtVIApvJnjxz49Bibj37Ak715CH69a60KfyRQ9Bsw12cLBhICerA/640?wx_fmt=png" alt=""></p>
+<p>wavenet 模型：</p>
+<p><a href="https://www.kaggle.com/vicensgaitan/2-wavenet-swa">https://www.kaggle.com/vicensgaitan/2-wavenet-swa</a></p>
+<p>1D-CNN 模型：</p>
+<p><a href="https://www.kaggle.com/kmat2019/u-net-1d-cnn-with-keras">https://www.kaggle.com/kmat2019/u-net-1d-cnn-with-keras</a></p>
+<p>seq2seq 模型：</p>
+<p><a href="https://www.kaggle.com/brandenkmurray/seq2seq-rnn-with-gru">https://www.kaggle.com/brandenkmurray/seq2seq-rnn-with-gru</a></p>
+<p><strong>4）肺压力预测</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/jupejmznDCibZe42VhV7fwegAQdn7R1VDAWpCPqZaUllSyrtDyXiba3X0NysKEQmJqfSiaNXcoCgsvB2FtvD1icXLg/640?wx_fmt=png" alt=""></p>
+<p>transformer 模型：</p>
+<p><a href="https://www.kaggle.com/cdeotte/tensorflow-transformer-0-112">https://www.kaggle.com/cdeotte/tensorflow-transformer-0-112</a></p>
+<p>双向 lstm 模型：</p>
+<p><a href="https://www.kaggle.com/tenffe/finetune-of-tensorflow-bidirectional-lstm">https://www.kaggle.com/tenffe/finetune-of-tensorflow-bidirectional-lstm</a></p>
+<p>时间序列问题博大精深，应用场景十分广泛。实际上许多预测问题都可以看做是时间序列问题，比如股票/期货/外汇价格预测，网站/餐馆/旅馆/交通流量预测，店铺商品库存/销量预测等等。掌握了时间序列预测方法，你可能就掌管一把洞见未来的钥匙。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/vI9nYe94fsGxu3P5YibTO899okS0X9WaLmQCtia4U8Eu1xWCz9t8Qtq9PH6T1bTcxibiaCIkGzAxpeRkRFYqibVmwSw/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>干货学习，<strong>点<strong><strong>赞</strong></strong>三连</strong> ↓</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
