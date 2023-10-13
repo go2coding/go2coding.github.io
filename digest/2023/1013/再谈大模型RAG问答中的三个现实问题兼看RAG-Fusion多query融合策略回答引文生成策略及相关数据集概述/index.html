@@ -1,0 +1,848 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>再谈大模型RAG问答中的三个现实问题：兼看RAG-Fusion多query融合策略、回答引文生成策略及相关数据集概述 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">再谈大模型RAG问答中的三个现实问题：兼看RAG-Fusion多query融合策略、回答引文生成策略及相关数据集概述</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              October 13, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGT6lr3Mg58Ameb16ZhEJiaeOjUaGmuhrufDQnqvJC8msp03ibLyFsJ1g/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/NFjn8pUsQaSx85nhBphORA">老刘说NLP</a></p>
+<p>今天是2023年10月8日，星期日，北京，天气晴，我们再来看看大模型在RAG行业问答落地中的一些观点和实践。</p>
+<p>实际上，在真实落地中，RAG存在几个比较突出的问题，我们社区对此也进行了不少讨论，总结了下，主要包括三个点：‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p><strong>第一，RAG进行应用权衡文档长度和返回文档数据的问题。</strong> 这个本质上是召回数据相关性的问题。而召回数据相关性的影响方面很多，既包括文档的切分，也包括文档query输入的清晰度，因此现在也出现了从多query、多召回策略以及排序修正等多个方案。针对这个问题，我们会来讲讲最近的一个方法，RAG-Fusion和RRF。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p><strong>第二，关于问答答案散落在多个文档以及多个文档内部段落里的问题，</strong> 这个问题的根在于，在有限的上下文窗口内，不同的答案很分散，不容易都放在窗口之内，因此需要将文本进行聚类（主题分割），尽可能地让有限的窗口下能塞满多个主题的内容。‍‍</p>
+<p>因此，我们会有很多思路，例如前面说到的泛化query来召回不同的答案点，又如，通过主题分割、检索文本主题聚类等方法进行处理。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p><strong>第三，引文生成的问题。</strong> 现有的RAG方案都是先召回一堆文档，然后让大模型根据文档进行作答，但其中更重要的是能够自动的生成引文角标，如下图所示。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJzzHicJ4LlxhR1W87Z6CUogOwOND5UaQz1p5wzyhOyVlOLzHrVXy083g/640?wx_fmt=png" alt=""></p>
+<p>我们之前在《引证生成让大模型问答结果更为可信：也看大型语言模型生成带引证的文本方法与评估基准ALCE》一文中，介绍了最近的工作《Enabling Large Language Models to Generate Text with Citations (使大型语言模型生成带引证的文本)》，里面提到的方案可供参考，可以通过in-context learning，也可以通过微调，让大模型自动生成引文。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p>但其中重要的问题是，数据并不好找，因此，针对这个问题，本文也进行介绍。‍‍‍‍‍‍‍‍‍‍‍</p>
+<p>本文主要针对以上三个问题的一些相关工作进行介绍，供大家一起参考。</p>
+<h4 id="一泛化query多召回排序策略提升意图相关性">一、泛化query多召回排序策略提升意图相关性</h4>
+<p>昨天看到一个分享，《使用RAG-Fusion和RRF让RAG在意图搜索方面更进一步》（https://mp.weixin.qq.com/s/N7HgjsqgCVf2i-xy05qZtA）介绍了《Forget RAG, the Future is RAG-Fusion》一文，（https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1），RAG-Fusion希望弥合用户明确提出的问题和他们（原本的意图）打算提出的问题之间的差距。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJ8TfD9rqicVbHhRtViaYp1ecQW2OyDpm0tfE5jicEveDZxicicBNeuoa3OCQ/640?wx_fmt=png" alt="">其思想在于通过生成多个用户查询和重新排序结果来解决RAG固有的约束；利用倒数排序融合（RRF）和自定义向量评分加权，生成全面准确的结果。 步骤很清晰，可以查看代码：</p>
+<pre><code># Predefined set of documents (usually these would be from your search database)  
+all_documents = {  
+    &quot;doc1&quot;: &quot;Climate change and economic impact.&quot;,  
+    &quot;doc2&quot;: &quot;Public health concerns due to climate change.&quot;,  
+    &quot;doc3&quot;: &quot;Climate change: A social perspective.&quot;,  
+    &quot;doc4&quot;: &quot;Technological solutions to climate change.&quot;,  
+    &quot;doc5&quot;: &quot;Policy changes needed to combat climate change.&quot;,  
+    &quot;doc6&quot;: &quot;Climate change and its impact on biodiversity.&quot;,  
+    &quot;doc7&quot;: &quot;Climate change: The science and models.&quot;,  
+    &quot;doc8&quot;: &quot;Global warming: A subset of climate change.&quot;,  
+    &quot;doc9&quot;: &quot;How climate change affects daily weather.&quot;,  
+    &quot;doc10&quot;: &quot;The history of climate change activism.&quot;  
+}  
+  
+# Main function  
+if __name__ == &quot;__main__&quot;:  
+    original_query = &quot;impact of climate change&quot;  
+    generated_queries = generate_queries_chatgpt(original_query)  
+    all_results = {}  
+    for query in generated_queries:  
+        search_results = vector_search(query, all_documents)  
+        all_results[query] = search_results  
+    reranked_results = reciprocal_rank_fusion(all_results)  
+    final_output = generate_output(reranked_results, generated_queries)  
+    print(final_output)  
+</code></pre>
+<p><strong>首先，通过LLM将用户的查询转换为相似但不同的查询，例如，如果最初的查询是关于“气候变化的影响”，生成的查询可能包括“气候变化的经济后果”、“气候变化和公共卫生”等角度。</strong></p>
+<pre><code># Function to generate queries using OpenAI's ChatGPT  
+def generate_queries_chatgpt(original_query):  
+  
+    response = openai.ChatCompletion.create(  
+        model=&quot;gpt-3.5-turbo&quot;,  
+        messages=[  
+            {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful assistant that generates multiple search queries based on a single input query.&quot;},  
+            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: f&quot;Generate multiple search queries related to: {original_query}&quot;},  
+            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;OUTPUT (4 queries):&quot;}  
+        ]  
+    )  
+  
+    generated_queries = response.choices[0][&quot;message&quot;][&quot;content&quot;].strip().split(&quot;\n&quot;)  
+    return generated_queries  
+</code></pre>
+<p>其次，对原始查询及其新生成的同级查询执行并发的向量搜索。</p>
+<pre><code># Mock function to simulate vector search, returning random scores  
+def vector_search(query, all_documents):  
+    available_docs = list(all_documents.keys())  
+    random.shuffle(available_docs)  
+    selected_docs = available_docs[:random.randint(2, 5)]  
+    scores = {doc: round(random.uniform(0.7, 0.9), 2) for doc in selected_docs}  
+    return {doc: score for doc, score in sorted(scores.items(), key=lambda x: x[1], reverse=True)}  
+</code></pre>
+<p>接着，聚合和细化所有结果使用倒数排序融合(RRF),RRF是与滑铁卢大学(CAN)和谷歌(Google)合作开发，论文地址：https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf</p>
+<p>具体计算公式为：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGNWJiamz3IqRXOS3pczlRxPksfSopf1ysAbNnBVndXLRp9sOElAdARw/640?wx_fmt=png" alt=""></p>
+<pre><code># Reciprocal Rank Fusion algorithm  
+def reciprocal_rank_fusion(search_results_dict, k=60):  
+    fused_scores = {}  
+    print(&quot;Initial individual search result ranks:&quot;)  
+    for query, doc_scores in search_results_dict.items():  
+        print(f&quot;For query '{query}': {doc_scores}&quot;)  
+          
+    for query, doc_scores in search_results_dict.items():  
+        for rank, (doc, score) in enumerate(sorted(doc_scores.items(), key=lambda x: x[1], reverse=True)):  
+            if doc not in fused_scores:  
+                fused_scores[doc] = 0  
+            previous_score = fused_scores[doc]  
+            fused_scores[doc] += 1 / (rank + k)  
+            print(f&quot;Updating score for {doc} from {previous_score} to {fused_scores[doc]} based on rank {rank} in query '{query}'&quot;)  
+  
+    reranked_results = {doc: score for doc, score in sorted(fused_scores.items(), key=lambda x: x[1], reverse=True)}  
+    print(&quot;Final reranked results:&quot;, reranked_results)  
+    return reranked_results  
+</code></pre>
+<p>最后，将精心挑选的结果与新查询配对，引导LLM进行有针对性的查询语句输出，考虑所有查询和重新排序的结果列表。</p>
+<pre><code># Dummy function to simulate generative output  
+def generate_output(reranked_results, queries):  
+    return f&quot;Final output based on {queries} and reranked documents: {list(reranked_results.keys())}&quot;  
+</code></pre>
+<p>总的来说，这种方式思路挺好的，幻觉评估问题就是采用这种思路在做，对于一个问题，找到多个回答点，作为证据，进行评估。这个文章中介绍的排序方式也有启发。但是，太慢，这是时间换效果，并且query改写成多个，多个容易漂移，而且选项太多对于排序也有影响，这个提分不明显，是优化阶段要做的事，重点要放在文本切割上。</p>
+<h4 id="二基于大模型生成能力自动生成引文">二、基于大模型生成能力自动生成引文‍‍‍‍‍‍</h4>
+<p>在《引证生成让大模型问答结果更为可信：也看大型语言模型生成带引证的文本方法与评估基准ALCE》一文中，我们介绍了最近的工作《Enabling Large Language Models to Generate Text with Citations (使大型语言模型生成带引证的文本)》很有趣。</p>
+<p>论文地址: <a href="https://arxiv.org/abs/2305.14627">https://arxiv.org/abs/2305.14627</a></p>
+<p>代码地址: <a href="https://github.com/princeton-nlp/ALCE">https://github.com/princeton-nlp/ALCE</a></p>
+<p>该工作研究了一种新的LLM生成范式评测基准ALCE，给定一个问题，系统生成文本，同时从一个大型检索语料库中提供引文。每个语句可能包含多个引文（例如[1][2]）</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJnhBjXH2hl12krc93LD1ffWovbYmPiae8ZnHoqe1oXzvb6kg5QFmO0Ng/640?wx_fmt=png" alt=""></p>
+<p>其核心工作在于如何生成引文，如VANILLA方案，向模型提供检索到的前k11段落，并指示模型进行相应的引用。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJdGia8R0q2M3FRb4VLHWW4lYdxXhkr1B1arkBcHeXdulpZAwXLLSccAg/640?wx_fmt=png" alt=""></p>
+<p>完整的指令见如表22所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGT6lr3Mg58Ameb16ZhEJiaeOjUaGmuhrufDQnqvJC8msp03ibLyFsJ1g/640?wx_fmt=png" alt=""></p>
+<p>当前，可用于引文数据集训练数据的，主流的有ASQA、QAMPARI以及ELI5，下面对其进行介绍：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJpfrEh1fDRW4SR3iaqiaPM6P6c4Bj7FVo6w69VgfFIVhibm6u08yejvVIQ/640?wx_fmt=png" alt=""></p>
+<p><strong>1、ASQA</strong></p>
+<p>ASQA《ASQA: Factoid Questions Meet Long-Form Answers》是一个长格式的事实类数据集。</p>
+<p>其中每个问题都是AmbigQA中的一个模棱两可的问题，需要多个简短答案来涵盖对问题的不同解释。</p>
+<p>例如，问题 &ldquo;美国何时脱离英国？&ldquo;应同时回答1776年7月2日（独立宣言）和1783年9月3日（巴黎条约）。由于问题的模糊性，有必要综合多份文件中的信息。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJFcffnJ7uufjBndZGWVN4NaDXRU97HTlGLqhIBrCMamP1cZ4kAAfFTA/640?wx_fmt=png" alt=""></p>
+<p>地址：https://browse.arxiv.org/pdf/2204.06092.pdf</p>
+<p>数据地址：https://github.com/google-research/language/tree/master/language/asqa</p>
+<p><strong>2、QAMPARI</strong></p>
+<p>QAMPARI《QAMPARI: A Benchmark for Open-domain Questions with Many Answers》是一个事实类QA数据集，其答案是一个实体列表，这些实体通常来自不同的段落。</p>
+<p>该数据集利用维基百科的知识图谱和表格自动构建，问题由人工解析，答案由人工验证。该数据集代表了人们常见的 &ldquo;罗列 &ldquo;类型问题。</p>
+<p>数据样例：</p>
+<pre><code>{  
+    &quot;entities&quot;:[  
+        {  
+            &quot;entity_url&quot;:&quot;https://en.wikipedia.org/wiki/Ryoichi_Ikegami&quot;,  
+            &quot;entity_text&quot;:&quot;Ryoichi Ikegami&quot;,  
+            &quot;aliases&quot;:[  
+                &quot;Ryoichi Ikegami&quot;  
+            ]  
+        }  
+    ],  
+    &quot;question_text&quot;:&quot;What manga was drawn by Ryoichi Ikegami?&quot;,  
+    &quot;answer_list&quot;:[  
+        {  
+            &quot;answer_text&quot;:&quot;Heat&quot;,  
+            &quot;aid&quot;:&quot;799__wikidata_simple__test__0&quot;,  
+            &quot;aliases&quot;:[  
+                &quot;Heat&quot;  
+            ],  
+            &quot;answer_url&quot;:&quot;https://en.wikipedia.org/wiki/Heat_(manga)&quot;,  
+            &quot;proof&quot;:[  
+                {  
+                    &quot;proof_text&quot;:&quot; is a seinen manga series written by buronson and illustrated by ryoichi ikegami.&quot;,  
+                    &quot;found_in_url&quot;:&quot;https://en.wikipedia.org/wiki/Heat_(manga)&quot;,  
+                    &quot;pid&quot;:&quot;799__wikidata_simple__test__0__0&quot;  
+                }  
+            ]  
+        },  
+        {  
+            &quot;answer_text&quot;:&quot;Mai, the Psychic Girl&quot;,  
+            &quot;aid&quot;:&quot;799__wikidata_simple__test__1&quot;,  
+            &quot;aliases&quot;:[  
+                &quot;Mai, the Psychic Girl&quot;  
+            ],  
+            &quot;answer_url&quot;:&quot;https://en.wikipedia.org/wiki/Mai,_the_Psychic_Girl&quot;,  
+            &quot;proof&quot;:[  
+                {  
+                    &quot;proof_text&quot;:&quot;mai, the psychic girl, known simply as in japan, is a manga written by kazuya kud\u014d and illustrated by ryoichi ikegami.\nthe main character is mai kuju, a 14-year-old japanese girl with powerful psychic abilities.&quot;,  
+                    &quot;found_in_url&quot;:&quot;https://en.wikipedia.org/wiki/Mai,_the_Psychic_Girl&quot;,  
+                    &quot;pid&quot;:&quot;799__wikidata_simple__test__1__0&quot;  
+                }  
+            ]  
+        },  
+        {  
+            &quot;answer_text&quot;:&quot;Wounded Man&quot;,  
+            &quot;aid&quot;:&quot;799__wikidata_simple__test__2&quot;,  
+            &quot;aliases&quot;:[  
+                &quot;Wounded Man&quot;  
+            ],  
+            &quot;answer_url&quot;:&quot;https://en.wikipedia.org/wiki/Wounded_Man&quot;,  
+            &quot;proof&quot;:[  
+                {  
+                    &quot;proof_text&quot;:&quot; is a japanese seinen manga written by kazuo koike and illustrated by ryoichi ikegami.&quot;,  
+                    &quot;found_in_url&quot;:&quot;https://en.wikipedia.org/wiki/Wounded_Man&quot;,  
+                    &quot;pid&quot;:&quot;799__wikidata_simple__test__2__0&quot;  
+                }  
+            ]  
+        },  
+        {  
+            &quot;answer_text&quot;:&quot;Sanctuary&quot;,  
+            &quot;aid&quot;:&quot;799__wikidata_simple__test__3&quot;,  
+            &quot;aliases&quot;:[  
+                &quot;Sanctuary&quot;  
+            ],  
+            &quot;answer_url&quot;:&quot;https://en.wikipedia.org/wiki/Sanctuary_(manga)&quot;,  
+            &quot;proof&quot;:[  
+                {  
+                    &quot;proof_text&quot;:&quot; is a manga written by sho fumimura, and illustrated by ryoichi ikegami.&quot;,  
+                    &quot;found_in_url&quot;:&quot;https://en.wikipedia.org/wiki/Sanctuary_(manga)&quot;,  
+                    &quot;pid&quot;:&quot;799__wikidata_simple__test__3__0&quot;  
+                }  
+            ]  
+        },  
+        {  
+            &quot;answer_text&quot;:&quot;Crying Freeman&quot;,  
+            &quot;aid&quot;:&quot;799__wikidata_simple__test__4&quot;,  
+            &quot;aliases&quot;:[  
+                &quot;Crying Freeman&quot;  
+            ],  
+            &quot;answer_url&quot;:&quot;https://en.wikipedia.org/wiki/Crying_Freeman&quot;,  
+            &quot;proof&quot;:[  
+                {  
+                    &quot;proof_text&quot;:&quot; is a japanese manga series written by kazuo koike and illustrated by ryoichi ikegami.&quot;,  
+                    &quot;found_in_url&quot;:&quot;https://en.wikipedia.org/wiki/Crying_Freeman&quot;,  
+                    &quot;pid&quot;:&quot;799__wikidata_simple__test__4__0&quot;  
+                }  
+            ]  
+        },  
+        {  
+            &quot;answer_text&quot;:&quot;Strain&quot;,  
+            &quot;aid&quot;:&quot;799__wikidata_simple__test__5&quot;,  
+            &quot;aliases&quot;:[  
+                &quot;Strain&quot;  
+            ],  
+            &quot;answer_url&quot;:&quot;https://en.wikipedia.org/wiki/Strain_(manga)&quot;,  
+            &quot;proof&quot;:[  
+                {  
+                    &quot;proof_text&quot;:&quot; is a japanese manga series written by buronson and illustrated by ryoichi ikegami, published shogakukan's \&quot;big comic superior\&quot; from 1996 to 1998.\nplot.\nmayo is a professional assassin who is hired by the \&quot;organization\&quot; to kill the mother of a young prostitute, shion.&quot;,  
+                    &quot;found_in_url&quot;:&quot;https://en.wikipedia.org/wiki/Strain_(manga)&quot;,  
+                    &quot;pid&quot;:&quot;799__wikidata_simple__test__5__0&quot;  
+                }  
+            ]  
+        }  
+    ],  
+    &quot;qid&quot;:&quot;799__wikidata_simple__dev&quot;  
+}  
+</code></pre>
+<p>例如，&ldquo;哪些电影的演员中有巩俐？为了在数据集上实现高精确度和高召回率，模型需要对多个段落进行综合，这就提出了一个独特的挑战。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJNBHyzn8iahonD7joOcT08Cv724YMcG10JWjVcmiaOw40vN2fq9kr2APw/640?wx_fmt=png" alt=""></p>
+<p>地址：https://browse.arxiv.org/pdf/2205.12665.pdf</p>
+<p>地址：https://samsam3232.github.io/qampari/</p>
+<p><strong>3、ELI5</strong></p>
+<p>ELI5《ELI5: Long Form Question Answering》是建立在Reddit论坛 &ldquo;Explain Like I&rsquo;m Five &ldquo;6上的长式QA数据集，平均答案长度为131个单词。</p>
+<p>大多数ELI5问题都是how/why/what问题，需要有深度的长答案和多个段落作为证据。由于问题中讨论的主题多种多样。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJQ4s108Eqfib5IUjH0XYxJj2PMtnE58XQDot0K4dfWpwyQvyNyfp0Qog/640?wx_fmt=png" alt=""></p>
+<p>地址：https://aclanthology.org/P19-1346.pdf</p>
+<h4 id="总结">总结</h4>
+<p>本文主要介绍了在真实落地中RAG存在几个比较突出的问题，现在也出现了从多query、多召回策略以及排序修正等多个方案，但是这些方法是以时间换效果，并且query改写成多个，多个容易漂移，而且选项太多对于排序也有影响，这个提分不明显，是优化阶段要做的事，重点要放在文本切割上。</p>
+<p>因此，如何增强大模型自身的知识，或许才是正道？但这明显十分漫长。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<h4 id="参考文献">参考文献</h4>
+<p>1、https://mp.weixin.qq.com/s/HFuerrV5l7h7YB7y_HzY9w</p>
+<p>2、https://arxiv.org/abs/2305.14627</p>
+<p>3、https://browse.arxiv.org/pdf/2204.06092.pdf</p>
+<p>4、https://browse.arxiv.org/pdf/2205.12665.pdf</p>
+<p>5、https://aclanthology.org/P19-1346.pdf</p>
+<p>6、https://mp.weixin.qq.com/s/N7HgjsqgCVf2i-xy05qZtA</p>
+<p>7、https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1</p>
+<h4 id="关于我们">关于我们</h4>
+<p>老刘，刘焕勇，NLP开源爱好者与践行者，主页：https://liuhuanyong.github.io。</p>
+<p>老刘说NLP，将定期发布语言资源、工程实践、技术总结等内容，欢迎关注。</p>
+<p><strong>对于想加入更优质的知识图谱、事件图谱、大模型AIGC实践、相关分享的，可关注公众号，在后台菜单栏中点击会员社区-&gt;会员入群加入。</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

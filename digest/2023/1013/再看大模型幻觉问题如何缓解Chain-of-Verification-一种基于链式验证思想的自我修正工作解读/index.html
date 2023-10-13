@@ -1,0 +1,704 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>再看大模型幻觉问题如何缓解：Chain-of-Verification-一种基于链式验证思想的自我修正工作解读 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">再看大模型幻觉问题如何缓解：Chain-of-Verification-一种基于链式验证思想的自我修正工作解读</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              October 13, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fY633eD87NmjJAMmovqfunG6ynnaiaXpgU20pOia10HYnf7iclq0CLmaicgw/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/v0g9bpOu7cOHBdeuJ8mIaw">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p><strong>我们借着这个时机，来继续看看一些关于大模型幻觉的问题【这一块我们已经讲了多个工作，包括如何进行评估，如何进行缓解】，假期充电。</strong></p>
+<p>最近看到一个较好的工作，Meta的《Chain-of-Verification Reduces Hallucination in Large Language Models》，该工作<strong>提出了一种链式验证（CoVe）方法，通过该方法模型首先起草初始回答，然后计划验证问题来核实起草结果，独立回答这些问题以避免受到其他回答的影响，最终生成验证后的回答。</strong></p>
+<p>从本质上来说，这是一种通过审议大型语言模型自身的回答并对其进行自我修正来减少幻觉的方法，通过将验证分解为一系列更简单的问题，模型能够以比回答原始查询更高的准确率回答验证问题。</p>
+<p>实验证明CoVe方法降低了在各种任务中出现的幻觉，包括基于Wikidata的列表问题，闭书型MultiSpanQA和长文本生成等。</p>
+<p>地址：https://arxiv.org/pdf/2309.11495</p>
+<p>本文从实现方案、评估方法以及实验结论三个方面进行介绍，供大家一起参考。</p>
+<h4 id="一实现方案">一、实现方案</h4>
+<p>CoVe包含生成基准响应、计划验证、执行验证和生成最终响应4个步骤，如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYE9k7krnr6kShbxyCwicnCsKMLJlMgRKHZ6BibibzvtnYEyySWIzF3ZTUA/640?wx_fmt=png" alt=""></p>
+<p>其中：</p>
+<p><strong>1、生成基准回复</strong></p>
+<p>给定一个查询，使用LLM生成回复，采用few shot提示学习来让LLM生成基础回复。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYJtpWxYbiab2eyAUETeUczeZ9wDURpcC1AzTkibDIibH4Zj3aoTLB4M0hA/640?wx_fmt=png" alt=""></p>
+<p><strong>2、计划验证</strong></p>
+<p>给定查询和基准回复，生成一个验证问题列表，以帮助自我分析原始回复中是否有任何错误。</p>
+<p>以原始查询和基线回复为条件，模型会被提示生成一系列验证问题，以检验原始基线回复中的事实主张。</p>
+<p>例如，如果长格式模型回复的一部分包含&quot;美墨战争是1846年至1848年美国和墨西哥之间的武装冲突&quot;，那么检查这些日期的一个可能的验证问题可能是&quot;美墨战争何时开始，何时结束？</p>
+<p>此处需要注意，<strong>验证问题并不是模板化的，语言模型可以自由地以任何形式提出这些问题，而且这些问题也不必与原文的措辞完全一致。所以，在具体实现上，通过向LLM提供（回答、验证）演示的少量提示来执行此类验证规划。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYyPYDppw2qoNPXJD7QbblUPIb2c2x0lYU8oXMic7np0CqUfNYrqTMZ1w/640?wx_fmt=png" alt=""></p>
+<p>采用的提示信息如上。</p>
+<p><strong>3、执行验证</strong></p>
+<p>依次回答每个验证问题，然后对照原始回复检查答案，检查是否存在不一致或错误。有了计划中的验证问题，下一步就是回答这些问题，以评估是否存在任何幻觉。</p>
+<p><strong>有趣的是，虽然在这一过程中可以使用检索增强等技术，例如通过搜索引擎进行验证，该工作只考虑在CoVe的所有步骤中使用LLM本身，因此模型是用来检查自身工作的。</strong></p>
+<p>改工作研究了验证执行的几种变体，分别称为联合、两步、因子和因子+修订。</p>
+<p>首先，在联合方法中，规划和执行（第2步和第3步）是通过使用单个LLM提示来完成的，其中的少量演示包括验证问题及其紧随问题之后的答案。这种方法不需要单独的提示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYTtwAeD8lZWvJ3fEbaflA6alFJ94lQjN02Xibf8qLeTKxFUrBBZ69wpg/640?wx_fmt=png" alt=""></p>
+<p>这类方法的潜在缺点是，<strong>由于验证问题必须以LLM上下文中的基线反应为条件，而且该方法是联合的，因此验证答案也必须以初始反应为条件。这可能会增加重复的可能性，也意味着验证问题可能会产生与原始基线回复类似的幻觉，这就失去了意义。</strong></p>
+<p>因此，2步的思想在于，<strong>将计划和执行分为不同的步骤，这两个步骤都有各自的LLM提示。规划提示以第一步中的基准回答为条件。规划生成的验证问题在第二步中回答，关键是LLM提示的上下文只包含问题，而不包含原始基准回复，因此不能直接重复这些答案。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYtZBgoPiazibOiag5ZNo6O3JcGeM6KGbJLibBvLwYO59407bSd7ujzzravQ/640?wx_fmt=png" alt=""></p>
+<p>因子的思想在于，<strong>将所有问题作为单独的提示独立回答</strong> ，不过这可能会增加计算成本，在具体实现上，将计划验证阶段生成的问题集解析为单独的问题，以逗号分隔的列表形式生成，然后将它们拆分成单独的LLM提示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYNtgIAFYMAewnUlu2JXrpWOSR4BnZtsOmmz2J2oqZ6QMV5TpEfFdicLw/640?wx_fmt=png" alt=""></p>
+<p>因子+修订思想在于在回答了验证问题后，通过额外的LLM提示将其作为一个有意的步骤来执行，检查这些答案是否与原始答案不一致。</p>
+<p><strong>4、生成最终校验回复</strong></p>
+<p>根据发现的不一致之处（如有），生成包含验证结果的修订回复，通过最后的few shot提示来执行。</p>
+<h4 id="二实验数据集">二、实验数据集</h4>
+<p>在实验设置上，使用各种实验基准来衡量CoVe在减少幻觉方面的性能，并与一些基线进行比较。</p>
+<p>首先是<strong>WIKIDATA数据集，首先使用WikidataAPI在一组自动生成的问题上对CoVe进行测试。</strong></p>
+<p>创建了&quot;出生在[城市]的[职业]有哪些？等类似的实体，例如，&ldquo;有哪些政治家出生在波士顿？这些问题的答案是一组实体，列表是从维基数据知识库中获取的。这就产生了一个包含56个测试问题的数据集，每个问题通常包含600个已知的实体，但通常LLM会生成一个短得多的列表。<strong>使用精确度指标（微观平均值）来衡量性能。</strong></p>
+<p>其次，<strong>QUEST数据集</strong> ，维基分类列表问题，包括例如&quot;说出一些墨西哥恐怖动画片的名字&quot;或&quot;说出一些越南特有兰花的名字&rdquo;，整理了数据集中所有不需要逻辑运算的示例，创建了一组55个测试问题，每个问题有8̃个答案。<strong>使用精确度指标（微观平均值）来衡量性能。</strong></p>
+<p>然后，<strong>阅读理解基准MultiSpanQA数据集。</strong>  MultiSpanQA包含有多个独立答案的问题，从文本中一系列多个不连续的跨度中得出。使用了由418个问题组成的测试集，每个跨度的答案较短。例如，问：谁在哪一年发明了第一台印刷机？答：约翰内斯-古腾堡（JohannesGutenberg），1450年。使用精确度指标（微观平均值）来衡量性能</p>
+<p>最后，长篇传记的生成数据集，模型需根据提示生成所选实体的传记，例如：&ldquo;告诉我&lt;实体&gt;的传记&rdquo;。<strong>评估指标采用FACTSCORE指标，该指标使用检索增强语言模型对回复进行事实检查（Instruct-Llama，&ldquo;Llama+Retrieval+NP&rdquo;）。</strong></p>
+<p>在对比模型上，</p>
+<p>首先，<strong>使用Llama65B作为基础LLM</strong> ，并对所有模型使用贪婪解码，由于Llama65B没有经过指令微调，采用针对每个任务的少量实例来衡量每个基准的性能。</p>
+<p>其次，<strong>与Llama指令微调模型进行了比较，使用Llama2</strong> 。</p>
+<h4 id="三实验结论">三、实验结论</h4>
+<p><strong>1、CoVe提高了基于列表的答案任务的精确度</strong></p>
+<p>CoVe在基于列表的任务中提高了大量精确度，例如，在维基数据任务中，CoVe的精确度比Llama65B fewshot 基线提高了一倍多（从0.17提高到0.36）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fY633eD87NmjJAMmovqfunG6ynnaiaXpgU20pOia10HYnf7iclq0CLmaicgw/640?wx_fmt=png" alt=""></p>
+<p>从正负分类中发现，幻觉答案的数量大幅减少，而非幻觉答案的数量仅有相对较小的减少。</p>
+<p><strong>2、CoVe提高了闭卷质检的性能</strong></p>
+<p>CoVe在一般质检问题上也有所改进，这是在MultiSpanQA上测得的结果。观察到，F1比很少的基线（0.39→0.48）提高了23%，提高的原因是精确度和CoVe提高了长式生成的精确度。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fY0CJlvmxIUuRk7g36HhgchZxR9QjLWtgWcvMYuzPFUaJb6kVmepBLQg/640?wx_fmt=png" alt=""></p>
+<p>FACTSCORE比很少的基线提高了28%(55.9→71.4)，而所提供事实的平均数量也只有相对较小的减少(16.6→12.3)。还在图2中显示了不同事实的改进情况，可以看出CoVe对罕见事实和更常见事实的结果都有改进。</p>
+<p><strong>3、指令微调和CoT并未减少幻觉</strong></p>
+<p>在所有任务中，采用预训练Llama模型的少量实例基线优于指令调整模型Llama2Chat。fewshot的示例会引导模型给出符合任务预期的输出结果，而一般的指令调整则会产生更多幻觉或错误输出。</p>
+<p>标准的思维链（CoT）提示也未能改善这些任务的结果。虽然事实证明，CoT对推理任务有帮助，但它似乎不太适合在这项工作中测量的幻觉问题。</p>
+<p><strong>4、因子式CoVe和两步式CoVe可提高性能</strong></p>
+<p>与联合CoVe相比，采用因子式CoVe方法可在所有任务中持续提高性能。例如，在长表生成中，FACTSCORE的性能从60.8提升到63.7。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYcbBAcQV5AibByNhvtcn2kTYEIQDc1ibjXozDua3vEwv7EVn3eWibwCxGQ/640?wx_fmt=png" alt=""></p>
+<p>同样，在维基数据和维基分类列表任务的测试中，两步法也优于联合法，其中两步法在维基数据中的结果最好，而在维基分类中的结果最好。</p>
+<p><strong>5、进一步明确推理有助于消除幻觉</strong></p>
+<p>在长表生成任务中，CoVe&quot;因素+修订&quot;方法中更复杂的推理步骤，该方法明确交叉检查验证答案是否表明存在不一致。通过这种进一步的明确推理，FACTSCORE指标从63.7（因子）→71.4（因子+修正）有了大幅提高。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYjfkaibqhjnCsnQ24Fu4cAALymEWhh1u3FLFFht24oopf6nPG7KJccAA/640?wx_fmt=png" alt=""></p>
+<p><strong>这进一步表明，在LLM中进行适当和明确的推理可在减少幻觉方面带来改进。</strong></p>
+<p><strong>6、基于CoVe的Llama优于InstructGPT、ChatGPT和PerplexityAI</strong></p>
+<p>在长表单生成任务中，的基线Llama65B在FACTSCORE指标方面优于ChatGPT和PerplexityAI模型。</p>
+<p>然而，将CoVe应用于基线Llama65B后，其性能不仅超过了ChatGPT和PerplexityAI，还超过了InstructGPT。</p>
+<p><strong>与PerplexityAI相比，这一点尤其令人印象深刻，因为PerplexityAI是一个可以通过检索增强来支持其事实的模型，而CoVe仅使用基础语言模型本身，并通过验证来改进推理。</strong></p>
+<p>然而，可以从图2中看到，在检索非常重要的罕见事实方面，PerplexityAI的表现仍然优于CoVe，<strong>但在更高频的事实方面，CoVe的表现优于PerplexityAI</strong> 。</p>
+<p><strong>7、短式验证问题比长式查询回答得更准确</strong></p>
+<p>在长式回答中，LLM很容易产生一些幻觉。<strong>然而，通常情况下，如果专门针对个别事实进行询问，LLM本身就会知道这些幻觉是错误的，与长表生成的其他部分无关</strong> 。</p>
+<p>这可以从维基数据任务中定量看出，<strong>在基于列表的问题中，只有∼17%的Llama少量基线答案实体是正确的。然而，当通过验证问题对每个实体进行查询时，发现有70%的实体得到了正确回答。</strong></p>
+<p><strong>8、基于LLM的验证问题优于启发式方法</strong></p>
+<p>在CoVe中，<strong>验证问题是由LLM根据任务生成的。对于答案中包含元素X的基于列表的问题，将LLM问题替换为&quot;X是否回答了问题&quot;形式的是/否模板问题，可以将这些问题的质量与启发式方法生成的问题进行比较，以衡量其质量。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYYhbolBrH78MYBNw5CT9NZkjAicXb7XSic17585lpBpM07bjKuURibyKOw/640?wx_fmt=png" alt=""></p>
+<p>表4所示的维基类别任务结果显示，<strong>基于规则的验证问题的精确度有所降低</strong> ，这种差异在长表生成中会更大，因为在长表生成中，所需的验证问题类型可能更加多样，基于LLM的验证变得更加必要。</p>
+<p><strong>9、开放式验证问题优于基于&quot;是/否&quot;的问题</strong></p>
+<p>该试验使用了预期答案为真实事实的验证问题，或者将事实作为验证问题的一部分，并以&quot;是/否&quot;的回答格式提出。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj7L8QlibFG44W6iaapqak9fYYhbolBrH78MYBNw5CT9NZkjAicXb7XSic17585lpBpM07bjKuURibyKOw/640?wx_fmt=png" alt=""></p>
+<p>表4中评估了这一差异，表明<strong>是/否类型的问题在事实版本的CoVe中表现较差，无论事实是对是错，模型都倾向于同意&quot;是/否&quot;问题格式的事实。</strong></p>
+<h4 id="总结">总结</h4>
+<p>本文主要介绍了《Chain-of-Verification Reduces Hallucination in Large Language Models》这一工作，其中通过模型内部自我修正的方案，值得我们借鉴，该方法旨在让大型语言模型通过花费更多时间思考来识别自身错误，从而产生更好的回复。</p>
+<p>不过，我们需要注意的是，<strong>虽然的验证链（CoVe）方法旨在减少幻觉，但并不能完全消除幻觉。</strong></p>
+<p>此外，<strong>CoVe生成的各代推理都带有验证，如果用户查看这些验证，就能为其决策增加更多可解释性，但这是以增加计算量为代价的，因为要在输出中生成更多token，这与Chain-of-Thought等其他推理方法类似。</strong></p>
+<p>虽然已经证明这能带来明显的改进，但改进的上限显然受限于模型的整体能力，例如在识别和了解其已知内容方面，因此，<strong>借助外部知识库增强的方法，让语言模型使用外部工具，以获得其权重存储之外的更多信息，将是一个可以互相增强和融合方案。</strong></p>
+<h4 id="参考文献">参考文献</h4>
+<p>1、https://arxiv.org/pdf/2309.11495</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>阅读至此了，分享、点赞、在看三选一吧🙏</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
