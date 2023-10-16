@@ -1,0 +1,716 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>「Meta版ChatGPT」背后的技术：想让基础LLM更好地处理长上下文，只需持续预训练 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">「Meta版ChatGPT」背后的技术：想让基础LLM更好地处理长上下文，只需持续预训练</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              October 16, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8xAGaacibPLxG9SXCGicRORPKnKEE7lD7lpcMhDBX0e5eFKRwN9jTVGWA/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 机器之心  来源： <a href="https://mp.weixin.qq.com/s/Ska-3gBG8RNi9k7YMXDA5Q">机器之心</a></p>
+<p>机器之心报道</p>
+<p><strong>编辑：Panda W</strong></p>
+<blockquote>
+<p>在处理长上下文方面，LLaMA 一直力有不足，而通过持续预训练和其它一些方法改进，Meta 的这项研究成功让 LLM 具备了有效理解上下文的能力。</p>
+</blockquote>
+<p>大型语言模型（LLM）所使用的数据量和计算量都是前所未见的，这也使其有望从根本上改变我们与数字世界的交互方式。随着 LLM 被不断快速部署到生产环境中并不断扩展进化，可以预见这些模型将能在更多复杂精细的用例中提供服务，比如分析具备丰富知识的密集型文档、提供更加真实和有参与感的聊天机器人体验、在编程和设计等交互式创造过程中辅助人类用户等。</p>
+<p>为了支持这种演进发展，模型需要的一大关键能力就是：高效处理长上下文输入。</p>
+<p>到目前为止，具有稳健长上下文功能的 LLM 主要来自专有 LLM API，如 Anthropic 和 OpenAI 提供的 LLM 服务。现有的开源长上下文模型往往评估研究不足，而是主要通过语言建模损失和合成任务来衡量其长上下文能力，这样的评估无法全面展示模型在各种真实世界场景中的有效性。</p>
+<p>不仅如此，这些模型往往还会忽视在标准短上下文任务中保持强大性能的必要性，要么就直接不评估，要么报告出现了性能下降情况。</p>
+<p>近日，Meta 团队提出了一种新方法，宣称可以有效地扩展基础模型的上下文能力，并且用该方法构建的长上下文 LLM 的性能表现优于所有现有的开源 LLM。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8CiaBFpAOFok0aTrJwAib6oftbPmNZ198ibg4RlJ68jEdRtwHkDSxC5bYQ/640?wx_fmt=png" alt=""></p>
+<p>论文：https://arxiv.org/abs/2309.16039</p>
+<p>他们是通过对 LLaMA 2 检查点进行持续预训练来构建模型，这其中用到了另外 4000 亿个 token 构成的长训练序列。在训练的系列模型中，较小的 7B/13B 变体模型的训练使用了 32,768 token 长的序列，而 34B/70B 变体则使用了 16,384 token 长的序列。</p>
+<p>评估方面，不同于之前已有模型的有限评估，Meta 的这个团队进行了更为全面的评估研究，涵盖语言建模、合成任务以及许多涉及长或短上下文任务真实世界基准任务。</p>
+<p>在语言建模任务上，新方法训练的模型在上下文长度方面表现出了明显的幂律缩放行为。如图 1 所示，这种缩放行为不仅表明新模型能够持续受益于更多上下文，也表明上下文长度是 LLM 扩展方面的一大重要轴线。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8MCEmAiaLzmxYj78xxYI0um05YxfCAV6WsXT9ibeT00rKrE9ZvMh6dTaw/640?wx_fmt=png" alt=""></p>
+<p>通过对比新模型与基准 LLaMA 2 在研究基准上的表现，研究者观察到新模型在长上下文任务上有明显优势，在短上下文任务上也有适度提升，尤其是在编程、数学和知识类任务基准上。</p>
+<p>他们还探索了一种简单且有成本效益的指令微调方法，可在没有任何人工标注数据的情况下对经过持续预训练的长模型进行微调。他们基于此方法得到的聊天模型在一系列长上下文基准任务（包括问答、摘要和多文档聚合）上的整体表现胜过 gpt-3.5-turbo-16k。</p>
+<p><strong>方法</strong></p>
+<p><strong>持续预训练</strong></p>
+<p>由于注意力计算会随序列长度增大呈二次增长，因此当使用更长的序列进行训练时，计算开销也会显著增大。解决这一难题正是本研究的主要目标。</p>
+<p>研究者假设：对短上下文模型进行持续预训练可让该模型具备上下文能力。然后他们通过实验验证了这一猜测。</p>
+<p>在实验中，他们保持原始 LLaMA 2 的架构基本不变，仅对位置编码进行了必要的修改，以便其能将注意力覆盖更长的序列。此外，他们还选择不使用稀疏注意力，因为 LLaMA 2 70B 模型的维度为 h=8192，而只有当序列长度超过 49,152 (6h) 个 token 时，注意力矩阵计算和值聚合的成本才会成为计算瓶颈。</p>
+<p>位置编码。通过 7B 模型的早期实验，研究者发现了 LLaMA 2 的位置编码（PE）的一大关键局限 —— 其有碍注意力模块聚合相聚较远的 token 的信息。为了解决这个问题，使模型能处理长上下文建模，研究者对 RoPE 位置编码方法进行了少量但必要的修改，即减小旋转角度（由基频 b 这个超参数控制），其作用是降低 RoPE 对远距离 token 的衰减效应。研究者通过实验展现了这种简单方法在扩展 LLaMA 上下文长度方面的有效性，并还给出了理论解释。</p>
+<p>数据混合。基于使用修改版位置编码的模型，研究者还进一步探索了不同数据混合方法对提升长上下文能力的作用，其中涉及的方法包括调整 LLaMA 2 的预训练数据的比例和添加新的长文本数据。研究者发现：对于长文本的持续预训练而言，数据的质量往往比文本的长度更重要。</p>
+<p>优化细节。那么他们究竟是如何实现持续预训练的呢？据介绍，他们在对 LLaMA 2 检查点模型进行持续预训练时，会在保证 LLaMA 2 中每批数据同等 token 量时不断增大序列长度。所有模型都使用总计 4000 亿个 token 训练了 10 万步。使用 Dao et al. (2022) 提出的 FlashAttention，当增大序列长度时，GPU 内存开销几乎可以忽略不计；研究者观察到，对于 70B 模型，当序列长度从 4096 增至 16384 时，速度下降了大约 17%。对于 7B/13B 模型，他们使用的学习率为 2e^−5，并使用了余弦学习率计划，预热步骤为 2000 步。对于更大的 34B/70B 模型，该团队发现设置更小的学习率（1e^-5 ）很重要，这样才能让验证损失单调递减。</p>
+<p><strong>指令微调</strong></p>
+<p>为 LLM 对齐任务收集人类演示和偏好标签是一个繁琐而昂贵的过程。对于长上下文任务，这一挑战和成本更为突出，因为这些任务通常涉及复杂的信息流和专业知识，例如处理信息密集的法律 / 科学文档 —— 即使对于熟练的标注者来说，这些标注任务也不简单。事实上，大多数现有的开源指令数据集都主要由短样本组成。</p>
+<p>针对这一问题，Meta 的这个研究团队发现了一种简单且低成本的方法，其能利用已经构建好的大规模和多样化的短 prompt 数据集，并使其很好地适用于长上下文基准任务。</p>
+<p>具体来说，他们取用了 LLaMA 2 Chat 使用的 RLHF 数据集，并使用 LLaMA 2 Chat 自身合成的自指示（self-instruct）长数据对其进行了增强。研究者表示，他们希望模型可以借此通过大量 RLHF 数据学习多样化的技能组合并通过自指示数据将所学知识迁移至长上下文场景。</p>
+<p>这个数据生成过程重点关注的是问答格式的任务：先从预训练预料库的一个长文档开始，从中随机选出一块文本，然后通过 prompt 让 LLaMA 2 Chat 基于该文本块中的信息写出成对的问答。研究者收集了不同 prompt 的长形式和短形式答案。</p>
+<p>之后还有一个自批判（self-critique）步骤，即通过 prompt 让 LLaMA 2 Chat 验证模型生成的答案。给定生成的问答对，研究者使用原始长文档（已截断以适应模型的最大上下文长度）作为上下文来构建一个训练实例。</p>
+<p>对于短指令数据，研究者会将它们连接成 16,384 token 长的序列。对于长指令数据，他们会在右侧添加填充 token，以便模型可以单独处理每个长实例，而无需截断。</p>
+<p>虽然标准的指令微调只在输出 token 上计算损失，但该团队发现，如果也在长输入 prompt 上计算语言建模损失，也能获得特别的好处，因为这能为下游任务带来稳定持续的提升。</p>
+<p><strong>主要结果</strong></p>
+<p><strong>评估预训练后的模型</strong></p>
+<p>表 1 聚合给出了在标准的短上下文基准任务上的性能表现。</p>
+<p>在短上下文任务上，如表 2 所示，使用新方法得到的模型在 MMLU 和 GSM8k 上优于 GPT-3.5。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8Vs0bCbj4DeqLaO45fxufyXUZ7unBerjZUlmB5kl1qXNug0kGhMo6FQ/640?wx_fmt=png" alt=""></p>
+<p>在长上下文任务上，如表 3 所示，新模型整体上表现更优。在 7B 规模的模型上，只有 Together-7B-32k 取得了与新模型相当的表现。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8cJvIWzicZUPMKmZ5ibs8Q59kqibrZtLfajx9OWuNOXmh5JD408TaSQhuw/640?wx_fmt=png" alt=""></p>
+<p>有效利用上下文。为了验证新模型确实能有效使用增大的上下文窗口，从图 2 可以看到，在每个长任务上的结果都会随上下文长度的增长而单调提升。研究者还发现，新模型的语言建模损失与上下文长度之间存在一种幂律加常数的缩放关系（见图 1），这说明：</p>
+<ul>
+<li>
+<p>在语言建模任务上，随着上下文长度增长，一直到 32,768 token 长的文本，新模型的性能都会持续提升，尽管后面的提升幅度会不断变小。</p>
+</li>
+<li>
+<p>更大的模型能更有效地利用上下文，这从那些曲线的 β 值可以看出。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8gddGLQ6JiaO7Jl2q8HFm2CXx26iaW0nqvEQwHv3qicMp5AIia42U1mjf3A/640?wx_fmt=png" alt=""></p>
+<p><strong>指令微调结果</strong></p>
+<p>如表 4 所示，在不使用任何人类标注的长上下文数据的情况下，新训练的 70B 规模的聊天模型在 10 项任务中的 7 项上都优于 gpt-3.5-turbo-16k。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8h8evUfu1WGAibP38y7EHcoFRgKj11Py5GTGbdCgrCCS6Q3WYJPgbBtQ/640?wx_fmt=png" alt=""></p>
+<p><strong>人类评估</strong></p>
+<p>通过计算每个相比较的示例结果的平均值，可以看出实验中新模型的标准胜率优于其它每个模型；图 3 给出了最终得分以及 95% 的置信区间。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8rfJKPcOya60euMFWGeN0BHV149xmX4TU0cQ9yqibowf5rGX5eRibBj3Q/640?wx_fmt=png" alt=""></p>
+<p>在指令数据很少的情况下，新方法所得模型的表现可与 MPT-30B-chat、GPT-3.5-turbo-16k 和 Claude-2 媲美。</p>
+<p><strong>分析</strong></p>
+<p>图 4 展示了基频（base frequency）变化的影响。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8hIyO6TeS4kGTicLvjPmXZibqvCs7iaBx9soeeKX8nRjMRzXF1SFicHLicKQ/640?wx_fmt=png" alt=""></p>
+<p>基于这些评估，整体上看，新提出的 RoPE ABF（基频调整版 RoPE）优于相比较的所有其它方法。</p>
+<p>表 7 则通过 7B 模型实验展示了所使用的数据混合方法对长上下文任务带来的提升。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh89fptMmzPydK1xAtGV5986AmZnL5ZUpv4UwnXb4AibX81JTYzHE71vicQ/640?wx_fmt=png" alt=""></p>
+<p>研究者还发现新的数据混合方法在很多情况下还能带来很大的提升，尤其是对于 MMLU 等知识密集型任务，如表 8 所示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8mPsR0gpt5y7Nzztamzcp988cn7CMrnMEBUZia1fEuTKnO1KiauLg6cew/640?wx_fmt=png" alt=""></p>
+<p>这些结果表明，即使使用非常有限的长数据，也可以有效地训练长上下文 LLM。而且研究者表示，相比于 LLaMA 2 所使用的预训练数据，该团队所使用的数据的优势在于数据本身的质量，而不是长度分布上的差异。</p>
+<p>而表 9 表明，通过指令微调这种简单技巧，可让模型更加稳定地应对输入和输出长度不平衡的情况，从而在大多数测试任务中取得显著改进。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8ibHTWiajnZOfU48lKFX2WuxeFjnOs6g92ePuic7jNrx8GtriaUdTfKvmyg/640?wx_fmt=png" alt=""></p>
+<p>表 10 和 11 则表明对短上下文模型持续预训练可在几乎无损于性能表现的同时轻松节省约 40% 的 FLOPs。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8xAGaacibPLxG9SXCGicRORPKnKEE7lD7lpcMhDBX0e5eFKRwN9jTVGWA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8x8DcYcP2bPlIBolNCx5nxVwTzS1odibjAMQAhCbk341N9wHdeKN0Chg/640?wx_fmt=png" alt=""></p>
+<p><strong>AI 安全</strong></p>
+<p>在 AI 安全方面，研究者观察到，与 LLaMA 2 Chat 相比，经过指令微调的模型整体上能维持相近的安全性能；而且与 Falcon-instruct 和 MPT-instruct 等其它开源 LLM 相比，经过指令微调的模型会更安全且偏见也更少。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8Ez5OWicBB8coUibe5UQfAh8HXxbhWNJvptrjuQTPkCjCiadNFWjGI3ZMb97BBBnribicmAibcFdgvJehA/640?wx_fmt=png" alt=""></p>
+<p><strong>华人作者介绍</strong></p>
+<p><strong>Wenhan Xiong</strong></p>
+<p>Wenhan Xiong 现为 Meta Generative AI 研究科学家，他本科毕业于中国科技大学，博士毕业于加州大学圣巴巴拉分校。他的研究致力于打造能完成复杂、专业的长文本大语言模型，参与了包括 Code Llama 在内的多个研究项目，博士期间他专注构建开放问答系统和检索增强的自然语言处理。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWibWlhSnM7Ap8cPiaBAPCN050jdjG7F5D5kxShelhKtIML1Lr6wjKhibibzDfhaXgcGricJicbSLNAyicgLA/640?wx_fmt=png" alt=""></p>
+<p>个人主页：https://xwhan.github.io/</p>
+<p><strong>Jingyu Liu</strong></p>
+<p>Jingyu Liu 现为苏黎世联邦理工学院硕士研究生，本科毕业于纽约大学计算机系，此前在 Meta Generative AI 做大语言模型的研究，他参与了包括 Code Llama 在内的多个研究项目。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWibWlhSnM7Ap8cPiaBAPCN050XFgyKTiaIXYoRrHaSLTjjuhDuDHO0kUNybMWNbr4nH7tAqkAjJCO21A/640?wx_fmt=png" alt=""></p>
+<p>谷歌学术：https://scholar.google.com/citations?user=jidrykQAAAAJ&amp;hl=en</p>
+<p><strong>Hejia Zhang</strong></p>
+<p>Hejia Zhang 现为 Meta Generative AI 组高级研究科学家，主要研究 Meta 基础大模型、AI Agent，及其在 Meta 产品线中的应用，此前曾在 Meta 推荐系统和人工智能组进行自然语言处理相关研究。她本科毕业于莱斯大学（电子工程和应用数学双学位），博士毕业于普林斯顿大学（电子工程和神经科学联合学位）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gWibWlhSnM7Ap8cPiaBAPCN050555ovk9d3CpmbHKSPtOoEs42oDR4qg3u4QPMsthZicnB38tIpWFS65A/640?wx_fmt=jpeg" alt=""></p>
+<p>谷歌学术：https://scholar.google.com/citations?user=bI0cfykAAAAJ&amp;hl=en</p>
+<p><strong>Rui Hou</strong></p>
+<p>Rui Hou 现为 Meta GenAI 研究科学家，主要研究生成式 AI 技术以及相关的生产应用。他于 2020 年 4 月入职 Meta，此前曾在丰田研究院等机构实习。</p>
+<p>他本科毕业于同济大学，硕士（智能系统和计算机科学双学位）和博士（智能系统）均毕业于密歇根大学。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWibWlhSnM7Ap8cPiaBAPCN050sYOUWoaVrIKLY9nvxlf7RPRym5dGoQPmQEatsj0liagOMT9WI0Cic0kA/640?wx_fmt=png" alt=""></p>
+<p>谷歌学术：https://scholar.google.com/citations?user=PKHKqX0AAAAJ&amp;hl=en</p>
+<p><strong>Angela Fan</strong></p>
+<p>Angela Fan 是 Meta AI Research Paris 的研究科学家，主要研究机器翻译。此前她曾在南锡 INRIA 和巴黎 FAIR 攻读博士学位，主要研究文本生成。在此之前，她是一名研究工程师，并在哈佛大学获得了统计学学士学位。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gWibWlhSnM7Ap8cPiaBAPCN050Ikibyia5dT8s7rrDebmsUZ35w7t1ceOMnWuQUkUkqTFjlLCcfmlqw2aQ/640?wx_fmt=jpeg" alt=""></p>
+<p>个人主页：https://ai.meta.com/people/angela-fan/</p>
+<p><strong>Han Fang</strong></p>
+<p>Han Fang 现为 Meta Generative AI 组高级经理，负责 AI agent 以及 LLAMA 在 meta 的应用开发，此前曾在 meta 推荐系统和人工智能组任职。他本科毕业于中山大学，博士毕业于纽约州立大学石溪分校应用数学与统计专业。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWibWlhSnM7Ap8cPiaBAPCN050oDKAKeGUcNewUGibCCs1g363QTo1tLj665wc36vvibZoEaQFrDa9fexw/640?wx_fmt=png" alt=""></p>
+<p>个人主页：https://ai.meta.com/people/han-fang/</p>
+<p><strong>Sinong Wang</strong></p>
+<p>Sinong Wang 现为 Meta 高级主任科学家，Meta Generative AI 组技术负责人。目前领导 Meta 基础大模型和 AI agent 开发，以及在 meta 产品线中的应用。此前他在 Meta AI 致力于自然语言处理、transformer 架构、（语言 / 图像）多模态研究。他博士毕业于俄亥俄州立大学电气与计算机工程专业，并多次获得 ACM/IEEE 最佳论文奖。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWibWlhSnM7Ap8cPiaBAPCN050DPlQ9I7xRv5ZTd8UMlreEgcsRibehJKYbNWguhWdum3OlaOIaKY2QOA/640?wx_fmt=png" alt=""></p>
+<p>个人主页：https://sites.google.com/site/snongwang/</p>
+<p><strong>Hao Ma</strong></p>
+<p>Hao Ma 现为 Meta Generative AI 组总监，负责大模型和语音基础模型研究和在产品当中的应用，曾在 Meta discovery 组负责开发下一代 AI 推荐系统和 AI 安全系统。此前曾在微软研究院担任研究经理，负责知识图谱在 bing 当中的开发。他博士毕业于香港中文大学计算机专业，并多次获得 ACM test-of-time award.</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWibWlhSnM7Ap8cPiaBAPCN050zWq94F2kqs17gMXWlgw97I8a6vQzEuqEGE5y5uJ9R2U4IiaY5x5Ma0A/640?wx_fmt=png" alt=""></p>
+<p>个人主页：https://www.haoma.io/</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW9LSvGJnGeMgN5icZW9coZAvicwuFyhFM09n7QicLPKzKr3WHYGIdVvlVUA20KPvDWYDKFKvXlXMz5XA/640?wx_fmt=png" alt=""></p>
+<p>© THE END</p>
+<p>转载请联系本公众号获得授权</p>
+<p>投稿或寻求报道：content@jiqizhixin.com</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
