@@ -1,0 +1,860 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>再看大模型微调数据质量如何评估：已有方法回顾及IFD指令遵循难度筛选的思路与聚类细节 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">再看大模型微调数据质量如何评估：已有方法回顾及IFD指令遵循难度筛选的思路与聚类细节</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              November 2, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewc4TJmCrztLYODvtxCicQMbZuZFanAvKLaN7SmSGzFdL7MN2iapkjwqbiag/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/ZEzc1VaXFaR7M0zXNRWfwQ">老刘说NLP</a></p>
+<p>今天是2023年10月28日，星期六，北京，天气晴，我们来继续聊聊数据工程方面的事情。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p><strong>对于数据构造方面，我们已经先后看了self-instruct、evolve instruction等自动构造方法，但这解决了量的问题。</strong></p>
+<p>那么，质的问题如何解，又是另一个科学问题。‍‍‍‍‍‍‍‍</p>
+<p>最近很多的工作，包括我们的实验，都表明决定模型性能的不是纯粹的数据量，而是数据的质量，即使是数量有限的人工收集的高质量数据，也能提升模型的指令跟踪能力。</p>
+<p>因此，如何从浩如烟海的可用数据集中自动识别高质量数据的问题是一个很经典的问题。</p>
+<p>当然， 我们首先会想到有很多的衡量指标，例如长度、奖励值、困惑度、聚类中心等方法。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p>例如，<strong>Instruction Mining(<a href="https://arxiv.org/abs/2307.06290">https://arxiv.org/abs/2307.06290</a>)评估以下一系列不同的指标，并应用统计回归模型来选择数据，但并没有提供与使用完整数据训练的模型相比的性能，而且其方法过于复杂；</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewcwZmNhoa9TrOdnOKEg9v1JG8iag6595hhexG8bccqA7edtldBpNFcBicw/640?wx_fmt=png" alt=""></p>
+<p><strong>AL-PAGASUS(<a href="https://arxiv.org/pdf/2307.08701.pdf">https://arxiv.org/pdf/2307.08701.pdf</a>)直接利用外部完全训练好的强LLM（ChatGPT）对每个样本进行评分，忽视了基础模型的内在能力，过于依赖额外的模型。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewc9iaj5uxywcG6OibhC3TQeIkxjDtRCwib1tCaUEHAruQdicicpEtPAzEZWJw/640?wx_fmt=png" alt=""></p>
+<p>最近读到一个工作，<strong>《From Quantity to Quality: Boosting LLM Performance with Self-Guided Data Selection for Instruction Tuning》(地址：https://arxiv.org/abs/2308.12032)，提出了一种通过计算&quot;<strong><strong>指令遵循难</strong></strong>度&quot;（IFD）得分，可以量化每个样本对模型的难度方法，从开源数据集中自主筛选出训练样本。</strong></p>
+<p>‍‍</p>
+<p>数据工程很重要，这些都很有启发意义，分享出来，给大家一起参考。</p>
+<h4 id="一数据选择方法ifd指令跟踪难度筛选">一、数据选择方法：IFD指令跟踪难度筛选‍‍‍‍‍</h4>
+<p>那么，怎么衡量这个影响力，必定是一组量化指标。</p>
+<p>该工作的一个假设在于：<strong>在使用精心选择的指令数据进行初步训练的阶段，LLM可以开发出一种内在的指令辨别能力，这种基础理解能力使他们具备了评估更广泛数据集质量的鉴别力，从而有可能以自我指导的方式评估指令执行难度。</strong></p>
+<p>为了估算给定例子的难度，提出了一种名为&quot;指令跟随难度&quot;（Instruction Following Difficulty，IFD）的新指标，即测量并比较模型对给定指令生成回复的能力和模型直接生成回复的能力，<strong>通过计算&quot;指令跟踪难度&quot;（IFD）得分，可以量化每个样本对模型的难度</strong> 。而这个难度，可以作为数据筛选的条件，得分越高，说明质量更高。</p>
+<p>如图1所示，该方法分为三个核心阶段：从简单经验中学习、根据经验进行评估以及从自我指导经验中进行再训练。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewcbwF8cA7phW4iaSnF86L80OW644b59tAcvJ0213v4fdnhm1prhSoYA1A/640?wx_fmt=png" alt=""></p>
+<p><strong>1、从简单经验中学习</strong></p>
+<p>这一阶段的目的是通过强迫模型首先熟悉目标数据集的一个子集，使初始模型具备基本的指令跟随能力。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewcCtHwMDc6GMvKxRicibWFdwZV1s3iaDLbalTlqAAQcIMP2ExntiauaI8jPw/640?wx_fmt=png" alt=""></p>
+<p>具体来说，对于初始的完整目标数据集D0（包含n个三连串x=（指令、[输入]、答案）），将字符串Question=map(指令、[输入])定义为完整指令。</p>
+<p>映射函数与原始目标数据集对齐。</p>
+<p>问题（Q）和答案（A）中的每个词分别记为xQi和xAi。</p>
+<p>让LLMθ表示使用的LLM，θ表示LLM的权重，θ0表示预先训练好的基础LLM模型。然后通过以下方法得到每个样本xj的指令嵌入：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewcW3TjN2Diblx8HNrJGiaNISOicRicWgfAcWmia4yMo1ia4sQBXrQsaflibsZ2A/640?wx_fmt=png" alt=""></p>
+<p>其中：</p>
+<p>wQj,i 表示样本j的第i个字的问题字符串；</p>
+<p>hQj,i表示其对应的最后一个隐藏状态；</p>
+<p>hQj,i表示其对应的最后一个隐藏状态。</p>
+<p><strong>为了确保初始模型所遇到的指令足够多样性，在这些指令嵌入上使用了基本的聚类技术K-Means，即在每个聚类中只抽取几个实例，在指令嵌入上生成100个聚类，并在每个聚类中抽取10个实例。然后只用这些样本对初始模型进行1个epoch的训练。</strong></p>
+<p><strong>2、根据经验进行评估</strong></p>
+<p>在指令调整过程中，根据指令Q及其后续单词，通过不断预测下一个tokens来计算样本对(Q,A)的损失：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewc4TJmCrztLYODvtxCicQMbZuZFanAvKLaN7SmSGzFdL7MN2iapkjwqbiag/640?wx_fmt=png" alt=""></p>
+<p>这一平均交叉熵损失称为&quot;预设答案得分&quot;（Con-ditioned Answer Score）sθ(A|Q)=Lθ(A|Q)。</p>
+<p><strong>该指标评估了模型根据所提供的指令生成适当答案的能力，用于衡量模型的输出在多大程度上与输入指令和相应的正确答案一致，即结构和相应正确答案的一致程度。</strong></p>
+<p>由于LLM在预训练阶段已经学习了大部分知识，只需要学习对齐和遵循指令，所以为了估算遵循给定样本指令的难度，可以引入直接回答得分sθ(A)，用于衡量LLM单独生成该答案的能力：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewcn5wPhaGOnOwYFick7HRrHF5WsOf5epBcoHq3klFQxYVicOO0hicRVyLFg/640?wx_fmt=png" alt=""></p>
+<p><strong>这一指标衡量的是在没有相应指令的指导下，单独生成答案所带来的内在难度或挑战，直接答案得分越高，表明模型生成答案的难度或复杂程度越高。</strong></p>
+<p>此外，分析样本的内在挑战性与模型的跟读能力之间的平衡，可以揭示估计给定样本的指令难度的复杂性，可以通过计算sθ(A)和sθ(A|Q)之间的比率，来估算出特定（Q,A）对的指令遵循难度（IFD）得分rθ(Q,A)：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewcx0wuVxibFrhpJ2BVZhygIic3hqHRib2rBpABzgXwsFBmTMuOSla21yhzQ/640?wx_fmt=png" alt=""></p>
+<p>该分数衡量的是给定指令对相应答案的匹配程度。<strong>IFD分数高，说明模型无法将答案与给定的相应指令相匹配，这反过来又说明了指令的难度。</strong></p>
+<p><strong>3、根据自我指导经验进行再训练</strong></p>
+<p>对目标数据集中的每个实例进行标注后，就可以得到按IFD分数排序的样本。</p>
+<p><strong>4、结论</strong></p>
+<p>如图4所示（标注为低IFD分数），使用低IFD分数训练的模型表现不佳，与基线数据相比，较高的分数始终能产生较好的结果，而较低的分数则会降低模型的内部性能。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewcDJDyVxgIksHQSLf3e09zbrgTJxt8ibB6TFpS8DVrhicNibrsDHTTicrDVA/640?wx_fmt=png" alt=""></p>
+<p>下面我们来看看几个例子，<strong>第一个正面例子介绍了直接答案得分（DA）和条件答案得分（CA）都相对较高的情况。DA高意味着初始预训练的LLM很难生成这首诗，而CA高意味着给定的指令并不会让生成这首诗变得更容易。因此，让LLM学习这个样本是很有价值的。</strong></p>
+<p>注意：关于CA和DA，论文里并未做解释，<strong>只有说条件答案得分（CA）等同于计算loss</strong> ，猜测是计算instruction+input+answer部分的loss；直接答案得分(DA)，是直接answer部分的loss。</p>
+<p><strong>第二个正例呈现的情况是CA分数和DA分数都相对较低。DA分数低意味着LLM已经学习了这一知识，因此生成这个句子很容易。然而，提供相应的指令并不能改变这种情况，这表明LLM遵循该指令的能力很差。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewchSQeceqsaZDwqtaI9sWu5EZfXMLX48I1qmt3Lzia0M2yM7YeRIhvdTQ/640?wx_fmt=png" alt=""></p>
+<p>第一个反面例子描述的情况是回答太短。由于下一步预测的固有特性，即较长的文本往往具有较低的困惑度，因此太短的回答的DA分数相对较高，从而导致IFD分数较大。</p>
+<p>第二个反面例子给出了DA分值和CA分值相对较小的情况。在这个例子中，LLM一定读过的一本书，因此作为已知知识，LLM很容易重现这个句子。但是，如果加上一个指令，CA分数就会变得更低。</p>
+<h4 id="二前期实现细节融合ppl与kmeans聚类的数据采样">二、前期实现细节：融合ppl与kmeans聚类的数据采样‍‍</h4>
+<p>为了进行比较，模型与<strong>根据较高的Conditioned Answer分数（相当于计算损失）选取</strong> 的数据训练的模型进行了比较。</p>
+<p><strong>如图4所示（图中标注为高CA分数），这组模型明显落后于官方的Alpaca模型。</strong></p>
+<p>但是，论文中并没有对CA分数的计算方案进行介绍，但在翻开开源代码中可以找到线索。</p>
+<p>完整代码如下：</p>
+<pre><code>def main():  
+    args = parse_args()  
+    pt_data = torch.load(args.pt_data_path, map_location=torch.device('cpu'))  
+    with open(args.json_data_path, &quot;r&quot;) as f:  
+        json_data = json.load(f)  
+    emb_list = []  
+    ppl_list = []  
+    ## 获取每个数据的embedding，用于kmeans聚类别；  
+    ## 获取每个数据的ppl值，也就是loss  
+    for i in tqdm(range(len(pt_data))):  
+        data_i = pt_data[i]  
+        sent_emb_list = data_i['sent_emb']  
+        emb_list.append(sent_emb_list[args.sent_type])  
+        ppl_list.append(data_i['ppl'][args.ppl_type].item())  
+  
+    high_dim_vectors = torch.cat(emb_list,0).numpy()  
+    ppl_array = np.array(ppl_list)  
+  
+    ## 使用kmeans进行聚类  
+    clustering = do_clustering(args, high_dim_vectors)  
+    cluster_labels = clustering.labels_  
+  
+    ## 获取中间置信度的数据  
+    def get_json_sample(middle_confidence_samples):  
+        json_samples = []  
+        for k in middle_confidence_samples.keys():  
+            ids_list = middle_confidence_samples[k].tolist()  
+            for id_i in ids_list:  
+                ori_sample = json_data[id_i]  
+                json_samples.append(ori_sample)  
+        return json_samples  
+  
+    middle_confidence_samples = sample_middle_confidence_data(cluster_labels, ppl_array, args.sample_num, args.low_th, args.up_th)  
+    new_data = get_json_sample(middle_confidence_samples)  
+    print('New data len \n',len(new_data))  
+    with open(args.json_save_path, &quot;w&quot;) as fw:  
+        json.dump(new_data, fw, indent=4)  
+    pass  
+</code></pre>
+<p>其中有几个个关键点：</p>
+<p><strong>ppl（也就是loss）以及embedding的计算：</strong></p>
+<p>将文本直接丢入模型，将返回loss取对数，得到文本ppl；</p>
+<p>将模型最后一层去除，并平均池化，作为文本embedding；</p>
+<pre><code>## Used to get the ppl and emb for the whole input  
+def get_perplexity_and_embedding_whole_text(tokenizer, model, text, max_length):  
+  
+    input_ids = tokenizer.encode(text, return_tensors=&quot;pt&quot;, truncation=True, max_length=max_length).to(device)  
+    with torch.no_grad():   
+        outputs = model(input_ids, labels=input_ids.contiguous())  
+    loss = outputs.loss  
+    perplexity = torch.exp(loss)  
+    hidden_states = outputs.hidden_states  
+    embeddings = hidden_states[-1]  
+    sentence_embedding = embeddings.mean(dim=1)  
+    return perplexity.to('cpu'), sentence_embedding.to('cpu')  
+</code></pre>
+<p><strong>KMEANS聚类：</strong></p>
+<p>指定聚类数量，进行聚类。</p>
+<pre><code>def do_clustering(args, high_dim_vectors):  
+    clustering_algorithm = args.cluster_method  
+    if clustering_algorithm == 'kmeans':  
+        clustering = KMeans(n_clusters=args.kmeans_num_clusters, random_state=0).fit(high_dim_vectors)  
+    return clustering  
+</code></pre>
+<p><strong>获取中间置信度的数据：</strong></p>
+<p>对类中心的数据点排序-&gt;如果某个类数据不够，全采-&gt;获取这个类别的的置信度，置信度来自于样本的ppl值-&gt;获取最低的ppl阈值和最大的阈值-&gt;将最低阈值和最大阈值之间的数据作为中间数据上-&gt;如果中间阈值过滤数据量不够采样数量，则全部使用-&gt;否则切分成n份进行采样</p>
+<pre><code>def sample_middle_confidence_data(cluster_labels, confidences, n, low_th=25, up_th=75):  
+    num_clusters = len(np.unique(cluster_labels))  
+    # Get the indices for each cluster  
+    cluster_indices = {i: np.where(cluster_labels == i)[0] for i in range(num_clusters)}  
+    # Create a dictionary to store the indices of the middle level confidence samples  
+    middle_confidence_samples = {}  
+    for i in range(num_clusters):  
+        # 对类中心的数据点排序  
+        sorted_indices = cluster_indices[i]  
+        # 如果某个类数据不够，全采  
+        if len(sorted_indices) &lt; n:  
+            middle_confidence_samples[i] = sorted_indices  
+            continue  
+        # 获取这个类别的的置信度，置信度来自于样本的ppl值  
+        cluster_confidences = confidences[sorted_indices]  
+        ## 获取最低的ppl阈值和最大的阈值  
+        lower_threshold = np.percentile(cluster_confidences, low_th)  
+        upper_threshold = np.percentile(cluster_confidences, up_th)  
+        ## 将最低阈值和最大阈值之间的数据作为中间数据上  
+        middle_indices = sorted_indices[(cluster_confidences &gt;= lower_threshold) &amp; (cluster_confidences &lt;= upper_threshold)]  
+        ## 如果中间阈值过滤数据量不够采样数量，则全部使用  
+        if len(middle_indices) &lt; n:  
+            middle_confidence_samples[i] = middle_indices  
+        else:  
+            ## 否则切分成n份进行采样  
+            step_size = len(middle_indices) // n  
+            # Select evenly from the middle level confidence samples  
+            middle_confidence_samples[i] = middle_indices[::step_size][:n]  
+    return middle_confidence_samples  
+</code></pre>
+<p>####<strong>IDF值计算：</strong></p>
+<h4 id="根据输入指令计算idf值并过滤idf1的样本">根据输入指令，计算IDF值，并过滤IDF&gt;1的样本：</h4>
+<pre><code>        # Tokenize the input text  
+        instruct_i_input_ids = tokenizer.encode(instruct_i, return_tensors=&quot;pt&quot;, truncation=True, max_length=args.max_length).to('cpu')  
+        instruct_i_len = instruct_i_input_ids.shape[1]   
+  
+        def get_loss_part_text(tokenizer, text, target_span, max_length, loss_list_):  
+            input_ids = tokenizer.encode(text, return_tensors=&quot;pt&quot;, truncation=True, max_length=max_length).to('cpu')  
+            start_index = text.rfind(target_span)  
+            text_temp = text[:start_index]  
+            token_id_temp = tokenizer.encode(text_temp)  
+            start_token = len(token_id_temp)   
+            end_token_real = input_ids.shape[1]  
+            loss_list = loss_list_[start_token-1:end_token_real-1]   
+            return end_token_real - start_token , input_ids[0][start_token:end_token_real], np.array(loss_list)  
+          
+        if args.max_length-instruct_i_len &gt; 0:  
+            len_1, token_ids_1, loss_list_1 = get_loss_part_text(tokenizer, direct_answer_text, output_i, args.max_length-instruct_i_len+4, loss_1_list)  
+            len_2, token_ids_2, loss_list_2 = get_loss_part_text(tokenizer, whole_text, output_i, args.max_length, loss_2_list)  
+            if len_1 &lt;= 0 or len_2 &lt;= 0:  
+                continue  
+            if instruct_i_len + len_1 &gt; args.max_length:  
+                continue  
+            mean_1 = loss_list_1.mean()  
+            mean_2 = loss_list_2.mean()  
+            mean_rate = mean_2/mean_1  
+            if mean_rate &gt; 1:   
+                continue  
+            mean_rate_list.append((mean_rate,i))  
+            mean_list_1.append((mean_1,i))  
+            mean_list_2.append((mean_2,i))  
+        else:  
+            continue
+</code></pre>
+<h4 id="三回顾数据质量评估方法基于聚类的方法">三、回顾数据质量评估方法：基于聚类的方法</h4>
+<p>之前介绍一个工作《<strong>MAYBE ONLY 0.5% DATA IS NEEDED: A PRELIMINARY EXPLORATION OF LOW TRAINING DATA INSTRUCTION TUNING》</strong> 利用聚类的思想筛选样本进行实验，以说明微调数据规模并不需要难么多，就可以达到一个不错的效果。其实际上走的是多样性的路子。</p>
+<p>地址：https://arxiv.org/abs/2305.09246</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJj5gicNNaMFa0nEjBJ4msewcQe9a3euuwW4wrZG2L0xK2xKtiaTGicoa6VTbLksFnblW1tI9Davfeu3A/640?wx_fmt=png" alt=""></p>
+<p><strong>1、向量化</strong></p>
+<p>将数据重新格式化为指令调优训练阶段使用的训练输入格式，即带有描述指令的数据，在最后加入答案，以格式化一个完整的训练数据。</p>
+<p>然后，使用预先训练好的语言模型（如Galactica或Bert）对所有样本进行编码。</p>
+<p>具体地，将模型作为单词嵌入或每个句子的输入后，提取每个样本的last_hidden_state。对每个样本的词嵌入进行均值集合，得到一个一维向量作为该样本的句子嵌入。</p>
+<p>为了加快计算速度，方便向量相似性的计算，将所有句子嵌入归一为长度1，即对嵌入维度进行L2归一。</p>
+<p><strong>2、聚类</strong></p>
+<p>考虑到NLP任务边界的模糊性可能导致不同任务的样本之间的差异很小。</p>
+<p>因此，通过关注数据表征来进行无监督聚类，而不是依靠标签信息来将数据点基于相同的类别或任务归类。</p>
+<p>具体来说，在获得第一步的句子嵌入后，使用K-Means在嵌入空间中进行无监督聚类，以获得每个样本和其对应的聚类标签的映射。</p>
+<p>然后，根据一个下游任务的样本出现在几个聚类中的频率，选择频率最高的聚类的中心点作为该下游任务的分布中心点。</p>
+<p>接下来，对于任务中的所有样本，计算与分布中心点的余弦相似度（距离函数的选择对结果影响不大，按照OpenAI的方法选择余弦相似度），并从任务数据中找出与该中心点最接近的样本作为任务中心点，任务中心点是这个任务数据中与分布中心点余弦相似度最大的一个确切样本。</p>
+<p><strong>3、核心样本采样</strong></p>
+<p>直观来说，在获得下游任务对应的分布中心点后，我们可以根据余弦相似度选择最相似的样本作为代表性任务样本，不过，检索方法是根据现有样本从数据池中选择高相似度样本，以提高任务性能，这可以被视为一种通过检索进行数据扩增的形式。为了使用尽可能少的样本，找到一个近似完整数据集分布的小集合。</p>
+<p>K近邻法并不适合这种情况，因为相似度高的样本并不能逼近全集分布。为了实现核心样本的采样，使用KCentergreedy(<a href="https://arxiv.org/pdf/1708.00489.pdf">https://arxiv.org/pdf/1708.00489.pdf</a>)，其目的是选择k个中心点，使随机数据点与其最近中心点之间的最大距离最小，该算法已被证明能高效获得一个分布的核心样本集。</p>
+<p>实现代码如下：‍‍‍‍‍</p>
+<pre><code>import numpy as np  
+from .strategy import Strategy  
+from sklearn.neighbors import NearestNeighbors  
+from tqdm import tqdm  
+  
+class KCenterGreedy(Strategy):  
+    def __init__(self, dataset, net):  
+        super(KCenterGreedy, self).__init__(dataset, net)  
+  
+    def query(self, n):  
+        labeled_idxs, train_data = self.dataset.get_train_data()  
+        embeddings = self.get_embeddings(train_data)  
+        embeddings = embeddings.numpy()  
+  
+        dist_mat = np.matmul(embeddings, embeddings.transpose())  
+        sq = np.array(dist_mat.diagonal()).reshape(len(labeled_idxs), 1)  
+        dist_mat *= -2  
+        dist_mat += sq  
+        dist_mat += sq.transpose()  
+        dist_mat = np.sqrt(dist_mat)  
+  
+        mat = dist_mat[~labeled_idxs, :][:, labeled_idxs]  
+  
+        for i in tqdm(range(n), ncols=100):  
+            mat_min = mat.min(axis=1)  
+            q_idx_ = mat_min.argmax()  
+            q_idx = np.arange(self.dataset.n_pool)[~labeled_idxs][q_idx_]  
+            labeled_idxs[q_idx] = True  
+            mat = np.delete(mat, q_idx_, 0)  
+            mat = np.append(mat, dist_mat[~labeled_idxs, q_idx][:, None], axis=1)  
+              
+        return np.arange(self.dataset.n_pool)[(self.dataset.labeled_idxs ^ labeled_idxs)]
+</code></pre>
+<p>具体地，以任务样本中心点为初始中心，送入前几步得到的任务样本的所有句子嵌入，使用KCenterGreedy算法按照给定比例从任务样本中收集一组核心样本。收集到的原始任务数据集子集可以用更少的数据达到相同甚至更高的性能</p>
+<h4 id="总结">总结</h4>
+<p>本文主要回顾了微调数据选择的一些现有方法，包括基于聚类、基于ppl、基于loss、基于GPT4打分，这些都是以一种量化的指标在做的筛选。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p>重要的，本文还介绍了《From Quantity to Quality: Boosting LLM Performance with Self-Guided Data Selection for Instruction Tuning》(地址：https://arxiv.org/abs/2308.12032)，提出了一种通过计算&quot;指令跟踪难度&quot;（IFD）得分，可以量化每个样本对模型的难度方法，从开源数据集中自主筛选出训练样本。其本质上还是在loss上做的更改。</p>
+<p>不过，我们需要注意的是，这种指令数据评估的方法纵使有很多，加上我们之前所说的self-instruct等自动构造方法，我们很自然地能够快速搭建出来一套pipeline。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p>但真正这些数据，与我们训练模型性能之间的关联性如何，还是一条很长的路。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p>本文讲了很多点，也给出了对应参考文献，感兴趣的，可以阅读原文，深入了解。</p>
+<h4 id="参考文献">参考文献</h4>
+<p>1、https://arxiv.org/abs/2307.06290</p>
+<p>2、https://arxiv.org/pdf/2307.08701.pdf</p>
+<p>3、https://arxiv.org/pdf/1708.00489.pdf</p>
+<h4 id="关于我们">关于我们</h4>
+<p>老刘，刘焕勇，NLP开源爱好者与践行者，主页：https://liuhuanyong.github.io。</p>
+<p>老刘说NLP，将定期发布语言资源、工程实践、技术总结等内容，欢迎关注。</p>
+<p><strong>对于想加入更优质的知识图谱、事件图谱、大模型AIGC实践、相关分享的，可关注公众号，在后台菜单栏中点击会员社区-&gt;会员入群加入。</strong></p>
+<p>​​</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
