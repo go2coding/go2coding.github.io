@@ -1,0 +1,975 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>TensorRT进阶（一）：从零搭建一个TensorRT分类框架 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">TensorRT进阶（一）：从零搭建一个TensorRT分类框架</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              November 23, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/VnDXQzNf28gNGkZiccNuy2sVaasM9icvqAtFUC6vNtlCs5GCicT7wO2ZqCKsddgXTaziaozxiaFnTAf1ly9RbxkPjJQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 人工智能技术与时代人物风云  来源： <a href="https://mp.weixin.qq.com/s/d3_Vbxi2MF8WoyKRTtT_BQ">人工智能技术与时代人物风云</a></p>
+<p>点击下方<strong>卡片</strong> ，关注“<strong>自动驾驶Daily</strong> ”公众号</p>
+<p>ADAS巨卷干货，即可获取</p>
+<p>**&raquo;****<strong><strong>点击进入→</strong></strong><a href="http://mp.weixin.qq.com/s?__biz=Mzg2NzUxNTU1OA==&amp;mid=2247539017&amp;idx=1&amp;sn=b3564efd92bae6f0d9db8e5cf06ff090&amp;chksm=ceb87480f9cffd96daa95aa02e2b9811a655c4253330a5519c6e2bf23f0b0f0d1a79c6bac929&amp;scene=21#wechat_redirect">自动驾驶Daily技术交流群** </a></p>
+<h4 id="写在前面">写在前面</h4>
+<p>本文是我在学习韩博《CUDA与TensorRT部署实战课程》第六章的课程部分输出的个人学习笔记，欢迎大家一起讨论学习！这里写一个未封装的TensorRT推理分类图形，不封装的原因是为了学习的时候能够更好的了解到这里面的过程，看完后会有一个汇总，如果你正在学习相关内容，强烈建议收藏！</p>
+<h4 id="1-先看简单封装一个model做了什么">1. 先看简单封装一个Model做了什么</h4>
+<p>其实这里就是做了一个model Load的一个过程，然后build model再然后infer很多张图片, 这些看似封装了但其实封装的很差</p>
+<pre><code>#include &lt;iostream&gt;  
+#include &lt;memory&gt;  
+  
+#include &quot;model.hpp&quot;  
+#include &quot;utils.hpp&quot;  
+  
+using namespace std;  
+  
+int main(int argc, char const *argv[])  
+{  
+    Model model(&quot;models/onnx/resnet50.onnx&quot;, Model::precision::FP32);  
+  
+    if(!model.build()){  
+        LOGE(&quot;fail in building model&quot;);  
+        return 0;  
+    }  
+  
+    if(!model.infer(&quot;data/fox.png&quot;)){  
+        LOGE(&quot;fail in infering model&quot;);  
+        return 0;  
+    }  
+    if(!model.infer(&quot;data/cat.png&quot;)){  
+        LOGE(&quot;fail in infering model&quot;);  
+        return 0;  
+    }  
+  
+    if(!model.infer(&quot;data/eagle.png&quot;)){  
+        LOGE(&quot;fail in infering model&quot;);  
+        return 0;  
+    }  
+  
+    if(!model.infer(&quot;data/gazelle.png&quot;)){  
+        LOGE(&quot;fail in infering model&quot;);  
+        return 0;  
+    }  
+  
+    return 0;  
+}  
+</code></pre>
+<h4 id="2-看一下model这个类做了什么">2. 看一下Model这个类做了什么</h4>
+<h4 id="21-工具">2.1 工具</h4>
+<p>首先先写一个Logger, 这里是从nvinfer1::ILogger继承过来的, 因为里面有一个必须实现的虚函数</p>
+<p>然后在下面自己把这些封装一下</p>
+<pre><code>virtual void log(Severity severity, AsciiChar const* msg) noexcept = 0;  
+
+
+
+class Logger : public nvinfer1::ILogger{  
+public:  
+    virtual void log (Severity severity, const char* msg) noexcept override{  
+        string str;  
+        switch (severity){  
+            case Severity::kINTERNAL_ERROR: str = RED    &quot;[fatal]&quot; CLEAR;  
+            case Severity::kERROR:          str = RED    &quot;[error]&quot; CLEAR;  
+            case Severity::kWARNING:        str = BLUE   &quot;[warn]&quot;  CLEAR;  
+            case Severity::kINFO:           str = YELLOW &quot;[info]&quot;  CLEAR;  
+            case Severity::kVERBOSE:        str = PURPLE &quot;[verb]&quot;  CLEAR;  
+        }  
+        // if (severity &lt;= Severity::kINFO)  
+        //     cout &lt;&lt; str &lt;&lt; string(msg) &lt;&lt; endl;  
+    }  
+};  
+</code></pre>
+<p>下面这段代码用于确保为TensorRT对象分配的内存在拥有它们的唯一指针超出范围时被正确地回收。</p>
+<p>首先智能指针std::unique_ptr 和 std::shared_ptr 是 C++ 标准库中的智能指针，用于管理动态分配的资源（如堆上的对象）。它们提供了自动资源管理，以帮助避免内存泄漏和释放后的访问错误。</p>
+<p>unique_ptr管理的资源只能被一个unique_Ptr拥有，当这个指针管理的作用域或被销毁时，它会自动释放所管理的资源。</p>
+<p>这边可以理解为是基于智能指针的第二层的保险</p>
+<pre><code>struct InferDeleter  
+{  
+    template &lt;typename T&gt;  
+    void operator()(T* obj) const  
+    {  
+        delete obj;  
+    }  
+};  
+  
+template &lt;typename T&gt;  
+using make_unique = std::unique_ptr&lt;T, InferDeleter&gt;;  
+</code></pre>
+<p>举个例子, make_uniquenvinfer1::IBuilder创建了一个智能指针builder，它管理一个nvinfer1::IBuilder对象，该对象是通过nvinfer1::createInferBuilder(logger)函数创建的。</p>
+<pre><code>auto builder       = make_unique&lt;nvinfer1::IBuilder&gt;(nvinfer1::createInferBuilder(logger));  
+</code></pre>
+<h4 id="22-构建模型-从onnx到engine">2.2 构建模型, 从onnx到engine</h4>
+<p>使用TensorRT的API根据ONNX模型构建和序列化引擎的过程,主要步骤包括:</p>
+<ol>
+<li>
+<p>判断引擎文件是否已经存在,如果存在直接加载,否则开始构建。</p>
+</li>
+<li>
+<p>创建TensorRT的构建器(IBuilder)、网络定义(INetworkDefinition)、构建配置(IBuilderConfig)。</p>
+</li>
+<li>
+<p>使用ONNX解析器(IParser)解析ONNX模型,生成TensorRT网络定义。</p>
+</li>
+<li>
+<p>设置最大工作空间大小,输出构建日志详情。</p>
+</li>
+<li>
+<p>根据精度模式设置构建配置的优化方式。</p>
+</li>
+<li>
+<p>使用构建器和配置构建引擎(ICudaEngine)。</p>
+</li>
+<li>
+<p>序列化引擎为plan文件,并保存到磁盘。</p>
+</li>
+<li>
+<p>反序列化plan文件获取ICudaEngine。</p>
+</li>
+<li>
+<p>记录输入和输出的维度信息。</p>
+</li>
+<li>
+<p>打印网络结构的优化前后信息。</p>
+</li>
+<li>
+<p>返回构建成功的标志。</p>
+</li>
+</ol>
+<p>所以主要步骤是:</p>
+<ol>
+<li>
+<p>使用ONNX解析器解析模型得到TensorRT网络定义</p>
+</li>
+<li>
+<p>使用TensorRT构建器和配置构建优化后的引擎</p>
+</li>
+<li>
+<p>序列化并保存引擎计划到磁盘</p>
+</li>
+<li>
+<p>反序列化加载引擎</p>
+</li>
+</ol>
+<p>通过这些步骤完成了使用TensorRT对ONNX模型进行解析、优化、构建和序列化的工作,得到了一个高性能的TensorRT引擎。</p>
+<pre><code>bool Model::build_engine() {  
+    // 我们也希望在build一个engine的时候就把一系列初始化全部做完，其中包括  
+    //  1. build一个engine  
+    //  2. 创建一个context  
+    //  3. 创建推理所用的stream  
+    //  4. 创建推理所需要的device空间  
+    // 这样，我们就可以在build结束以后，就可以直接推理了。这样的写法会比较干净  
+    auto builder       = shared_ptr&lt;IBuilder&gt;(createInferBuilder(*m_logger), destroy_trt_ptr&lt;IBuilder&gt;);  
+    auto network       = shared_ptr&lt;INetworkDefinition&gt;(builder-&gt;createNetworkV2(1), destroy_trt_ptr&lt;INetworkDefinition&gt;);  
+    auto config        = shared_ptr&lt;IBuilderConfig&gt;(builder-&gt;createBuilderConfig(), destroy_trt_ptr&lt;IBuilderConfig&gt;);  
+    auto parser        = shared_ptr&lt;IParser&gt;(createParser(*network, *m_logger), destroy_trt_ptr&lt;IParser&gt;);  
+  
+    config-&gt;setMaxWorkspaceSize(m_workspaceSize);  
+    config-&gt;setProfilingVerbosity(ProfilingVerbosity::kLAYER_NAMES_ONLY); //这里也可以设置为kDETAIL;  
+  
+    if (!parser-&gt;parseFromFile(m_onnxPath.c_str(), 1)){  
+        return false;  
+    }  
+  
+    if (builder-&gt;platformHasFastFp16() &amp;&amp; m_params-&gt;prec == model::FP16) {  
+        config-&gt;setFlag(BuilderFlag::kFP16);  
+        config-&gt;setFlag(BuilderFlag::kPREFER_PRECISION_CONSTRAINTS);  
+    }  
+  
+    auto engine        = shared_ptr&lt;ICudaEngine&gt;(builder-&gt;buildEngineWithConfig(*network, *config), destroy_trt_ptr&lt;ICudaEngine&gt;);  
+    auto plan          = builder-&gt;buildSerializedNetwork(*network, *config);  
+    auto runtime       = shared_ptr&lt;IRuntime&gt;(createInferRuntime(*m_logger), destroy_trt_ptr&lt;IRuntime&gt;);  
+  
+    // 保存序列化后的engine  
+    save_plan(*plan);  
+  
+    // 根据runtime初始化engine, context, 以及memory  
+    setup(plan-&gt;data(), plan-&gt;size());  
+  
+    // 把优化前和优化后的各个层的信息打印出来  
+    LOGV(&quot;Before TensorRT optimization&quot;);  
+    print_network(*network, false);  
+    LOGV(&quot;After TensorRT optimization&quot;);  
+    print_network(*network, true);  
+  
+    return true;  
+}  
+</code></pre>
+<h4 id="23-infer-模型推理">2.3 infer 模型推理</h4>
+<p>简单流程, 比较方便大家理解，如果推理一个TensorRT的文件</p>
+<pre><code>runtime-&gt;engine  
+engine-&gt;context  
+context-&gt;intput_dims,  (224X224, 640x640)  
+context-&gt;output_dims  
+context-&gt;enquenev2  
+</code></pre>
+<p>这里为了方便理解，我把这个地方分成了15个步骤</p>
+<ol>
+<li>加载引擎</li>
+</ol>
+<pre><code>// 1. 加载引擎  
+vector&lt;unsigned char&gt; modelData = loadFile(mEnginePath);  
+auto runtime = make_unique&lt;nvinfer1::IRuntime&gt;(nvinfer1::createInferRuntime(logger));  
+auto engine = make_unique&lt;nvinfer1::ICudaEngine&gt;(runtime-&gt;deserializeCudaEngine(modelData.data(), modelData.size()));  
+</code></pre>
+<ol start="2">
+<li>创建一个流来做后面的异步处理</li>
+</ol>
+<pre><code>cudaStream_t stream;  
+CUDA_CHECK(cudaStreamCreate(&amp;stream));  
+</code></pre>
+<ol start="3">
+<li>从engine拿到模型的输入和输出, 也要计算出来input, output的size, 为了后面的cudaMemcpy做的</li>
+</ol>
+<pre><code>int input_width    = input_dims.d[3];  
+int input_height   = input_dims.d[2];  
+int input_channel  = input_dims.d[1];  
+int num_classes    = output_dims.d[1];  
+int input_size     = input_channel * input_width * input_height * sizeof(float);  
+int output_size    = num_classes * sizeof(float);  
+</code></pre>
+<ol start="4">
+<li>给预处理分配足够的Device空间和Host空间, 这里主要是用了之前的CUDA_CHECK</li>
+</ol>
+<pre><code>/*Preprocess -- 分配host和device的内存空间*/  
+float* input_host    = nullptr;  
+float* input_device  = nullptr;  
+float* output_host   = nullptr;  
+float* output_device = nullptr;  
+CUDA_CHECK(cudaMalloc(&amp;input_device, input_size));  
+CUDA_CHECK(cudaMalloc(&amp;output_device, output_size));  
+CUDA_CHECK(cudaMallocHost(&amp;input_host, input_size));  
+CUDA_CHECK(cudaMallocHost(&amp;output_host, output_size));  
+</code></pre>
+<ol start="5">
+<li>preprocess打印信息</li>
+</ol>
+<pre><code>/*Preprocess -- 读取数据*/  
+cv::Mat input_image;  
+input_image = cv::imread(imagePath);  
+if (input_image.data == nullptr) {  
+    LOGE(&quot;file not founded! Program terminated&quot;);  
+    return false;  
+} else {  
+    LOG(&quot;Model:      %s&quot;, getFileName(mOnnxPath).c_str());  
+    LOG(&quot;Precision:  %s&quot;, getPrecision(mPrecision).c_str());  
+    LOG(&quot;Image:      %s&quot;, getFileName(imagePath).c_str());  
+}  
+</code></pre>
+<p>会有下面的输出</p>
+<pre><code>[info]models/engine/resnet50_fp32.engine has been generated!  
+[info]Model:      resnet50.onnx  
+[info]Precision:  FP32  
+[info]Image:      fox.png  
+</code></pre>
+<ol start="6">
+<li>做图像的预处理工作 归一化 + BGR2RGB + hwc2chw</li>
+</ol>
+<p>先看一下hwc跟chw的区别</p>
+<ol>
+<li>HWC格式:</li>
+</ol>
+<ul>
+<li>
+<p>HEIGHT: 图像的高度,有多少行</p>
+</li>
+<li>
+<p>WIDTH: 图像的宽度,每行有多少列</p>
+</li>
+<li>
+<p>CHANNEL: RGB三个通道,每个像素点有RGB三个值</p>
+</li>
+</ul>
+<p>可以想象为一叠书,每本书是一张图像,书页的高和宽就是H和W,一页书由墨水的RGB三原色混合而成,是三个channel。</p>
+<ol start="2">
+<li>CHW格式:</li>
+</ol>
+<ul>
+<li>
+<p>CHANNEL: 把图像看成三个通道的集合,R通道一堆,G通道一堆,B通道一堆</p>
+</li>
+<li>
+<p>HEIGHT: 每个通道堆里有多少行,行数等于图像高度</p>
+</li>
+<li>
+<p>WIDTH: 每行有多少列,列数等于图像宽度</p>
+</li>
+</ul>
+<p>可以想象为把书分开三摞,每摞书是一种颜色的页面,每本书的页数(高度)和每页的文字数量(宽度)不变。</p>
+<p>输入时HWC格式比较直观,但CHW格式在计算机中的存储更连续,利于访问。这个转换 rearrange了元素的位置,但总数据量未变。</p>
+<p>总结是h的合集，w的合集，根据不同通道</p>
+<p>实现hwc2chw的地方是通过下面循环，</p>
+<pre><code>for (int i = 0; i &lt; input_height; i++) {  
+for (int j = 0; j &lt; input_width; j++) {  
+    index = i * input_width * input_channel + j * input_channel;  
+</code></pre>
+<p>BGR2RGB就是在写的时候把通道换一下就好了，归一化在这个里面做的</p>
+<pre><code>/*Preprocess -- host端进行normalization + BGR2RGB + hwc2cwh)*/  
+int index;  
+int offset_ch0 = input_width * input_height * 0;  
+int offset_ch1 = input_width * input_height * 1;  
+int offset_ch2 = input_width * input_height * 2;  
+for (int i = 0; i &lt; input_height; i++) {  
+for (int j = 0; j &lt; input_width; j++) {  
+    index = i * input_width * input_channel + j * input_channel;  
+    input_host[offset_ch2++] = (input_image.data[index + 0] / 255.0f - mean[0]) / std[0];  
+    input_host[offset_ch1++] = (input_image.data[index + 1] / 255.0f - mean[1]) / std[1];  
+    input_host[offset_ch0++] = (input_image.data[index + 2] / 255.0f - mean[2]) / std[2];  
+}  
+}  
+</code></pre>
+<p>总结: 这里其实就是在input_host上面把数据做了</p>
+<ol start="6">
+<li>TensorRT执行推理</li>
+</ol>
+<p>把数据从host挪到Device上面去，然后执行enqueueV2, 这里就是TRT的黑盒子过程了，这里就会把build engine的时候所计算出来最好的方法拿出来用</p>
+<pre><code>CUDA_CHECK(cudaMemcpyAsync(input_device, input_host, input_size, cudaMemcpyKind::cudaMemcpyHostToDevice, stream));  
+/*Inference -- device端进行推理*/  
+float* bindings[] = {input_device, output_device};  
+if (!context-&gt;enqueueV2((void**)bindings, stream, nullptr)){  
+    LOG(&quot;Error happens during DNN inference part, program terminated&quot;);  
+    return false;  
+}  
+</code></pre>
+<ol start="7">
+<li>从后处理拿到结果并且输出到控制台</li>
+</ol>
+<p>想要后处理，还得把数据从Device放到Host上面去, 这里不要忘记了还要同步一下</p>
+<pre><code>CUDA_CHECK(cudaMemcpyAsync(output_host, output_device, output_size, cudaMemcpyKind::cudaMemcpyDeviceToHost, stream));  
+CUDA_CHECK(cudaStreamSynchronize(stream));  
+</code></pre>
+<p>然后取出来labels最大的那个类别</p>
+<pre><code>/*Postprocess -- 寻找label*/  
+ImageNetLabels labels;  
+int pos = max_element(output_host, output_host + num_classes) - output_host;  
+float confidence = output_host[pos] * 100;  
+</code></pre>
+<p>然后就可以看到对应的结果了</p>
+<h4 id="3-总结">3. 总结</h4>
+<p>上面完成的是一个基于TensorRT实现图像分类的推理框架。总体来说,该框架存在以下问题:</p>
+<ol>
+<li>
+<p>设计模式缺失,导致代码复用性、扩展性、可读性较差。建议使用面向对象设计模式,提高模块化和封装程度。</p>
+</li>
+<li>
+<p>封装不够,外部函数需要处理内部逻辑,降低了抽象程度。建议降低接口间的耦合,隐藏内部实现细节。</p>
+</li>
+<li>
+<p>内存复用方面有优化空间,存在重复分配和释放开销。建议预分配资源,重用上下文对象,减少内存操作。</p>
+</li>
+<li>
+<p>存在多方面功能不完善之处,如INT8量化、TensorRT插件、并行推理等。后续需要持续扩展,使框架功能更加完备。</p>
+</li>
+<li>
+<p>当前仅支持单张图像推理,无法扩展到批处理。建议抽象批处理逻辑,实现动态大小的批处理。</p>
+</li>
+<li>
+<p>仅使用GPU推理,可进一步利用CPU并行来优化。</p>
+</li>
+</ol>
+<p>综上,该框架尚需在模块化、性能、功能等多方面进一步优化。但作为初步实践和总结,已经反映出框架设计和实现的多方面考量,对后续改进具有很好的启发作用。</p>
+<h4 id="引用">引用</h4>
+<p>[1] <a href="https://wrzpl.xet.tech/s/T30p4">https://wrzpl.xet.tech/s/T30p4</a></p>
+<p>投稿作者为『**<a href="http://mp.weixin.qq.com/s?__biz=Mzg2NzUxNTU1OA==&amp;mid=2247542481&amp;idx=1&amp;sn=c6d8609491a128233c3c3b91d68d22a6&amp;chksm=ceb80b18f9cf820e789efd75947633aec9d2f1e8b58c29e5051c05a64b21ae63c244d54886a1&amp;scene=21#wechat_redirect">自动驾驶之心知识星球** </a>』特邀嘉宾，如果您希望分享到自动驾驶之心平台，欢迎联系我们！</p>
+<p><strong>① 全网独家视频课程</strong></p>
+<p>BEV感知、毫米波雷达视觉融合、多传感器标定、多传感器融合、多模态3D目标检测、点云3D目标检测、目标跟踪、Occupancy、cuda与TensorRT模型部署、协同感知、语义分割、自动驾驶仿真、传感器部署、决策规划、轨迹预测等多个方向学习视频（扫码学习）</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/VnDXQzNf28iaw7QriaBH6ejCvSYMwBS1na5WicfvsibtQtjwHoTDcHgzaCkU0myUseXiaTuGFCy7Dmr4dricUyIUjDuA/640?wx_fmt=png" alt=""><strong>视频官网：www.zdjszx.com</strong></p>
+<p><strong>② 国内首个自动驾驶学习社区</strong></p>
+<p>近2000人的交流社区，涉及30+自动驾驶技术栈学习路线，想要了解更多自动驾驶感知（2D检测、分割、2D/3D车道线、BEV感知、3D目标检测、Occupancy、多传感器融合、多传感器标定、目标跟踪、光流估计）、自动驾驶定位建图（SLAM、高精地图、局部在线地图）、自动驾驶规划控制/轨迹预测等领域技术方案、AI模型部署落地实战、行业动态、岗位发布，欢迎扫描下方二维码，加入自动驾驶之心知识星球，<strong>这是一个真正有干货的地方，与领域大佬交流入门、学习、工作、跳槽上的各类难题，日常分享论文+代码+视频</strong> ，期待交流！</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/VnDXQzNf28iaw7QriaBH6ejCvSYMwBS1naglHVebfuzu9Kib5ISibL2hNUz0fgrI5IZpib4lIyfcOZgfc0ibiaZucuKKA/640?wx_fmt=png" alt=""></p>
+<p><strong>③【自动驾驶之心】技术交流群</strong></p>
+<p>自动驾驶之心是首个自动驾驶开发者社区，聚焦<strong>目标检测、语义分割、全景分割、实例分割、关键点检测、车道线、目标跟踪、3D目标检测、BEV感知、多模态感知、Occupancy、多传感器融合、transformer、大模型、点云处理、端到端自动驾驶、SLAM、光流估计、深度估计、轨迹预测、高精地图、NeRF、规划控制、模型部署落地、自动驾驶仿真测试、产品经理、硬件配置、AI求职交流</strong> 等方向。扫码添加汽车人助理微信邀请入群，备注：学校/公司+方向+昵称（快速入群方式）</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/VnDXQzNf28gNGkZiccNuy2sVaasM9icvqAtFUC6vNtlCs5GCicT7wO2ZqCKsddgXTaziaozxiaFnTAf1ly9RbxkPjJQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>**④【自动驾驶之心】平台矩阵，**<strong>欢迎联系我们！</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/VnDXQzNf28ia3hoDSGRZt36EuD7qibF9xBe1LuAdjia8Yzhk2CQUPx2nNu8Faia93FwdPJy4t4e6SWeNPYIdc0sUwg/640?wx_fmt=jpeg" alt=""></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

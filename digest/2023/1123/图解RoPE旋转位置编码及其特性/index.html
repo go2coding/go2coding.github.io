@@ -1,0 +1,677 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>图解RoPE旋转位置编码及其特性 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">图解RoPE旋转位置编码及其特性</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              November 23, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBInatcSD0JL9icRIsa0iagy0ic2oIibghZczMhBsmLMCsuRNUxHFQ2Dr21w/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： YeungNLP  来源： <a href="https://mp.weixin.qq.com/s/-1xVXjoM0imXMC7DKqo-Gw">YeungNLP</a></p>
+<p><strong>01</strong></p>
+<p>前言</p>
+<p>旋转位置编码RoPE (Rotary Position Embedding) 是目前大模型中广泛使用的一种位置编码，包括但不限于Llama、Baichuan、ChatGLM、Qwen等。由于计算资源限制，目前的大模型大多在较小的上下文长度中进行训练，在推理中，若超出预训练的长度，模型的性能将会显著降低。于是涌现出了许多基于RoPE的长度外推的工作，旨在让大模型能够在预训练长度之外，取得更好的效果。所以弄清楚RoPE的底层原理，对于RoPE-base模型进行长度外推至关重要。</p>
+<p>本文主要结合苏神关于Roformer的论文与博客进行介绍。在原博客和论文中，苏神更多的是以复数的形式推导和介绍RoPE，本文将主要从向量旋转的角度对RoPE进行介绍，并且结合函数图像，以数形结合的方式帮助大家更直观地理解RoPE的各种性质。</p>
+<p><strong>02</strong></p>
+<p>为什么需要位置编码？</p>
+<p>众所周知，transformer模型之所以能够取得如此卓越的效果，其中的Attention机制功不可没，它的本质是计算输入序列中的每个token与整个序列的注意力权重。假设  和  分别表示词向量  位于位置  和词向量  位于位置  ，在未添加位置信息的时候，  ，则两者的注意力权重计算如下:</p>
+<p>我们会发现，在未加入位置信息的情况下，无论  和  所处的位置如何变化，它们之间的注意力权重  均不会发生变化，也就是位置无关，这显然与我们的直觉不符。对于两个词向量，如果它们之间的距离较近，我们希望它们之间的的注意力权重更大，当距离较远时，注意力权重更小。</p>
+<p>为了解决这个问题，我们需要为模型引入位置编码，让每个词向量都能够感知到它在输入序列中所处的位置信息。我们定义如下函数，该函数表示对词向量  注入位置信息  ，得到  ：</p>
+<p>则  与  之间的注意力权重可表示为：</p>
+<p><strong>03</strong></p>
+<p>绝对位置编码</p>
+<p>我们先简单回顾一下经典的绝对位置编码，主要包括<strong>训练式位置编码</strong> 与<strong>Sinusoidal位置编码</strong> 。</p>
+<p>训练式位置编码</p>
+<p>训练式位置编码，顾名思义就是每个位置的位置向量会随着模型一起训练。假设模型最大输入长度为512，向量维度为768，我们可初始化一个512*768的位置编码矩阵，该矩阵将参与模型的训练，从而学习得到每个位置所对应的向量表示。</p>
+<p>如何为每个位置的词向量注入位置信息呢？答案是相加，如以下公式所示，其中  表示第  个位置的位置向量：</p>
+<p>训练式位置编码广泛应用于早期的transformer类型的模型，如BERT、GPT、ALBERT等。但其缺点是模型不具有长度外推性，因为位置编码矩阵的大小是预设的，若对其进行扩展，将会破坏模型在预训练阶段学习到的位置信息。例如将512<em>768扩展为1024</em>768，新拓展的512个位置向量缺乏训练，无法正确表示512~1023的位置信息。但早期大家对长文本输入的需求并不如现在迫切。</p>
+<p>Sinusoidal位置编码</p>
+<p>Sinusoidal位置编码是谷歌在Transformer模型中提出的一种绝对位置编码，它的形式如下，其中  表示词向量的维度，  表示位置索引，  和  表示位置向量的分量索引，例如  和  分别表示位置  的位置向量的第  和第  个分量：</p>
+<p>Sinusoidal位置编码的每个分量都是正弦或余弦函数，所有每个分量的数值都具有周期性。如下图所示，每个分量都具有周期性，并且越靠后的分量，波长越长，频率越低。这是一个非常重要的性质，基于RoPE的大模型的长度外推工作，与该性质有着千丝万缕的关联，后续我们会进行分享。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBYOibrcbPwaxXDsWfTt0HHjTfGFT4sl8IVACx8CB1nlKcGLaUTooI8fg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>Sinusoidal位置编码还具有远程衰减的性质，具体表现为：对于两个相同的词向量，如果它们之间的距离越近，则他们的内积分数越高，反之则越低。如下图所示，我们随机初始化两个向量q和k，将q固定在位置0上，k的位置从0开始逐步变大，依次计算q和k之间的内积。我们发现随着q和k的相对距离的增加，它们之间的内积分数震荡衰减。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBm0NSyyPFFb4EFZJEkT1rtrPEib6EWN2u5zWgZXb8ShXk8WfRuGURovg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>因为Sinusoidal位置编码中的正弦余弦函数具备周期性，并且具备远程衰减的特性，所以理论上也具备一定长度外推的能力。</p>
+<p><strong>04</strong></p>
+<p>RoPE位置编码</p>
+<p>在这里先直接抛出一个直观的结论：RoPE位置编码通过将一个向量旋转某个角度，为其赋予位置信息。</p>
+<p>RoPE的出发点</p>
+<p>接下来进入今天的主角RoPE位置编码。在绝对位置编码中，尤其是在训练式位置编码中，模型只能感知到每个词向量所处的绝对位置，并无法感知两两词向量之间的相对位置。对于Sinusoidal位置编码而言，这一点得到了缓解，模型一定程度上能够感知相对位置。</p>
+<p>对于RoPE而言，作者的出发点为：通过绝对位置编码的方式实现相对位置编码。回顾我们此前定义的位置编码函数，该函数表示对词向量  添加绝对位置信息  ，得到  ：</p>
+<p>RoPE希望  与  之间的点积，即  中能够带有相对位置信息  。那么  如何才算带有相对位置信息呢？只需要能够将  表示成一个关于  、  、  的函数  即可，其中  便表示着两个向量之间的相对位置信息。</p>
+<p>因此我们建模的目标就变成了：找到一个函数  ，使得如下关系成立:</p>
+<p>二维位置编码</p>
+<p>为了简化问题，我们先假设词向量是二维的。作者借助复数来进行求解，在此我们省略求解过程，直接抛出答案，最终作者得到如下位置编码函数，其中  为位置下标，  为一个常数： 为了更好地理解上面的函数，我们先简单复习一下线性代数中的旋转矩阵。在二维空间中，存在一个旋转矩阵  ，当一个二维向量左乘旋转矩阵时，该向量即可实现弧度为  的逆时针旋转操作。</p>
+<p>我们以二维向量  为例，将其逆时针旋转45度，弧度为 ，将得到新的二维向量 ，向量的模长未发生改变，仍然是1。计算过程如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBLcbodCJLQCRBT0fmCphRkyz4ibQoHYS7mp0dIKLO1micktusATHHm7pg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBsiclibtXw7r7155mQNTX8VRsODKnpPXricZFEhkrCgjHpjpPibvfy2nrZw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>回看我们求解得到的位置编码函数  ，感叹数学之美，我们得到的是一个向量旋转的函数，左侧的  是一个旋转矩阵，  表示在保持向量 的模长的同时，将其逆时针旋转  。这意味着只需要将向量旋转某个角度，即可实现对该向量添加绝对位置信息，这就是旋转位置编码的由来。</p>
+<p>我们进一步验证RoPE是否能通过绝对位置编码的方式实现相对位置编码。当我们求两个向量之间的点积会发现，它们的点积是一个关于 、  、  的函数 ，所以函数  实现了以绝对位置编码的方式实现相对位置编码。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBzOwdkU2EKcca6q1RxcALytVYw0LIJjfzA8vUYKssFDBiapyGPsraI1g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>为了更加形象生动地理解旋转位置编码，我们结合图形描述如何为一个二维向量赋予位置编码。假设存在向量  ，位置编码函数  中的  是一个常量，我们不妨设为1，则：</p>
+<p>向量  位于位置0,1,2,3时，分别将向量  旋转0,1,2,3弧度，就可以为其赋予对应的绝对位置信息。如下图所示，只需要对向量进行旋转操作，即可对向量添加对应的位置信息。并且向量旋转具有周期性。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBVC2qgo1D2jeicGuRicnVIMwgQlCjHuRsq6zyvs9iaibysFB7oZZjKeb4aA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>到此为止，我们已经弄明白了旋转位置编码的来源、数学意义，以及它是如何使用绝对位置实现相对位置编码，大道至简，惊叹数学的优雅。</p>
+<p>推广到多维</p>
+<p>上述我们介绍了如何为一个二维向量赋予绝对位置信息：旋转一定的角度即可。但我们知道词向量的维度一般是几百甚至上千，如何将我们上述旋转的结论推广到多维呢？分而治之即可，我们把高维向量，两两一组，分别旋转。最终高维向量的旋转可表示成如下公式，可以认为左侧便是高维向量的旋转矩阵：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBrib4jpOeqc857iba9DWT5P04SmHwdoaCrFeWjpc9DEhGBctfJ4tpMZIg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>远程衰减性</p>
+<p>在此前的推导中，我们说过  可以是一个任意常量，我们不妨将其设为1，以便查看其性质。我们随机初始化两个向量q和k，将q固定在位置0上，k的位置从0开始逐步变大，依次计算q和k之间的内积。我们发现随着q和k的相对距离的增加，它们之间的内积分数呈现出一定的震荡特性，缺乏了重要的远程衰减性，这并不是我们希望的。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBInatcSD0JL9icRIsa0iagy0ic2oIibghZczMhBsmLMCsuRNUxHFQ2Dr21w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>借鉴Sinusoidal位置编码，我们可以将每个分组的  设为不同的常量，从而引入远程衰减的性质。这里作者直接沿用了Sinusoidal位置编码的设置，  。则我们可以将高维向量的旋转矩阵更新为如下</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBPb9nKoWf1Pfo0mFKhnia8pJkmsZVcmHI3icytNbZSbXAmcvt3haVnFcw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>上式中的旋转矩阵十分稀疏，为了节省算力，可以以下面的方式等效实现：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmByuZE7EMChNQYEg4HK2qBdPJmzAAm6uglJlBqXeSFNy9pySQJEFrenA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>‍</p>
+<p>我们继续随机初始化两个向量q和k，将q固定在位置0上，k的位置从0开始逐步变大，依次计算q和k之间的内积。我们发现随着q和k的相对距离的增加，它们之间的内积分数呈现出远程衰减的性质，这正是我们希望的。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBBKQzxAJl1Erro21PkhuOGV8PwvryZdkygticgftjH1NAL5HJwGEfjYA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>‍‍‍‍‍</p>
+<p>在原始的RoPE中，沿用了Si‍‍nusoidal位置编码的设置，令 ，但 一定要取  吗？我们继续深入探讨一下 中base的取值的影响。依然结合图像来进行说明，此次我们初始化两个全一向量q和k（为了让图像显得不那么杂乱‍‍），将q固定在位置0上，k的位置从0开始逐步变大，依次计算q和k之间的内积。当我们将base取不同的值的时候，q和k的内积随着相对位置变化趋势如下图。‍</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBJicBFwt6IC9xkAWFf9G9xlaVmAIqdynEjvjgoRVP6h0PCrgS6wJiaoPA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>‍‍‍‍</p>
+<p>‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p>‍‍如上图我们可以总结得到一些规律，base的不同取值会影响注意力远程衰减的程度。当base大于500时，随着base的提升，远程衰减的程度会逐渐削弱。但太小的base也会破坏注意力远程衰减的性质，例如base=10或100时，注意力分数不再随着相对位置的增大呈现出震荡下降的趋势。更极端的情况下，当base=1时，其实也就是上面我们提到的，将所有  都设为1的情况，将完全失去远程衰减特性，如下图所示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBjfGrFA579icy8iaHrgevhg5OTZ9lmXcv1AohK6BChnJztu15JKCyUTgg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>‍‍‍‍‍‍‍‍‍‍‍‍</p>
+<p>对于base的性质的研究，与大模型的长度外推息息相关，如NTK-Aware Scaled RoPE、NTK-by-parts、Dynamic NTK等长度外推方法，本质上都是通过改变base，从而影响每个位置对应的旋转角度，进而影响模型的位置编码信息，最终达到长度外推的目的。目前大多长度外推工作都是通过放大base以提升模型的输入长度，例如Code LLaMA将base设为1000000，LLaMA2 Long设为500000，但更大的base也将会使得注意力远程衰减的性质变弱，改变模型的注意力分布，导致模型的输出质量下降。如下图所示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NEqDVM75TBvw6jSI27T4DmBfQ5AibGww0Avfm51PUhl54lR0cnyjuVBMm8jiat78b38A7coib3lLGctA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>‍‍</p>
+<p>在本文中，我们暂且不对长度外推工作展开介绍，后续我们将专门写一篇文章分享各种主流的长度外推方法。</p>
+<p><strong>05</strong></p>
+<p>结语</p>
+<p>RoPE位置编码，以向量旋转这种简单巧妙的方式，实现了绝对位置编码，并且具备相对位置编码的能力。RoPE目前广泛应用于各种大模型，包括但不限于Llama、Baichuan、ChatGLM、Qwen等。基于RoPE的长度外推工作不断涌现，并且获得了非常优秀的效果。如果当前你需要研究大模型的长度外推工作，那么弄清楚RoPE的底层原理则为一门必修课。</p>
+<p>后续我们也将继续以图解的方式，对现有的长度外推工作进行分享介绍。</p>
+<p>您的<strong>点赞、在看、关注</strong> 是我坚持的最大动力！</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
