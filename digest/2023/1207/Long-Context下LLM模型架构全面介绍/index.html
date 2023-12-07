@@ -1,0 +1,817 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>Long-Context下LLM模型架构全面介绍 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">Long-Context下LLM模型架构全面介绍</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              December 7, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHh0OfxLOBohpWyg8zWdkibC0icwYG8ic7SshVkEyr683Q4oGBobXKreFOg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/ZjV6CwZflKMtSvknCLF39Q">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHOtLtk6WWFm37JXC3P2dHibqDgguAlrejreGopCRcbyc8u4HbsHkuMZg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>随着ChatGPT的快速发展，基于Transformer的大型语言模型(LLM)为人工通用智能(AGI)铺平了一条革命性的道路，并已应用于知识库、人机界面和动态代理等不同领域。然而，存在一个普遍的限制:当前许多LLM受资源限制，主要是在较短的文本上进行预训练，使它们对现实世界中常见的较长的上下文提示不太有效。本文对基于Transformer的LLM模型架构的进展进行了全面的介绍。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHvIfptKBicZXDZXLeNuiaXbdFKxj4dTWxK4icd5k1dhznicMFSZlIyt9iadw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<blockquote>
+<blockquote>
+<p><strong>论文：</strong><br>
+Advancing Transformer Architecture in Long-Context Large Language Models: A Comprehensive Survey</p>
+<p><strong>地址：</strong><br>
+<a href="https://arxiv.org/pdf/2311.12351.pdf">https://arxiv.org/pdf/2311.12351.pdf</a></p>
+</blockquote>
+</blockquote>
+<h4 id="介绍">介绍</h4>
+<p>近年来，利用深度学习的技术，特别是BERT、GPT系列等基于Transformer的模型大量涌现，NLP取得了显著进步，使机器能够理解和生成人类语言，从而彻底改变了自然语言理解(NLU)中的许多任务(如情感分析)，自然语言生成(NLG)(如文本摘要)，以及其他领域，如计算机视觉和自动驾驶。此外，随着ChatGPT、PaLM、GPT4等的出现，基于Transformer的大型语言模型(LLMs)可扩展到1B ~100B参数以增强涌现能力，已显示出一条通向人工通用智能(AGI)的令人振奋的新道路，并迅速被大量人机交互应用程序采用，如聊天机器人、编程助手和教育导师。</p>
+<p>Transformer是一个深度神经网络模型，当代LLM主要通过使用Transformer的全部或部分模块来建立其基础。其成功可归因于核心的注意力机制，捕捉了整个输入中每一对token的全局依赖关系，使模型能够处理具有复杂关系的序列。虽然注意力机制提供了卓越的性能，但其关于输入序列长度的二次时间和空间复杂性导致了显著的计算资源瓶颈，不仅限制了训练期间允许的输入文本长度，还由于效率不理想以及推理过程中生成的token增加而增加昂贵的内存消耗，也限制了提示的有效上下文窗口。对推理来说更糟糕的是，当面对比训练中的序列更长的序列时，LLM的性能也会下降，这是因为对输入长度的可泛化机制设计较差。</p>
+<p>然而，LLM在需要长上下文理解和生成的应用，对能够有效和高效地理解和生成极长序列的长上下文LLM的需求变得越来越不可或缺和迫切。因此，研究人员投入了大量精力来增强Transformer架构，以解决LLM中的长上下文问题，包括对注意力效率的优化、具有额外记忆机制的上下文窗口扩展、使用外推位置嵌入的有效长度泛化、上下文预处理/后处理和其他方法，如特定的预训练目标、专家混合、量化、并行等。</p>
+<h4 id="概览">概览</h4>
+<p>我们从基本的语言建模目标、典型的建模阶段到基于Transformer的仅解码器的LLM中的关键架构模块进行初步介绍。简要分析了LLM遇到广泛的上下文窗口时的架构限制。提出了一种全面的方法分类法，旨在通过架构创新增强LLM的长上下文能力。</p>
+<h4 id="预备知识">预备知识</h4>
+<h4 id="语言建模">语言建模</h4>
+<p>LLM的核心是语言建模，其目的是使神经网络能够理解和生成人类语言。从数学的角度来看，神经语言建模的本质是近似任何给定文本出现的精确对数概率，记为，其中θ表示要学习的网络参数，由一系列表示自然语言的元素组成，包括单词、标点符号、数学符号等。然而，这项任务遇到了一个重要的实际障碍，称为维数诅咒，它源于随着的增加，可能性呈指数增长。为了避免，LLM采用掩码语言建模(MLM)和因果语言建模(CLM)。</p>
+<p>MLM是根据双向剩余未掩码token来预测掩码token，其目标可以写成式1。在给定所有其他token的情况下，最大化第个标记的条件概率，其中表示被掩码的索引集。相比之下，CLM的目标是预测下一个token，即在给定单向之前token的情况下，最大化每个token的条件概率(见公式2)。在这种设置中，因果LLM可以有效地利用自然语言序列中固有的时间依赖关系，使LLM能够生成连贯和上下文相关的文本。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHv2ZucU4cHQue6jicUcyu8ZKJD7ECfw2iccQSKiaqVFCICwGPdnqVKAu4Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="建模阶段">建模阶段</h4>
+<p>LLM的操作通常经历多阶段的建模过程。在预处理阶段，原始文本数据通过BPE等算法被分割并标记为单个token。然后，在预训练阶段，以MLM或CLM为目标，在大量文本语料库上训练模型，以捕获自然语言的语义模式和语言结构。预训练后，模型进入微调阶段，在此阶段中，它会在特定任务的数据上进一步训练。最后，将微调后的模型部署到下游场景中，以推理模式预测预期答案。在推理步骤中，模型通过一些解码策略(如贪婪搜索、波束搜索、核采样)从词汇表的概率分布进行预测，以逐个token的自回归范式对提示生成上下文连贯的响应。</p>
+<h4 id="解码器块">解码器块</h4>
+<p>Transformer架构主要由一个编码器和一个解码器组成，每个编码器和解码器都由多个相同的块堆叠。每个块的骨架与图1(a)中所示的框架基本一致。一般来说，第一个块将采用由词嵌入层编码的token化序列，然后是具有与特定语言建模目标相对应的注意力掩码的多头自注意力(MHA)层和前馈网络(FFN)层。在块的每个入口/出口，MHA层和FFN层都丰富了层归一化和残差连接。然后，每个更高级别的块将前一个块的输出隐藏状态作为输入，用其MHA和FFN层表示它们，并将它们提供给下一个块。最后一个块的最终输出隐藏状态被送入一个称为语言建模头的线性层，输出的logits将通过softmax操作转换为目标词汇表上的概率分布。在编码器-解码器Transformer中，编码器块和解码器块之间的轻微区别是，后者在输入FFN层之前，通过交叉注意力(CA)层与编码器的输出进行连接。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHfl3dNzfxwfWszKftQAYEyhNrzHnbAgJ2OxFNiaqwzKwrPAf1H1YlMIQ/640?wx_fmt=png&amp;from=appmsg" alt="">然而，这种结构最初是为机器翻译任务中的序列到序列建模而设计的。随后，它产生了几个变种，旨在更通用的语言建模目标，如MLM和CLM。BERT系列仅利用编码器与MLM来增强双向信息，作为判别模型。相反，GPT系列只使用CLM的解码器，专注于单向生成模型。然而，T5和BART变体将每个NLP任务视为文本到文本的转换，利用编码器和解码器。仅解码器的生成模型架构最近成为当前LLM的主要选择。如GPT4、PaLM、LLaMA和GLM等。</p>
+<h4 id="注意力机制">注意力机制</h4>
+<p>注意力机制作为在MHA层实现的Transformer的核心设计，根据输入序列中每个token与任何其他token的相关性计算每个token的加权表示。如图1 (a)所示，词嵌入的token序列，连接了总长度为L的长上下文和用户提示，将推导出三个具有线性投影层的嵌入矩阵(见公式3):query , key  以及 value 。然后，对于公式4中的注意力核操作，首先通过的矩阵乘法计算非归一化的相关矩阵，其中每一项对应token对的相关性。然后，归一化注意力分数矩阵通过缩放因子、的元素级掩码操作、以及行级softmax计算而得。最后，输出隐藏状态是由的每一行注意力权重的加权和生成的，通常需要额外的线性变换。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHgLrL7MoBcLZDGqLOyegp9Vic8kyJ4ANWbnxibvjdLXGbyEfFSXuzp69w/640?wx_fmt=png&amp;from=appmsg" alt="">、、、的嵌入维度可以不同，文中默认。至于掩码矩阵，它通常用于掩码填充token，以对齐所有批量输入序列，也适用于生成式LLM的因果语言建模的因果掩码操作。此外，为了捕获多样化的关系，该模型通常采用多头注意力而不是单头注意力，通过将等可学习参数划分为，以不同权重的集合并行执行注意力过程，其中表示头的数量。与嵌入维度类似，头的数量可以是特定于。</p>
+<h4 id="位置嵌入">位置嵌入</h4>
+<p>位置嵌入(PE)在Transformer中至关重要，特别是对于NLP任务。与循环神经网络(Rnn)不同，Transformer将输入token作为词袋并行处理，并且缺乏固有的序列顺序感。为了保留顺序信息，Transformer提出了一种新的正弦位置嵌入(SinPE)。如公式5所示，SinPE的每个维度中的每个条目都是基于sin、cos等三角函数推导出来的，周期相对于绝对token位置呈指数变化，其中base是一个大整数，根据原始论文手动设置为10000，没有进一步解释，d是隐藏状态的单位嵌入维度。最近出现了一些变体，包括可训练的嵌入来学习嵌入映射和基于相对位置的相对嵌入。其中，Rotary PE (RoPE)对复数域进行旋转操作(见公式6)，而不是基于绝对位置对Q、K进行相加，与SinPE共享相同的基函数。根据Eq.7中描述的性质，不仅RoPEs保证q,k的大小，并且P中的每一对q, k，只会根据它们在序列中的相对距离标记嵌入。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHSSDfeOupFvrTJQ8Cnzlg97QI2ToR5YavkP8ahicGeOJqq3vtt2w5ExQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="键值缓存">键值缓存</h4>
+<p>从狭义上讲，键值(KV)缓存是一个张量列表，存储每个块的注意力层中所有先前token的k,v嵌入，在因果LLM的自回归生成过程中使用和更新。如图1(a)所示，在生成第一个token之前，所有KV缓存都被初始化为空，在进行L个query和L个key的heave attention计算后，将被L个(key, value)对填充。然后，第一个生成的token也将被视为输入，将整个序列扩展为L+1个token。为了避免冗余计算，真正的输入将只包含最新生成的token，从而派生出一个新的(query, key, value)三元组。</p>
+<p>但是同样的计算，新的query必须关注和应用所有L+1个之前的键和值，因此新的(key，value)必须与存储在KV缓存中的过去的L对连接，并将自己更新到它中以供下一个生成的令牌参与。但是，从广义上讲，我们可以将KV缓存视为LLM的内存存储，其占用随着生成token的增加呈线性增长。</p>
+<h4 id="限制分析">限制分析</h4>
+<h4 id="注意力复杂度">注意力复杂度</h4>
+<p>通常的场景中，MHA的计算复杂度可以总结如下:它的时间复杂度为，包括投影的时间复杂度为，计算的时间复杂度为，获得的softmax操作的时间复杂度为， 和的乘法的时间复杂度为，输出的时间复杂度为。它的空间复杂度为，包括、、、嵌入的复杂度为，以及存储权重和的额外空间复杂度为。时间和空间计算成本都随着序列长度的扩展呈二次增长，这对训练和推理都是负担。</p>
+<h4 id="上下文存储">上下文存储</h4>
+<p>LLM缺乏显式的存储机制，仅依赖KV缓存将之前所有token的表示存储在一个列表中。这种设计意味着，一旦query在一次调用中完成，Transformer就不会在后续调用中保留或回忆任何先前的状态或序列，因此，Transformer在每次调用期间只具有上下文中的工作记忆，而不是诸如长短期记忆(LSTM)等固有记忆机制。</p>
+<h4 id="最大长度约束">最大长度约束</h4>
+<p>在训练阶段，通常需要确定一个关键的超参数max-length，在本文中记为。这个超参数表示批次中任何训练样本的序列长度上界。根据可用的计算资源，它通常被设置为1k、2k或4k，以避免GPU上的内存不足(OOM)错误。然而，在推理过程中，LLM服务提供商还必须限制用户提示的长度，或自动截断它们以与预定义的对齐，即使推理资源通常比训练期间更丰富。然而，当前的语言模型在处理超过的输入序列时表现出明显的性能下降，往往导致重复和不合理的输出。</p>
+<h4 id="分类">分类</h4>
+<p>根据各阶段不同的提升LLM的长上下文能力方法，可分类为5大类，如图1(b)所示：</p>
+<p>1️⃣高效注意力:这些方法专注于实现高效的注意力机制，减少计算需求，甚至实现线性复杂度。</p>
+<p>2️⃣长期记忆:一些方法旨在设计显式记忆机制，以补偿LLM中高效和有效的长期记忆的缺乏。</p>
+<p>3️⃣外推PEs:通过改进现有位置编码方案的外推特性来增强LLM的长度泛化能力。</p>
+<p>4️⃣上下文处理:这些方法通过引入多个调用开销来确保每次调用中馈送到LLM的输入始终满足最大长度要求，并打破上下文窗口限制。</p>
+<p>5️⃣其他:不能完全归入前四个类别的各种通用和有价值的方法。</p>
+<h4 id="高效注意力">高效注意力</h4>
+<h4 id="局部注意力">局部注意力</h4>
+<p>传统注意力机制的特点是其全局和完全注意力的性质，其中每个token都期望关注其他每个token，导致二次时间和空间复杂度。考虑到局部上下文在某些应用中的重要性，近年来提出了各种方法来实现局部注意力机制。这些机制将每个token的注意力限制在其相邻的token上，而不是所有token，这些方法之间的差异来自于确定谁是token邻居的启发式标准，如图2所示。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHcUJKdic09JsqFJL1Z19zgUlpjAJQBJc6icicJtL8IHfHcSmyUd3xMpeYA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="基于块的注意力">基于块的注意力</h4>
+<p>实现局部注意力的一个简单方法是将输入序列分割为不重叠的块。正如BlockBERT所提出的，在固定大小B的每个块中，token只允许关注同一块中的其他token。这种分块注意力涉及在每个B×B块中进行LB迭代的完全注意力计算，导致时间复杂度为和内存复杂度为。</p>
+<p>然而，这种方法限制了全局感受野，并可能限制对长期依赖关系进行建模的能力。为了解决这个限制，Bi-BloSAN引入了一种块间注意力机制来捕获长程依赖关系。SPADE增强了状态空间模型(SSMs)以解决长程依赖限制。此外，Landmark Attention为每个块引入了一个称为Landmark token的新token，通过训练注意力机制使用它来选择相关块，从而实现块级表示。在微调阶段，LongLoRA在LoRA的基础上引入了shift short attention (-Attn)，将token移动一半的注意力头中的块大小，以确保相邻块之间的信息流动。</p>
+<h4 id="滑动窗口注意力">滑动窗口注意力</h4>
+<p>在这种方法中，每个token被分配一个连续的固定窗口，并且只允许关注前一个相邻的w≪L tokens作为它的邻居。为了扩展类似于扩张卷积的感受野，窗口被扩张为的间隙，使每个token能够关注以外的token。为了在不进行额外计算的情况下聚合全局信息，还将全局注意力应用于一些预选位置，这些位置上有特殊标记(如[CLS])，将计算复杂度降低到。</p>
+<h4 id="全局-局部混合注意力">全局-局部混合注意力</h4>
+<p>ETC和LongT5也采用了类似的全局-局部注意力机制，显式或隐式地构建辅助全局tokens来表示全局注意力的分割信息，而只对源tokens应用局部注意力。另一种有趣的全局token技术来自最近的streamLLM，他们观察到不仅在推理期间保持初始token的KV可以在很大程度上恢复滑动窗口注意力的性能，而且在预训练期间添加占位符token也可以进一步改善流部署。</p>
+<h4 id="lsh注意力">LSH注意力</h4>
+<p>与直接位置邻接相比，Reformer利用基于k-最近邻(kNN)和局部敏感哈希(LSH)算法的邻居token选择机制。LSH注意力允许每个查询关注单个哈希内的一组键。哈希函数被设计为以高概率将相同的哈希值分配给两个相似的向量，反之亦然。</p>
+<h4 id="层次注意力">层次注意力</h4>
+<p>要进一步思考全局token技术或块注意力，我们可以将它们视为向自注意力引入一些分层特征，以从更高级别的注意力中获得更多的全局信息进行补偿，同时保持来自低级别局部注意力的低计算成本。</p>
+<h4 id="两级层次结构">两级层次结构</h4>
+<p>HAN率先使用了两级注意力机制。该方法首先将自注意力应用于词特征以获得句子表示，然后利用句子级特征的自注意力生成文档级特征。这种分层的方法提高了文档分类的效率和性能。</p>
+<h4 id="多级层次结构">多级层次结构</h4>
+<p>BPT引入了更详细的注意力机制。Token节点可以用于更近的上下文，也可以用于更远距离的上下文。这种方法将层次结构形式化为图神经网络，并使用图自注意力对其进行更新。在自适应Span Transformer中可以看到一种更简单的变化，它采用软注意力掩码函数，将相对距离非递增地映射到[0,1]范围内的真实值。该函数控制每个头部的注意力范围，允许模型关注不同的上下文范围。在假设的基础上，许多NLP任务中的注意力矩阵具有层次低秩结构，H-Transformer-1D将注意力矩阵划分为具有不同低秩范围的不同块，从而实现不同层次的逼近。</p>
+<h4 id="稀疏注意力">稀疏注意力</h4>
+<p>这些方法旨在引入一个稀疏注意力掩码，记为，其中每一行分配一个稀疏索引集表示第个标记要处理的对象。这些基于稀疏性的注意力机制既提供了计算效率，又提供了捕捉全局上下文信息的能力。图3提供了这些稀疏注意力机制的可视化。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKH2cQ0Utf6yEw4KLVo40LaOOiaRHSavibuTb0icGdqrjTDClZ2ThzgH23NA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="固定的稀疏注意力">固定的稀疏注意力</h4>
+<p>从稀疏Transformer开始，它从CIFAR-10上学习的注意力模式中获得灵感，并提出了一种行列分解注意力方案。这种方法保证了更快的计算，同时仍然保持全局上下文感知。形式上，它采用了一个选定的步幅，接近。每个查询将一行注意力应用于局部上下文信息(即局部注意力)，另一列注意力总结以前的位置并将信息传播到所有未来的标记，类似于一种全局注意力。作者提供了两种特定的行和列注意力模式，分别对应于图3 (c)，(d)所示的步幅模式和固定模式。最近的LongNet通过引入扩张注意力进一步提高了计算效率，随着token之间的距离增加，注意力领域呈指数级扩展。它结合混合膨胀率来对长和短依赖关系进行建模，最终将计算复杂度降低到，同时成功扩展到多达10亿个token的序列。</p>
+<h4 id="自适应稀疏注意力">自适应稀疏注意力</h4>
+<p>一些方法通过考虑嵌入值以一种可学习的方式自适应地寻求稀疏度。Expire-Span为每个前一个token引入了一个在[0,1]范围内的可学习标量，允许模型保留具有最重要信息的token，同时使不再相关的token过期，类似于基于LSTM的RNN中的遗忘门。Routing Transformer利用k均值聚类来识别Q, k中top-k个最相关的质心向量，并将每个查询分配给具有相同聚类成员的键，降低了注意力的总体复杂度。SparseBERT引入了一个使用Gumbel放松技术的可微注意力掩码，允许模型学习按重要性指导注意力模式选择。该算法引入了预定义的稀疏率，计算复杂度为。</p>
+<h4 id="近似注意力">近似注意力</h4>
+<p>一些研究还探索了注意力核计算背后的数学本质。这些研究使用基于注意力矩阵的稀疏性或低秩特性的估计方法，以线性复杂度来近似注意力。之前我们没有区分这些方法是用于类BERT的编码器型LLM还是类GPT的解码器型LLM，因为它们中的大多数可以通过因果注意力掩码从BERT设置轻松转移到GPT设置。然而，对于许多近似策略来说，随意的掩码往往不是那么简单。因此，我们首先定义了公式8中的广义加权因果函数，其中表示每行的权重向量。该函数将替代因果注意力掩码操作，因此为了简化，我们在下面的所有注意力方程中省略掩码M。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHZ0EQvJN0toNUqbG8mVO5vrahtWUF0qcliaGDDtEEVwxUNXMLU3CXCug/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="低秩近似">低秩近似</h4>
+<p>Linformer使用奇异值分解(SVD)用低秩矩阵来近似注意力矩阵。该方法涉及维数的两个可学习投影矩阵和，其中。该过程包括分别用,投影,，然后用投影的在上进行标准MHA。这种低秩技术以线性复杂度逼近全注意力，同时允许误差。</p>
+<h4 id="嵌套的注意力">嵌套的注意力</h4>
+<p>Luna将注意力核解耦为两种嵌套的注意力方法，这两种方法相对于L都具有线性复杂度。具体来说，首先将pack attention作为公式9，得到打包的上下文，其中是一个额外的输入序列，长度k≪L，激活函数为指数线性单元。然后将unpack attention应用于公式10，得到解包的输出。然后，他们将和传递到下一个注意力层，仍然记为和，通过传播打包的上下文信息，而不会泄露未来的信息。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKH9kYJOrUZcWXDLFoZL06ABzDJVQgQvVXv5p7a8epPlZl1Ef1LMia62cw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="核近似">核近似</h4>
+<p>除了依赖于低秩先验，一些工作基于广义可核注意力(generalized kernelizable attention)提供近似，如公式11所示，其中核函数逐行应用于中的每一对，是公式12中定义的归一化因子。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHvmldwDguXZllMn8DWa7B9lBrrXwgKfs9eI4TwUevEnXnc2hn5jp0FQ/640?wx_fmt=png&amp;from=appmsg" alt="">Linear Transformer基于elu核设计了一个简单的特征映射，如公式13所示。因此，它避免了二次注意力矩阵，将时空复杂度降低到和。Performer基于正交随机特征(ORFs)映射实现无偏低方差估计，如公式14所示，其中是基函数，是范数函数，是正交随机特征，采样自分布。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHHwBMUmTuVldoiaOrnTItA0ia2b4RXCdicCVJzTY3yNbDppZO3Qa51yUHA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="稀疏-核混合近似">稀疏-核混合近似</h4>
+<p>Scatterbrain通过将基于LSH的稀疏矩阵和低秩核分解与随机特征图相结合，提供了更准确而有效的近似，如公式15中简化的那样，其中我们省略了归一化步骤和因果掩膜应用函数。该方法不仅统一了两种近似技术，以更高的精度实现了O(Lrd)的线性时间复杂度，而且还提供了灵活性，可以利用各种低秩和稀疏近似方法作为子组件。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHnXfba399M5XwrzBX6hcZXNnprakSzfTZKswoDIkhCQunibnu1Z2efhw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="io感知注意力">IO感知注意力</h4>
+<p>基于注意力矩阵和NLP任务的一些理论或经验属性，包括局部性、稀疏性、低秩性和其他启发式或数学技巧，上述所有追求高效注意力的方法都可以被认为是高注意力质量与低计算复杂度的权衡。相比之下，以下这些IO感知注意力机制统称为通过考虑内存瓶颈而优化注意力计算的努力，同时保留注意力核计算的准确性。</p>
+<h4 id="内存高效的注意力">内存高效的注意力</h4>
+<p>这种简单的方法在利用lazy softmax算法，通过顺序处理每个单个/分块查询注意力，跟踪归一化因子来计算标准的和数字稳定的注意力。该方法只需对序列长度保持恒定的工作记忆，时间复杂度为二次型。</p>
+<h4 id="flash注意力">Flash注意力</h4>
+<p>Flash Attention通过使其在GPU高带宽内存(HBM)和GPU片上SRAM之间实现IO感知，在应用精确注意力计算的同时设法减少时间和内存消耗。它已经被广泛采用，并直接合并到Pytorch v2.0中。更具体地说，对于前向传递，它利用分块技术将大型softmax注意力分解为更小的块，从HBM逐块加载到SRAM，从而在芯片上执行所有注意力计算步骤以减少HBM访问，并通过缩放增量更新输出回HBM。如公式16所示,表示一对基于块从Q和K的矩阵乘法,小到可以加载在SRAM和计算,以及重新调节因子只包含一些关于的统计数据。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHUJYf6abpRgdp8ojqZSEn45BthwZDNDicibicpOOB5qldp7AmpQvz0VtHg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="scfa">SCFA</h4>
+<p>虽然Flash注意力可以很容易地扩展到支持块稀疏结构，但在处理其他不规则结构和任意注意力掩码的稀疏策略时可能缺乏灵活性。SCFA的工作扩展了Flash Attention GPU内核，以适应广泛的注意力稀疏模式，包括key/query删除和像Reformer这样的基于哈希的注意力。</p>
+<h4 id="页注意力">页注意力</h4>
+<p>由于碎片化和冗余而造成的内存浪费，研究人员提出了页注意力。该技术有效地管理KV高速缓存以减少浪费，并允许在批请求之间灵活共享，灵感来自虚拟内存操作系统中的内存分页技术。</p>
+<h4 id="长期记忆">长期记忆</h4>
+<p>研究人员探索了两种主要途径来解决Transformer难以捕获长期依赖这一挑战，同时又不损害全注意力的优势。一种方法是通过合并可通过注意力层访问的内部内存缓存，将循环机制引入注意力。这种方法使模型能够在较长的序列中维护和检索信息，补偿内置长期记忆的固有缺乏。另一种方法涉及利用现有模型作为外部知识库(如特定文档或数据集)的接口。在推理过程中，模型可以从这些知识库中读取内容以丰富上下文输入，并从用户的响应中写入内容以刷新其长期记忆。通过这种方式整合外部知识，模型获得了更广泛的上下文，增强了其有效处理长期依赖关系的能力。</p>
+<h4 id="内部内存缓存">内部内存缓存</h4>
+<p>将长文本划分为固定长度的片段流，并在第n层中利用更多的上下文信息增强当前第个片段的查询。这些上下文信息是从缓存中获得的，或从前一段提取的信息，存储在内存缓存中，记为，如公式17所示。我们假设每个片段都具有相同的长度，模型由层Transformer块组成。符号◦表示沿长度维度的拼接操作。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHh0OfxLOBohpWyg8zWdkibC0icwYG8ic7SshVkEyr683Q4oGBobXKreFOg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="段级重现">段级重现</h4>
+<p>从Transformer-XL开始，引入了段级重现（Segment-Level Recurrence）。如公式18所示，它在最后一层缓存个之前连续段的输出，并将它们连接到当前层的当前段，以扩展当前查询的上下文。这种机制允许将最大可能的依赖距离扩展到，其中可以在GPU内存允许的范围内设置。Segatron通过结合句子级甚至段落级来增强token级PEs，引入了段感知机制。为了进一步扩展多粒度内存缓存的依赖性，Transformer与Transformer-XL一样，为前面的段存储第一个FIFO细粒度内存队列。然而，它并没有丢弃旧内存，而是应用了速率为的压缩函数，沿着长度维度压缩内存，并将其放入大小为的二级FIFO粗粒度压缩内存队列中,如式19所示。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKH12p3Dmic1SyGW8vhbibO73M9Q9j63gxZD3QAZnWaIGxNREXTp6v8C2ww/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="回溯重现">回溯重现</h4>
+<p>为了解决最大有效上下文长度受到的限制这个问题，ERNIE-Do提出了一种增强的递归机制，通过连接同一层(而不是最后一层)中前一段的输出隐藏状态来进行替换，简单地形式化为式21。通过这种方式，不仅可以隐式地扩展最大有效上下文长度，而且还可以利用过去的高级表示来丰富未来的低级表示。此外，它通过两次馈送片段采用回溯馈机制，其中第一次仅浏览每个片段，而第二次回溯以实现双向信息流，这类似于READTWICE中的机制。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHSdfmb3pV6jG7tia8vAR6x60Ku1QyibB5EAESicpibKqCcJFicofHDkYqYTg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="连续信号内存">连续信号内存</h4>
+<p>为了与LSTM进行比较，我们可以将Transformer中的压缩记忆视为LSTM中长期单元记忆的有限尺寸离散版本，而第一个队列存储短期单元记忆。如等式20所示，为了实现像LSTM一样的无界长期记忆，former将离散嵌入转换为连续信号。该信号表示为个径向基函数(RBFs)的线性组合，记为，系数矩阵，由多元岭回归拟合。这种连续的信号表示允许具有固定内存存储的无界上下文表示，与上下文长度无关，类似于LSTM。然而，由于内存缓存是作为连续信号存储的，它不能简单地添加到当前段，而必须通过持续注意力转换回嵌入。</p>
+<h4 id="备用缓存设计">备用缓存设计</h4>
+<p>除了遵循作为内存缓存的Mem的前置样式外，RMT将内存缓存形式化为特殊的tokens，在每个段的开始和结束处都有前缀，如等式22所示。在处理每个段之后，读/写标记将从输出嵌入中分离出来，写标记将被作为下一个段的[mem]标记。通过将这种递归机制与全局记忆标记相结合，RMT被证明可以将有效的上下文大小扩展到1M tokens。此外，他们没有使用简单的FIFO缓存来读取内存，而是使用KNN算法来为每个查询检索top-k个最相似的(key，value)对，并将其添加到本地查询的前面，如等式23所示。相比之下，Memformer充分利用具有遗忘机制的自注意力变体来读写记忆缓存，以通过长程时间步检索和保留最重要的信息。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHOuTYYhd7eJiaLefSaTz1F32iaIN2mCKOOBI7G9Be72ibsKStyGoBbIuhw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="外部记忆库">外部记忆库</h4>
+<p>前面讨论的机制通过在内部内存缓存中添加先前输入的额外隐藏状态，用顺序递归增强了普通的无状态转换器模型。然而，这些机制有一定的缺点。首先，记忆机制的轻微变化可能需要从头开始重新训练模型，而不是充分利用预训练的LLM，这些LLM已经具有跨上下文窗口的良好依赖性表示。其次，研究人员经常遇到内存陈旧的问题，在训练期间，内存缓存中较旧的隐藏状态可能会表现出与最新状态的分布变化，限制了内存增强的有效性。</p>
+<p>另一种检索增强机制将模型本身与其长期记忆存储解耦可以解决这些问题。它们利用语言头之前的部分作为性能良好的上下文信息编码器，以嵌入的形式将长序列存储为外部记忆库。在查询过程中，模型根据一定的标准从该记忆库中检索信息，并将其实时连接组成上下文工作记忆。</p>
+<h4 id="基于cosine的检索准则">基于cosine的检索准则</h4>
+<p>LangChain是一个热门的开源框架，用于开发像聊天机器人这样的应用程序，它接受用户指定的通用可读格式的本地文档，然后使用现成的LLM将该文档向量化到内存库中。在每次用户交互过程中，根据用户提示嵌入与存储上下文的点积余弦相似度检索最相关的上下文。然后，它将这些外部上下文前置到提示，为LLM提供更相关的输入以生成响应。</p>
+<h4 id="启发式检索准则">启发式检索准则</h4>
+<p>RETRO通过基于L2距离的KNN搜索从嵌入BERT的KV记忆库中检索。Unlimiformer也基于KNN搜索，为任何现有的预训练编码器-解码器Transformer设计了一种通用方法，以索引无限的输入序列，使解码器检索其top-k键，以应用交叉注意力。相比而言，SiliconFriend提出了一种增强的记忆库机制，以保持对与用户的长聊天历史的跟踪，并提供专门的响应，包括带有时间戳的对话记录、将事件提炼为高级摘要、对用户个性画像的感知以及以遗忘速度的记忆刷新。与这种基于文本的记忆类似，RecurrentGPT通过模拟LSTM中的长短期记忆机制，使循环提示成为可能，并使用ChatGPT定义循环计算图。此外，RecallM将记忆组织和更新为动态概念感知的知识图谱，以改进聊天过程中更复杂的持续学习和知识的时间推理。Ret-LLM以三元组的形式从内存库中存储和检索知识，就像⟨A, B, R⟩，这意味着“A和B具有R的关系”，作为一个通用读写内存单元，并采用微调的Alpaca将内存读写视为基于文本的API调用。</p>
+<h4 id="可学习的检索准则">可学习的检索准则</h4>
+<p>REALM使用MLM作为学习信号预训练了一个潜在的神经知识检索器，负责从大型文本语料库中检索知识。LongMem训练另一个基于Transformer的SideNet，以将记忆检索和融合过程与只负责将(key，value)对编码到记忆库的预训练LLM解耦。</p>
+<h4 id="外推pes">外推PEs</h4>
+<h4 id="增强理解">增强理解</h4>
+<h4 id="再思考pes作为">再思考PEs作为</h4>
+<p>研究人员重新审视了正弦PE和RoPE的正弦和余弦基函数，认为它们是β编码的近似项，如式24所示。这种方法采用了个固定的β位，其中 base 表示三角基函数的波长或周期的幂基，它随着维的加深而以几何级数增加。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHugYPZk5gTbwpH57jKaaibCOpicTJgb4dtJia2ibUPujfygDDfaeBbY82rg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="长度外推困境">长度外推困境</h4>
+<p>在Transformer时代之前，基于RNN的语言模型是在较短的序列上训练的，但被期望有效地泛化到较长的上下文，这种现象被称为长度外推或长度泛化。不幸的是，最近的研突出了基于Transformer的语言模型的长度外推能力有重大缺陷。在Transformer的原始论文中，很少讨论其正弦PE的设计见解或理论解释。这使得许多研究人员对其必要性和有效性提出了质疑，特别是将其归咎于外推不足，这也指向了同样基于三角函数的RoPE。为理解当前三角PEs造成的糟糕外推，从以下两个不同的角度研究和总结了两个见解:</p>
+<p>1️⃣从数学的角度来看，外推(extrapolation)，即从局部信息推断出整体，依赖于函数的高阶平滑性。然而，为了容纳足够的位置信息，这些PEs被设计为高频振荡三角基函数的组合。这种选择使模型在训练阶段不进行特定学习的情况下进行泛化具有挑战性。</p>
+<p>2️⃣从训练的角度来看，由于基函数的波长或周期呈指数增长，与成正比，目前支持的约束下的训练样本通常太短，以至于后面的低频维度无法跨度整个周期。这表明只有少数维度感知到完整的周期性信息，从而得到充分的外推训练，边界在中被定义为关键维度。因此，当依赖于这些学习较差的低频成分时，直接外推很容易失败。</p>
+<h4 id="注意力偏差">注意力偏差</h4>
+<p>作为显式编码位置信息的替代机制，注意力偏差已被探索，以捕获融入注意力的自然语言的时序性。如式所示，注意力偏差被描述为一个矩阵，记为，在应用softmax操作之前，将其添加到未归一化的注意力权重矩阵中。该矩阵的每个元素由索引，携带由函数编码的位置信息。因此，将注意力偏差视为一种相对PEs的形式是合理的。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKH4yRNCXYhl2lhINhrbnJLOGZzAicpial7sibcxZiapzyfGGial2nYCHbqlTg/640?wx_fmt=png&amp;from=appmsg" alt="">早期的方法如T5采用了可学习的注意力偏差，其每个注意力层中的每个头都是独立的。然而，也没有明确解决长度外推的问题。认识和解决外推问题的突破来自于ALiBi，其启发式地引入了消极因果注意偏差，如式26所示，其中是训练前固定的头部特定斜率，并随着头部指数呈几何下降。之后KERPLE将ALiBi注意力偏差作为一个复合三角核扩展到自注意力。引入了两个额外的可学习标量参数来泛化偏置核，如式27所示。Sandwich的作者重用了正弦PEs来形成RoPE风格的注意力偏差，如公式28所示，作为一个要调整的超参数。研究人员研究的另一种方法在推理过程中使用了超基线方法，如式29所示。该方法依赖于局部因果注意力掩码，其中每个query都关注距离不超过的key，同时仍然应用RoPE。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHZGibnSZEnTHbDawTkiaia8AD5cZsdJYhJH6QOgAic9liax69YicD6qBXA18g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="扩展rope">扩展RoPE</h4>
+<h4 id="缩放策略">缩放策略</h4>
+<p>最近的方法通过简单地扩展RoPE来推断推理上下文长度，而很少或不进行微。在LEX中，作者引入了一种称为XPOS的扩展因果RoPE，它在缩放绳中包含了一个额外的指数衰减项，如式30所示，其中是一个标量超参数。位置插值(PI对每个位置数从到κ进行线性缩放，使表示空间密集，使最远长度边界扩展了1次(见式31)。</p>
+<p>NTKaware Scaling RoPE(NTK-RoPE)结合了高频外推和低频插值。当对最低频率项应用的比值进行插值时，它使用系数κ来缩放β，以达到相同的效果，而对高频项保持缩放(见式32)。令人惊讶的是，这种非线性缩放可以直接应用于用RoPE预训练的LLM，如Llama无需任何进一步的微调来扩展上下文长度边界。这种方法已经部署在开源LLM中，如CodeLlama。</p>
+<p>受NTK-RoPE的启发，出现了几种增强的缩放方法。为了避免L仍然在“最大长度”内时性能下降，Dynamic-NTK延迟应用缩放技巧，直到L超过当前支持的上下文长度。随着L的增大，κ的比值逐渐动态增大。这一想法也已在Qwen-7B和Llama2等模型中实现。NTK-RoPE的作者还提出了YaRN，它将NTK-by-parts与“长度缩放”技巧相结合，通过恒定的温度因子缩放和。这种方法声称优于之前所有基于NTK-RoPE的方法，无论是否进行微调。此外，Giraffe引入了另一种缩放策略，称为“功率缩放”(见式33)。这种方法确保基中的高频元素比学习不良的低频元素受影响更小。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHiaUDkccBvcwPKYPTB1aCqvKez98XymPJTnAZ7do1LlmdTcMaBDUajJA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="截断策略">截断策略</h4>
+<p>研究人员基于NTK-RoPE的高频外推和低频内插思想提出了两种简单的截断策略，分别以激活函数整流线性单元(ReLU)及其Leaky变体命名为ReRoPE和Leaky ReRoPE。如式34所示，这种修正截断方法背后的主要思想是设置一个大小为w的局部窗口，对于每个标记，只要要参加的标记在窗口内，就不应用缩放。然而，线性缩放，类似于Leaky ReLU，用于在令牌位于窗口外时增加步骤κ的位置(LeakyReRoPE)。该方法更直接地结合了高频外推和低频插值，并确保了通过仔细调整和κ而不超过。此外，如果κ设置为无穷大，它对任何对施加一个恒定的位置数，只要，就可能容纳无限的上下文(ReRoPE)。</p>
+<p>根据实验，ReRoPE在没有对困惑度指标和QA任务进行任何微调的情况下表现非常好，甚至优于基于NTX的方案。然而，Leaky ReRoPE和ReRoPE都涉及到连接两个缩放阶段，并且它们之间的差距无法通过任何线性变换来弥补。因此，它们需要为每个阶段进行两个注意力矩阵计算，并利用一个布尔矩阵将它们缝合在一起，显著增加了推理成本并限制了实际长度边界。更糟糕的是，它们目前无法与Flash Attention兼容来减轻高计算成本。为了使ReRoPE与Flash Attention相适应，我们重新实现了Flash Attention前向内核，以基于Triton框架合并ReRoPE，在一定程度上缓解了其高计算成本。此外，Giraffe引入了另一种截断策略，即基截断，如式35所示，其中,是截止阈值。该方法在保留基的高频成分的同时，将低频元素截断为接近零的常数ρ，甚至在足够低的情况下为零，从而降低了低频元素的外推复杂度。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHXiacib2O65U23XZ0q0up02gdL1w9TnkunbwvUhreeBrlQ4PxVdro0Hwg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="重排策略">重排策略</h4>
+<p>靠后位置的PEs比前面位置嵌入的更新次数少，这种不平衡可能导致训练不当的嵌入。近年来，一些简单而有效的工作在一定程度上解决了这一问题。SHAP在训练过程中随机移动绝对位置以实现移位不变性。Random Padding涉及在微调期间将随机数量的填充标记移动到输入序列的前端，平衡所有位置的更新时间。PoSE通过在训练样本的位置索引(例如2k)中添加一个独特的跳跃偏差项来微调模型以适应目标上下文窗口的所有相对位置(例如128k)，以模拟更长的输入。</p>
+<h4 id="上下文处理">上下文处理</h4>
+<p>之前讨论的许多方法都围绕Transformer架构中的注意力模块提出了复杂的设计,相比之下，存在更简单和更直接的方法，将预训练的LLM视为黑盒或灰盒模型。这些方法通过多次调用模型来解决处理超过模型长度限制的长上下文输入的挑战，确保每次调用中提供给LLM的实际输入不超过。虽然这些方法没有显式地增强LLM处理长上下文的固有能力，但它们利用LLM卓越的上下文学习能力来解决问题，尽管代价是计算量增加和可能不那么精确的答案。</p>
+<h4 id="上下文选择">上下文选择</h4>
+<p>这些方法主要涉及将冗长的文本划分为多个片段，然后根据预定义的策略选择特定的片段。目标是确保选择的片段可以舒适地适合LLM的上下文窗口，同时最大限度地减少与所提出的query相关的原始冗长文本中的相关信息的损失。</p>
+<p>这些方法在两个关键方面有所不同。首先，它们在如何定义选择标准方面存在分歧，这些标准用于为每个片段分配优先级分数。其次，它们的选择策略各不相同，有些方法是基于所有片段的分数同时排序，而其他方法采用迭代的贪婪选择方法，逐个考虑片段。当检索到的上下文长度超过LLM的最大上下文长度时，LangChai采用三种策略进行处理。一种策略是Map Rerank，其中LLM需要独立地输出每个段的答案，以及置信度分数。具有最高置信度分数的答案被选择为最终输出。CogLTX引入了一种称为MemRecall的多步骤推理机制。在每个推理步骤中，依次使用两个模型以由粗到细的方式对上下文片段进行评分。得分最高的前k个片段被添加到最终的候选队列，而剩余的片段被推迟到下一个推理步骤，直到候选队列被填满。相比之下，LoBART在训练过程中使用ROUGE-2分数来选择top-k上下文。在推理方面，它训练了一个额外的分层RNN模型，以生成上下文选择的代理优先分数。</p>
+<h4 id="上下文聚合">上下文聚合</h4>
+<p>与基于选择的方法相比，这种性质的方法考虑了所有上下文片段对最终答案的贡献，而不是只选择一个。最初，这些方法分别从每个片段中提取相关信息。然后采用多种融合策略对检索到的信息进行融合，最终得到最终答案。这些方法在两个关键方面表现出差异。第一种涉及从每个段中提取信息的方式，而第二种涉及用于整合所有段信息的不同融合策略。在像T5和BART这样的编码器-解码器架构LLM的背景下，存在一类称为FiD的方法。这些方法既利用编码器来提取嵌入隐藏状态形式的信息，又利用解码器来处理所有上下文表示，以生成最终输出。</p>
+<p>对于只有解码器的LLM，除了称为Map ReRank的选择策略外，LangChain还引入了两种额外的聚合技术。第一种称为Map Reduce，即同时处理每个数据段以并行获取答案。然后将这些答案传递给另一个LLM，后者将它们合成为最终的总结。第二种方法称为Refine，通过在每个段的处理过程中逐步细化答案来操作。在该策略中，前一段得到的答案与当前段进行级联，作为进一步细化的提示。这个迭代求精过程持续进行，直到处理完最后一个片段。</p>
+<p>除了LangChain，另一种最近的方法PCW采用类似的方法来处理长上下文输入。PCW将扩展的上下文划分为多个较小的上下文窗口，每个上下文窗口的最大长度为，其中表示上下文的总长度，为query中与任务相关的token的长度，以及要生成的新token的最大数量。在每个上下文窗口中，tokens并行地相互关注，其位置索引隔离在的范围内。随后，与任务相关的tokens处理所有上下文tokens。该过程聚合来自每个上下文窗口的并行信息，并对其进行融合以生成最终答案。</p>
+<p>研究人员提出的另一种方法NBCE将并行上下文窗口视为一系列独立的条件，记为，旨在逼近对数后验概率，用于生成token。正如在公式36中推导的，表示以第个上下文窗口为条件的可能性，表示先验，而const是一个仅依赖于。如果可以访问LLM的logit，则使用LLM可以直接计算此公式。将公式扩展到更一般的情况，如式37所示，引入了超参数μ和池化操作。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHNQbhTNuGoCsBBEKWyWJsf02wSia6TrBMuXxnvtpOCV1HiabxN3TTZapw/640?wx_fmt=png&amp;from=appmsg" alt="">NBCE和PCW可以无缝应用于任何现成的开放访问LLM，显著扩展上下文长度。然而，需要注意的是，这两种方法的运行都假设上下文窗口之间的关系可以忽略不计，并且可以以无序的方式统一处理。因此，当上下文窗口紧密连接且表现出顺序关系时，或者当需要并行处理的窗口数量过多时，它们的性能可能会受到影响。</p>
+<h4 id="其他">其他</h4>
+<p>本节简要扩展了前面讨论的四个类别的其他解决方案，为推进LLM的有效上下文窗口或利用现有LLM时的效率提供了更广泛的视角。重要的是要注意，这里介绍的文献可能不是详尽的，也不是为基于transformer的模型量身定做的。事实上，这些技术中的许多都普遍适用于任何配备了深度神经网络的模型，尽管它们对LLM尤其关键。</p>
+<h4 id="特定目标">特定目标</h4>
+<p>这些方法有替代损失函数、附加术语和专门的预处理技术。例如，XLNet引入了一个在各种NLP任务中表现出色的置换目标。ERNIE-Doc将此方法扩展到长文档，并以分段重排为目标，以建模长程关系。对于摘要任务，DANCE采用分治的预处理策略，将长文档及其摘要分解为多个源-目标对。PEGASUS引入了用于生成摘要的间隙句子生成(GSG)目标，而PRIMERA使用实体金字塔方法将其扩展到多文档。</p>
+<h4 id="混合专家">混合专家。</h4>
+<p>混合专家(MoE)的概念通过将密集的FFN层替换为包含多个专家的MoE层，对巨型LLM进行了增强。每个专家擅长处理特定的输入类型或任务，动态门控机制安排为给定输入选择最合适的专家。该方法可以以各种方式实现，包括采用针对特定任务优化的专家模块，利用稀疏激活并将其分片到多个设备，以及通过训练自适应混合权重以确定每个专家的贡献，如Soft MoE。然后，路由机制负责根据门限值为每个令牌选择top-k专家。然而，在Switch Transformer中，他们发现设置k=1，称为交换机路由，可以在保持模型质量的同时减少路由计算。最后，通过对这些专家的贡献进行加权求和得到输出。MoE技术可以显著增强建模的通用性，减少计算需求，提高大规模上下文建模的效率和效果。</p>
+<h4 id="并行性">并行性</h4>
+<p>利用节点内和节点间的现代聚合GPU内存，最近的研究引入了各种并行策略来扩大模型大小和扩展序列长度。对常用的并行化范式进行简要介绍如下:</p>
+<p>1️⃣数据并行：广泛集成到PyTorch中，是在多个设备上以分布式方式加速训练的最常用方法。它在每个设备上复制模型以独立生成梯度，并在每次迭代时传递它们以保持一致性。</p>
+<p>2️⃣张量并行：引入张量拆分，其中模型的各个层被水平划分到多个设备上。</p>
+<p>3️⃣管道并行：将模型层沿批次维度垂直分割为不同设备上的不同微批次分区。每个设备以流水线方式处理从前一个设备接收到的一个微批。</p>
+<p>4️⃣序列并行：将输入序列划分为多个块，并将每个块提供给相应的设备。它融入了环形通信来计算注意力输出。</p>
+<p>5️⃣专家并行：在MoE中，将不同的专家放在不同的GPU上并行执行。</p>
+<p>其中前三种并行同时使用称为3D并行，它可以有效地将模型扩展到数万亿参数。但3D并行主要是为更大的模型尺寸而不是更长的序列设计的。为了训练具有长序列的大规模模型，将前四种并行集成到4D并行中是一种很有前途的方法。</p>
+<h4 id="备用内存高效推理">备用内存高效推理</h4>
+<p>已经开发了其他方法，以提高基于Transformer的LLM在推理过程中的存储效率。这些方法包括权重剪枝、权重因子分解、权重量化、权重划分和知识蒸馏。其中，量化策略对于LLM的实际部署尤其重要，因为它们降低了参数精度，以减轻内存需求和加速推理。此外，还有更简单的策略来缓解推理期间的大型KV缓存，如Multi-Query注意力(MQA)和GroupedQuery注意力(GQA)。特别是，它们减少了key和value的头数量，并在多个查询头之间平均共享它们。据我们所知，这些方法已经应用于最先进的LLM，如GLM和PaLM。</p>
+<h4 id="评估的必要性优化工具">评估的必要性＆优化工具</h4>
+<p>在本节中，我们探讨了评估LLM的长上下文能力常用的评估必要性，包括数据集、指标和基线模型。此外，还研究了几个流行的优化工具包，如库、系统和编译器，旨在提高LLM在整个开发阶段的效率和有效性。</p>
+<h4 id="数据集">数据集</h4>
+<p>数据集的详细信息如表1所示，包括语言、任务类型、长度统计、质量、分片、文件大小、样本数量和格式。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHnicghy1aCl13XNgQVU0m9gDGdkdNZX4Q30QfPmbdSFX50ialmJlOs4icg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="指标">指标</h4>
+<p>本节简要总结了之前分类的10种NLP任务类型中常用的9类通用评估指标。每个任务的详细指标如表2所示。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHekufhBnIPoEUK9VLKzoeRzEVvoB0m5Xznaq04SnRBCCse05Sg0CnkQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="基线">基线</h4>
+<p>在本部分中，收集了文献中经常使用的预训练或微调的LLM，作为评估某些下游任务中的长上下文能力的基线。本文概述了这些模型的基本信息(名称、基本架构、Lmax、参数大小)、特殊特征(训练技术和微调任务)，以及可用的出版链接(huggingface、GitHub、主页和论文)详细信息见表3。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHu9icibw8wZtDrM3kkhWdv2lsicAyuCtHrg5LFicuicJqn7uVN1qOYWh51xg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="工具">工具</h4>
+<p>有关工具包的快速概述，请参阅表4。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gKaxjIx6bahbX3rhjFyVTiauVVdoWDrKHSiam2GO6CkKgSjynSmHVU5dU1wXM0iaR7bFvQjSnJdAEzb5C3AQsicvMw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="讨论">讨论</h4>
+<p>在本节中，我们深入研究了LLM的关键挑战，并在增强基于Transformer的LLM的长上下文能力的背景下，提出了未来研究和发展的潜在方向，特别是架构的增强。</p>
+<h4 id="注意力平衡">注意力平衡</h4>
+<p>随着更长的上下文，篇章结构和相关信息变得越来越复杂，需要在保持精确相关性的同时捕捉全局、长程依赖关系的能力。要解决这一挑战，需要在计算效率和尽可能多地保留注意力模式的精度之间找到最佳平衡。因此，在长上下文语言模型领域，这仍然是一个持续的追求。幸运的是，最近的一些创新，如Flash Attention，探索了超越算法水平的IO感知的解决方案，在不损失任何注意力精度的情况下，极大地提高了运行时效率和内存开销。此外，人们可以探索将之前的有效策略与这些替代方法集成，利用强大的GPU内核编程工具，如Cuda，或更轻量的Triton。</p>
+<h4 id="内存的有效性和效率">内存的有效性和效率</h4>
+<p>之前我们概述了由于缺乏显式内存机制、仅依赖于上下文工作内存，以及在扩展的上下文交互期间KV缓存内存消耗的显著增加而产生的局限性。这些挑战共同强调了在基于Transformer的LLM中需要更有效和高效的内存机制。虽然我们之前也介绍了各种长时记忆机制，但它们受到复杂的启发式设计带来的额外内存开销的限制，因此由于频繁的刷新，可能会随着时间的推移导致性能下降。为了应对这一挑战，研究人员可以研究更有效的策略来组织内存存储和提高读写吞吐量，从最近的进展中获得灵感，如分页注意力。</p>
+<h4 id="长度外推挖掘">长度外推挖掘</h4>
+<p>本文对最近的突破进行了全面概述，特别是应用在RoPE上的扩展策略，我们认为，它在解决外推限制方面具有重大希望。然而，这些进展往往依赖于对复杂高维位置嵌入属性的简化观察，并结合直接的启发式调整。这促使我们质疑用高维嵌入建模时序性的理论基础，并探索可学习嵌入的潜在复苏，在这些具有许多超参数的启发式设计的指导下。相信未来的研究应该深入这一领域，例如CLEX，特别是在开发一个鲁棒的理论框架来对Transformer设置下的时序性进行建模。</p>
+<h4 id="具体而普遍的目标">具体而普遍的目标</h4>
+<p>虽然我们讨论了为长文本建模量身定制的特定目标，但值得注意的是，其中许多限于某些类型的任务，或仅与MLM目标兼容，而不是当今更常见的CLM目标。这突出了对特定但普遍适用的因果语言建模目标的需求，这些目标可以从模型训练的早期阶段有效地捕捉长程依赖关系。</p>
+<h4 id="可靠的指标需求">可靠的指标需求</h4>
+<p>从我们之前的评估经验来看，与人类的判断分数相比，常用的指标(如ROUGE分数)往往表现出显著的差异。随着LLM在现实世界场景中的快速部署，对更可靠的指标的需求越来越迫切，以评估长上下文能力，特别是在难以精确的地面事实的生成任务中。一个有希望的途径是利用最先进的LLM(如GPT4)的鲁棒性作为人类评估的替代品。</p>
+<h4 id="总结">总结</h4>
+<p>主要贡献：</p>
+<ul>
+<li>
+<p>建立了一个整体的分类法，通过对Transformer架构的分解，对五个部分进行分类，然后研究在每个阶段增强长上下文LLM的现有方法，包括预训练、微调、推理和预处理/后处理。</p>
+</li>
+<li>
+<p>探讨了广泛使用的评估必要性，包括数据集、指标和基线，专门评估LLM的长上下文能力。以及一些流行的工具包，以优化LLM的训练和推理的效率和有效性，如库、系统和编译器。</p>
+</li>
+<li>
+<p>确定了改进Transformer结构以处理广泛背景的关键挑战，以及相应的未来方向。</p>
+</li>
+<li>
+<p>考虑到该领域的快速增长和调查可能很快落后，我们构建了一个实时更新的存储库，以收集该特定领域的相关文献。https://github.com/Strivin0311/long-llms-learning</p>
+</li>
+</ul>
+<h4 id="heading"></h4>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>阅读至此了，分享、点赞、在看三选一吧🙏</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

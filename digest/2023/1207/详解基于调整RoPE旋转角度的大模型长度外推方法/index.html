@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>详解基于调整RoPE旋转角度的大模型长度外推方法 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">详解基于调整RoPE旋转角度的大模型长度外推方法</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              December 7, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2tNFDiaUtEia8mpKicvntb5UFgAaxqibqBh1Cp2GPDYITPeund9jOWWB21Q/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/dOvZte0dWfMN_9mFsAicwQ">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p><strong>01</strong></p>
+<p>前言</p>
+<p>旋转位置编码RoPE (Rotary Position Embedding) 被广泛应用于目前的大模型中，包括但不限于Llama、Baichuan、ChatGLM、Qwen等。但RoPE却有着较弱的长度外推性，也就是在推理时，当模型的输入长度超出训练长度时，模型的性能会急剧下降，具体表现为困惑度的急剧上升。如下图所示，我们评测了LLaMA2-7B在不同输入长度中的困惑度，当评测长度为8192时，模型的困惑度急剧上升。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2S6wq5wzYg240mSBXQjDm82Z6pibL0iaGLW3eW8qBTPRM0YaJPqjiaQnBw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>于是涌现出了一系列基于RoPE的大模型长度扩展的工作，并且取得了非常优秀的效果。在本文中，我们将对这些方法进行介绍，包括线性插值、NTK-Aware插值、NTK-by-parts、Dynamic NTK、YaRN等。上述方法均通过减小RoPE的旋转弧度来进行长度扩展，若读者对RoPE的基本原理尚未熟悉，建议先阅读文章：<a href="http://mp.weixin.qq.com/s?__biz=MzA3MTgwODE1Ng==&amp;mid=2247484716&amp;idx=1&amp;sn=b919204f5b0d634f8c538d45a18c7e88&amp;chksm=9f26a0dfa85129c9f3b1e5e82597d197858069b4011cfa53dd3eb3067a30c725d821ec4f5c7d&amp;scene=21#wechat_redirect">图解RoPE旋转位置编码及其特性</a>。</p>
+<p><strong>02</strong></p>
+<p>RoPE知识回顾</p>
+<p>磨刀不误砍柴工，我们先回顾RoPE的一些原理和特性，以便后续对各种长度扩展方法的理解。</p>
+<p>RoPE的基本原理</p>
+<p>在RoPE旋转位置编码中，存在位置编码函数  ，该函数表示对任意词向量  添加绝对位置信息  ，得到  ，其中  是一个矩阵，可以形象地把  理解为一个旋转矩阵。最终  如下公式所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2DyeKwRwRARib6j9icztdiciajEUR27sgcibPPGxzGicvsl6CRwhhyjrYlCQg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>我们可以以向量分组旋转的方式来理解上面的位置编码函数，它表示将向量  中的  个分量划分成  个分组，每组分量视为一个二维向量，分别旋转。当向量 位于位置  时，只需要将它的第  组分量旋转  ，就可以得到赋予了位置信息  的  ，其中  表示向量维度，在LLaMA中，  。</p>
+<p>我们以向量  的第0组分量  为例，假设  ，此时  ，则  。当  位于位置0,1,2,3时，分别对应将  旋转0,1,2,3弧度。其它组分量的旋转弧度，可以依此类推。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2ompao2RaOE5rH7SXc3RZHlAKgyhIsNZzNemdvOqtVFFeIuc9YlWFtw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>周期性</p>
+<p>下图展示了每组分量的旋转弧度和它所处位置的关系。对于每组分量，它的旋转弧度随着位置索引的增加而线性增加。每组分量的旋转都具有周期性，因为旋转一圈的弧度是  ，所以RoPE中的向量旋转就像时钟一样，具有周期性。并且我们发现越靠后的分组，它的旋转速度越慢。例如当向量位于位置500时，它的第0组分量已经旋转了500弧度，但第8组分量的旋转弧度仅为158左右。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2gKsiapywUqckYeicJxzYeJ819Do8FTnwPia7FyZMgdY9XIPtcIR9Mf3AA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>下图展示了上述旋转弧度所对应的正弦函数。我们可以更直观地看到，越靠后的分组，它的旋转速度越慢，正弦函数的周期越大、频率越低。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2dSmLt4FtQX3q93eicMwkibjYX5BVXwciboGialqLcMCZY7ibkPVqJFOlrwQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>远程衰减性</p>
+<p>在此前的文章中，我们已经详细介绍了RoPE的远程衰减特性，具体表现为：对于两个词向量，若它们之间的距离越近，则它们的内积分数越高，反之则越低。随机初始化两个向量q和k，将q固定在位置0上，k的位置从0开始逐步变大，依次计算q和k之间的内积。随着q和k的相对距离的增加，它们之间的内积分数呈现出远程衰减的性质。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2IVrrJQN1ayniaIwOeswnW4xaTics2bUSatnaQVVBc9lZDh3D9lAzia3iag/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>03</strong></p>
+<p>大模型长度扩展方法</p>
+<p>基于RoPE的大模型进行长度扩展的方法，大致可以分为两大类：【局部注意力】与【调整旋转弧度】。本文主要讨论基于调整旋转弧度的长度扩展方法。</p>
+<p>在此，请大家记住：任意向量  位于位置  时，它的第  组分量的旋转弧度为  ，其中  表示向量  的维度。我们后续讨论的所有长度扩展方法，本质上都是通过缩小旋转弧度  ，以达到长度扩展的目的。</p>
+<p>注意：如未特殊说明，本文后续的所有方法讨论均建立在不进行微调的前提下。</p>
+<p>Position Interpolation</p>
+<p>当推理长度超出RoPE的训练长度  时，为什么模型的性能会下降？在RoPE中，每个位置  都对应一个旋转弧度  ，当模型的训练长度为  时，位置0到位置 对应的旋转弧度范围为  。</p>
+<p>按照炼丹经验，我们可以合理地猜想：模型在训练时，只见过  范围内的旋转弧度，未见过大于  的旋转弧度，所以当推理长度大于  时，模型难以理解新的旋转弧度，无法正确注入位置信息，导致模型性能下降。</p>
+<p>当然，真实原因比上述猜想更加复杂，此处我们只是希望以一种更加直观的猜想引出Position Interpolation，更具体的分析可以参考后续章节。</p>
+<p>对于上述猜想，我们举个例子，LLaMA的训练长度为2048，如下图所示，对于第0组分量，训练时模型见过的旋转弧度范围为  ，当LLaMA在4096的长度上进行推理时，由于它在训练时未见过  的旋转弧度，所以难以理解，造成模型的性能下降。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2zKNTktcVR2jvAxscx1SpPGmkW0l70vmBmhOiaca2zY1PyVz43LBJiatQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>基于上述猜想，我们可以认为模型已经能够非常好地理解旋转弧度范围  所表示的位置信息，那么是否存在某种方法，可以使用旋转弧度范围  来表示更长的长度范围  呢？</p>
+<p>Position Interpolation的做法简单且直观：缩小每个位置的旋转弧度，让向量旋转得慢一些，每个位置的旋转弧度变为原来的  ，长度扩大几倍，则旋转弧度缩小几倍。最终，经过调整后，位置  的旋转弧度如下公式所示： 举个例子，我们设 ，也就是将模型的长度从2048扩展至4096，Position Interpolation将每个位置的旋转弧度均变为原来的一半。下图直观地展示了第0组分量的旋转弧度的变化情况，原来  的旋转弧度范围就可以用来表示4096的长度范围。这相当于在原来的弧度范围内，插入更多的位置，由于旋转弧度是线性变化的，所以也称为线性位置插值。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2q2JBm1KhOiaGMic22ia6mvvoMBg1cfNnxgkt2IwmqrP2BDRH8fw9pKWbw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>下图展示了第0组分量的旋转弧度所对应的正弦函数的变化情况。进行位置插值后，向量旋转速度变慢，周期变大，频率变慢。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2tNFDiaUtEia8mpKicvntb5UFgAaxqibqBh1Cp2GPDYITPeund9jOWWB21Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>NTK-Aware Interpolation</p>
+<p>NTK-Aware Interpolation以NTK（神经正切核）作为理论支撑，或者说灵感来源。作者认为高频信息对于神经网络非常重要，而Position Interpolation对于向量的所有分组不加区分地缩小旋转弧度，降低旋转速度（进一步体现为对其正弦函数进行拉伸），会导致模型的高频信息缺失，从而影响模型的性能。</p>
+<p>在前文中我们介绍过，位置越靠前的向量分组，旋转速度越快，频率越高，作者希望保留这些高频信息。在NTK-Aware插值中，经过调整后，位置  的旋转弧度如下公式所示，其中LLaMA中的  为10000，  表示  的缩放因子：</p>
+<p>我们以Code LLaMA为例进行分析，Code LLaMA中 ，也就是将原始模型的  放大100倍。调整后的旋转弧度与原始旋转弧度的倍数关系如下： 如下图所示，越靠后的分组，旋转弧度缩小的倍数越大。其中第0分组的旋转弧度保持不变，最后一个分组的旋转弧度变为原来的1/100。可以将NTK-Aware Interpolation的思想总结为：保留高频信息；高频分量旋转速度降幅低，低频分量旋转速度降幅高；在高频部分进行外推，低频部分进行内插。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2wfIHyJyDnCGG267ktPeQApS9Y5hPFaJ9IANzaPglpAUHYeROJ0PBhQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>评测结果表明，在不进行finetune的时候，NTK-Aware插值的效果比线性插值更优。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2Pqvm5NcOQAdzUA5ib9icRrBEicj5S4aT5ib9viaF0Qu5riaaQAYjSmUb82Mw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>为什么NTK-Aware Interpolation能够奏效？作者以NTK的理论进行解释。但我们认为从旋转周期的角度也许可以进行更加直观且合理的解释。前文中我们介绍过，位置越靠后的分组的旋转速度越慢，频率越低，周期越长。如下图所示，对于第0组分量，仅在位置7时，就已经旋转一周。但对于第64组分量，当位置为2047时，其旋转弧度约为0.2047，甚至仍未完成1/4周旋转。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2kyu6WAcY2WIk5BJN4LuBRZNGKqnjO5EiceML0GE7rD0OdraR6lsDuxQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>我们可以将NTK-Aware Interpolation奏效的原因按照如下方式进行解释：</p>
+<ol>
+<li>
+<p>靠前的分组，在训练中见过非常多完整的旋转周期，位置信息得到了充分的训练，所以具有较强的外推能力。</p>
+</li>
+<li>
+<p>靠后的分组，在训练中无法见到完整的旋转周期，或者见到的旋转周期非常少，训练不够充分，外推性能弱，需要进行位置插值。</p>
+</li>
+</ol>
+<p>NTK-by-parts Interpolation</p>
+<p>NTK-by-parts Interpolation则是基于NTK-Aware Interpolation进行优化，其核心思想是：不改变高频部分，仅缩小低频部分的旋转弧度。也就是不改变靠前分组的旋转弧度，仅减小靠后分组的旋转弧度，这就是by-patrs的含义。</p>
+<p>第  个分组的旋转周期如下： 第  个分组在训练长度内旋转的周期个数如下： 以每组分量在训练长度内旋转的周期个数  分类讨论插值方案。引入超参数  ，表示旋转周期个数的约束条件。</p>
+<ol>
+<li>
+<p>：旋转周期数量足够多，则认为该分组为高频部分，无需改变。</p>
+</li>
+<li>
+<p>：旋转周期数量少，则为低频分组，进行Position Interpolation。</p>
+</li>
+</ol>
+<p>当然，在NTK-by-parts Interpolation的实现中，分类讨论比上述描述稍微复杂一点。上述方法进行了相应的简化，但思想是一致的。</p>
+<p>Dynamic NTK Interpolation</p>
+<p>当超出训练长度时，上述插值方法都比原模型直接外推的效果更好，但是它们都有一个共同的缺点，在训练长度内，推理表现都比原模型差。如下图，灰色表示LLaMA直接外推的表现，在2048长度内，原始模型的困惑度显著低于各种插值方法。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2Pqvm5NcOQAdzUA5ib9icRrBEicj5S4aT5ib9viaF0Qu5riaaQAYjSmUb82Mw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>Dynamic NTK Interpolation是一种动态插值的方法，思路也很简单：推理长度小于等于训练长度时，不进行插值；推理长度大于训练长度时，每一步都通过NTK-Aware Interpolation动态放大base。</p>
+<p>表示当前的序列长度，  表示模型训练长度，当  时，不改变模型原始的旋转弧度；当  时，使用NTK-Aware Interpolation调整旋转弧度为  ， 。注意，每生成一个token后，  都会加1，当  时，每一次生成都会根据  重新调整旋转弧度，然后再进行下一次生成。</p>
+<p>YaRN</p>
+<p>前文中我们介绍过，无论是Position Interpolation还是NTK类方法，本质都是通过减小旋转弧度，降低旋转速度，来达到长度扩展的目的。这将导致位置之间的旋转弧度差距变小，词向量之间的距离变得比原来更近，词向量之间的点乘变大，破坏模型原始的注意力分布。所以经过插值之后，模型在原来的训练长度内的困惑度均有所提升，性能受损。</p>
+<p>向量的内积公式如下。向量旋转不改变模长，当  和  的旋转弧度变小，导致它们之间的夹角 变小，所以两者的内积会变大，最终会改变模型的注意力分布。 我们以图像的方式进一步分析注意力分布变化的问题。初始化两个全一向量q和k，将q固定在位置0上，k的位置从0开始逐步变大，依次计算q和k之间的内积。对于不同的长度扩展策略，q和k的内积变化如下图。无论是NTK还是线性插值，相对距离固定时，q和k之间的内积分数都将变大，进而导致模型的注意力分布改变。并且可以发现，RoPE的注意力远程衰减的性质变弱，这也将导致整个序列的注意力分布变得更加平滑。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm28KXZ1M438VicUaVf7ribmlQGSia06QZTldD5dFdo61mAURGVRUbsewjkw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>YaRN本质上是NTK-by-parts Interpolation与注意力分布修正策略的结合，仅缩小低频部分的旋转弧度，且通过温度系数修正注意力分布。只需将原来的注意力分数除以温度  即可。 ，我们以LLaMA为例，当长度从2048扩展至16384时，长度扩展为原来的8倍，代入公式，计算得到  。回顾温度系数对注意力分布的影响，当  变大，注意力分布更加平滑，方差更小；当  变小，注意力分布更加尖锐，区分度变大，方差变大。 意味着缓解注意力分布过于平滑的问题，让注意力分布方差更大些。</p>
+<p>下图是未经过微调的动态插值方法的比较，修正了注意力分布的Dynamic-YaRN，显著优于未修正注意力分布的Dynamic-PI方法。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/JrHT8u594NGQBIdhCILVLQ8EH9kxQWm2icP7ZsMGPez2ADDT7OIR8FQDlRbvqhPr0ePCHusX80HWlKJRJ0sQEzw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>05</strong></p>
+<p>总结</p>
+<p>本文介绍的大模型长度扩展方法，本质上都是通过缩小RoPE的旋转弧度，降低旋转速度，从而达到扩展长度的目的，并且通过不断优化缩小旋转弧度的方案，以提升模型的性能。</p>
+<p>调整旋转弧度后，将对模型的注意力分布产生影响，如要达到更优的效果，一般还需要使用少量长文本进行微调，让模型适应调整后的位置信息。</p>
+<p>一句话总结各种方法的特点：</p>
+<ol>
+<li>
+<p>Position Interpolation：目标长度是原来的n倍，则旋转弧度减小至原来的1/n。</p>
+</li>
+<li>
+<p>NTK-Aware Interpolation：增大RoPE的base，保留高频信息；高频分量旋转速度降幅低，低频分量旋转速度降幅高；在高频部分进行外推，低频部分进行内插。</p>
+</li>
+<li>
+<p>NTK-by-parts Interpolation：不改变高频部分，仅缩小低频部分的旋转弧度。</p>
+</li>
+<li>
+<p>Dynamic NTK Interpolation：推理长度小于等于训练长度时，不进行插值；推理长度大于训练长度时，每一步都通过NTK-Aware插值动态放大base。</p>
+</li>
+<li>
+<p>YaRN：NTK-by-parts Interpolation与注意力分布修正策略的结合，通过温度系数修正注意力分布。</p>
+</li>
+</ol>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>阅读至此了，分享、点赞、在看三选一吧🙏</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
