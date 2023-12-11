@@ -1,0 +1,752 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>随机分词浅探：从ViterbiSampling到完美采样算法 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">随机分词浅探：从ViterbiSampling到完美采样算法</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              December 11, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKB5BLtJHATvHDbdch7VjNDuOkMpcj28DJxuswHySM0clOARqJia3mEuqg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： PaperWeekly  来源： <a href="https://mp.weixin.qq.com/s/7KbyyA3LC4ttLNTVzZXgJQ">PaperWeekly</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHKVtfYDubjKdZRUjAfBQQicXjoZWJ3qnK42ooD4eeJUfJBM4SSZVa2RE5lO0j6rWwzliby0j9u4bDg/640?wx_fmt=gif" alt=""></p>
+<p><strong>©PaperWeekly 原创 · 作者 |</strong> 苏剑林</p>
+<p><strong>单位 |</strong>  月之暗面</p>
+<p><strong>研究方向 |</strong>  NLP、神经网络</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wulOVRfC18yCkd6xXqGq22h6QUk8chptF0fnQ4uXeZtAktYMrWwG2SyQ/640?wx_fmt=png" alt=""></p>
+<p><strong>从Viterbi Decoding到Viterbi Sampling</strong></p>
+<p>上一篇文章<a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247637047&amp;idx=1&amp;sn=9f99c375726a5d67407bd75d145bb2d7&amp;chksm=96e407b7a1938ea109b4b990cfc7de3ff60251c7e3ec62cdf5d630d59d118b171e57b939733e&amp;scene=21#wechat_redirect">《大词表语言模型在续写任务上的一个问题及对策》</a>发布后，很快就有读者指出可以在训练阶段引入带有随机性的分词结果来解决同样的问题，并且已经有论文和实现。</p>
+<p>经过进一步查阅学习，笔者发现这是一个名为 Subword Regularization [1] 的技巧，最早应用在 NMT（机器翻译）中，目前 SentencePiece 也有相应的实现。看起来这个技巧确实能缓解前述问题，甚至有助于增强语言模型的容错能力，所以就有了将它加进去 <a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247635593&amp;idx=1&amp;sn=6953f71a8bacb514944be2b8eb0440ca&amp;chksm=96e40d09a193841f5a3419852b8f6a2cec9db72336cafda7a3c67d67413d34744609272a1a68&amp;scene=21#wechat_redirect">BytePiece</a> 的想法。</p>
+<p>那么问题来了，如何将确定性分词改为随机性分词呢？BytePiece 是基于 Unigram 模型的，它通过 Viterbi 算法找最大概率的分词方案，既然有概率，是否就可以自然地导出随机采样？本文来讨论这个问题，并分享自己的解决方案。</p>
+<p><strong>1.1 要点分析</strong></p>
+<p>现阶段，Unigram 分词是直接输出最大概率的切分方案，通常这是一个确定性的输出。具体来说，假设  代表一个切分方案，对应的打分为 ， 代表句子  所有可能的切分方案的集合，那么分词算法可以描述为</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBHDAQFF5speIkqc2JeC9AhvuKsWCYdricf8yPrNY6U4JcVwtCbVW00Sw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这可以通过 Viterbi 算法在线性时间内来完成，所以这个过程我们也称之为 “Viterbi Decoding”。看起来，Unigram 模型天然带有概率，所以似乎并不难将它改为依概率采样的形式，但细想之下才发现这并非一个平凡的问题，有很多细节上的困难需要克服。</p>
+<p>笔者设想是模仿自回归语言模型设计一个递归采样流程，但这里最困难的地方是如何尽量保持原来的候选切分方案的排序不变，或者就算不能保持所有的排序不变，也至少满足最大概率不变，即 Viterbi 解码的最大概率路径  应该对应所设计的递归采样算法的最大概率采样结果。</p>
+<p>由于所有切分方案  构成一个有向无环图（DAG，Directed Acyclic Graph），笔者一开始以为直接在有向无环图上随机游走是一个可行方案，但再思考后发现很难设计适当的转移概率来保证最大概率路径不变（因为同一起点的不同边不是平权的，不能简单按照边的频率为权重做采样）。</p>
+<p><strong>1.2 已有方案</strong></p>
+<p>由于一时半会没有新想法，所以笔者决定去翻翻“参考答案”——看看 Subword Regularization 的原始论文《Subword Regularization: Improving Neural Network Translation Models with Multiple Subword Candidates》[1] 是怎么做的。</p>
+<p>然而，这个“标准答案”却让笔者有点哭笑不得。原来Subword Regularization的思路非常简单直接：先搜索出  最大的  个分词方案 （n-best segmentations），然后构建如下分布</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBmQApWiczfnianLicgnIYibcorMIyFzk5pKY7qfstJaRian7j3ETSN8dchNQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>对这  个方案进行依概率采样，其中  是一个超参数。该算法已经集成在 SentencePiece 中，读者可以自行测试（使用方法参考这里 [2]）。</p>
+<p>问题是，“简单直接”不代表着“高效”，尽管搜索 top- 个分词方案最优方案的复杂度也是线性的（有兴趣的读者可以自行找找 N-best Viterbi 的资料），但明显比只找 top1 的 Viterbi Decoding 要大很多（理论上是  倍复杂度），所以直接的后果是开启了随机采样后，会比确定性的分词要慢很多，所以这并非是笔者心中的理想采样方法。</p>
+<p><strong>1.3 个人思路</strong></p>
+<p>思路再度陷入了僵局。一筹莫展之际，笔者决定把思路再捋一捋：我们的目标是想要找到复杂度类似 Viterbi Decoding 的随机采样算法，既然如此，Viterbi Decoding [3] 本身应该是一个不错的突破点。于是，笔者再次翻开了分词代码，当时的分词函数长这个样：</p>
+<pre><code> 1def _tokenize(self, bytes text):  
+ 2    cdef int e, k, s  
+ 3    cdef double v, score  
+ 4    cdef list routes = [(0, None)] + [(-INFINITY, None) for _ in text]  
+ 5    cdef list tokens = []  
+ 6    for e, (k, v) in self._automaton.iter(text):  
+ 7        s, e = e - k + 1, e + 1  
+ 8        score = routes[s][0] + v  
+ 9        if score &gt; routes[e][0]:  
+10            routes[e] = score, s  
+11    while text:  
+12        s = routes[e][1]  
+13        tokens.append(text[s:e])  
+14        text, e = text[:s], s  
+15    return tokens[::-1]
+</code></pre>
+<p>反复读了几遍，总算有了灵感：Viterbi Decoding 的关键是  if score &gt; routes[e][0]:  这一句，它代表保留截止到当前位置的最优切分方案，其中  score  是新切分方案分数（概率对数）， routes[e][0]  是历史最优分数，如果新方案更优则覆盖。这让笔者联想到了 <a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247519872&amp;idx=1&amp;sn=345892c6cb4f4681bfe63440179f804d&amp;chksm=96ea5100a19dd8161d378c5075bf1044c18912c4deecc9f813b39cd842093c8435652fdd1179&amp;scene=21#wechat_redirect">MCMC 算法</a>的接受率设计，如果在这里引入随机采样，不就可以将分词结果随机化了？</p>
+<p>我们用  表示接受/拒绝新方案，由于这一步只是一个二元选择，所以将它概率化也非常简单：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBG9mQH95Mpoj3QhNPjl1YFwq9FrVBbFfBWnEUXrLsPibSDEIsBjlLC7Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这里  是均匀随机数， 是超参数， 是 Sigmoid 函数， 分别是新旧方案的得分（概率对数）。不难发现，左端的确定性采样对应  的随机性采样。</p>
+<p>这样，在 Viterbi 解码的基础上我们得到了一个非常自然、非常轻量级的随机采样算法，这里称之为 “Viterbi Sampling”，实现它只需要将  if score &gt; routes[e][0]: 这一判据换成带随机数的版本。</p>
+<p>由于 Sigmoid 函数的单调性，当 时，它自然会给新方案分配更大的概率，所以很明显原来的的最大概率切分在 Viterbi Sampling 之下也是最大概率结果，并且当  越大， 也越大，这意味着原本得分越大的方案被采样到的概率也越高，一定程度上保持了切分方案的排序不变（尽管还没有证明一定严格保序，但从应用角度看，近似保序就够了）。</p>
+<p><strong>1.4 简单测试</strong></p>
+<p>从 0.4.0 版本开始，Viterbi Sampling 就内置在 BytePiece 的分词函数中，只需要在  tokenizer.tokenize  或者  tokenizer.encode  时加入大于 0 的 alpha 参数，结果就是随机的：</p>
+<pre><code> 1import bytepiece  
+ 2assert bytepiece.__version__ &gt;= '0.4.0'  
+ 3  
+ 4tokenizer = bytepiece.Tokenizer('bytepiece_160k.model')  
+ 5text = '今天天气不错'  
+ 6print(tokenizer.tokenize(text))  # alpha默认值为-1，alpha≤0 都代表确定性分词  
+ 7for i in range(5):  
+ 8    print(tokenizer.tokenize(text, alpha=0.1))  
+ 9  
+10# [b'\xe4\xbb\x8a\xe5\xa4\xa9', b'\xe5\xa4\xa9\xe6\xb0\x94', b'\xe4\xb8\x8d\xe9\x94\x99']  
+11# [b'\xe4\xbb\x8a\xe5\xa4\xa9', b'\xe5\xa4\xa9\xe6', b'\xb0\x94', b'\xe4\xb8\x8d\xe9\x94\x99']  
+12# [b'\xe4\xbb\x8a\xe5\xa4\xa9', b'\xe5\xa4\xa9\xe6\xb0\x94', b'\xe4\xb8\x8d\xe9\x94\x99']  
+13# [b'\xe4\xbb\x8a\xe5\xa4\xa9', b'\xe5\xa4\xa9\xe6\xb0\x94', b'\xe4\xb8', b'\x8d', b'\xe9\x94', b'\x99']  
+14# [b'\xe4\xbb\x8a\xe5\xa4\xa9', b'\xe5\xa4\xa9', b'\xe6\xb0\x94', b'\xe4\xb8\x8d\xe9\x94\x99']  
+15# [b'\xe4\xbb', b'\x8a\xe5\xa4\xa9', b'\xe5\xa4\xa9', b'\xe6\xb0\x94\xe4\xb8\x8d', b'\xe9\x94', b'\x99']
+</code></pre>
+<p>下面对比一下 SentencePiece 的 Subword Regularization 和 BytePiece 的 Viterbi Sampling 的速度（随机性分词时都设 ）：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBdv0zicZFGuvLbA0picjYSgibUV8cNCCgOy35Hg9Hhs7TvQ4ib0OlBDgJog/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>可以看到，Subword Regularization（“SP-Unigram” 这一行）开启之后，分词速度不到原来的 1/4，这表明 Subword Regularization 的采样算法是相当低效的。</p>
+<p>相比之下，本文提出的 Viterbi Sampling 只下降了 30% 左右，效率显然更高，下降的部分在于随机数的生成和 Sigmoid 函数的计算，如果能进一步优化这两部分，速度还能进一步提升。至于 BPE 模型，它的随机分词叫做 BPE Dropout [4]，这是专属于BPE模型的方法，有兴趣的读者自行了解，这里就不介绍了。</p>
+<p><strong>1.5 小结</strong></p>
+<p>上文主要探讨了将 Unigram 分词模型的确定性分词改为随机性分词的策略。尽管已有名为 “Subword Regularization” 的方法可以实现这一目标，但其效率相对较低。为此，笔者提出了一种更高效的采样算法 Viterbi Sampling，它仅需对确定性的 Viterbi Decoding 进行简单的修改，从而基本保持了原有的效率。实验证明，新的算法采样速度明显超越了 Subword Regularization。相应的实现已经内置在 BytePiece 最新版中。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuhfgUpIfdPSqH8YjjHbCUiaaKsMA36bIMsMtGNKoBcus5py06M0fvx3A/640?wx_fmt=png" alt=""></p>
+<p><strong>从Viterbi Sampling到完美采样算法</strong></p>
+<p>在上一节中，笔者提出了一种名为 “Viterbi Sampling” 的随机分词算法，它只是在求最优解的 Viterbi Decoding 基础上进行小修改，保留了 Viterbi 算法的简单快速的特点，相比于已有的 Subword Regularization [1] 明显更加高效。不过，知乎上的读者 @鶴舞 指出，当前的采样算法可能会在多次二选一“稀释”了部分方案的出现概率，直接后果是原本分数最高的切分并不是以最高概率出现。</p>
+<p>经过仔细思考后，笔者发现相应的问题确实存在，当时为了尽快得到一种新的采样算法，在细节上的思考和处理确实比较粗糙。为此，本节将进一步完善 Viterbi Sampling 算法，并证明完善后的算法在效果上可以跟 Subword Regularization 等价的。</p>
+<p><strong>2.1 问题分析</strong></p>
+<p>首先，我们来看一下评论原话：</p>
+<p>subword regularization 中可以保证按概率数据（具有 temperature 超参数）。提出的方法中对于每个 e，第一个算出的 route 会被多次 1v1 “挑战”，最终概率分布会不会和已有算法差蛮多的。</p>
+<p>举个例子，watching 三种分法 watch ing，wat ching，和 watching 概率都是三分之一，提出的方案的采样概率概率就会变成，前两个的概率是四分之一，第三个的概率是二分之一，是这样的吗？</p>
+<p>其实评论里边已经说得很清晰了，如果读者还不理解的话，这里笔者稍微再展开一下。假设有三种切分方案，每种方案的得分都一样，那么我们自然是期望采样过程中每种方案的出现概率都是 。然而，Viterbi Sampling 是将多选一的采样过程转化为多步的二选一：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBicDePRuEYE9BfPFFWxCVTBQXAxsXPSOQeqysx7viaMxGwRx5JibsO9oTg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这样一来，前面的两种切分方案先二选一，概率都是 ；选出来一个结果之后，又跟第三种方案放一起来二选一，由于概率是按照各自得分来算的，所以这时候各自的概率还是 。于是，在完整的采样过程中，前两种方案出现的概率是 ，后一种方案出现的概率是 ，越晚出现的方案相对来说越“占便宜”，而越早出现的方案概率被稀释得越严重。</p>
+<p>而很不巧的是，按照 BytePiece 的 AC 自动机的返回顺序，越长的词（通常来说得分越高）出现的次序会越靠前，所以在 Viterbi Sampling 中，得分越高的方案反而更容易被稀释概率。</p>
+<p><strong>2.2 解决办法</strong></p>
+<p>现在看来，其实解决办法也很简单，每次进行二选一后，同时缓存累积概率就可以了，而从第二步开始，每次二选一时新进来的候选者不是跟已有候选者得分二选一，而是跟累积概率得分二选一，这就是俗称“水塘采样（Reservoir sampling）”[5] 的算法。</p>
+<p>用前面的例子来说，先进来两种切分方案，按照  的概率选出一种，然后它们总的累积概率是 ；接下来被选者跟新方案选一，新出现的方案被选到的概率应该是 ，也就是说要跟累积概率比，而不是跟被选者自己的概率比，这样完整的采样流程下来，每种切分方案出现的概率都是 。</p>
+<p>对于 Viterbi Sampling 来说，每个终点位置会有多个切分方案，我们要对其进行多选一采样，被选中的概率是由各自的得分构造出来的 ， 是归一化因子。因为我们是递归处理的，所以我们不知道多选一的“多”是多少，也无法计算 ，不过这不重要，知道  就够了，因为计算每一步的条件采样概率其实也用不到完整的 ，而是需要递归的 ：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBtkm95Ok1YBk45JItYtr8qiaqtmQRg01fH4BH2kVnrTPGxulQmhZ5r1g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>实际计算时，由于指数爆炸的原因，直接缓存  大概率会有溢出风险，所以我们一般缓存的是它的对数 ，并利用  函数避免溢出：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBXgkzmiaWia3AMjwKdYuiauQtxtLDWvQQEJJOicOjK4d2aYFSkvN6zVWnGw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>相应的实现已经内置在  bytepiece&gt;=0.5.0  中。</p>
+<p><strong>2.3 完美采样</strong></p>
+<p>总的来说，出现旧版 Viterbi Sampling 的缺陷，还是因为之前操之过急了，所以现在认真地给新版 Viterbi Sampling 补上数学证明。有意思的是，可以证明更新后的 Viterbi Sampling 跟 Subword Regularization 一样都是“完美采样”算法。</p>
+<p>之前我们介绍过，Subword Regularization 的做法非常“粗暴”，直接找出得分最高的  个切分方案，然后通过  的方式计算被选中的概率，其中  是第  种方案的得分。</p>
+<p>这种做法除了复杂度高外没有任何毛病，当  不做限制（即找出全部切分方案）时，我们得到<strong>所有切分方案的一个随机采样</strong> ，而每种方案被采样到的概率正比于  ——是得分  的单调增函数，即<strong>采样概率与得分的大小排序都是一样的</strong> ，满足这两个条件的，笔者称之为“完美采样”。</p>
+<p><strong>2.4 Decoding</strong></p>
+<p>为了证明新版 Viterbi Sampling 也是“完美采样”，我们先来回顾一下 Viterbi Decoding。设有一个长度为  的字节串 ，用  表示最优切分方案的得分，假设我们知道  之间一定会分开，那么必然有</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBRfm7zImxkf4b9tiaS4dv7VnIkuYh1IHnVkWqUCtxn2bsJeS5z9D1Lrg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>也就是说，最优切分方案的子串，一定也是对应的子字节串的最优切分方案，这是动态规划的根本依据。当然，事实上我们不能预知哪一处会被切开，所以只能用枚举的方式：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKB5BLtJHATvHDbdch7VjNDuOkMpcj28DJxuswHySM0clOARqJia3mEuqg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>其中 是指字节串  作为一个 token 时的得分（如果它不是词表中的 token，那么记为 ）。这样一来， 的计算就转化为  的计算，依此类推， 的计算又可以转化为  的计算，等等，也就是  的结果是可以复用的。所以，整个流程总结下来就是一句话：</p>
+<p>扫描到每一个位置时，都记录到当前位置的最优切分方案及其得分。</p>
+<p>当然，直接按照式（7）进行递归的话，理论上复杂度是 ，但事实上不可能每个子字节串都是词表中的一个 token，所以可以用 Trie 树、AC 自动机等方法根据词表提前扫描好所有可能出现的 token，那么复杂度就正比于搜索出来的候选 token 数，关于  是线性的，如果非要估计一个数值，那么假设词表中 token 的最大长度为 ，那么长度为  的字节串扫描出来的 token 数就不超过</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKB6ib7ZMtR6cQPJvF631B051YibPz9yGoDVKaCXAPs9u8ZwuGAmJn3Ss8Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>2.5 Sampling</strong></p>
+<p>有了 Decoding 部分做铺垫后，理解 Sampling 就相对容易一些了。其实关键还是在式（7），我们用  表示字节串  的所有切分方案的归一化因子（完美采样），那么有</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBO8bMDVAuMEz36XoMTn6ibNBe7pYqiaxOLGPL4D7L2icZ2xbwD3d7WEC1Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这个等式也表明，要实现从  的所有切分方案中按  的比重采样，可以从  的所有切分方案中随机选一个然后接上 token 、从  的所有切分方案中随机选一个然后接上 token 、从  的所有切分方案中随机选一个然后接上 token 、&hellip;，得到这  个采样结果后，分别再以权重 、、、&hellip; 从中选一个。</p>
+<p>接下来跟 Decoding 情形一样， 的计算又可以重用  的结果， 的计算又可以重用  的结果，等等，以及采样结果也都是可以重用的。于是类似地，那么整个 Sampling 算法也可以总结为一句话：</p>
+<p>扫描到每一个位置时，都对以当前位置为终点的所有切分方案按照  权重进行采样，记录采样结果以及累积权重 。</p>
+<p>如果两边取对数，那么式（9）可以等价地改写成</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBo8bvrbE35UMmvmN8wvyV3YibYXbkkiazibv78m2EqcNMicLahwDkvn79fA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>跟 Viterbi Decoding 的式（7）区别就是  代替了 ， 代替了 ，而  正好是  的光滑近似，所以  时能退化为 Viterbi Decoding。</p>
+<p>另一方面，在实际计算时，同一终点的多个切分方案是逐一到达而不是一次性到达的，所以就需要将单步的“多选一”转化为多步的“二选一”，这就是“解决办法”一节所讨论的内容。至此，我们证明了（或者说从 Viterbi Decoding 出发重新推导了）修改后的 Viterbi Sampling 实际是跟 Subword Regularization 一样的完美采样算法。</p>
+<p><strong>2.6 小结</strong></p>
+<p>本文完善了之前提出的随机分词算法 Viterbi Sampling，并从数学上证明了它在效果上跟 Subword Regularization 一样都是“完美采样”算法，而在使用上有着比 Subword Regularization 明显更高的效率。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrITiah4YpYUhEVibLd8lD4Zs7EaIsqkau5sUsicuLmicW1nvpMrREYleOwHg2tZKWXba0fQONFtg5dyVYAefFXJOic51N/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>参考文献</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrITiah4YpYUhEVibLd8lD4Zs7EaIsqkau5sUsicuLmicW1nvpMrREYleOwHg2tZKWXba0fQONFtg5dyVYAefFXJOic51N/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p>[1] <a href="https://arxiv.org/abs/1804.10959">https://arxiv.org/abs/1804.10959</a></p>
+<p>[2] <a href="https://github.com/google/sentencepiece/tree/master#subword-regularization-and-bpe-dropout">https://github.com/google/sentencepiece/tree/master#subword-regularization-and-bpe-dropout</a></p>
+<p>[3] <a href="https://github.com/bojone/bytepiece/blob/b65716b76938b3ac4124661a3367fc1c270373fa/bytepiece/faster.pyx">https://github.com/bojone/bytepiece/blob/b65716b76938b3ac4124661a3367fc1c270373fa/bytepiece/faster.pyx</a></p>
+<p>[4] <a href="https://arxiv.org/abs/1910.13267">https://arxiv.org/abs/1910.13267</a></p>
+<p>[5] <a href="https://en.wikipedia.org/wiki/Reservoir_sampling">https://en.wikipedia.org/wiki/Reservoir_sampling</a></p>
+<p><strong>更多阅读</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKB1XWcUrqeybpbkLCZfNxNaB4xozQ0WaXu1TE1kFlvPvqYPtG3n3JmWQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBn1uhlxqia1GsDZynXVNricdQTJ4Vtm6pLAcXvy3ousCpt4ic2PpnZ1ysw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDFFl9VWsMtTYL33rsOTFoKBraW4Bq8Kgg0oWvvSc6ibX7sYiawwQGKia819Sw1P7bYqMpuXjS2vFwMIg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHHMXQ2IicFvJwssWxgWhKuK7ulQVyw7gPTxZia00vCxia2vzhRH6pGq8t1FN1zY48ibULAEZpic41k6eg/640?wx_fmt=gif" alt=""></p>
+<p><strong>#投 稿 通 道#</strong></p>
+<p>** 让你的文字被更多人看到**</p>
+<p>如何才能让更多的优质内容以更短路径到达读者群体，缩短读者寻找优质内容的成本呢？<strong>答案就是：你不认识的人。</strong></p>
+<p>总有一些你不认识的人，知道你想知道的东西。PaperWeekly 或许可以成为一座桥梁，促使不同背景、不同方向的学者和学术灵感相互碰撞，迸发出更多的可能性。</p>
+<p>PaperWeekly 鼓励高校实验室或个人，在我们的平台上分享各类优质内容，可以是<strong>最新论文解读</strong> ，也可以是<strong>学术热点剖析</strong> 、<strong>科研心得</strong> 或<strong>竞赛经验讲解</strong> 等。我们的目的只有一个，让知识真正流动起来。</p>
+<p>📝<strong>稿件基本要求：</strong></p>
+<p>• 文章确系个人<strong>原创作品</strong> ，未曾在公开渠道发表，如为其他平台已发表或待发表的文章，请明确标注</p>
+<p>• 稿件建议以<strong>markdown</strong>  格式撰写，文中配图以附件形式发送，要求图片清晰，无版权问题</p>
+<p>• PaperWeekly 尊重原作者署名权，并将为每篇被采纳的原创首发稿件，提供<strong>业内具有竞争力稿酬</strong> ，具体依据文章阅读量和文章质量阶梯制结算</p>
+<p>📬<strong>投稿通道：</strong></p>
+<p>• 投稿邮箱：hr@paperweekly.site</p>
+<p>• 来稿请备注即时联系方式（微信），以便我们在稿件选用的第一时间联系作者</p>
+<p>• 您也可以直接添加小编微信（<strong>pwbot02</strong> ）快速投稿，备注：姓名-投稿</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgmic1CRCSOKfDibC3dZ4BaJuYyYTWJyw8gFxqon34STk3icf9aJbY4rqMpmhNjTGJXIGGFsCdTBHy3Tw/640?wx_fmt=png" alt=""></p>
+<p><strong>△长按添加PaperWeekly小编</strong></p>
+<p>🔍</p>
+<p>现在，在**「知乎」** 也能找到我们了</p>
+<p>进入知乎首页搜索**「PaperWeekly」**</p>
+<p>点击**「关注」** 订阅我们的专栏吧</p>
+<p>·</p>
+<p>·</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgnZ3nlEAOI3MyTd7jqeD6cq8uTbkM2xZNpribyNr9liaPJ722zaHxd0YpQvib2nxOYmWibydCVY7W94ew/640?wx_fmt=jpeg" alt=""></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

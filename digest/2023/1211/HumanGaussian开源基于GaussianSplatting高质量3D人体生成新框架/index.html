@@ -1,0 +1,671 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>HumanGaussian开源：基于GaussianSplatting，高质量3D人体生成新框架 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">HumanGaussian开源：基于GaussianSplatting，高质量3D人体生成新框架</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              December 11, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZO3C6KQbk8v6MNLAz05CXrOtxHHoxCDmhUIKw5tJE3M7uTZPCvGjSibA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 机器之心  来源： <a href="https://mp.weixin.qq.com/s/ksE2dWCxwTVZLG9hfaPgtg">机器之心</a></p>
+<p>机器之心专栏</p>
+<p><strong>作者：香港中文大学，腾讯AI Lab，北京大学，香港大学，南洋理工大学</strong></p>
+<p>在 3D 生成领域，根据文本提示创建高质量的 3D 人体外观和几何形状对虚拟试穿、沉浸式远程呈现等应用有深远的意义。传统方法需要经历一系列人工制作的过程，如 3D 人体模型回归、绑定、蒙皮、纹理贴图和驱动等。为了自动化 3D 内容生成，此前的一些典型工作（比如 DreamFusion [1] ）提出了分数蒸馏采样 (Score Distillation Sampling)，通过优化 3D 场景的神经表达参数，使其在各个视角下渲染的 2D 图片符合大规模预训练的文生图模型分布。然而，尽管这一类方法在单个物体上取得了不错的效果，我们还是很难对具有复杂关节的细粒度人体进行精确建模。</p>
+<p>为了引入人体结构先验，最近的文本驱动 3D 人体生成研究将 SDS 与 SMPL 等模型结合起来。具体来说，一个常见的做法是将人体先验集成到网格（mesh）和神经辐射场（NeRF）等表示中，或者通过将身体形状作为网格 / 神经辐射场密度初始化，或者通过学习基于线性混合蒙皮（Linear Blend Skinning）的形变场。然而，它们大多在效率和质量之间进行权衡：基于 mesh 的方法很难对配饰和褶皱等精细拓扑进行建模；而基于 NeRF 的方法渲染高分辨率结果对时间和显存的开销非常大。如何高效地实现细粒度生成仍然是一个未解决的问题。</p>
+<p>最近，3D Gaussian Splatting（3DGS）[2] 的显式神经表达为实时场景重建提供了新的视角。它支持多粒度、多尺度建模，对 3D 人体生成任务非常适用。然而，想要使用这种高效的表达仍有两个挑战：1) 3DGS 通过在每个视锥体中排序和 alpha - 混合各向异性的高斯来表征基于图块的光栅化，这仅会反向传播很少一部分的高置信度高斯。然而，正如 3D 表面 / 体积渲染研究所证实的那样，稀疏的梯度可能会阻碍几何和外观的网络优化。因此，3DGS 需要结构引导，特别是对于需要层次化建模和可控生成的人体领域。2）朴素的 SDS 需要一个较大的无分类器指导（Classifier-Free Guidance）来进行图像文本对齐（例如，在 DreamFusion [1] 中使用的 100）。但它会因过度饱和而牺牲视觉质量，使真实的人类生成变得困难。此外，由于 SDS 损失的随机性，3DGS 中原始的基于梯度的密度控制会变得不稳定，导致模糊的结果和浮动伪影。</p>
+<p>在最近的一项工作中，香港中文大学、腾讯 AI Lab、北京大学、香港大学、南洋理工大学团队推出最新有效且快速的 3D 人体生成模型 HumanGaussian，通过引入显式的人体结构引导与梯度规范化来辅助 3D 高斯的优化过程，能够生成多样且逼真的高质量 3D 人体模型。目前，代码与模型均已开源。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZbbJCmNEoYvYhA1En02IQDxBK3v8QH7toAiaz757punfg92ZLccCaz8g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<ul>
+<li>
+<p>arXiv: <a href="https://arxiv.org/abs/2311.17061">https://arxiv.org/abs/2311.17061</a></p>
+</li>
+<li>
+<p>Webpage: <a href="https://alvinliu0.github.io/projects/HumanGaussian">https://alvinliu0.github.io/projects/HumanGaussian</a></p>
+</li>
+<li>
+<p>Demo: <a href="https://www.youtube.com/watch?v=S3djzHoqPKY">https://www.youtube.com/watch?v=S3djzHoqPKY</a></p>
+</li>
+<li>
+<p>Github&amp;Code: <a href="https://github.com/alvinliu0/HumanGaussian">https://github.com/alvinliu0/HumanGaussian</a></p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZFUzOkNwRdYiaU2ic8svfoz8qCTsq2vxF0qFX6phtqa00A11dUz8hH6PQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>核心方法</strong></p>
+<p>（1）Structure-Aware SDS</p>
+<p>研究者基于 SMPL-X 网格形状初始化 3D 高斯中心位置：1）以前的研究使用运动结构点（Structure-from-Motion）或 Shap-E [3] 和 Point-E [4] 等通用文本到点云先验。然而，此类方法通常在人体类别中存在点过于稀疏或身体结构不连贯等问题。2）作为 SMPL 的扩展，SMPL-X 补充了人脸和手部的形状拓扑，有利于进行具有细粒度细节的复杂人体建模。基于这些观察，研究者提出了在 SMPL-X 网格表面均匀采样点作为 3DGS 初始化。他们对 3DGS 进行缩放和变换，使其达到合理的人体尺寸并位于 3D 空间的中心。</p>
+<p>由于 SMPL-X 先验仅用作初始化，因此需要更全面的指导来促进 3DGS 训练。研究者提出使用一个同时捕获纹理和结构联合分布的 SDS 源模型，而不是从仅学习外观或几何形状的单一模态扩散模型中学习 3D 场景。他们使用结构专家分支扩展预训练的 Stable Diffusion 模型，以同时对图像 RGB 和深度图进行去噪：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZ0c4U7FTiapcH0ywH62P1A63Q2VjQ6CqADuXfERBKsJ0AiaNqTxM5H37g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>借助这种方式，研究者获得了一个统一的模型，可以捕获外观的图像纹理和前景 / 背景关系的结构，该模型可以在 SDS 中用于促进 3DGS 学习。</p>
+<p>通过生成空间对齐图像 RGB 和深度的扩展扩散模型，可以从结构和纹理方面同时指导 3DGS 优化过程：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZ9HKZjj8tfaC6jiaS2s3V7YDDVW6eX5Xria6Pb8wy5XiawZCqxibzZxr1xw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这种结构正则化有助于减少几何失真，从而有利于具有稀疏梯度信息的 3DGS 优化。</p>
+<p>（2）Annealed Negative Prompt Guidance</p>
+<p>为了促进文本与 3D 生成内容之间的对齐，DreamFusion [1] 使用较大的无分类器引导尺度来更新 3D 场景优化的分数匹配差异项：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZa8tg232kZWv8ibFuqBWNjfYeZqbSDboYUPIGjjnMDltDDIZBL7ibTBhw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在这个公式中，可以自然地将分数匹配差异分解为两部分，其中前一项是将图像推向更真实的流形的生成分数；后一项是将样本与隐式分类器对齐的分类器分数。然而，由于生成分数包含高方差的高斯噪声，它提供了损害训练稳定性的随机梯度信息。为了解决这个问题，DreamFusion 特地使用较大的无分类器引导尺度，使分类器分数主导优化，导致模式过度饱和。相反，研究者仅利用更清晰的分类器分数作为 SDS 损失。</p>
+<p>在文生图和文生 3D 领域中，负文本被广泛用于避免生成不需要的属性。基于此，研究者提出增加负文本分类器分数以实现更好的 3DGS 学习。</p>
+<p>根据经验，研究者发现负文本分类器分数会在小时间步长内损害质量，因此使用退火的负文本引导来结合两个分数进行监督：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZO3C6KQbk8v6MNLAz05CXrOtxHHoxCDmhUIKw5tJE3M7uTZPCvGjSibA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>实验结果</strong></p>
+<p>研究者与通用的文生 3D 和 3D 人体生成领域的模型进行对比。可以看到，HumanGaussian 取得了优越的性能，渲染出更真实的人体外观、更连贯的身体结构、更好的视图一致性、更细粒度的细节捕捉:</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZWk6eAicow2zRsEkCJr8WkOXwM6RHibibmk0O8iakthpksOTWtSicX7aVgBw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>此外，研究者还通过消融实验验证了各个模块的有效性。可以看出，SMPL-X 提供的人体结构先验可以给 3DGS 优化提供初始化信息；负文本引导可以确保逼真的人体纹理外观；图像 RGB 与深度图双分支的 SDS 监督约束可以同时对人体的几何和纹理进行优化；最后根据高斯大小进行剪枝可以去除雾状的伪影：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZ41h39xnC7Oic3EpbVwKSzOq4VibyRD8UicCGEE9AalicFiafuAcfAXfB7kg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>以下是一些高清的多视角 3D 人体生成结果图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZTd3WjImb2qMfMW8xia0ibtY7vIzyB78bREoM6ia8aYFUhSIa5TPXshm0Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW99juX6iaDq2sqtOicA12QFSZntlH7HAk7nQZGg3icEDWEv7aiaRdj7O2Kja5ADxXqp75TzSiafxq4ntUQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>更多样本请参考文章的项目主页以及 demo 视频。</p>
+<p><strong>总结与未来工作</strong></p>
+<p>本文提出 HumanGaussian，一种有效且快速的框架用于生成具有细粒度几何形状和逼真外观的高质量 3D 人体。HumanGaussian 提出两点核心贡献：</p>
+<p>（1）设计了结构感知的 SDS，可以显式地引入人体结构先验，并同时优化人体外观和几何形状；</p>
+<p>（2）设计了退火的负文本引导，保证真实的结果而不会过度饱和并消除浮动伪影。总体来说，HumanGaussian 能够生成多样且逼真的高质量 3D 人体模型，渲染出更真实的人体外观、更连贯的身体结构、更好的视图一致性、更细粒度的细节捕捉。</p>
+<p>未来工作：</p>
+<ol>
+<li>
+<p>由于现有的文生图模型对于手部和脚部生成的性能有限，研究者发现它有时无法高质量地渲染这些部分；</p>
+</li>
+<li>
+<p>后背视图的渲染纹理可能看起来模糊，这是因为 2D 姿势条件模型大多是在人类正面视图上训练的，而人类后视图的先验知识很少。</p>
+</li>
+</ol>
+<p><em>参考文献</em></p>
+<p><em>[1] Dreamfusion: Text-to-3d using 2d diffusion, ICLR’23</em></p>
+<p><em>[2] 3d gaussian splatting for real-time radiance field rendering, SIGGRAPH’23</em></p>
+<p><em>[3] Shap-e: Generating conditional 3d implicit functions, arXiv preprint arXiv: 2305.02463</em></p>
+<p><em>[4] Point-e: A system for generating 3d point clouds from complex prompts, arXiv preprint arXiv: 2212.08751</em></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW9LSvGJnGeMgN5icZW9coZAvicwuFyhFM09n7QicLPKzKr3WHYGIdVvlVUA20KPvDWYDKFKvXlXMz5XA/640?wx_fmt=png" alt=""></p>
+<p>© THE END</p>
+<p>转载请联系本公众号获得授权</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
