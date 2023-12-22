@@ -1,0 +1,734 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>也读大模型RAG问答技术综述及评估思路：兼看UHGEval幻觉评估数据集的构建细节 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">也读大模型RAG问答技术综述及评估思路：兼看UHGEval幻觉评估数据集的构建细节</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              December 22, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAhUHbNLlGoovz6c8cHkWLjsdsfx5wWScnvr28uPzdMjPzMZUot1oBZA/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/PiTWDht3rOTwXE2vN5p6PQ">老刘说NLP</a></p>
+<p>今天是2023年12月21日，星期四，北京，天气晴，我们来看看RAG以及幻觉评估的一些话题，并重点关注数据构造和评估。</p>
+<p>RAG是个有趣的话题，我们在之前的文章《大模型RAG检索增强问答如何评估：噪声、拒答、反事实、信息整合四大能力评测任务探索》(<a href="https://mp.weixin.qq.com/s/YFji1s2yT8MTrO3z9_aI_w">https://mp.weixin.qq.com/s/YFji1s2yT8MTrO3z9_aI_w</a>)以及《再看大模型RAG检索增强如何评估：RAGAS开源自动化评估框架》(<a href="https://mp.weixin.qq.com/s/TrXWXkQIYTVsS1o4IZjs9w">https://mp.weixin.qq.com/s/TrXWXkQIYTVsS1o4IZjs9w</a>)有介绍过。</p>
+<p>最近的工作《Retrieval-Augmented Generation for Large Language Models: A Survey》(<a href="https://arxiv.org/pdf/2312.10997">https://arxiv.org/pdf/2312.10997</a>)，感兴趣的可以看看，其中综述了现有大模型的一些整体架构以及评估，其中评估是一个重点，我们来进一步重点看看RAG系统如何评估，评估维度、评估框架(比如RAGAS以及ARES)，这个是最值得关注的。</p>
+<p>关于幻觉评估的另一个工作《UHGEval: Benchmarking the Hallucination of Chinese Large Language Models via Unconstrained Generation》(<a href="https://arxiv.org/abs/2311.15296">https://arxiv.org/abs/2311.15296</a>)很有趣，其数据构造方式可以看看，同样的，其中的评估指标kwPrec也很有新意。</p>
+<p>供大家一起参考。</p>
+<h4 id="一大模型rag问答综述及评估范式">一、大模型RAG问答综述及评估范式</h4>
+<p>《Retrieval-Augmented Generation for Large Language Models: A Survey》(<a href="https://arxiv.org/pdf/2312.10997">https://arxiv.org/pdf/2312.10997</a>)提到了大模型幻觉的综述，比较偏理论，实践性不强，但对于增强对RAG的认识有帮助。</p>
+<p>其中有几个图很有趣，可以看看。</p>
+<p><strong>1）RAG研究时间线</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAjz9mfYTqic2kxCmBrMltGXjLibsLEBicku77vjUzbcDQcdG0cjliaz62qA/640?wx_fmt=png" alt=""></p>
+<p><strong>2）RAG与其他调优方式的对比</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAgKVe030x2BaoAXfZf91MfgONujEiaYmNBCONBjpZwYJS2hSeRgnH8CQ/640?wx_fmt=png" alt=""></p>
+<p><strong>3）RAG与finetune微调的对比</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eA2CnF3FyibfdIRI9uhciatZlMibcnpHrj9mCRXHdrN0JLSsojicUjoDJBEQ/640?wx_fmt=png" alt=""></p>
+<p><strong>4）RAG的组件</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAtCmygTrMP9OaFhjIuhN7L1jC7RKE4SDsTwlXqARwTCeYUbMNw9ic3Cw/640?wx_fmt=png" alt=""></p>
+<p><strong>2、RAG的几种范式</strong></p>
+<p>RAG包括Naive RAG、Advanced RAG以及Modular RAG等。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAHyqKuN5CIK6OLiaiaE57q0q5cgZUn7arOg7HqX6dPdiaw0MnSFbrbCyPg/640?wx_fmt=png" alt=""></p>
+<p>Naive RAG是RAG技术的最早阶段，主要涉及三个核心步骤: 索引、检索和生成。</p>
+<p>其中，索引阶段，构建一个包含大量文本数据的倒排索引，以便快速检索相关信息。索引过程包括数据清洗、分块和嵌入，将文本转换为向量表示，以便计算文本之间的相似度；检索阶段，给定用户输入的问题，使用嵌入模型将问题转换为向量表示，并计算问题向量与索引中文档块的相似度。根据相似度对文档块进行排序，选取最相关的前K个文档块作为上下文信息；生成阶段将检索到的上下文信息与用户输入问题一起输入到LLM中，生成最终的回答。</p>
+<p>Advanced RAG对Naive RAG进行了优化。例如，在检索阶段之前和之后引入优化方法，如重新排序检索结果、使用LLM生成伪文档等，以提高检索质量；索引优化阶段通过滑动窗口、细粒度分块、元数据增强等方法优化索引过程，提高检索效果；多阶段检索阶段根据问题的不同类型和需求，进行多阶段检索，以获取更精确的检索结果；提高索引数据的质量，包括增强数据粒度、优化索引结构、添加元数据、对齐优化和混合检索等。</p>
+<p>Modular RAG允许根据具体问题调整模块和流程，例如引入搜索模块、记忆模块、额外生成模块等新模块，以扩展RAG的功能。允许调整模块之间的顺序和连接方式，如对齐模块、添加或替换模块等，以适应不同任务和场景，与LLM的其他技术(如提示工程、知识蒸馏等)相结合，提高模型性能，并最终通过调整模块和流程，使RAG技术能够适应各种下游任务，提高通用性。</p>
+<p><strong>3、RAG的评估</strong></p>
+<p>在探索RAG的开发和优化过程中，有效评估其性能已成为一个中心问题，我们重点来看看。</p>
+<p><strong>在评估方法层面，评估RAG有效性的方法主要包括独立评估和端到端评估两种，其中：</strong></p>
+<p>独立评估包括评估检索模块和生成（读取/合成）模块。</p>
+<p>检索模块指的是一套衡量系统（如搜索引擎、推荐系统或信息检索系统）根据查询或任务对项目进行排名的有效性的指标通常用于评估RAG检索模块的性能，包括命中率、MRR、NDCG、精度等。</p>
+<p>生成模块是指通过将检索到的文档补充到查询中而形成的增强或合成输入，与通常端到端评估的最终答案/响应生成不同。生成模块的评估指标主要关注上下文相关性，衡量检索到的文档与查询问题的相关性。</p>
+<p>端到端评估评估RAG模型针对给定输入生成的最终响应，涉及模型生成的答案与输入查询的相关性和一致性。从内容生成目标的角度来看，评估可以分为无标签内容和有标签内容，未标记内容评估指标包括答案保真度、答案相关性、无害性等，而标记内容评估指标包括准确性和EM。</p>
+<p>另外，从评估方法的角度来看，端到端评估可以分为手动评估和使用LLM的自动评估，而针对不同的领域，可以根据RAG在特定领域的应用，采用特定的评估指标，例如用于问答任务的EM，用于摘要的UniEval和E-F1任务，以及用于机器翻译的BLEU，这些指标有助于了解RAG在各种特定应用场景中的性能。</p>
+<p><strong>在评估指标方面，可以关注三个核心指标：答案的可信度、答案相关性和上下文相关性。</strong></p>
+<p>其中：</p>
+<p>可信度指该模型必须保持给定上下文的真实性，确保答案与上下文信息一致，并且不会偏离或矛盾，评估的这一方面对于解决大型模型中的幻觉至关重要。</p>
+<p>答案相关性强调生成的答案需要与提出的问题直接相关。</p>
+<p>上下文相关性要求检索的上下文信息尽可能准确和有针对性，避免不相关的内容。</p>
+<p>而在真实工程落地中，则需要关注噪声鲁棒性、负拒绝、信息集成和反事实鲁棒性，其中：</p>
+<p>噪声鲁棒性衡量模型处理噪声文档的效率，这些噪声文档是与问题相关但不包含有用信息的文档。</p>
+<p>否定拒绝指当模型检索到的文档缺乏回答问题所需的知识时，模型应该正确地拒绝响应。在否定拒绝的测试设置中，外部文档仅包含噪声。理想情况下，大模型应该发出“缺乏信息”或类似的拒绝信号。</p>
+<p>信息整合评估模型是否可以集成多个文档中的信息来回答更复杂的问题。</p>
+<p>反事实鲁棒性旨在评估模型在收到有关检索信息中潜在风险的指令时是否能够识别并处理文档中已知的错误信息，其在测试中包括大模型可以直接回答的问题，但相关外部文件包含事实错误。</p>
+<p>在评估框架方面，RAGAS(<a href="https://github.com/explodinggradients/ragas">https://github.com/explodinggradients/ragas</a>)和ARES(<a href="https://github.com/stanford-futuredata/ARES">https://github.com/stanford-futuredata/ARES</a>)相对较新。这些评估的核心重点是三个主要指标：答案的可信度、答案的相关性和上下文的相关性。此外，业界提出的开源库TruLens(<a href="https://github.com/truera/trulens">https://github.com/truera/trulens</a>)也提供了类似的评估模式。</p>
+<p>其中： RAGAS是一个基于简单手写提示的评估框架，利用这些提示以全自动方式衡量质量的三个方面——答案忠实度、答案相关性和上下文相关性。在该框架的实现和实验中，所有提示均使用gpt-3.5-turbo-16k模型进行评估。</p>
+<p>其算法原理也很简单：</p>
+<p>在评估答案的可信度上，使用LLM将答案分解为单独的陈述，并验证每个陈述是否与上下文一致。最终，“可信度分数”是通过将支持的陈述数量与陈述总数进行比较来计算的；</p>
+<p>评估答案相关性上，使用LLM生成潜在问题并计算这些问题与原始问题之间的相似度。答案相关性分数是通过计算所有生成的问题与原始问题的平均相似度得出；</p>
+<p>评估上下文相关性上，使用LLM提取与问题直接相关的句子，并使用这些句子与上下文中句子总数的比率作为上下文相关性得分。</p>
+<p>ARES(<a href="https://arxiv.org/pdf/2311.09476.pdf">https://arxiv.org/pdf/2311.09476.pdf</a>)从上下文相关性、答案忠实性和答案相关性上进行评估，评估指标与RAGAS中的类似。不同的是，ARES通过使用少量的手动标注数据和合成数据来降低评估成本，并利用预测驱动推理（PDR）提供统计置信区间，提高评估的准确性。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAJT3LXZVnibqgK32RNTgVdRGolyuyeyj5eC0wk0uOThUqeN0XCJR2DuQ/640?wx_fmt=png" alt=""></p>
+<p>也可看看其评估原理：</p>
+<p>ARES首先使用语言模型从目标语料库中的文档生成综合问题和答案，以创建正样本和负样本，然后使用合成数据集对轻量级语言模型进行微调，以训练它们评估上下文相关性、答案忠实性和答案相关性，最后使用置信区间对RAG系统进行排名。</p>
+<h4 id="二也看uhgeval幻觉评估数据集的构建">二、也看UHGEval幻觉评估数据集的构建</h4>
+<p>实际上，目前已经有许多关于幻觉评估的数据集：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAibEAUg0af1B9cxdTtDzu4ibibXAIAxBxXE0ib8XrHFwSnG5tgdh8HexR2Q/640?wx_fmt=png" alt=""></p>
+<p>为此，可以考虑构建一套能够模拟实际应用场景的综合性幻觉评测基准。</p>
+<p>UHGEval是其中的一个基准，我们可以看看，项目地址，https://github.com/IAAR-Shanghai/UHGEval，重点关注评估数据的构建方案，会有收获：‍‍‍‍‍‍‍</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAhUHbNLlGoovz6c8cHkWLjsdsfx5wWScnvr28uPzdMjPzMZUot1oBZA/640?wx_fmt=png" alt=""></p>
+<p><strong>1、数据集的收集与处理</strong></p>
+<p>为了增强新闻延续数据集的真实性，收集了中国主要新闻网站的数万条历史新闻文章，涵盖2015年1月至2017年1月，作为构建数据集的基础。</p>
+<p>考虑到不同类别的新闻，例如体育、教育、科学和社会，所产生的幻觉通常表现出一定的差异。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAIWSoWGS0wibblqJwOP8icACZ0agd9BaCMTEd3wZEUfXEjsJSXftgAibtw/640?wx_fmt=png" alt=""></p>
+<p>因此，将收集到的新闻示例分为四种主要类型：文档密集型、数字密集型、知识密集型和一般新闻。</p>
+<p>在数据预处理阶段，将一篇完整的新闻文章分为三个部分：开头文本、后续文本和参考信息。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAADXv8JJHXws89iaX0YFxib9t4LZOZlNGfmxsddKibia75TkLs1Tia9Iae9g/640?wx_fmt=png" alt=""></p>
+<p>开始文本用于指导模型生成延续，通常是新闻的开头部分。 在评估过程中，大模型需要在开始文本之后生成内容。</p>
+<p>后续文本包含新闻文章中的后续句子，并作为延续任务的基本事实。</p>
+<p>参考信息指在排除开始文本之后，所有剩余的文本都作为参考信息的来源。</p>
+<p><strong>2、不受约束的幻觉生成</strong></p>
+<p>评估幻觉的基准主要依赖于单个大模型来生成幻觉数据集，例如使用ChatGPT的HaluEval和PHD，以及仅使用InstructGPT的FActScor和FACTOR。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAOBvp45wxian0996vJ64iatySY4ic5P4E6ugYYic8w4moib4GBP1gz6xdeqA/640?wx_fmt=png" alt=""></p>
+<p>不受约束的幻觉生成使用五个不同的大模型来生成幻觉内容，包括ChatGLM2-6B、Baichuan2-13B、Qwen-14B、InternLM-20B和Xinyu-7B(基于BloomZ-7B，针对新闻进行微调）。</p>
+<p>在生成上，直接将要继续的文本输入到模型中，获得续写结果。</p>
+<p><strong>3、幻觉排序</strong></p>
+<p>完全依赖人工标注会产生大量成本，并且可能无法大规模可持续，而纯粹基于机器的方法（例如利用GPT4）可能会产生不太准确的结果。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eA15XBYGwBXAdA2CLfhLkiak1RicsI8l1uBJibf2xJSumqZhjXzc75tFJ7g/640?wx_fmt=png" alt=""></p>
+<p>因此，该工作通过两个评估指标进行两阶段的候选续文过滤，剔除毫无意义或过于保守的续写文本。</p>
+<p>一个是根据文本流畅度（自研流畅度奖励模型）排序，从五个候选续文中选取前三个流畅的续写文本。</p>
+<p>另一个是根据幻觉发生可能性（kwPrec），利用LLM从候选续文中提取关键词，并计算在参考信息中有匹配的关键词数与总关键词数的比率，即，考虑生成文本中关键词与参考信息的词汇相关性，并选取kwPrec最小（幻觉发生的可能性相对较大）的一个候选续文进入后续的自动标注和人工复检阶段。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAfSu8JYC1MxT0DuDSZlMUYKEJZaM3lZluqRQLKhhVT1bm84XMczXCgA/640?wx_fmt=png" alt=""></p>
+<p>这个选定逻辑很有意思，可以考虑两个主要维度：</p>
+<p><strong>一个是流畅性。</strong>  这是指文本的自然性和可读性。流畅的文本应该读起来流畅，语法正确，并且在后续上下文中具有逻辑意义。为了评估流畅性，采用奖励模型，该模型经过训练可以评估文本的质量，并可以根据每个延续的流畅性为其分配分数。通过使用此模型，保留流畅度得分最高的前三个后续文本。</p>
+<p>另一个是发生幻觉的可能性。该维度评估续集可能包含幻觉内容的程度。对于幻觉发生可能性排名，评估生成的后续文本和参考信息之间的词汇相关性。相关性越低，出现幻觉的可能性就越大。尽管现有基于n-gram覆盖率的词汇度量，例如BLEU和ROUGE，但这些基于规则的方法可能无法有效地发现幻觉关键词。</p>
+<p><strong>因此，采用关键词精度（kwPrec）指标，因为大模型通常可以更有效地提取适当的关键词，因此kwPrec更关注事实相关性而不是表达相关性。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eAqd1nMygEzx0tCjwRGrlfAQB4ZnAmxrftYuq9HXRTebxRI61ZpoYG5g/640?wx_fmt=png" alt=""></p>
+<p>具体实现很有意思，其使用LLM（GPT3.5-Turbo）从后续文本中提取关键词，并确定这些关键字是否在参考信息中匹配，然后计算所有匹配与总关键词的比率。</p>
+<p>其计算三个候选后续文本中每一个的kwPrec，选择具有最低值的一个作为最终候选。</p>
+<p>最后，在自动标注阶段，由GPT3.5-Turbo从候选续文中识别关键词，由GPT4-0613注释关键词的（不）合理性和相应的解释。人工复检由具有新闻学背景的注释员完成，根据文章提出的最小幻觉原则【这个最小幻觉原则】，逐条验证注释结果的正确性，剔除不准确的候选续文（即，关键词的合理性有误或者不合适对应的解释不当的文本）。</p>
+<p>有趣的点又来了，<strong>其中的最小幻觉原则</strong> ，其逻辑在于，如果可以选择一组单词，并且用上下文适当的单词替换它们产生语义连贯的句子，则这样的一组单词被指定为幻觉单词组，因此，选择标注的单词必须满足组内单词数量最少的条件：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgMdX3VyZvicMiaBq27kZO3eApPNlRsYuKlj4nukIenGic2FQn6e1GIOXwEQEY4VHLPVVC1DJkwicaSqA/640?wx_fmt=png" alt=""></p>
+<p>如上式所示：</p>
+<p>式中，W为句子中关键词的集合，w为幻觉词组，正确(·) 是将幻觉词修改为非幻觉词的校正函数，halluculated(·) 评估由一组关键词组成的句子是否幻觉。</p>
+<p><strong>按照这个原则，在“西游记是美国小说，四大名著之一”这句话中，会标注“美国”二字进行标注，因为将这个单一的关键词改为“中国”就可以消除幻觉。</strong></p>
+<p><strong>4、具体数据</strong></p>
+<p>我们可以从数据地址：https://github.com/IAAR-Shanghai/UHGEval/blob/main/data/Xinhua/XinhuaHallucinations.json看到其中对应的数据情况，总共包括5141条数据</p>
+<pre><code>    {  
+        &quot;id&quot;: &quot;doc_000059&quot;,  
+        &quot;headLine&quot;: &quot;（新华时评）别让“限牌令”的“安全锁”变成“马后炮”&quot;,  
+        &quot;broadcastDate&quot;: &quot;2015-02-02 17:21:16&quot;,  
+        &quot;type&quot;: &quot;doc&quot;,  
+        &quot;newsBeginning&quot;: &quot;  新华社北京2月2日电题：别让“限牌令”的“安全锁”变成“马后炮”\n  新华社记者冯国栋、陈诺\n  备受关注的深圳“限牌令”程序合法性审查日前已完成。广东省法制办根据《广东省行政机关规范性文件管理规定》，确认深圳市限牌通告符合相关规定。&quot;,  
+        &quot;hallucinatedContinuation&quot;: &quot;2月2日最新消息显示，深圳对1.5万辆汽车发出限牌令已暂停执行。&quot;,  
+        &quot;generatedBy&quot;: &quot;InternLM_20B_Chat&quot;,  
+        &quot;appearedKeywords&quot;: [  
+            &quot;2月2日&quot;,  
+            &quot;深圳&quot;,  
+            &quot;限牌令&quot;  
+        ],  
+        &quot;allKeywords&quot;: {  
+            &quot;2月2日&quot;: &quot;合理&quot;,  
+            &quot;最新消息显示&quot;: &quot;合理&quot;,  
+            &quot;深圳&quot;: &quot;合理&quot;,  
+            &quot;1.5万辆汽车&quot;: &quot;不合理，因为没有给出具体的支持事实，无法验证这是一个真实的数字&quot;,  
+            &quot;限牌令&quot;: &quot;合理&quot;,  
+            &quot;暂停执行&quot;: &quot;不合理，因为在给出的参考事实中，没有提到深圳的限牌令已经暂停执行&quot;  
+        },  
+        &quot;realContinuation&quot;: &quot;\n  要看到，一些群众对深圳“限牌令”有异议，不仅是因为对限牌的合法性、科学性、有效性存在疑问，更大程度上是质疑这种“半夜鸡叫”式的决策程序。&quot;,  
+        &quot;newsRemainder&quot;: &quot;\n  要看到，一些群众对深圳“限牌令”有异议，不仅是因为对限牌的合法性、科学性、有效性存在疑问，更大程度上是质疑这种“半夜鸡叫”式的决策程序。广东省法制办启动合法性审查，本身能回应一部分公众对政府决策的疑问，在一定程度上挽回决策中缺失的民主程序。\n  这次合法性审查给地方政府决策敲了一记警钟，决不能让合法性审查等重大决策前必要的“安全锁”沦为“马后炮”。《中共中央关于全面推进依法治国若干重大问题的决定》明确提出：“把公众参与、专家论证、风险评估、合法性审查、集体讨论决定确定为重大行政决策法定程序，确保决策制度科学、程序正当、过程公开、责任明确。”这就是为了健全依法决策机制，确保公众民主参与决策，防止领导“拍脑袋”让决策走偏，预防因决策失误引发社会问题，从而保障公众的根本利益。\n  深圳“限牌令”的仓促出台并非个案，这种“隔着锅台上炕”的做法在一些地方还没有完全消失。例如，有的地方在对涉及重大民生价格调整之前早已内部敲定，对调价只旁听不听证，或者让听证会变成了履行程序“听涨会”。如此不合程序的决策，极易产生暗箱操作，让政府决策变成既得利益的保护伞，最终牺牲百姓利益。\n  决策前的未雨绸缪，远胜过决策后的亡羊补牢。地方政府应在法治框架下做出决策，绝不能让一纸红头文件超越法治天马行空。尤其是在当前全面深化改革的关键期，政府决策事关群众切身利益，也事关改革深化大局，要完善依法科学民主决策的机制，落实重大行政决策法定程序，加大对重大行政决策事前的合法性审查力度，真正为群众利益加上一把放心的“安全锁”。（完）&quot;  
+    }  
+    }  
+</code></pre>
+<p><strong>5、如何使用该数据集进行评估</strong></p>
+<p>基于该数据集，可以使用包括BLEU、ROUGE、Bert-Score以及kwPrec四类指标进行计算。</p>
+<h4 id="总结">总结</h4>
+<p>本文主要介绍了大模型RAG问答的综述工作，重点看了其中关于评估的框架和指标情况，随后，我们还看了看关于大模型幻觉数据集的一个构建方式UHGEval，其提出的采用关键词精度（kwPrec）指标，因为大模型通常可以更有效地提取适当的关键词，因此kwPrec更关注事实相关性而不是表达相关性，这个对生成模型的性能评估也有借鉴意义。</p>
+<p>很有趣的工作，抓住细节，深入理解，供大家一起参考。</p>
+<h4 id="参考文献">参考文献</h4>
+<p>1、https://arxiv.org/pdf/2312.10997)</p>
+<p>2、https://arxiv.org/abs/2311.15296</p>
+<h4 id="关于我们">关于我们</h4>
+<p>老刘，刘焕勇，NLP开源爱好者与践行者，主页：https://liuhuanyong.github.io。</p>
+<p>老刘说NLPhttps://zhuanlan.zhihu.com/p/653063532，将定期发布语言资源、工程实践、技术总结等内容，欢迎关注。</p>
+<p><strong>对于想加入更优质的知识图谱、事件图谱、大模型AIGC实践、相关分享的，可关注公众号，在后台菜单栏中点击会员社区-&gt;会员入群加入。</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,1031 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>LLaMA开源大模型源码分析！ | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">LLaMA开源大模型源码分析！</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              December 22, 2023 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/vI9nYe94fsFwy6sOpKkhyT7pZuQrLX0FvNx2onC6ic3XHicfDEnB9WJuNicHESUsRTZfEOAO8EyeT0HAK86FmrtPg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： Datawhale  来源： <a href="https://mp.weixin.qq.com/s/oO7nkY0Fcgd4Y7en3Sx2Xw">Datawhale</a></p>
+<p>Datawhale干货</p>
+<p><strong>作者：宋志学，Datawhale成员</strong></p>
+<p>花了一晚上照着transformers仓库的LLaMA源码，把张量并行和梯度保存的代码删掉，只留下模型基础结构，梳理了一遍LLaMA的模型结构。</p>
+<p>今年四月份的时候，我第一次接触深度学习，也是今年第一次接触Datawhale，在Datawhale和小伙伴一起学习、讨论了大半年，不知不觉已经可以做到看源码的程度了。</p>
+<p>Datawhale才是一个没有围墙的大学，在这里无论你有什么想法💡，<strong>只要你愿意前进，总会有小伙伴和你一起。</strong></p>
+<p>博客地址：</p>
+<p><a href="https://flowus.cn/kmno4/share/527055be-464f-4f0f-98c5-8b8f72a1fc2e">https://flowus.cn/kmno4/share/527055be-464f-4f0f-98c5-8b8f72a1fc2e</a></p>
+<h4 id="llama-model">LLaMA-Model</h4>
+<p>在transformers仓库中可以看到llama的源码，首先是LlamaModel类，继承自PreTrainedModel，这个类是所有模型的基类，包含了一些通用的方法，比如保存模型、加载模型、初始化权重等。</p>
+<p>继承关系为：LlamaModel
+-&gt; LlamaPreTrainedModel
+-&gt; PreTrainedModel</p>
+<h4 id="llamaconfig">LlamaConfig</h4>
+<p>LlamaConfig 中主要是定义一些参数，比如vocab_size、hidden_size、num_hidden_layers、num_attention_heads等。所有的参数有默认值，可以直接创建cofing就能用。</p>
+<pre><code>config = LlamaConfig()  
+</code></pre>
+<h4 id="llamamodel">LlamaModel</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vI9nYe94fsFwy6sOpKkhyT7pZuQrLX0FDWOhoQA4fRBibqVvUsrvW0gLzU16uFRS3v683k4Tibebib3wyfWib2XW5Q/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<h4 id="llamamodel-初始化">LlamaModel 初始化</h4>
+<ul>
+<li>
+<p>设置了模型的两个属性:padding_idx（用于指定填充标记的索引），vocab_size（词汇表的大小）</p>
+</li>
+<li>
+<p>初始化了模型的嵌入层、解码器层、归一化层</p>
+</li>
+<li>
+<p>嵌入层（nn.Embedding）：模型使用嵌入层将输入的标记映射成密集的向量表示。</p>
+</li>
+<li>
+<p>解码器层（nn.ModuleList()）：模型包含多个解码器层，这些层都是由 LlamaDecoderLayer 定义</p>
+</li>
+<li>
+<p>归一化层 LlamaRMSNorm：归一化层使用的是 Root Mean Square Layer Normalization（RMS Layer Norm）</p>
+</li>
+<li>
+<p>设置了是否使用 gradient_checkpoint 主要是用来节省显存</p>
+</li>
+<li>
+<p>调用 post_init() 完成一些初始化和准备检查的代码</p>
+<p>def <strong>init</strong>(self, config: LlamaConfig):<br>
+    super().<strong>init</strong>(config)<br>
+    self.padding_idx = config.pad_token_id<br>
+    self.vocab_size = config.vocab_size</p>
+<p>    # embedding 层<br>
+    self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size, self.padding_idx)<br>
+    # 中间的一堆 decoderlayers 层<br>
+    self.layers = nn.ModuleList(<br>
+        [LlamaDecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]<br>
+    )<br>
+    self._use_sdpa = config._attn_implementation == &ldquo;sdpa&rdquo;<br>
+    self._use_flash_attention_2 = config._attn_implementation == &ldquo;flash_attention_2&rdquo;<br>
+    self.norm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)</p>
+<p>    self.gradient_checkpointing = False<br>
+    # Initialize weights and apply final processing<br>
+    self.post_init()</p>
+</li>
+</ul>
+<p>可以看一下 post_init()
+的代码，主要是初始化权重和gradient_checkpointing
+相关的一些事情。该方法在PreTrainedModel
+基类中，transformers
+中所有模型基本都继承这个类。</p>
+<pre><code>def post_init(self):  
+    &quot;&quot;&quot;  
+    A method executed at the end of each Transformer model initialization, to execute code that needs the model's  
+    modules properly initialized (such as weight initialization).  
+    &quot;&quot;&quot;  
+    self.init_weights()  
+    self._backward_compatibility_gradient_checkpointing()  
+</code></pre>
+<h4 id="llamamodel-forward">LlamaModel forward</h4>
+<p>forward 部分的代码有点长，但其实大部分都是张量并行或者是节省显存相关的代码，对于理解模型结构来说可以直接忽略。</p>
+<p>首先进来就是把 inputs_ids
+进行向量化，然后拿到 hidden_states
+。然后是存起来所有的hidden_states
+进入 decoder_layer
+再拿一个 hidden_states
+，作为下一轮 decoder_layer
+的 hidden_states
+输入，最后给 hidden_states
+norm一下。如下代码所示：</p>
+<pre><code>inputs_embeds = self.embed_tokens(input_ids)  
+hidden_states = inputs_embeds  
+  
+for decoder_layer in self.layers:  
+    # 存起来所有的 hidden_states  
+    if output_hidden_states:  
+        all_hidden_states += (hidden_states,)  
+    # 这里是 decoder_layer 的 forward  
+    layer_outputs = decoder_layer(  
+        hidden_states,  
+        attention_mask=attention_mask,  
+        position_ids=position_ids,  
+        past_key_value=past_key_values,  
+        output_attentions=output_attentions,  
+        use_cache=use_cache,  
+    )  
+    # 再拿一个 hidden_states，作为下一轮 decoder_layer 的 hidden_states 输入  
+    hidden_states = layer_outputs[0]  
+  
+hidden_states = self.norm(hidden_states)  
+</code></pre>
+<p>最后就是以 BaseModelOutputWithPast
+的形式输出。ok，接下来继续看decoder_layer
+中的其他代码。</p>
+<h4 id="llamadecoderlayer">LlamaDecoderLayer</h4>
+<p>Embedding层不用多说，用的就是torch中的nn.Embedding。那就直接来看DecoderLayer。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/vI9nYe94fsFwy6sOpKkhyT7pZuQrLX0FvP6tV9bN81BmHdkw7UHsjX1f9k5axcp8B4ibM43GTwNsCctFowvrSeA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="decoderlayers-初始化">DecoderLayers 初始化</h4>
+<p>先来看初始化。</p>
+<ul>
+<li>
+<p>hidden_size
+: 也就是在上面说的输入输出。</p>
+</li>
+<li>
+<p>self_attn
+: 别看它写这么多啊，其实就是选一下用什么 attention
+。看见大写字母不要怕，直接点进去看看怎么个事！ <br>
+LLAMA_ATTENTION_CLASSES = {<br>
+    &ldquo;eager&rdquo;: LlamaAttention,<br>
+    &ldquo;flash_attention_2&rdquo;: LlamaFlashAttention2,<br>
+    &ldquo;sdpa&rdquo;: LlamaSdpaAttention,<br>
+}</p>
+</li>
+<li>
+<p>mlp
+: 一个全连接层 LlamaMLP
+这个待会后面再说，输入输出都是 hidden_size
+大小。</p>
+</li>
+<li>
+<p>input_layernorm
+: LlamaRMSNorm
+层，输入时候的norm</p>
+</li>
+<li>
+<p>post_attention_layernorm
+: 丢入 mlp
+之前的操作。</p>
+<p>class LlamaDecoderLayer(nn.Module):<br>
+    def <strong>init</strong>(self, config: LlamaConfig, layer_idx: int):<br>
+        super().<strong>init</strong>()<br>
+        self.hidden_size = config.hidden_size</p>
+<p>        self.self_attn = LLAMA_ATTENTION_CLASSES<a href="config=config,%C2%A0layer_idx=layer_idx">config._attn_implementation</a></p>
+<p>        self.mlp = LlamaMLP(config)<br>
+        self.input_layernorm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)<br>
+        self.post_attention_layernorm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)\</p>
+</li>
+</ul>
+<h4 id="decoderlayers-forward">DecoderLayers forward</h4>
+<p>首先复制一份 hidden_states
+给 residual
+。然后 hidden_states
+进入 input_layernorm
+进行norm。然后进入 self_attn
+进行 attention
+操作，拿到 hidden_states
+、self_attn_weights
+、present_key_value
+。然后 hidden_states
+和 residual
+相加，得到 hidden_states
+。</p>
+<p>然后 hidden_states
+进入 post_attention_layernorm
+进行norm。最后 hidden_states
+进入 mlp
+进行全连接操作，拿到 hidden_states
+。然后 hidden_states
+和 residual
+相加，得到 hidden_states
+。最后输出 hidden_states
+。</p>
+<pre><code>residual = hidden_states  
+  
+hidden_states = self.input_layernorm(hidden_states)  
+  
+# Self Attention  
+hidden_states, self_attn_weights, present_key_value = self.self_attn(  
+    hidden_states=hidden_states,  
+    attention_mask=attention_mask,  
+    position_ids=position_ids,  
+    past_key_value=past_key_value,  
+    output_attentions=output_attentions,  
+    use_cache=use_cache,  
+    **kwargs,  
+)  
+hidden_states = residual + hidden_states  
+  
+# Fully Connected  
+residual = hidden_states  
+hidden_states = self.post_attention_layernorm(hidden_states)  
+hidden_states = self.mlp(hidden_states)  
+hidden_states = residual + hidden_states  
+  
+outputs = (hidden_states,)  
+  
+if output_attentions:  
+    outputs += (self_attn_weights,)  
+  
+if use_cache:  
+    outputs += (present_key_value,)  
+  
+return outputs  
+</code></pre>
+<h4 id="llama-attention">Llama Attention</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/vI9nYe94fsFwy6sOpKkhyT7pZuQrLX0FvNx2onC6ic3XHicfDEnB9WJuNicHESUsRTZfEOAO8EyeT0HAK86FmrtPg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>看代码首先映入眼帘的就是<strong>Attention Is All You Need</strong>  好好好，很有精神！那我们接着往下看。</p>
+<p>先来看 init 部分叭。</p>
+<ul>
+<li>
+<p>layer_idx
+: 这个就是第几个 DecoderLayers
+层。不用关心。</p>
+</li>
+<li>
+<p>attention_dropout
+: 用于dropout的概率。</p>
+</li>
+<li>
+<p>hidden_size
+: 输入输出大小。</p>
+</li>
+<li>
+<p>num_attention_heads
+: 多头注意力的头数。</p>
+</li>
+<li>
+<p>head_dim
+: 多头注意力的维度 self.hidden_size // self.num_heads
+，和transformers中的一样。</p>
+</li>
+<li>
+<p>num_key_value_heads
+: 用于key和value的头数。</p>
+</li>
+</ul>
+<p>其他的参数都在 LlamaConfig
+中有默认值，可以直接使用，也可以直接去LlamaConfig
+的源码中看具体的解释，这里就不再多说。</p>
+<p>再往下就是 q_proj
+、 k_proj
+、v_proj
+、 o_proj
+四个矩阵（全连接层），耳熟能详了。</p>
+<pre><code>class LlamaAttention(nn.Module):  
+    &quot;&quot;&quot;Multi-headed attention from 'Attention Is All You Need' paper&quot;&quot;&quot;  
+  
+    def __init__(self, config: LlamaConfig, layer_idx: Optional[int] = None):  
+        super().__init__()  
+        self.config = config  
+        self.layer_idx = layer_idx  
+        if layer_idx is None:  
+            logger.warning_once(  
+                f&quot;Instantiating {self.__class__.__name__} without passing `layer_idx` is not recommended and will &quot;  
+                &quot;to errors during the forward call, if caching is used. Please make sure to provide a `layer_idx` &quot;  
+                &quot;when creating this class.&quot;  
+            )  
+  
+        self.attention_dropout = config.attention_dropout  
+        self.hidden_size = config.hidden_size  
+        self.num_heads = config.num_attention_heads  
+        self.head_dim = self.hidden_size // self.num_heads  
+        self.num_key_value_heads = config.num_key_value_heads  
+        self.num_key_value_groups = self.num_heads // self.num_key_value_heads  
+        self.max_position_embeddings = config.max_position_embeddings  
+        self.rope_theta = config.rope_theta  
+        self.is_causal = True  
+  
+        if (self.head_dim * self.num_heads) != self.hidden_size:  
+            raise ValueError(  
+                f&quot;hidden_size must be divisible by num_heads (got `hidden_size`: {self.hidden_size}&quot;  
+                f&quot; and `num_heads`: {self.num_heads}).&quot;  
+            )  
+  
+        self.q_proj = nn.Linear(self.hidden_size, self.num_heads * self.head_dim, bias=config.attention_bias)  
+        self.k_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=config.attention_bias)  
+        self.v_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=config.attention_bias)  
+        self.o_proj = nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias=config.attention_bias)  
+        self._init_rope()  
+</code></pre>
+<h4 id="llamaattention-forward">LlamaAttention forward</h4>
+<p>重头戏来了，attention forward
+部分。</p>
+<blockquote>
+<p>注意：其中有关于张量并行或者显存节省的部分我就直接省略了，直接看主要代码。这个笔记主要是分析llama的模型结构，并不讨论如何节省显存。</p>
+</blockquote>
+<p>首先拿到 hidden_states
+的 batch_size
+和 seq_len
+。然后把 hidden_states
+丢入 q_proj
+、 k_proj
+、v_proj
+三个矩阵（全连接层），拿到 query_states
+、 key_states
+、value_states
+。然后把 query_states
+、 key_states
+、value_states
+reshape 为下一步计算做准备。</p>
+<p>将旋转位置嵌入应用于查询和键张量。使用了旋转位置嵌入的余弦和正弦部分，将它们与查询和键张量相乘，并将结果相加，从而实现旋转位置嵌入的效果</p>
+<p>key_states
+和value_states
+重复self.num_key_value_groups
+次。然后，使用torch.matmul()
+函数计算query_states
+和转置后的key_states
+之间的矩阵乘法。最后，将结果除以math.sqrt(self.head_dim)
+进行归一化</p>
+<p>然后 attn_weights
+加上 attention_mask
+，再 softmax
+和 dropout
+。然后 attn_weights
+和 value_states
+相乘，把 attn_output
+reshape 为下一步计算做准备，最后把 attn_output
+丢入 o_proj
+，然后return
+就行了。</p>
+<p>好了，至此。我觉得llama
+最激动人心的地方已经结束了。</p>
+<pre><code># 获取 batch_size 和 seq_len  
+bsz, q_len, _ = hidden_states.size()  
+  
+# 把 hidden_states 丢入 q_proj、k_proj、v_proj  
+query_states = self.q_proj(hidden_states)  
+key_states = self.k_proj(hidden_states)  
+value_states = self.v_proj(hidden_states)  
+  
+# 把 q_proj、k_proj、v_proj 的输出 reshape 为下一步计算做准备  
+query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)  
+key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)  
+value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1, 2)  
+  
+# 将旋转位置嵌入应用于查询和键张量。使用了旋转位置嵌入的余弦和正弦部分，将它们与查询和键张量相乘，并将结果相加，从而实现旋转位置嵌入的效果  
+cos, sin = self.rotary_emb(value_states, seq_len=kv_seq_len)  
+query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)  
+  
+# 首先，它将key_states和value_states重复self.num_key_value_groups次。然后，使用torch.matmul()函数计算query_states和转置后的key_states之间的矩阵乘法。最后，将结果除以math.sqrt(self.head_dim)进行归一化  
+key_states = repeat_kv(key_states, self.num_key_value_groups)  
+value_states = repeat_kv(value_states, self.num_key_value_groups)  
+attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)  
+  
+# 然后 attn_weights 加上 attention_mask  
+attn_weights = attn_weights + attention_mask  
+  
+# softmax + dropout  
+attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)  
+attn_weights = nn.functional.dropout(attn_weights, p=self.attention_dropout, training=self.training)  
+  
+# 然后 attn_weights 和 value_states 相乘  
+attn_output = torch.matmul(attn_weights, value_states)  
+  
+# 然后把 attn_output reshape 为下一步计算做准备  
+attn_output = attn_output.transpose(1, 2).contiguous()  
+attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)  
+  
+# 最后把 attn_output 丢入 o_proj  
+attn_output = self.o_proj(attn_output)  
+  
+# 返回 attn_output、attn_weights、present_key_value  
+return attn_output, attn_weights, past_key_value  
+</code></pre>
+<h4 id="llamamlp">LlamaMLP</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/vI9nYe94fsFwy6sOpKkhyT7pZuQrLX0FK9J2icxpzTOP2yfoKZltMHGltPYxbfBLAAUDtNI4QQ5cQcgAHmg81QQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>看完 attention 再看 MLP ，突然就觉得好简单了，哈哈哈。这部分代码比较少，就直接放到一起了。</p>
+<p>x进来之后先进去up_proj和gate_proj，gate_proj进行激活，然后这俩再乘起来，丢进 down_proj。那直接放个图叭，这个过程有点简单了。</p>
+<pre><code>class LlamaMLP(nn.Module):  
+    def __init__(self, config):  
+        super().__init__()  
+        # 这俩不必多说  
+        self.config = config  
+        self.hidden_size = config.hidden_size  
+        self.intermediate_size = config.intermediate_size  
+  
+        # 三个全连接层  
+        self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)  
+        self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)  
+        self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias=False)  
+        self.act_fn = ACT2FN[config.hidden_act]  
+  
+    def forward(self, x):  
+        down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))  
+        return down_proj  
+</code></pre>
+<h4 id="llamarmsnorm">LlamaRMSNorm</h4>
+<p>RMSNorm函数可以用以下数学公式表示：</p>
+<p>其中：</p>
+<ul>
+<li>
+<p>是层的输入。</p>
+</li>
+<li>
+<p>代表层的权重。</p>
+</li>
+<li>
+<p>是权重的数量。</p>
+</li>
+<li>
+<p>是一个小常数，用于数值稳定性（以避免除以零的情况）。</p>
+</li>
+</ul>
+<p>这种归一化有助于通过确保权重的规模不会变得过大或过小来稳定学习过程，这在具有许多层的深度学习模型中特别有用。</p>
+<pre><code>class LlamaRMSNorm(nn.Module):  
+    def __init__(self, hidden_size, eps=1e-6):  
+        &quot;&quot;&quot;  
+        LlamaRMSNorm is equivalent to T5LayerNorm  
+        &quot;&quot;&quot;  
+        super().__init__()  
+        self.weight = nn.Parameter(torch.ones(hidden_size))  
+        self.variance_epsilon = eps  
+  
+    def forward(self, hidden_states):  
+        input_dtype = hidden_states.dtype  
+        hidden_states = hidden_states.to(torch.float32)  
+        variance = hidden_states.pow(2).mean(-1, keepdim=True)  
+        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_epsilon)  
+        return self.weight * hidden_states.to(input_dtype)  
+</code></pre>
+<blockquote>
+<p>参考：https://space.bilibili.com/45156039</p>
+</blockquote>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/vI9nYe94fsGxu3P5YibTO899okS0X9WaLmQCtia4U8Eu1xWCz9t8Qtq9PH6T1bTcxibiaCIkGzAxpeRkRFYqibVmwSw/640?wx_fmt=png" alt=""></p>
+<p>干货学习，<strong>点<strong><strong>赞</strong></strong>三连</strong> ↓</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
