@@ -1,0 +1,661 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>Hyena成下一代Transformer？StripedHyena-7B开源：最高128k输入，训练速度提升50% | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">Hyena成下一代Transformer？StripedHyena-7B开源：最高128k输入，训练速度提升50%</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              January 2, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/UicQ7HgWiaUb34fMk4ap734QLqaib3HsUeQlO0h03ps6eolcKx5cJqeFUCyzblfKtrTicxiaqgtpvVXutOQ6MGKqGsw/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 新智元  来源： <a href="https://mp.weixin.qq.com/s/dHDtfOkX1RVj6-bZVVUKlg">新智元</a></p>
+<h4 id="httpsaibard123topshowpicphpurlhttpsmmbizqpiccnsz_mmbiz_jpguicq7hgwiaub3ps6qmn91eorsnsc5bhojbfuo2ibvgew36cxiczicagmhbcbgawrmbicia9iateyozdkcya9gzz0desfmg640wx_fmtjpegfromappmsg"><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/UicQ7HgWiaUb3pS6QMN91EoRsnsc5BhOJBFUO2ibvgeW36CxicZicAgMHbcbGAwrMBicia9iaTeYozdkCYa9GZZ0desfmg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></h4>
+<h4 id="heading"></h4>
+<h4 id="heading-1"></h4>
+<p>****<strong>新智元报道</strong></p>
+<p>编辑：LRS</p>
+<p>####<strong>【新智元导读】</strong> Hyena处理长序列输入比FlashAttention速度高100倍！最新发布的StripedHyena模型可能成下一代AI架构的新标准？****</p>
+<p>最近几年发布的AI模型，如语言、视觉、音频、生物等各种领域的大模型都离不开Transformer架构，但其核心模块「注意力机制」的计算复杂度与「输入序列长度」呈二次方增长趋势，这一特性严重限制了Transformer在长序列下的应用，例如无法一次性处理一整本书，或是处理千兆像素级别的图像。</p>
+<p>即便强如GPT-4也难以摆脱这种缺陷。</p>
+<p>最近，Together Research开源了一个全新的语言模型StripedHyena，采用了针对「长上下文」的新架构，可以处理高达128k个token的长上下文，并且改进了Transformer架构在训练和推理上的性能，为目前的主流架构提供了一种可选方案。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/UicQ7HgWiaUb34fMk4ap734QLqaib3HsUeQqP0ZIwIl3yEoYt7qNLUSj1iaBbasIUhe8VB5HTVwOQ9vyLYzDiblV7uw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>开源链接：https://github.com/togethercomputer/stripedhyena</p>
+<p>StripedHyena也是「首个」在短上下文和长上下文评估中，以相同模型尺寸，实现了与最佳开源Transformer模型性能相匹敌的模型：在OpenLLM基准任务上与Llama-2, Yi和Mistral 7B实现了相当的性能，并且在长上下文摘要上表现更出色。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/UicQ7HgWiaUb34fMk4ap734QLqaib3HsUeQSHrRLr587c8DbbHFtTJ0Thic0F1zd1miaHT0hiaYlibcwTTKVtUFHiaHXEA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>StripedHyena是一种混合架构，由多头、分组查询注意力和排列在Hyena块中的门控卷积组成，不同于传统的decoder-only的Transformer：通过将卷积表示为状态空间模型（SSM，state-space model）或截断滤波器，在Hyena块中进行常数内存解码。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/UicQ7HgWiaUb34fMk4ap734QLqaib3HsUeQSWt6h9VPzqQhh0XicxuvWia9qIjjCTpknxfE5kdfTevGlk1WjSwP2ViaQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>实验结果显示，StripedHyena在32k个token、64k个token和128k个token序列的端到端训练中比传统transformer快30%、50%和100%以上。</p>
+<p>SH 7B的另一个优点是，与Transformer相比，自回归生成期间的内存占用减少了50%以上；在Transformers中，每个层的键和值在预填充阶段被缓存，以避免重新计算并加快增量解码。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/UicQ7HgWiaUb34fMk4ap734QLqaib3HsUeQJ4BhUSsxFWy33v8UnZyMria9S3rNn44KIF2c60NpZuqAtLQnOQtbiagw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="heading-2"></h4>
+<p>Hyena块</p>
+<p>现有的基于低秩和稀疏近似的次二次（subquadratic）方法需要与稠密的注意层相结合才能匹配Transformer，也就是说二者在表达能力上存在差距。</p>
+<p>也就是说，注意力机制在语言处理中只利用了其二次方能力的一小部分，所以研究问题在于，是否存在一个次二次算子，在大规模训练时的性能可以与注意力机制相匹敌？</p>
+<p>今年2月，来自斯坦福大学和蒙特利尔大学（Mila and Université de Montréal）的研究人员提出了一个次二次下降的注意力替代品Hyena：在对数千到数十万个token的序列进行召回和推理任务时，Hyena比依赖于状态空间和其他隐式和显式方法的运算符提高了50多个点的准确性，匹配基于注意力的模型。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/UicQ7HgWiaUb34fMk4ap734QLqaib3HsUeQlO0h03ps6eolcKx5cJqeFUCyzblfKtrTicxiaqgtpvVXutOQ6MGKqGsw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>论文链接：https://arxiv.org/abs/2302.10866</p>
+<p>研究人员在标准数据集（WikiText 103和The Pile）的语言建模上设置了一个新的免密集注意力架构，达到了Transformer的质量，在序列长度为2k时所需的训练计算减少了20%；在序列长度为8k时，Hyena算子的速度是高度优化注意力的两倍，在序列长度为64k时，速度快100倍。</p>
+<p>研究人员对高效次二次primitive进行组合，如元素乘法（门控）和长卷积（即滤波器大小与输入一样长的卷积），最终从实验结果中得到了肯定的答案。</p>
+<p>根据最近在机制可解释性方面所做的工作（如召回recall和归纳induction），研究人员制定了一系列有针对性的推理任务，以提炼出注意力与其性能相关的三个特性，以及与现有次二次元方法之间的质量差距：</p>
+<p><strong>1. 数据控制（Data control）</strong></p>
+<p>注意力机制实现了一种富有表现力的数据控制线性算子，在单个块中对整个线性函数族进行编码。</p>
+<p><strong>2. 次线性参数缩放（sublinear parameter scaling）</strong></p>
+<p>将注意力层的参数数量与序列长度脱钩，允许Transformers在注意力层之间的其他地方分配更多参数，例如前馈神经网络（FFN）。</p>
+<p><strong>3. 无限制的上下文（unrestricted context）</strong></p>
+<p>对于给定的输入，注意力具有不受限制的上下文，可以近似任意两个输入之间的依赖关系，而不受任意限制，如局部性（locality）；但使用掩码的情况除外，如自回归模型。</p>
+<p><strong>Hyena层次结构</strong></p>
+<p>基于上述三个发现，研究人员提出Hyena层次结构，由两个高效的二次基元递归定义的算子（长卷积和元素乘法门控）组成。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/UicQ7HgWiaUb34fMk4ap734QLqaib3HsUeQXNAicnxhouFL5U6jX7U5ITHqcqRSiavQwAWGEZC1CY1QiaaicCia71GdwBg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>递归的指定深度（即步数）可控制算子的大小；对于短递归，现有模型可作为特例。</p>
+<p>通过将 Hyena 递归中的每一步映射到相应的矩阵形式，研究人员发现Hyena算子可以等价地定义为数据控制矩阵的分解，即entries为输入函数的矩阵。</p>
+<p>此外，研究人员还展示了如何利用快速卷积算法，在不具体化全矩阵的情况下高效地评估 Hyena 算子。</p>
+<p>从经验上看，Hyena 算子能够显著缩小与大规模注意力的质量差距，以更少的计算成本实现了相似的困惑度和下游性能，而且无需混合注意力。</p>
+<p><strong>缩小能力差距</strong></p>
+<p>设计Hyena的初衷是「标准稠密注意力」和「次二次运算符」之间的存在质量差距，并且可以通过与大规模语言建模性能相关的推理任务来确定这一差距。</p>
+<p>研究人员扩展了一套基本的机械可解释性基准（归纳和召回），并增加了额外的任务以探究当任务复杂度增加（如词汇量增加）时，模型性能会如何快速下降。</p>
+<p>此外，文中还研究了 Hyena 中长卷积的最佳参数化。</p>
+<p>在具有数十万词条的最具挑战性的设置中，隐式参数化方案比其他利用状态空间、频域参数化或标准卷积的算子提高了50%以上的准确率。</p>
+<p><strong>语言和视觉中的扩展</strong></p>
+<p>研究人员还验证了推理基准套件中的排名是否能预测大规模质量，对Hyena 自回归语言建模进行了十亿以下参数规模的测试，在标准数据集（WikiText103 和 The Pile）中的无稠密注意力架构中实现了新sota，并与Transformer的质量相当。</p>
+<p>在3.35亿参数规模的The Pile数据集上，该系统以减少20%浮点运算（FLOPs）总数达到了与Transformer相当的困惑度指标。</p>
+<p>作为扩展，研究人员在大规模图像识别中测试了Hyena运算符的通用性，并在视觉Transformer（ViT）中取代了注意力。</p>
+<p>在图像分类中，当在ImageNet-1k数据集上从头开始训练时，Hyena 的准确率可以与注意力相媲美。</p>
+<p><strong>面向更长的上下文</strong></p>
+<p>研究人员还对 Hyena 在长序列上的效率进行了基准测试。在长度为 8192 的序列上，测得的速度是稠密自注意力的 5 倍，是高度优化的 FlashAttention的 2 倍，而在长度为 64k 的序列上，测得的速度是 FlashAttention 的 100 倍。</p>
+<p>参考资料：</p>
+<p><a href="https://archive.ph/SDJMv#selection-2025.0-2028.0">https://archive.ph/SDJMv#selection-2025.0-2028.0</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/UicQ7HgWiaUb2mwPEyibXkialt6T7jGCPBpy0LwRuNKo1geQh2NeU2ia5Tfib7mibER7WqZ9ZJl3CNDTjsvRKQcHRib1Lw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/UicQ7HgWiaUb1lKYCMMiaxGxWTbkaPTAxuR84iaPsp8u8Yg0okpLUj3ibsPkwdQXjibPcp8oW1jmJAmZmMEia2sjDKpGA/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/UicQ7HgWiaUb10PoMc8QQNrjsp8lOMiaPwVkHbjVicxntJynwdmjiadosl2znIvDTSjWsp4kcqlbqVdFt6TxqpptrkA/640?wx_fmt=gif&amp;wxfrom=5&amp;wx_lazy=1" alt=""></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
