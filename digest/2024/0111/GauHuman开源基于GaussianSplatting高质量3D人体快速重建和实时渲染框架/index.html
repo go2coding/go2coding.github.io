@@ -1,0 +1,647 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>GauHuman开源：基于GaussianSplatting，高质量3D人体快速重建和实时渲染框架 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">GauHuman开源：基于GaussianSplatting，高质量3D人体快速重建和实时渲染框架</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              January 11, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8gG4tCn8QMZaiaJoibdT5RJqNwnOlmibbkXc6SxZoTbGLfia4XJtdvP6n6zZ8XzagibSywGrBHrdSib3dw/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 机器之心  来源： <a href="https://mp.weixin.qq.com/s/ObJFBj1tZ7TG6nN2RnMHbg">机器之心</a></p>
+<p><strong>机器之心专栏</strong></p>
+<p><strong>机器之心编辑部</strong></p>
+<blockquote>
+<p>南洋理工大学 - 商汤科技联合研究中心 S-Lab 团队提出了基于 Gaussian Splatting 的高质量 3D 人体快速重建 (1~2 分钟) 和实时渲染 (高达 189 帧每秒) 框架 GauHuman。GauHuman 可以基于用户输入的一段单目人体视频，以及相应的相机和人体动作体型（SMPL）参数，快速重建该 3D 人体，并实时渲染该 3D 人体。</p>
+</blockquote>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8gG4tCn8QMZaiaJoibdT5RJq8FzBKJCicRIy2zzCr9CKCicenvtbqyicAsT314IJ0adZNKvAaxpRibxZyQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<ul>
+<li>
+<p>论文名称：GauHuman: Articulated Gaussian Splatting from Monocular Human Videos</p>
+</li>
+<li>
+<p>论文下载地址：https://arxiv.org/abs/2312.02973</p>
+</li>
+<li>
+<p>项目主页：https://skhu101.github.io/GauHuman</p>
+</li>
+<li>
+<p>代码开源：https://github.com/skhu101/GauHuman</p>
+</li>
+</ul>
+<p><em>图1 GauHuman可以快速重建(1~2分钟)和实时渲染(高达189帧每秒) 高质量3D人体。</em></p>
+<p><strong>背景</strong></p>
+<p>3D 数字人重建对于一系列应用场景，比如虚拟现实和辅助现实，有着非常大潜在性的影响。基于人体神经辐射场，现有方法可以从 sparse-view 的视频甚至单张图片中恢复出 3D 数字人。然而这些方法往往需要昂贵的计算时间（高达 10 小时）和资源去完成训练和渲染，极大限制了他们在现实场景中的应用。为了加速建模过程，可泛化三维人体建模方法采用预训练加微调（pretrain-finetune）的范式。这类方法通常需要几个小时的预训练去获取可泛化的 3D 人体表征，再对每一个 3D 数字人额外微调一个小时完成建模。由于这类方法依赖的输入图片只能提供有限的信息，3D 人体重建的质量还有待提升。另一类研究针对人体建模引入更加高效的 3D 人体表征，比如多精度的哈希表征（multi-resolution hash encoding）或者 neural volumetric primitives。多精度的哈希表征提升了训练收敛速度，但渲染速度限制了他们的实际应用；neural volumetric primitives 提升了渲染速度，但训练速度和最终渲染质量还有提升的空间。得益于 Gaussian Splatting 在静态和动态场景中的实时渲染特性，本方法针对单目人体视频提出基于 Gaussian Splatting 的快速训练（1~2 分钟）和实时渲染（高达 189 帧每秒）的 3D 人体建模框架。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8gG4tCn8QMZaiaJoibdT5RJqliajItNnHtDA1A7Hh127gB231uWKb3icuiafDBqiabNzOGBWaJichzycjtg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><em>图2 基于一段单目人体视频，GauHuman可以快速训练（1~2分钟）和实时渲染（高达189帧每秒）高质量的3D人体。</em></p>
+<p><strong>基本原理</strong></p>
+<p>利用 Gaussian Splatting 对单目人体视频中的 articulated 3D 人体进行建模，我们需要解决两个难点问题：1）如何将单目人体视频中的 articulated 3D 人体信息引入 Gaussian Splatting 的框架；2）如何实现高效优化 articulated Gaussian Splatting。针对以上的问题，一个比较容易想到的方案是利用 Gaussian Splatting 对标准空间（canonical space）下的 3D 人体进行建模，并利用线性蒙皮算法（Linear Blend Skinning， LBS）将 3D 高斯球从标准空间转换到目标空间，从而渲染得到目标空间下的图像并构建损失函数。以上方案存在的一个问题是线性蒙皮算法定义的是3D人体顶点（vertex）的旋转和偏移，如何从人体先验比如SMPL中不准确的LBS系数和姿态（pose）信息中去学习标准空间中3D高斯球的旋转和偏移仍是一个难点问题。此外，现有的 Gaussian Splatting 方法利用 Structure-from-Motion（SFM）或随机初始化产生的点云去初始化 3D 高斯球的中心坐标。这一初始化方式主要是针对静态场景设计，忽略了人体的结构信息，不适用于快速人体建模。针对建模过程中出现的 over-reconstruction 和 under-reconstruction 现象，Gaussian Splatting 论文提出分裂（split）和克隆（clone）的操作来动态控制 3D 高斯球的数目。尽管以上操作可以显著提升重建的质量，它也产生了大量数目的 3D 高斯球，限制了优化的效率并占用了大量的硬盘空间（比如对一个静态场景需要 734MB 的存储空间）。另一个值得关注的点是，现有的Gaussian Splatting框架包含了大量冗余的3D高斯球，留给了我们进一步提升优化效率的空间。</p>
+<p>针对以上提到的一些难点问题，我们从建模框架和快速优化算法两个方面去考虑解决。【将单目人体视频中的 articulated 3D 人体信息引入 Gaussian Splatting 的框架】受到之前人体神经辐射场（Human NeRF）的启发，我们利用 Gaussian Splatting 对标准空间（canonical space）下的 3D 人体进行建模，并将 3D 高斯球从标准空间转换到目标空间。基于高斯函数的变换性质，我们可以通过 LBS 算法将 3D 高斯球从标准空间旋转和偏移变换到目标空间。以上变换涉及到如何估 LBS 系数的问题，直接用神经网络来估计 LBS 系数往往需要很长时间的优化，最后渲染得到的效果也是差强人意。为了快速得到较为准确的 LBS 系数，我们 1）基于 SMPL 的 LBS 系数，并利用神经网络来提供一个偏置值；2）对人体的姿态（pose）信息基于训练数据进行纠正。当渲染一张 1024p 的图片时，以上建模框只需要对有限数目（比如 13k）的 3D 高斯球进行滚雪球处理，然而之前的人体神经辐射场需要对整个 3D 空间内百万级的采样点就行体渲染操作。这极大降低了在训练和渲染中的计算资源耗费。【高效优化 articulated Gaussian Splatting】1）3D 高斯球初始化。我们利用 3D 人体先验比如 SMPL 对 3D 高斯球进行初始化，极大提升了优化的效率。2）分裂/克隆/合并。通过实验分析，我们发现分裂和克隆操作忽略了将3D高丝球之间距离作为度量指标。基于以上分析，我们引入3D高丝球的Kullback-Leibler （KL）散度去约束分裂和克隆操作。对于大量冗余的3D高斯球，我们提出了一个合并操作去有效减小这部分3D高斯球。3）剪枝。考虑到 3D 人体有着特定的结构，我们将远离 3D 人体的 3D 高斯球进行剪枝操作。基于以上的快速优化算法，我们可以用大约 13k 的 3D 高斯球（大约占用 3.5MB 的硬盘空间）在一到两分钟内完成对 3D 人体的建模。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8gG4tCn8QMZaiaJoibdT5RJqNwnOlmibbkXc6SxZoTbGLfia4XJtdvP6n6zZ8XzagibSywGrBHrdSib3dw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><em>图3 GauHuman框架原理图。GauHuman首先基于人体先验SMPL去初始化3D高斯球位置，紧接着基于LBS系数偏差和人体姿态纠正模块去学习3D高斯球从标准空间转换到目标空间的转换矩阵。在后续优化过程中，GauHuman基于tile的可微分渲染器去快速渲染图片，并利用人体先验和KL散度去约束分裂，克隆，合并和剪枝操作，以达到有效控制3D高斯球数目的目的。</em></p>
+<p><strong>结果比较</strong></p>
+<p>本文在ZJU_MoCap和MonoCap两个单目人体数据集上进行了实验。该研究对比了对比了多个先进的3D人体重建方法：NB，AN, AS, HumanNeRF, DVA, InstantNVR, InstantAvatar, PixelNeRF和NHP，并在peak signal-to-noise ratio （PSNR），structural similarity index （SSIM），以及Learned Perceptual Image Patch Similarity （LPIPS）指标上进行了比较。如下图所示，GauHuman可以快速重建(1~2分钟)和实时渲染(高达189帧每秒) 3D人体，并在性能指标上超越了之前的方案。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8gG4tCn8QMZaiaJoibdT5RJqqTV7ulQribhxAFn5ribIccQGLYXceCerUL5FE4HrQ8COfdzSdkIyg0qw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>3D 人体 Novel View Synthesis 结果如下图所示：</p>
+<p><em>图4 ZJU_MoCap上Novel View Synthesis结果比较图</em></p>
+<p><em>图5 MonoCap上Novel View Synthesis结果比较图</em></p>
+<p><strong>应用前景</strong></p>
+<p>在游戏电影制作，虚拟现实增强现实或者其他需要数字人建模的场景，用户可通过输入一段单目人体视频，以及该角度下相机的参数和相应的人体动作体形参数（SMPL），就可以达到重建该 3D 数字人的目的。</p>
+<p><strong>结语</strong></p>
+<p>本文提出一种基于 Gaussian Splatting 的高质量 3D 人体快速重建 (1~2 分钟) 和实时渲染 (高达 189 帧每秒) 框架 GauHuman。可以承认的是，本文依然存在一定的缺陷。首先，如何从 3D 高斯中提取人体 mesh 还有待进一步研究。其次，从单目人体视频中恢复 3D 人体细节，比如说衣服皱褶，依旧是一个很难的问题。一个可行的方案是在 3D 人体重建中引入衣物物理仿真模型。最后，我们的代码已经全部开源，欢迎大家下载玩耍！</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW9LSvGJnGeMgN5icZW9coZAvicwuFyhFM09n7QicLPKzKr3WHYGIdVvlVUA20KPvDWYDKFKvXlXMz5XA/640?wx_fmt=png" alt=""></p>
+<p>© THE END</p>
+<p>转载请联系本公众号获得授权</p>
+<p>投稿或寻求报道：content@jiqizhixin.com</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
