@@ -1,0 +1,963 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+	<title>PyTorch显存可视化与Snapshot数据分析 | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">PyTorch显存可视化与Snapshot数据分析</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              January 31, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrqNHJrEz5qkdH6mI6Ux2LjR6m1wB3rY8ODYc2hKAHCVD9YG0zRibaQ4Q/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/A8NR4ExDWNyUy0edg1pEJg">吃果冻不吐果冻皮</a></p>
+<p>####**<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群** </a></p>
+<p>原文：https://zhuanlan.zhihu.com/p/677203832</p>
+<p>显存优化和显存溢出(OOM)分析是调参过程中常见的两个问题，解决显存不足的问题一般而言需要分析显存消耗占比，对显存消耗较大的操作进行参数调优。显存分析的途径包括静态计算和运行时分析，<strong>静态计算（仿真）通过公式来预估显存消耗，这种方式有一定的误差</strong> ；对于运行时分析一般是日志打印，整体理解性较弱。</p>
+<p>在PyTorch2.1中推出了一个显存的snapshot功能，可以将显存消耗可视化，特点是查看简单、更易理解。本文简单讲解该特性的使用方式，并例举了几个数据的分析。一个transformer模型显存可视化后如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrZCldyOQbyrLBPfUg9n4AmWo9Frua1goyk9aZO5SvdAmwbrFGloATew/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>本文主要内容：</p>
+<ol>
+<li>
+<p>SnapshotAPI的使用</p>
+</li>
+<li>
+<p>Snapshot数据分析</p>
+</li>
+<li>
+<p>Profiler中显存可视化使用</p>
+</li>
+<li>
+<p>Profiler数据分析（可读性较好）</p>
+</li>
+</ol>
+<p>文中示例代码：https://github.com/CalvinXKY/BasicCUDA/tree/master/pytorch/torch_mem_snapshot</p>
+<ol>
+<li>SnapshotAPI的使用</li>
+</ol>
+<p>Snapshot的工作原理：开启API后，torch会自动记录c10代码中CUDA allocator的显存消耗，显存的Python/C++跟踪调用堆栈、记录调用过程中的timeline。最后将这些数据保持下来生成pickle文件，用于可视化。</p>
+<p>1.1 API调用方式：</p>
+<p>调用步骤：</p>
+<ul>
+<li>
+<p>开始（训练/推理前）: torch.cuda.memory._record_memory_history(max_entries=80000)</p>
+</li>
+<li>
+<p>保存（迭代结束后）: torch.cuda.memory._dump_snapshot(file_name)</p>
+</li>
+<li>
+<p>停止（分析完成）: torch.cuda.memory._record_memory_history(enabled=None)</p>
+</li>
+</ul>
+<p>_record_memory_history(enabled=&lsquo;all&rsquo;,context=&lsquo;all&rsquo;,stacks=&lsquo;all&rsquo;,max_entries=1,device=None)的参数解释：</p>
+<ul>
+<li>
+<p>max_entries：最多使用多少个alloc/free events来记录内存开销，内存的操作需要用events来记录。当记录数据溢出时，系统只保留最后的max_entries个events量的数据。参数设置过小保存数据会不足，设置过大可能会影响运行。</p>
+</li>
+<li>
+<p>context：选择需要跟踪的数据类型[None,&ldquo;state&rdquo;,&ldquo;alloc&rdquo;,&ldquo;all&rdquo;]。&ldquo;state&quot;是指记录当前使用内存情况，“alloc&quot;是指通过alloc调用过的内存跟踪（如果不会设置按默认值即可），all缺省。</p>
+</li>
+<li>
+<p>stacks: [&ldquo;python&rdquo;,&ldquo;all&rdquo;], 记录python层的调用堆栈，或者增加c++的。默认&quot;all&rdquo; 表示C++调用堆栈也记录。</p>
+</li>
+<li>
+<p>enabled：开关值。[None,&ldquo;state&rdquo;,&ldquo;all&rdquo;] &ldquo;state&rdquo;,&ldquo;all&rdquo; 含义见context。</p>
+</li>
+</ul>
+<p>相关Torch API帮助文档：https://pytorch.org/docs/main/torch_cuda_memory.html#understanding-cuda-memory-usage</p>
+<p>函数编写的关键步骤示例：</p>
+<hr>
+<pre><code>def train(*args):
+ # 建立模型...
+  for data,label in range(iteration_data):
+      y = model(data)
+      loss(y, label).backward()
+      op.step() 
+  # 其它操作...
+  
+
+# 开启记录，并设置最多记录100000个数据点
+torch.cuda.memory._record_memory_history(max_entries=100000)
+  
+
+# 训练调用
+train(args)
+  
+
+# 保存数据
+torch.cuda.memory._dump_snapshot(your_file_name.pickle)
+  
+
+# 停掉记录，关闭snapshot
+torch.cuda.memory._record_memory_history(enabled=None)
+</code></pre>
+<p>可视化操作：</p>
+<p>保存成功后会生成一个文件，如：&ldquo;your_file_name.pickle&rdquo; ，</p>
+<p>方式一：将pickle文件拖拽到浏览器（如chrome）网址：https://pytorch.org/memory_viz 中。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrFazoX94T7wZsu9FhwXRibaJg0fcfSKhZ4Ttq5Ws9vB3LTXia8D6EAcAg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>方式二：将&quot;your_file_name.pickle&quot;转化为html，直接点击打开。转化方式：找到pytorch的安装包位置，里面有个torch/cuda/_memory_viz.py ，用它进行转换。如下给了一个示例：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>python /home/user/anaconda3/envs/py3.9/lib/python3.9/site-packages/torch/cuda/_memory_viz.py trace_plot your_file_name.pickle -o mem_snapshot.html
+</code></pre>
+<p>1.2 调用示例：</p>
+<p>用torch原生API构造一个Transformer训练，完整的示例代码如下（git位置：https://github.com/CalvinXKY/BasicCUDA/blob/master/pytorch/torch_mem_snapshot/transformer_snapshot.py）：</p>
+<hr>
+<pre><code># Author: kevin.xie  zhihu@kaiyuan
+  
+
+import torch
+from torch import nn
+from datetime import datetime
+  
+
+  
+
+def train(num_iter=5, device=&quot;cuda:0&quot;):
+    model = nn.Transformer(d_model=512, nhead=2, num_encoder_layers=2, num_decoder_layers=2).to(device=device)
+    x = torch.randn(size=(1, 1024, 512), device=device)
+    tgt = torch.rand(size=(1, 1024, 512), device=device)
+    model.train()
+    labels = torch.rand_like(model(x, tgt))
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters())
+    for _ in range(num_iter):
+        y = model(x, tgt)
+        loss = criterion(y, labels)
+        loss.backward()
+        print(loss.item())
+        optimizer.step()
+        optimizer.zero_grad(set_to_none=True)
+  
+
+  
+
+def run():
+    # Start recording memory snapshot history
+    torch.cuda.memory._record_memory_history(max_entries=100000)
+    # training running:
+    train()
+  
+
+    timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+    file_name = f&quot;visual_mem_{timestamp}.pickle&quot;
+    # save record:
+    torch.cuda.memory._dump_snapshot(file_name)
+  
+
+    # Stop recording memory snapshot history:
+    torch.cuda.memory._record_memory_history(enabled=None)
+  
+
+  
+
+if __name__ == &quot;__main__&quot;:
+    run()
+</code></pre>
+<p>注意：</p>
+<ol>
+<li>
+<p>代码运行环境中PyTorch&gt;=2.1 。</p>
+</li>
+<li>
+<p>可视化API开启的系统开销比较高，正常运行时建议关闭。</p>
+</li>
+</ol>
+<p>运行后输出可视化后的结果：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicr7tQU4RHBzvyL8rvGBd5k645sUpb2jH8DILEpaQd1jpNJobZQ2phSXw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<ol start="2">
+<li>Snapshot数据分析</li>
+</ol>
+<p>2.1 激活内存数据</p>
+<p>网页中选择“Active Memory Timeline”下拉框可看到激活内存数，这部分数据主要是记录tensor在计算过程中占用的内存数值以及其存活的周期；同时，能够查看每个tensor的内存消耗调用堆栈（Python/C++）。</p>
+<p>整体数据分析：</p>
+<p>如图是1.2运行中内存消耗情况的数据，一共有5个迭代。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrOJFU8aIpewXrrlQ4iabNOSQ4D8ib1fRric34XszmK6r8STRd9kRs0yxtw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>第一个“三角”图形是“ labels = torch.rand_like(model(x, tgt))”操作产生的，后面的5个山峰形状图形是正反向运算时产生的内存变化。</p>
+<p>第一个迭代的内存消耗小于后续迭代时的显存消耗，原因是：优化器的显存占用发生在第一个迭代结束后。</p>
+<p>图中前向计算的内存消耗比后向计算的内存消耗更多；</p>
+<p>局部数据分析：</p>
+<p>波纹变化：图表中能够看到“数据条”有显示变化。首先需要明确单个tensor数据消耗显存在生命周期内是保持不变的。通过放大图片可以看到显存条纹有上/下行“波纹”，这种波纹形状的产生原因是因为其它的tensor被创建/释放了导致的显示绘图的变化，并非tensor占用的显存大小发生了改变。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicr6YuuN9ahwa3GDrDibvGJYQibMu7ib6bM0rHmzF4k1OxydJn4n6RTOFCjQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>尖峰值：后向计算时autograd会产生额外的内存消耗，能够形成一些尖峰值。可以点击一个尖峰值，其内容显示如下，可以看到触发尖峰的操作API源自autograd：</p>
+<hr>
+<pre><code>autograd_not_implemented_fallback.cpp:0:torch::autograd::autogradNotImplementedFallbackImpl(c10::OperatorHandle const&amp;, c10::DispatchKeySet, std::vector&lt;c10::ivalue, std::allocator&gt;*)
+:0:c10::impl::BoxedKernelWrapper(at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, double, std::array, bool, c10::optional), void&gt;::call(c10::BoxedKernel const&amp;, c10::OperatorHandle const&amp;, c10::DispatchKeySet, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, double, std::array, bool, c10::optional)
+??:0:at::_ops::_scaled_dot_product_efficient_attention_backward::call(at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, at::Tensor const&amp;, double, std::array, bool, c10::optional)
+??:0:torch::autograd::generated::ScaledDotProductEfficientAttentionBackward0::apply(std::vector&lt;at::tensor, std::allocator&gt;&amp;&amp;)
+:0:torch::autograd::Node::operator()(std::vector&lt;at::tensor, std::allocator&gt;&amp;&amp;)
+??:0:torch::autograd::Engine::evaluate_function(std::shared_ptr&amp;, torch::autograd::Node*, torch::autograd::InputBuffer&amp;, std::shared_ptrconst&amp;)
+??:0:torch::autograd::Engine::thread_main(std::shared_ptrconst&amp;)
+??:0:torch::autograd::Engine::thread_init(int, std::shared_ptrconst&amp;, bool)
+??:0:torch::autograd::python::PythonEngine::thread_init(int, std::shared_ptrconst&amp;, bool)
+thread.cc:0:execute_native_thread_routine
+</code></pre>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrQOuDqbnL5HSCpbxEcia3KAZzicibuorG2ibYv2rqOGrLv5KgCYS2SsF8ag/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>2.2 内存块的使用与释放</p>
+<p>当把选项切换到“Allocator State Hisotry”时，可以看到如下的可视化数据如下。该图展示从CUDA里面申请的内存块是如何被alloc分配成小的block，以及这些小的block什么时候被释放掉了。如果把光标放置到这些彩色的block上面，能够跟踪到是什么操作在使用该显存地址。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrGpeaDiaEsrpWY0SdhGHdibUT7xgleFFHkKzHXX3aGFHYUFzud77m16AA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>右侧框框表示segment（分片），在segment块中的彩色条表示block。</p>
+<p>torch显存管理创建的顺序是先创建segment，然后创建block</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrT8q9HSOSXXKv2ZjmicsZ20u9T047nU48ulUUwiaKCNdudQg7bpgcPRhw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>block创建的堆栈查看：光标放到一个allc位置，显示内容如下:</p>
+<hr>
+<pre><code>(279.8MiB (293443588 bytes) allocated / 554.0MiB (580911104 bytes) reserved)
+alloc b7f6a235dd800_2 6.0KiB (6144 bytes)
+CUDACachingAllocator.cpp:0:c10::cuda::CUDACachingAllocator::Native::DeviceCachingAllocator::malloc(int, unsigned long, CUstream_st*)
+:0:c10::cuda::CUDACachingAllocator::Native::NativeCachingAllocator::malloc(void**, int, unsigned long, CUstream_st*)
+:0:c10::cuda::CUDACachingAllocator::Native::NativeCachingAllocator::allocate(unsigned long) const
+</code></pre>
+<p>主要看&quot;alloc b7f6a235dd800_2 6.0KiB (6144 bytes)&quot; 这个部分，表示使用了一个6KB大小的block块。其中b7f6a235dd800表示地址，_2表示该地址被使用的次数，整个数字标记是唯一的，目的是使其能够与tensor对应上。</p>
+<p>block释放的堆栈查看：光标放到放到一个free位置，显示内容如下：</p>
+<hr>
+<pre><code>(304.9MiB (319707140 bytes) allocated / 554.0MiB (580911104 bytes) reserved)
+free b7f6a235eb000_3 2.0KiB (2048 bytes)
+CUDACachingAllocator.cpp:0:c10::cuda::CUDACachingAllocator::Native::DeviceCachingAllocator::free(c10::cuda::CUDACachingAllocator::Native::(anonymous namespace)::Block*)
+:0:c10::cuda::CUDACachingAllocator::Native::local_raw_delete(void*)
+:0:c10::StorageImpl::~StorageImpl()
+</code></pre>
+<p>其中free表示“释放”掉了多少内存。</p>
+<p>注意，block的释放仅从torch显存管理里面释放，而非cuda free操作，要发出cuda free得是segment的释放。</p>
+<p>当一个segment的大小不能满足block需求时，系统会新申请一个segment块。这样的操作可能会产生显存碎片，下面给了一个显存碎片产生的示例。当创建一个约2M大小的tensor时，系统申请了一个20M的segment(s7faef4000000_0)，接着需要创建一个大小约24M的tensor时，系统重新申请了一个segment(s7faef2000000_0)。这样segment(s7faef4000000_0)有18M空间暂时时未被使用的，形成了碎片(fragment)。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrapogE3ic7yrib9CBTArFkWibbv0mJXIyvSpF0uDq9rKwQp33lYQk2lLeA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>复现代码：https://github.com/CalvinXKY/BasicCUDA/blob/master/pytorch/torch_mem_snapshot/block_fragment.py</p>
+<p>2.3 Cache分片数据</p>
+<p>把下拉框放到“Active Cached Segment Timeline”显示数据cache的segment分片的创建过程，这个数据比较直观能够看到cache是什么时候创建的，如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrqNHJrEz5qkdH6mI6Ux2LjR6m1wB3rY8ODYc2hKAHCVD9YG0zRibaQ4Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>同样点击每个分片块，能够看到分片块创建的调用堆栈。通过这个数据能够直观看到哪些操作触发了大的segment的创建，比如图中蓝色部分就是上面提到的autograd产生的尖峰显存所对应的segment。</p>
+<p>segment一般不会释放，上图中所有的segment创建后均未释放。tensor释放后可以通过empty_cache来释放segment（示例见附录）。</p>
+<p>3 Profiler中显存可视化使用</p>
+<p>PyTorch Profiler已支持把显存的snapshot数据记录到profiling中，通过prof.export_memory_timeline函数可导出snapshot数据。</p>
+<p>由于Profiler能够给一些数据打标签，所以可更加详细的记录具体是由哪个过程消耗了显存。通过可视化图表能直观的看到激活值、优化器、输入等操作的显存消耗，相比snapshot图表更加容易读懂，但没有snapshot数据那么精细。</p>
+<p>API参考文档：https://pytorch.org/docs/main/profiler.html</p>
+<p>3.1 开启方式</p>
+<p>torch.profiler中打开record功能：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>with torch.profiler.profile(profile_memory=True,with_stack=True,on_trace_ready=trace_handler,)：
+</code></pre>
+<p>主要添加参数如下：</p>
+<ul>
+<li>
+<p>profile_memory (bool) – 是否记录 tensor memory allocation/deallocation.</p>
+</li>
+<li>
+<p>with_stack (bool) – 追踪操作的调用堆栈.</p>
+</li>
+<li>
+<p>on_trace_ready(Callable) – 记录完成后的后处理<strong>回调函数</strong> 。</p>
+</li>
+</ul>
+<p>3.2 调用示例</p>
+<p>用transformer来进行调用示例，完整的代码如下所示（git位置https://github.com/CalvinXKY/BasicCUDA/blob/master/pytorch/torch_mem_snapshot/transformer_profile.py）：</p>
+<hr>
+<pre><code># Author: kevin.xie  zhihu@kaiyuan
+import torch
+from torch import nn
+from datetime import datetime
+from torch.autograd.profiler import record_function
+  
+
+def trace_handler(prof: torch.profiler.profile):
+   # 获取时间用于文件命名
+   timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+   file_name = f&quot;visual_mem_{timestamp}&quot;
+  
+
+   # 导出tracing格式的profiling
+   prof.export_chrome_trace(f&quot;{file_name}.json&quot;)
+  
+
+   # 导出mem消耗可视化数据
+   prof.export_memory_timeline(f&quot;{file_name}.html&quot;, device=&quot;cuda:0&quot;)
+  
+
+  
+
+def train(num_iter=5, device=&quot;cuda:0&quot;):
+    model = nn.Transformer(d_model=512, nhead=2, num_encoder_layers=2, num_decoder_layers=2).to(device=device)
+    x = torch.randn(size=(1, 1024, 512), device=device)
+    tgt = torch.rand(size=(1, 1024, 512), device=device)
+    model.train()
+    labels = torch.rand_like(model(x, tgt))
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters())
+    
+    with torch.profiler.profile(
+            activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA],
+            schedule=torch.profiler.schedule(wait=0, warmup=0, active=6, repeat=1),
+            record_shapes=True,
+            profile_memory=True,
+            with_stack=True,
+            on_trace_ready=trace_handler,
+    ) as prof:
+        for _ in range(num_iter):
+            prof.step()
+            with record_function(&quot;## forward ##&quot;): 
+                y = model(x, tgt)
+  
+
+            with record_function(&quot;## backward ##&quot;):
+                loss = criterion(y, labels)
+                loss.backward()
+                print(loss.item())
+  
+
+            with record_function(&quot;## optimizer ##&quot;):
+                optimizer.step()
+                optimizer.zero_grad(set_to_none=True)
+  
+
+  
+
+if __name__ == &quot;__main__&quot;:
+    # warm-up:
+    train(1)
+    # run:
+    train(5)
+</code></pre>
+<p>运行后此代码生成了两个html文件，一个由warm up产生，另一个由run产生。打开后生成的html文件(直接用浏览器打开)，可以看到mem-timeline数据，如下所示，可从数据中看到各个部分的占用比例，以及产生与释放的时机。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrltHExPWyhjqPy11ar31YtxGooopBk7xxwFJep4EicykwHMcotesCDTA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>上例的transformer模型完成了5个迭代步骤，每次迭代内存的消耗占比在图中踩了不同颜色进行区分，我们可看到显存占用内容主要如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrfw9uH4ECt4KADicXCAoW3pb52K1jOxRQZKAulkaI2eOm3QxSZBKry9A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<ul>
+<li>
+<p>parameter：模型参数</p>
+</li>
+<li>
+<p>optimizer_state: 优化器状态参数</p>
+</li>
+<li>
+<p>input：输入值</p>
+</li>
+<li>
+<p>temporary：临时变量；</p>
+</li>
+<li>
+<p>activation：激活值（前向运算产生）</p>
+</li>
+<li>
+<p>gradient：梯度值</p>
+</li>
+<li>
+<p>autograd_detail: 自动梯度产生的显存</p>
+</li>
+<li>
+<p>unknown：无法分类的消耗</p>
+</li>
+</ul>
+<p>还有一个profiling的html文件，是warn-up动作产生的（这个数据暂未看出来有啥分析意义），打开后是这样：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicr4viarNs98nHpVfOG5MBicGgAUjSb4R2GNAdEas7v8SevHg7vchzCd9og/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>注意，进行warn-up动作是必要的，不然产生的数据会不符合预期。</p>
+<p>参考内容：</p>
+<p>Understanding CUDA Memory Usage</p>
+<p><a href="https://pytorch.org/docs/main/profiler.html">https://pytorch.org/docs/main/profiler.html</a></p>
+<p><a href="https://pytorch.org/memory_viz">https://pytorch.org/memory_viz</a></p>
+<p><a href="https://github.com/pytorch/tutorials/blob/main/beginner_source/transformer_tutorial.py">https://github.com/pytorch/tutorials/blob/main/beginner_source/transformer_tutorial.py</a></p>
+<p>附1：segment释放示例</p>
+<p>代码 ：https://github.com/CalvinXKY/BasicCUDA/blob/master/pytorch/torch_mem_snapshot/segment.py</p>
+<p>cache数据如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrEHqBYgNZLDU589GibkhKbRoTD5YVMibDTuibxYRN6yOSBMibgfNVWDkFpg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>segment和block创建的过程如下，能够与代码的操作进行一一对应。比如，第一个segment_alloc动作是为第一个tensor的创建准备了内存，之后alloc创建block用于tensor1（tensor1 = torch.randn(size=(10,1024, 1024, 512), device=device)）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicruH7HY2rVIHYKbBVm1kJYibYF1ErBfGatziczMp5Ax1n1Rzs0IWgqH4sg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>附2：“文本预测”训练</p>
+<p>一个关于文本预测的训练的示例（torch官方给出的示例），主要是通过torch.nn.transformer实现。通过添加snapshotAPI，保存显存使用数据。代码：https://github.com/CalvinXKY/BasicCUDA/blob/master/pytorch/torch_mem_snapshot/predict_text_with_snapshot_example.py</p>
+<p>源码的改动变化：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrcyrGtbWeJpKLKkCF5UqUgV3NkmKCj1qG8JSWRvXBIXSehouGtG6q9w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>添加snapshot的运行时间变化（不同机器时长会有差异！）：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrZKOl8RJtIKNYNiaTyX01oTEdWayqeQ6rCs7GexLVqjCc8bSZPcXg4CQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>snapshot的结果如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GwWiajOianxwuomZ2QUEyIHicrdxdhicxiayx0ZqGACBgBico1t29aYIpookZxxf3m7I062mCFhzNsSZqwg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>历史文章：<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247486824&amp;idx=2&amp;sn=4faaac42f983af46cce44b35dd416c5f&amp;chksm=fd3be43bca4c6d2d6f5fd1cf3004c37782d0b829111ad5ecd155d6cd3adedd40655653271ba1&amp;scene=21#wechat_redirect">2023年12月大模型文章集锦</a></strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
