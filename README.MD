@@ -87,4 +87,12 @@ aibard123.com 是一个开源导航网站，旨在为爱好人工智能的人提
 ![aibard123_screenshot](https://aibard123.com/assets/images/screenshot/aibard123qqlogo.png)
 
 
+#### 关注AiBard123公众号
+
+AiBard123公众号推荐好玩的AI工具
+
+
+![AiBard123公众号](https://aibard123.com/assets/images/screenshot/qrcode_for_gh_dde1b429630d_258.jpg)
+
+
 感谢 [一个基于 Hugo 的静态响应式网址导航主题](https://github.com/shenweiyan/WebStack-Hugo)， 他是 在 [一个基于 Hugo 的静态响应式网址导航主题](https://github.com/shenweiyan/WebStack-Hugo)的基础上修改而来，感谢[webstack.cc](https://github.com/WebStackPage/WebStackPage.github.io) 和其他人的贡献。
