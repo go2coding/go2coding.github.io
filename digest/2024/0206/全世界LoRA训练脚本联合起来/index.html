@@ -1,0 +1,1145 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>全世界LoRA训练脚本，联合起来! 作者： Hugging Face 来源： Hugging Face 太长不看版 我们把 Replicate 在 SDXL Cog 训练器中使用的枢轴微调 (Pivotal Tuning) 技术与 Kohya 训练器中使用的 Prodigy 优化器相结合，再加上一堆其他优化，一起对 SDXL 进行 Dreambooth LoRA 微调，取得了非常好的效果。你可以在 diffusers 上找到 我们使用的训练脚本🧨，或是直接 在 Colab 上 试着运行一下。 如果  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">全世界LoRA训练脚本，联合起来!</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              February 6, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQTagibibo5HfFEqZNXccJCIrYEL3v1Q1dwkKk2ztt6NJQ8tzX83BUcRPg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： Hugging Face  来源： <a href="https://mp.weixin.qq.com/s/EmKIfsYhlSFBzQ_k_Ut-Lg">Hugging Face</a></p>
+<p><strong>太长不看版</strong></p>
+<p>我们把 Replicate 在 SDXL Cog 训练器中使用的枢轴微调 (Pivotal Tuning) 技术与 Kohya 训练器中使用的 Prodigy 优化器相结合，再加上一堆其他优化，一起对 SDXL 进行 Dreambooth LoRA 微调，取得了非常好的效果。你可以在 diffusers
+上找到 我们使用的训练脚本🧨，或是直接 在 Colab 上 试着运行一下。</p>
+<p>如果你想跳过技术讲解直接上手，可以使用这个 Hugging Face Space，通过简单的 UI 界面用我们精选的超参直接开始训练。当然，你也可以尝试干预这些超参的设置。</p>
+<h4 id="概述">概述</h4>
+<p>使用 Dreambooth LoRA 微调后的 Stable Diffusion XL(SDXL) 模型仅需借助少量图像即可捕获新概念，同时保留了 SDXL 出图美观高质的优势。更难得的是，虽然微调结果令人惊艳，其所需的计算和资源消耗却相当低。你可在 此处 找到很多精彩的 SDXL LoRA 模型。</p>
+<p>本文我们将回顾一些流行的、可以让你的 LoRA 微调更出色的实践和技术，并展示如何使用 diffusers
+来运行或训练你自己的 LoRA 模型！</p>
+<p>拾遗: LoRA (Low Rank Adaptation，低阶适配) 是一种可用于微调 Stable Diffusion 模型的技术，其可用于对关键的图像/提示交叉注意力层进行微调。其效果与全模型微调相当，但速度更快且所需计算量更小。要了解有关 LoRA 工作原理的更多信息，请参阅我们之前的文章 - 使用 LoRA 进行 Stable Diffusion 的高效参数微调。</p>
+<p><strong>致谢</strong>  ❤️:</p>
+<p>本文展示的各种技术 (包括算法、训练脚本、实验以及各种探索) 是站在很多前人工作的基础上的，包括: Nataniel Ruiz 的 Dreambooth、 Rinon Gal 的 文本逆化 (textual inversion) 、Ron Mokady 的 枢轴微调、Simo Ryu 的 cog-sdxl、Kohya 的 sd-scripts 以及 The Last Ben 的 fast-stable-diffusion。在此，我们向他们和社区表示最诚挚的谢意！🙌</p>
+<h4 id="枢轴微调">枢轴微调</h4>
+<p>枢轴微调 技术巧妙地将 文本逆化 与常规的扩散模型微调相结合。以 Dreambooth 为例，进行常规 Dreambooth 微调时，你需要选择一个稀有词元作为触发词，例如“一只 sks 狗” 中的 sks
+。但是，因为这些词元原本就来自于词表，所以它们通常有自己的原义，这就有可能会影响你的结果。举个例子，社区之前经常使用 sks
+作为触发词，但实际上其原义是一个武器品牌。</p>
+<p>为了解决这个问题，我们插入一个新词元到模型的文本编码器中，而非重用词表中现有的词元。然后，我们优化新插入词元的嵌入向量来表示新概念，这种想法就是文本逆化，即我们对嵌入空间中的新词元进行学习来达到学习新概念的目的。一旦我们获得了新词元及其对应的嵌入向量，我们就可以用这些词元嵌入向量来训练我们的 Dreambooth LoRA，以获得两全其美的效果。</p>
+<p><strong>训练</strong></p>
+<p>使用 diffusers
+的新训练脚本，你可以通过设置以下参数来进行文本逆化训练。</p>
+<pre><code>--train_text_encoder_ti  
+--train_text_encoder_ti_frac=0.5  
+--token_abstraction=&quot;TOK&quot;  
+--num_new_tokens_per_abstraction=2  
+--adam_weight_decay_text_encoder  
+</code></pre>
+<ul>
+<li>
+<p>train_text_encoder_ti
+开启文本逆化训练，用于训练新概念的嵌入向量。</p>
+</li>
+<li>
+<p>train_text_encoder_ti_frac
+指定何时停止文本逆化 (即停止文本嵌入向量的更新，仅继续更新 UNet)。中途定轴 (即仅在训练前半部分执行文本逆化) 是 cog sdxl 使用的默认设置，我们目前的实验也验证了其有效性。我们鼓励大家对此参数进行更多实验。</p>
+</li>
+<li>
+<p>token_abstraction
+即概念标识符，我们在提示文本中用该词描述我们希望训练的概念。该标识符词元会用在实例提示、验证提示或图像描述文本中。这里我们选择 TOK
+作为概念标识符，如 “TOK 的照片”即为一个含有概念标识符的实例提示。注意，&ndash;token_abstraction
+只是一个占位符，因此，在训练之前我们需要用一个新词元来代替 TOK
+并对其进行训练 (举个例子，训练时“一张 TOK
+的照片”会变成“一张 <s0><s1>
+的照片”，其中 <s0><s1>
+就是新词元)。同样地，需要确保这里的 token_abstraction
+与实例提示、验证提示和自定义提示 (如有) 中的标识符相一致。</p>
+</li>
+<li>
+<p>num_new_tokens_per_abstraction
+表示每个 token_abstraction
+对应多少个新词元 - 即需要向模型的文本编码器插入多少个新词元并对其进行训练。默认设置为 2，我们鼓励大家对不同取值进行实验并分享你们的发现！</p>
+</li>
+<li>
+<p>adam_weight_decay_text_encoder
+用于为文本编码器设置与 UNet 不同的权重衰减。</p>
+</li>
+</ul>
+<h4 id="自适应优化器">自适应优化器</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQJYHywJvprys5jAq8ORRBDYzmgE5lVSPic45aWnoeBa2h9nRI1F5tuTg/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p>在训练或微调扩散模型 (或与此相关的任何机器学习模型) 时，我们使用优化器来引导模型依循最佳的收敛路径 - 收敛意味着我们选择的损失函数达到了最小值，我们认为损失函数达到最小值即说明模型已习得我们想要教给它的内容。当前，深度学习任务的标准 (也是最先进的) 优化器当属 Adam 和 AdamW 优化器。</p>
+<p>然而，这两个优化器要求用户设置大量的超参 (如学习率、权重衰减等)，以此为收敛铺平道路。这可能会导致我们需要不断试验各种超参，最后常常因为耗时过长而不得不采用次优超参，从而导致次优结果。即使你最后试到了理想的学习率，但如果学习率在训练期间保持为常数，仍然可能导致收敛问题。一些超参可能需要频繁的更新以加速收敛，而另一些超参的调整又不能太大以防止振荡。真正是“摁了葫芦起了瓢”。为了应对这一挑战，我们引入了有自适应学习率的算法，例如<strong>Adafactor</strong>  和<strong>Prodigy</strong> 。这些方法根据每个参数过去的梯度来动态调整学习率，借此来优化算法对搜索空间的遍历轨迹。</p>
+<p>我们的关注点更多在 Prodigy，因为我们相信它对 Dreambooth LoRA 训练特别有用！</p>
+<p><strong>训练</strong></p>
+<pre><code>--optimizer=&quot;prodigy&quot;  
+</code></pre>
+<p>使用 Prodigy 时，缺省学习率可以设置如下:</p>
+<pre><code>--learning_rate=1.0  
+</code></pre>
+<p>对扩散模型特别是其 LoRA 训练有用的设置还有:</p>
+<pre><code>--prodigy_safeguard_warmup=True  
+--prodigy_use_bias_correction=True  
+--adam_beta1=0.9  
+# 注意，以下超参的取值与默认值不同:  
+--adam_beta2=0.99  
+--adam_weight_decay=0.01  
+</code></pre>
+<p>在使用 Prodigy 进行训练时，你还可以对其他超参进行调整 (如: &ndash;prodigy_beta3
+、prodigy_de Couple
+、prodigy_safeguard_warmup
+)，本文不会对这些参数进行深入研究，你可以移步 此处 以了解更多信息。</p>
+<h4 id="其他好做法">其他好做法</h4>
+<p>除了枢轴微调以及自适应优化器之外，还有一些可以影响 LoRA 模型质量的其他技巧，所有这些技巧都已在最新的 diffusers
+训练脚本中了。</p>
+<h4 id="独立设置文本编码器和-unet-的学习率">独立设置文本编码器和 UNet 的学习率</h4>
+<p>社区发现，在优化文本编码器时，为其设置专有的学习率 (与 UNet 学习率独立) 所得模型的生成质量会更好 - 特别地，文本编码器需要<strong>较低</strong>  的学习率，因为它一般过拟合 <em>更快</em> 。</p>
+<ul>
+<li>
+<p>在使用枢轴微调时，为 UNet 和文本编码器设置不同的学习率是已被证明了的 - 此时，为文本编码器设置更高的学习率更好。</p>
+</li>
+<li>
+<p>但请注意，当使用 Prodigy (或一般的自适应优化器) 时，我们一开始可以让所有训练参数的初始学习率相同，让优化器自行调节。很神吧✨！</p>
+</li>
+</ul>
+<p><strong>训练</strong></p>
+<pre><code>--train_text_encoder  
+--learning_rate=1e-4 #unet  
+--text_encoder_lr=5e-5  
+</code></pre>
+<p>&ndash;train_text_encoder
+启用文本编码器全模型训练 (即文本编码器的权重都参与更新，而不是仅仅优化文本逆化新词元的嵌入 ( &ndash;train_text_encoder_ti
+))。如果你希望文本编码器的学习率始终与 &ndash;learning_rate
+一致，可设 &ndash;text_encoder_lr=None
+。</p>
+<h4 id="自定义描述文本">自定义描述文本</h4>
+<p>虽然通过对一组配有相同实例提示的图像进行训练也可以获得良好的结果，如“一张的人像照片”或 “的风格”等。但对多幅图像使用相同的描述文本有可能会导致次优结果。具体效果取决于很多因素，包括待学习概念的复杂性、模型原本对该概念的“熟悉程度”，以及训练集捕获新概念的效果如何。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQiaAf1DlEllY1ljAZ4TQLTuM5qk4WZBUyib27b8gHM7cxwGwInd15ueMg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>训练</strong></p>
+<p>想要使用自定义描述文本，首先需要安装 datasets
+库，如下:</p>
+<pre><code>!pip install datasets  
+</code></pre>
+<p>要加载自定义图像描述文本，我们需要训练集的目录结构遵循 datasets
+库的 ImageFolder
+结构，其包含图像及每张图像对应的描述文本。</p>
+<ul>
+<li><em>方式 1</em>:</li>
+</ul>
+<p>从 hub 中选择一个已包含图像及其对应提示的数据集 - 如 LinoyTsaban/3d_icon。现在要做的就是在训练参数中指定数据集的名称及文本列的名称 (在本例中列名为 &ldquo;prompt&rdquo;):</p>
+<pre><code>--dataset_name=LinoyTsaban/3d_icon  
+--caption_column=prompt  
+</code></pre>
+<ul>
+<li><em>方式 2</em>:</li>
+</ul>
+<p>你还可以使用自己的图像并为其添加描述文本。此时，你可以借助 这个 Colab Notebook 来用 BLIP 自动为图像生成描述文本，或者你可以在元数据文件中手动创建描述文本。后面的事情就和方式 1 一样了，将 &ndash;dataset_name
+设为文件夹路径， &ndash;caption_column
+设为描述文本所对应的列名。</p>
+<h4 id="最小信噪比-gamma-加权">最小信噪比 Gamma 加权</h4>
+<p>训练扩散模型通常会遇到收敛缓慢的问题，部分是由于各时间步之间的优化方向相互冲突。Hang 等人 通过引入简单的最小信噪比 Gamma 法来缓解此问题。该方法根据钳位信噪比调整每个时间步的损失权重，以有效平衡各时间步之间的冲突。</p>
+<ul>
+<li>
+<p>做小信噪比加权策略在小数据集上效果可能并不明显; 其对较大的数据集效果会更明显。</p>
+</li>
+<li>
+<p>不同  值的效果比较: <em>你可在 这个 wandb 项目页面 上比较不同的 snr_gamma
+值 (5.0、1.0 及 None) 下的训练损失曲线。</em></p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQuJlo2zRC5icxp3bX3jFia96Qb8Ohzytn6RuZUe5RfKZpRiaNrontS9HKg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>训练</strong></p>
+<p>如欲使用最小信噪比 Gamma 法，推荐设置如下:</p>
+<pre><code>--snr_gamma=5.0  
+</code></pre>
+<p>默认情况下 &ndash;snr_gamma=None
+，即不启用。启用 &ndash;snr_gamma
+时，建议取值为 5.0。</p>
+<h4 id="图像样本重复次数">图像样本重复次数</h4>
+<p>此参数指的是数据集中的图像在训练集中重复的次数。其与 epoch 的不同之处在于，图像首先被重复，然后才被打乱。</p>
+<p><strong>训练</strong></p>
+<p>要启用重复，只需将其设为一个大于 1 的整数:</p>
+<pre><code>--repeats  
+</code></pre>
+<p>默认情况下， &ndash;repeats=1
+，即不重复。</p>
+<h4 id="训练集创建">训练集创建</h4>
+<ul>
+<li>
+<p>俗话说得好 - “垃圾进，垃圾出”，虽然仅需少量图像即可轻松训练一个好的 Dreambooth LoRA，但训练图像的质量对微调模型影响很大。</p>
+</li>
+<li>
+<p>一般来说，在对特定对象或主题进行微调时，我们希望确保训练集中包含尽可能多样的关于该对象或主题的图像，且这些图像应尽量与后续应用场景相关。</p>
+</li>
+<li>
+<p>例如，如果想让模型学到有关下面这个红色背包的知识: (该图来自 google/dreambooth 数据集)</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQxvmpwDD51zQJB77RPbEPdCaltWD6XdepEETtjtX1KXhybNEEibue5Vg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<ul>
+<li>我觉得后面用户有可能给一个某人背着包的提示，因此训练集中最好有下面这样的样本:</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQZZShpeK0bd4MNE33280EnbVicB3KRZhC6GwsO4TnQNjXmqdFSOnPAYQ/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>这样就能在训练时匹配推理时的应用场景，因此模型推理时就更容易外推至该类场景或者设定。</p>
+<p><em>再举个例子</em> ， 在 <em>人脸</em> 数据上进行训练时，在准备数据集时需要特别注意以下几点:</p>
+<ol>
+<li>
+<p>应尽可能选择<strong>高分辨率、高画质</strong>  的图像。模糊或低分辨率的图像不利于微调结果。</p>
+</li>
+<li>
+<p>在训练特定人物的人脸时，建议训练集中不要出现其他人的脸，因为我们不想对目标人脸产生模糊的概念。</p>
+</li>
+</ol>
+<p>3.<strong>特写照片</strong>  对于最终产生真实感的效果很重要，但是同时也应该包含好的全身照片，以提高对不同姿势/构图的泛化能力。</p>
+<ol start="4">
+<li>
+<p>我们建议<strong>避免纳入离拍摄主体较远的照片</strong> ，因为此类图像中的大多数像素与我们希望优化的概念无关，模型可以从中学习的东西不多。</p>
+</li>
+<li>
+<p>避免重复的背景/服装/姿势 —— 在灯光、姿势、背景和面部表情方面力求<strong>多样性</strong> 。多样性越大，LoRA 就越灵活、越通用。</p>
+</li>
+</ol>
+<p>6.<strong>先验保留损失</strong> 先验保留损失是一种使用模型自己生成的样本来帮助其学习如何生成更多样化的图像的方法。由于这些图像样本与你提供的图像属于同一类，因此它们可以帮助模型保留已习得的有关该类的信息，并习得如何使用已知的该类的信息来形成新的组合。</p>
+<p><em><strong>用于正则化的真实图像 VS 模型生成的图像</strong></em> 选择类图像时，你可以在合成图像 (即由扩散模型生成) 和真实图像之间进行选择。支持使用真实图像的理由是它们提高了微调模型的真实感。另一方面，有些人也会认为使用模型生成的图像可以更好地保留模型习得的 * 知识 * 及审美。</p>
+<p>7.<strong>名人相</strong>  - 这主要与用于训练的描述文本或实例提示有关。当使用“令牌标识符 + 基础模型所知道的与待训练任务相似的公众人物”进行提示时，我们发现一些案例的微调效果得到了改善。</p>
+<p>使用先验保留损失进行<strong>训练</strong> :</p>
+<pre><code>--with_prior_preservation  
+--class_data_dir  
+--num_class_images  
+--class_prompt  
+</code></pre>
+<p>&ndash;with_prior_preservation</p>
+<ul>
+<li>启用先验保留训练<br>
+&ndash;class_data_dir</li>
+<li>包含类图像的文件夹的路径<br>
+&ndash;num_class_images</li>
+<li>先验保留损失所需的最小类图像数。如果 &ndash;class_data_dir
+中没有足够的图像，则用 &ndash;class_prompt
+采样出更多的图像。</li>
+</ul>
+<h4 id="实验与结果">实验与结果</h4>
+<p>讲了这么多，该挽起袖子试试了。我们在不同的任务 (风格化、人脸及特定对象) 上尝试了上述技术的不同组合。</p>
+<p>为了减小超参搜索空间，我们使用一些流行配置作为起点，并基于此进行调整以达成效果。</p>
+<p><strong>Huggy Dreambooth LoRA</strong></p>
+<p>首先，我们想为 Huggy 微调一个 LoRA 模型，这意味着既要教会模型相应的艺术风格，同时还要教会它特定的角色。在这个例子中，我们制作了一个高质量的 Huggy 吉祥物数据集 (我们使用的是 Chunte-Lee 的艺术作品)，该数据集包含 31 张图像及其对应的描述文本。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQ6FPjKUkuDfmibictAEt8ASIQTTCwYibsQkcYXfCPo86NYp3oEwiaOVUmow/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>配置:</p>
+<pre><code>--train_batch_size = 1, 2,3, 4  
+-repeats = 1,2  
+-learning_rate = 1.0 (Prodigy), 1e-4 (AdamW)  
+-text_encoder_lr = 1.0 (Prodigy), 3e-4, 5e-5 (AdamW)  
+-snr_gamma = None, 5.0  
+-max_train_steps = 1000, 1500, 1800  
+-text_encoder_training = regular finetuning, pivotal tuning (textual inversion)  
+</code></pre>
+<ul>
+<li>
+<p>文本编码器全模型微调 VS 枢轴微调 - 我们注意到枢轴微调取得了比文本编码器全模型微调更好的结果，且无需微调文本编码器的权重。</p>
+</li>
+<li>
+<p>最小信噪比 Gamma 加权</p>
+</li>
+</ul>
+<p>这两个版本都使用了以下参数 (但版本 2 多了一个 snr_gamma
+) <br>
+&ndash;pretrained_model_name_or_path=&ldquo;stabilityai/stable-diffusion-xl-base-1.0&rdquo; \<br>
+&ndash;pretrained_vae_model_name_or_path=&ldquo;madebyollin/sdxl-vae-fp16-fix&rdquo; \<br>
+&ndash;dataset_name=&quot;./huggy_clean&quot; \<br>
+&ndash;instance_prompt=&ldquo;a TOK emoji&rdquo;\<br>
+&ndash;validation_prompt=&ldquo;a TOK emoji dressed as Yoda&rdquo;\<br>
+&ndash;caption_column=&ldquo;prompt&rdquo; \<br>
+&ndash;mixed_precision=&ldquo;bf16&rdquo; \<br>
+&ndash;resolution=1024 \<br>
+&ndash;train_batch_size=4 \<br>
+&ndash;repeats=1\<br>
+&ndash;report_to=&ldquo;wandb&rdquo;\<br>
+&ndash;gradient_accumulation_steps=1 \<br>
+&ndash;gradient_checkpointing \<br>
+&ndash;learning_rate=1e-4 \<br>
+&ndash;text_encoder_lr=3e-4 \<br>
+&ndash;optimizer=&ldquo;adamw&rdquo;\<br>
+&ndash;train_text_encoder_ti\<br>
+&ndash;lr_scheduler=&ldquo;constant&rdquo; \<br>
+&ndash;lr_warmup_steps=0 \<br>
+&ndash;rank=32 \<br>
+&ndash;max_train_steps=1000 \<br>
+&ndash;checkpointing_steps=2000 \<br>
+&ndash;seed=&ldquo;0&rdquo; \</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQTagibibo5HfFEqZNXccJCIrYEL3v1Q1dwkKk2ztt6NJQ8tzX83BUcRPg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<pre><code>* 我们比较了关闭 snr_gamma
+</code></pre>
+<p>训得的 版本 1 以及使用 snr_gamma = 5.0
+训得的 版本 2。</p>
+<ul>
+<li>
+<p>AdamW 及 Prodigy 优化器</p>
+<ul>
+<li>
+<p>我们比较了使用 optimizer=prodigy
+训练的 版本 1 及使用 optimizer=adamW
+训练的 版本 2。两个版本都使用枢轴微调进行训练。</p>
+</li>
+<li>
+<p>使用 optimizer=prodigy
+进行训练时，我们将初始学习率设置为 1。而对 adamW，我们使用了 cog-sdxl 中用于枢轴微调的默认学习率 ( learning_rate
+为 1e-4
+， text_encoder_lr
+为 3e-4
+)，因为我们能够使用它们重现出较好的效果。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQfp5qD91PZ75pPRXRSvNQicsJe1fvpiasbrc6SWHnb2jEfb6r5ic9AsTww/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<pre><code>* 所有其他训练参数和设置均相同。具体如下:        
+    --pretrained_model_name_or_path=&quot;stabilityai/stable-diffusion-xl-base-1.0&quot; \  
+    --pretrained_vae_model_name_or_path=&quot;madebyollin/sdxl-vae-fp16-fix&quot; \  
+    --dataset_name=&quot;./huggy_clean&quot; \  
+    --instance_prompt=&quot;a TOK emoji&quot;\  
+    --validation_prompt=&quot;a TOK emoji dressed as Yoda&quot;\  
+    --output_dir=&quot;huggy_v11&quot; \  
+    --caption_column=&quot;prompt&quot; \  
+    --mixed_precision=&quot;bf16&quot; \  
+    --resolution=1024 \  
+    --train_batch_size=4 \  
+    --repeats=1\  
+    --report_to=&quot;wandb&quot;\  
+    --gradient_accumulation_steps=1 \  
+    --gradient_checkpointing \  
+    --train_text_encoder_ti\  
+    --lr_scheduler=&quot;constant&quot; \  
+    --snr_gamma=5.0 \  
+    --lr_warmup_steps=0 \  
+    --rank=32 \  
+    --max_train_steps=1000 \  
+    --checkpointing_steps=2000 \  
+    --seed=&quot;0&quot; \  
+</code></pre>
+<p><strong>Y2K 网页设计 LoRA</strong></p>
+<p>我们再探讨另一个例子，这次用另一个数据集，该数据集是我们从互联网上抓取的 27 个 20 世纪 90 年代和 21 世纪初的网页截图 (相当复古🥲):</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQEMJb5Y2raYygrF6Hj8NsyTzv9u7s7qyQ29CTzg6F9CTZP9j1WKFuicA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>配置:</p>
+<pre><code>–rank = 4,16,32  
+-optimizer = prodigy, adamW  
+-repeats = 1,2,3  
+-learning_rate = 1.0 (Prodigy), 1e-4 (AdamW)  
+-text_encoder_lr = 1.0 (Prodigy), 3e-4, 5e-5 (AdamW)  
+-snr_gamma = None, 5.0  
+-train_batch_size = 1, 2, 3, 4  
+-max_train_steps = 500, 1000, 1500  
+-text_encoder_training = regular finetuning, pivotal tuning  
+</code></pre>
+<p>与前例略有不同，虽然我们使用的训练图像大致相同 (~30 张)，但我们注意到，对于这种风格的 LoRA，在 Huggy LoRA 效果很好的设置对于网页风格来说表现出了过拟合。如下:</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQybO0gYW8iagvjJiaSoEUEmZ93icqpCyuQacGysARKaiaZGusSVemJ7iaJQQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>对于 v1，我们选择了训练 Huggy LoRA 时的最佳配置作为起点 - 显然过拟合了。因此我们尝试在下一个版本中通过调整 &ndash;max_train_steps
+、 &ndash;repeats
+、 &ndash;train_batch_size
+以及 &ndash;snr_gamma
+来解决这个问题。更具体地说，我们基于这四个配置迭代了 8 个版本，如下 (所有其余配置保持不变):</p>
+<p>配置v1v2v3v4v5v6v7v8</p>
+<p>max_train_steps</p>
+<p>1500
+1500
+1500
+1000
+1000
+1000
+1000
+1000</p>
+<p>repeats</p>
+<p>1
+1
+2
+2
+1
+1
+2
+1</p>
+<p>train_batch_size</p>
+<p>4
+4
+4
+4
+2
+1
+1
+1</p>
+<p>instance_data_dir</p>
+<p>web_y2k</p>
+<p>14 images randomly samples from web_y2k</p>
+<p>web_y2k</p>
+<p>web_y2k</p>
+<p>web_y2k</p>
+<p>web_y2k</p>
+<p>web_y2k</p>
+<p>web_y2k</p>
+<p>snr_gamma</p>
+<h2 id="50">5.0
+5.0
+5.0
+5.0</h2>
+<p>-
+5.0
+5.0</p>
+<p>我们发现 v4、v5 及 v6 可以达到最佳的折衷效果:</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQGx80xY4DQicExK1UAhF7WIYxKhvMVTtdM0hAPfGGlZEFAoibiasVrqHqw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>人脸 LoRA</strong></p>
+<p>在人脸图像上进行训练时，我们的目标是让 LoRA 生成尽可能真实且与目标人物相似的图像，同时又能够很好地泛化至训练集中未见过的背景和构图。本例中，我们聚合了多个 Linoy 脸部数据集 (每个数据集含 6-10 张图像)，其中包括一组同时拍摄的特写照片、不同场合的照片集 (不同的背景、灯光和服装) 以及全身照。</p>
+<p>我们深知，如果由于照明/分辨率/聚焦上的问题导致图像的质量偏低，此时较少的高质图像比较多的低质图像的微调效果更好 - 少即是多，务必选择最好的照片来训练模型！</p>
+<p>配置:</p>
+<pre><code>rank = 4,16,32, 64  
+optimizer = prodigy, adamW  
+repeats = 1,2,3,4  
+learning_rate = 1.0 , 1e-4  
+text_encoder_lr = 1.0, 3e-4  
+snr_gamma = None, 5.0  
+num_class_images = 100, 150  
+max_train_steps = 75 * num_images, 100 * num_images, 120 * num_images  
+text_encoder_training = regular finetuning, pivotal tuning  
+</code></pre>
+<ul>
+<li>
+<p>先验保留损失</p>
+<ul>
+<li>
+<p>与通常的做法相反，我们发现使用生成的类图像会降低与目标人脸的相似性及生成图像的真实性。</p>
+</li>
+<li>
+<p>我们利用从 unsplash 下载的开源图像创建了真实肖像的 数据集。现在，你也可以在我们创建的新 训练空间 中用上它！</p>
+</li>
+<li>
+<p>当使用真实图像数据集时，我们注意到语言漂移更少 (即模型不会将“女人/男人”一词仅与经过训练的面孔相关联，而是可以生成不同的人) ; 同时在输入含经训练的人脸相关词元的提示词情况下，其生成又能保证真实感及整体质量。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>秩</p>
+<ul>
+<li>
+<p>我们比较了秩设为 4、16、32 和 64 等不同值时的 LoRA。在这些实验中，我们发现秩为 64 的 LoRA 生成的图像磨皮效果更强，并且皮肤纹理看上去不太真实。</p>
+</li>
+<li>
+<p>因此，在后面的实验以及 LoRA ease 空间 上，我们都把秩默认设为 32。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>训练步数</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQIg4Tpm4kPBcHvibSxEuAGXEBziaGiaia0U1V65MboIunwcyGliaUIFINickg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<pre><code>* 尽管仅需很少高质图像 (在我们的例子中为 6) 就能达到好的训练效果，但我们仍需要确定模型训练的理想步数。
+
+
+* 基于训练图像数，我们尝试了几种不同的乘数: 6 x75 = 450 步 / 6 x100 = 600 步 / 6 x120 = 720 步。
+
+
+* 如下图所示，初步结果表明，使用 120 倍乘数效果较好 (如果数据集足够多样而不会过拟合，训练集中最好不要有相似的照片)
+</code></pre>
+<p>上图显示了使用 3 个训得的 LoRA (除了 &ndash;max_train_steps
+之外的所有参数都保持相同) 生成的图像，具体配置如下:</p>
+<pre><code>rank = 32  
+optimizer = prodigy  
+repeats = 1  
+learning_rate = 1.0  
+text_encoder_lr = 1.0  
+max_train_steps = 75 * num_images, 100 * num_images, 120 * num_images  
+train_text_encoder_ti  
+with_prior_preservation_loss  
+num_class_images = 150  
+</code></pre>
+<h4 id="推理">推理</h4>
+<p>使用上述技术训练的模型的推理应该与任何其他训练器训得的模型的推理方式相同，不同之处在于，当我们进行枢轴微调时，除了 LoRA 的 *.safetensors
+权重之外，还有经过训练的新词元及其文本嵌入模型的 *.safetensors
+。为了对这些进行推理，我们在加载 LoRA 模型的方式上加了 2 个步骤:</p>
+<ol>
+<li>从 Hub 下载经过训练的嵌入模型 (默认文件名为 {model_name}_emb.safetensors
+)</li>
+</ol>
+<pre><code>import torch  
+from huggingface_hub import hf_hub_download  
+from diffusers import DiffusionPipeline  
+from safetensors.torch import load_file  
+pipe = DiffusionPipeline.from_pretrained(  
+        &quot;stabilityai/stable-diffusion-xl-base-1.0&quot;,  
+        torch_dtype=torch.float16,  
+        variant=&quot;fp16&quot;,  
+).to(&quot;cuda&quot;)  
+  
+# download embeddings  
+embedding_path = hf_hub_download(repo_id=&quot;LinoyTsaban/web_y2k_lora&quot;, filename=&quot;web_y2k_emb.safetensors&quot;, repo_type=&quot;model&quot;)  
+</code></pre>
+<ol start="2">
+<li>将嵌入模型加载到文本编码器中</li>
+</ol>
+<pre><code># load embeddings to the text encoders  
+state_dict = load_file(embedding_path)  
+  
+# notice we load the tokens &lt;s0&gt;&lt;s1&gt;, as &quot;TOK&quot; as only a place-holder and training was performed using the new initialized   tokens - &lt;s0&gt;&lt;s1&gt;  
+# load embeddings of text_encoder 1 (CLIP ViT-L/14)  
+pipe.load_textual_inversion(state_dict[&quot;clip_l&quot;], token=[&quot;&lt;s0&gt;&quot;, &quot;&lt;s1&gt;&quot;], text_encoder=pipe.text_encoder, tokenizer=pipe.  tokenizer)  
+# load embeddings of text_encoder 2 (CLIP ViT-G/14)  
+pipe.load_textual_inversion(state_dict[&quot;clip_g&quot;], token=[&quot;&lt;s0&gt;&quot;, &quot;&lt;s1&gt;&quot;], text_encoder=pipe.text_encoder_2, tokenizer=pipe.  tokenizer_2)  
+</code></pre>
+<ol start="3">
+<li>加载你的 LoRA 并输入提示！</li>
+</ol>
+<pre><code># normal LoRA loading  
+pipe.load_lora_weights(&quot;LinoyTsaban/web_y2k_lora&quot;, weight_name=&quot;pytorch_lora_weights.safetensors&quot;)  
+prompt=&quot;a &lt;s0&gt;&lt;s1&gt; webpage about an astronaut riding a horse&quot;  
+images = pipe(  
+    prompt,  
+    cross_attention_kwargs={&quot;scale&quot;: 0.8},  
+).images  
+# your output image  
+images[0]  
+</code></pre>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2oTm4VSzmicmftwmV7x6qmnQZSoDwrRnHeCHfShMjROR0EcYxwiaN6sUr5DbcZsyr6U1Rbu0j7I10gA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="comfy-ui--automatic1111-推理">Comfy UI / AUTOMATIC1111 推理</h4>
+<p>最新的脚本完全支持 Comfy UI 和 AUTOMATIC1111 格式的文本逆化模型加载！</p>
+<p><strong>AUTOMATIC1111 / SD.Next</strong></p>
+<p>在 AUTOMATIC1111/SD.Next 中，我们同时加载 LoRA 和文本嵌入模型。</p>
+<ul>
+<li>
+<p><em>LoRA</em> : 除了 diffusers
+格式之外，该脚本还将同时生成 WebUI 格式的 LoRA，其文件名为 {your_lora_name}.safetensors
+。随后，你可以将其放入 models/Lora
+目录中。</p>
+</li>
+<li>
+<p><em>嵌入</em> : diffusers
+和 WebUI 的嵌入文件格式相同。你可以直接下载已训练模型的 {lora_name}_emb.safetensors
+文件，并将其放入 embeddings
+目录中。</p>
+</li>
+</ul>
+<p>然后，你可以输入提示 a y2k_emb webpage about the movie Mean Girls <a href="lora:y2k:0.9">lora:y2k:0.9</a>
+来运行推理。你可以直接使用 y2k_emb
+词元，也可以通过使用 (y2k_emb:1.2)
+来增加其权重。</p>
+<p><strong>ComfyUI</strong></p>
+<p>在 ComfyUI 中，我们会同时加载 LoRA 和文本嵌入。</p>
+<ul>
+<li>
+<p><em>LoRA</em> : 除了 diffusers
+格式之外，该脚本还将训练 ComfyUI 兼容的 LoRA，其文件名为 {your_lora_name}.safetensors
+。然后，你可以将其放入 models/Lora
+目录中。然后，你需要加载 LoRALoader 节点并将其与你的模型和 CLIP 连接起来，详见 LoRA 加载官方指南</p>
+</li>
+<li>
+<p><em>嵌入</em> : diffusers 和 WebUI 的嵌入格式相同。你可以直接下载已训练的模型的 {lora_name}_emb.safetensors
+文件，并将其放入 models/embeddings
+目录中，并在你的提示中以 embedding:y2k_emb
+的方式使用它，详见 加载嵌入模型的官方指南。</p>
+</li>
+</ul>
+<h4 id="下一步">下一步</h4>
+<p>🚀 更多功能，即将推出！我们正在努力为我们的训练脚本添加更多高级功能，以允许用户施加更多的控制力，并支持更灵活的使用。如果你觉得哪些功能对你有帮助，请告诉我们！</p>
+<p>🤹 多概念 LoRA Shah 等人在最近的一项 工作 引入了 ZipLoRAs - 一种将多个独立训练的不同风格或主题 LoRA 模型合并起来的方法，以支持以用户指定的任意风格生成用户指定的任意主题图像。mkshing 实现了此方法的一个开源复现，见 此处，其使用了我们新改进的 脚本。</p>
+<blockquote>
+<p>🤗 宝子们可以戳<strong>阅读原文</strong>  查看文中所有的外部链接哟！</p>
+</blockquote>
+<h4 id="heading"></h4>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>英文原文: <a href="https://hf.co/blog/sdxl_lora_advanced_script">https://hf.co/blog/sdxl_lora_advanced_script</a></p>
+<p>原文作者: Linoy Tsaban，Apolinário</p>
+<p>译者: Matrix Yao (姚伟峰)，英特尔深度学习工程师，工作方向为 transformer-family 模型在各模态数据上的应用及大规模模型的训练推理。</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

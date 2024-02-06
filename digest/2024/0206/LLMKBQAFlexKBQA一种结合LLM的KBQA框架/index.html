@@ -1,0 +1,824 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>【LLM&amp;KBQA】FlexKBQA：一种结合LLM的KBQA框架 作者： AINLP 来源： AINLP 前言 大语言模型（LLMs）在知识库问答（KBQA）领域的应用主要集中在包括但不限于以下几个方面： 1.直接生成答案 ：一些方法直接利用LLMs生成答案，而不是生成中间的程序（如SPARQL查询）。这种方法通常依赖于模型的上下文学  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">【LLM&amp;KBQA】FlexKBQA：一种结合LLM的KBQA框架</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              February 6, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGBmkdJKCkicgFU1WhzfsmiakqUs7kRiaLIrLWr0ExGWK6IrVPiaUamD34Gia89XZaPWvoPpyIW8AvwGoXA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/wq6fodgdmsq8vpVppdtXKg">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<h4 id="前言">前言</h4>
+<p>大语言模型（LLMs）在知识库问答（KBQA）领域的应用主要集中在包括但不限于以下几个方面：</p>
+<p>1.<strong>直接生成答案</strong> ：一些方法直接利用LLMs生成答案，而不是生成中间的程序（如SPARQL查询）。这种方法通常依赖于模型的上下文学习能力，通过提供少量的示例（in-context learning）来引导模型理解问题并生成答案。</p>
+<p>2.<strong>程序生成</strong> ：在某些情况下，LLMs被用来直接生成执行查询的程序，例如<strong>SPARQL查询</strong> 。这种方法需要模型理解问题的结构，并能够将自然语言问题转换为有效的查询语言。</p>
+<p>3.<strong>语义解析</strong> ：LLMs也被用于将自然语言问题映射到结构化的查询表示，如SPARQL。这种方法通常涉及将问题分解为实体和关系，然后构造查询以从知识库中检索答案。</p>
+<p>4.<strong>模型微调</strong> ：在某些情况下，LLMs会在特定的KBQA任务上进行微调，以提高其在特定领域或数据集上的性能。</p>
+<p>这些方法通常面临一些挑战，如上下文窗口大小的限制、推理成本高、模型部署困难以及在处理特定领域知识库时的准确性问题。本文介绍的方法：<strong>FlexKBQA</strong> ，通过结合LLMs的生成能力和轻量级模型的推理效率，提供更灵活、高效且可扩展的KBQA解决方案。</p>
+<h4 id="方法">方法</h4>
+<h4 id="1automatic-program-sampling-">1.<strong>Automatic Program Sampling</strong> ：</h4>
+<p>FlexKBQA框架中的一个关键组件，负责从知识库（KB）中自动生成多样化的程序（如SPARQL查询），这些程序随后可以被转换为自然语言问题。这个过程分为两个主要步骤：模板收集（Template Collection）和逐步Grounding（Step-wise Grounding）：</p>
+<p><em><strong>模板收集（Template Collection）</strong> ：首先，从知识库中收集结构化查询（如</em><em>SPARQL</em>* ）的模板，这些模板包含了变量（例如，ent0, rel0, ent1），用于表示实体和关系。这些模板的设计旨在捕捉不同类型问题的基本逻辑。例如，一个SPARQL查询模板可能看起来像这样： <br>
+SELECT ( ?x0 AS ?value ) WHERE<br>
+{ ?x0 :type.object.type ?ent1 .<br>
+VALUES ?x1 { ?ent0 }<br>
+?x0 ?rel0 ?x1 .<br>
+FILTER ( ?x0 ! = ?x1 )<br>
+}</p>
+<p>在这个例子中，?type
+是一个占位符，用于在后续步骤中填充具体的实体和关系。模板的多样性对于生成覆盖用户可能遇到的各种问题类型至关重要。</p>
+<p>*<strong>逐步Grounding（Step-wise Grounding）</strong> ：在收集了多样化的模板之后，下一步是将模板中的变量逐步替换为具体的实体和关系值。这个过程称为“<strong>Step-wise Grounding</strong> ”，通过迭代地确定模板中变量的值，将这些模板转换为可执行的程序。这个过程通过直接将模板中的变量视为查询对象，利用SPARQL的查询机制来实现。例如，对于上述SPARQL模板，可能的接地顺序是首先确定ent0
+，然后是rel0
+，最后是ent1
+。一旦这些变量被赋予了具体的值，就可以将它们填充到模板中，形成一个可执行的程序。 <br>
+SELECT ?rel0 ?ent0 ?ent1 WHERE<br>
+{ ?x0 :type.object.type ?ent1 .<br>
+VALUES ?x1 { ?ent0 }<br>
+?x0 ?rel0 ?x1 .<br>
+FILTER ( ?x0 ! = ?x1 ) }</p>
+<p>逐步接地的目的是有效地缩小搜索空间，同时保持生成程序的多样性。这个过程可以通过自动化算法实现，例如随机采样或基于某些策略的采样。在实际应用中，人们可以根据特定的业务场景自定义和设计自己的模板。</p>
+<p><strong>小结</strong> ：通过这两个步骤，能够生成大量的有效程序，这些程序随后可以被用于生成自然语言问题，为后续的模型训练提供数据支持。这种方法有助于减轻手动标注数据的负担，特别是在数据稀缺的情况下。</p>
+<h4 id="2低资源程序翻译low-resource-program-translation-">2.<strong>低资源程序翻译（Low-Resource Program Translation）</strong> ：</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGBmkdJKCkicgFU1WhzfsmiakqibIRDMaibFYH0b6xq1pG1g5Idia4ROH0qjVAzdWxxqwoDBMmaZ1rEVhDw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<ul>
+<li>
+<p>传统的（a）LLM直接在自然文本上进行训练，缺乏对程序的训练。该文认为将程序转换为自然语言更加高效，特别是资源有限的情况下。</p>
+</li>
+<li>
+<p>使用大语言模型（LLMs）将上述生成的程序（S-expressions或SPARQL查询）转换为自然语言问题。这个过程涉及到构建一个提示（prompt），其中包括一个指令（Inst）来指导模型将程序翻译成问题，以及一些示例程序和问题对（）作为示范。这个翻译过程可以表示为：</p>
+</li>
+</ul>
+<p>下面给出了GrailQA、WebQSP和KQA Pro数据集的prompt，设计了不同的prompt，这些prompt直接从数据集中的问题和答案对构建。这些prompt帮助模型理解如何将结构化查询转换为自然语言，同时保持问题的准确性和流畅性。</p>
+<p>prompt参考：</p>
+<p>Listing 1. Example Prompt for GrailQA <br>
+### Convert the s-expressions to natural language questions.<br>
+# s-expression:(AND medicine.routed_drug (JOIN medicine.routed_drug.<br>
+marketed_formulations Oxybutynin chloride 5 extended release film coated tablet))<br>
+# question:oxybutynin chloride 5 extended release film coated tablet is the<br>
+ingredients of what routed drug?<br>
+# s-expression:(ARGMAX food.food food.food.energy)<br>
+# question:when it comes to the food that has the most energy per 100g what is the<br>
+name of it?<br>
+# s-expression:(AND music.genre (JOIN (R music.genre.parent_genre) (JOIN music.genre.<br>
+albums confessions tour)))<br>
+# question:the albums confessions tour is part of what parent genre of a musical genre<br>
+?<br>
+# s-expression:(AND architecture.architect (JOIN architecture.architect.<br>
+architectural_style (JOIN (R architecture.architect.architectural_style) Josef<br>
+Fanta)))<br>
+# question:which architect has a similar architectural style to josef fanta?<br>
+# s-expression:(AND architecture.building (lt architecture.building.floors 9ˆˆhttp://<br>
+<a href="https://www.w3.org/2001/XMLSchema#integer">www.w3.org/2001/XMLSchema#integer</a>))<br>
+# question:which building has less than 9 floors?<br>
+# s-expression:(AND comic_books.comic_book_series (JOIN (R comic_books.<br>
+comic_book_genre.comic_book_series_in_this_genre) (JOIN (R comic_books.<br>
+comic_book_story.genre) Case of the Namesake Murders)))<br>
+# question:case of the namesake murders is the same genre as what comic book series?<br>
+# s-expression:(AND film.director (JOIN (R media_common.quotation.author) It is an<br>
+open question whether any behavior based on fear of eternal punishment can be<br>
+regarded as ethical or should be regarded as merely cowardly.))<br>
+# question:what is the name of the author who wrote it is an open question whether any<br>
+behavior based on fear of eternal punishment can be regarded as ethical or should<br>
+be regarded as merely cowardly.?<br>
+# s-expression:(AND meteorology.beaufort_wind_force (ge meteorology.<br>
+beaufort_wind_force.wave_height 7.0ˆˆhttp://www.w3.org/2001/XMLSchema#float))<br>
+# question:for waves higher than 7.0 what is the beaufort window force?<br>
+# s-expression:(AND book.short_story (JOIN book.short_story.characters (JOIN book.<br>
+book_character.appears_in_stories Doing Clarence a Bit of Good)))<br>
+# question:what short story has a character who also is in doing clarence a bit of<br>
+good?<br>
+# s-expression:(AND education.school_category (AND (JOIN (R education.<br>
+educational_institution.school_type) Chiang Kai Shek College) (JOIN education.<br>
+school_category.schools_of_this_kind Sacred Heart High School (Roseville, Michigan<br>
+))))<br>
+# question:chiang kai shek college and sacred heart high school (roseville, michigan)<br>
+are in what category of school?<br>
+# s-expression:(ARGMIN food.bottled_water food.bottled_water.nitrate_content)<br>
+# question:the bottled water that has the least amount of nitrates?<br>
+&hellip;&hellip;<br>
+# s-expression:</p>
+<p>Listing 2. Example Prompt for WebQSP <br>
+### Convert the s-expressions to natural language questions.<br>
+# s-expression:(JOIN (R location.location.containedby) Auburn University)<br>
+# question:where is university of auburn?<br>
+# s-expression:(JOIN (R government.political_party_tenure.politician) (JOIN (R<br>
+government.political_party.politicians_in_this_party) New Democratic Party))<br>
+# question:who founded the new democratic party?<br>
+# s-expression:(ARGMAX (JOIN (R location.location.contains) China) topic_server.<br>
+population_number)<br>
+# question:where do most chinese live?<br>
+# s-expression:(JOIN (R film.performance.actor) (AND (JOIN film.performance.character<br>
+Dorothy Gale) (JOIN (R film.film.starring) The Wizard of Oz)))<br>
+# question:who played dorothy in the film wizard of oz?<br>
+# s-expression:(AND (JOIN common.topic.notable_types College/University) (JOIN (R<br>
+education.education.institution) (JOIN (R people.person.education) Jerry Rice)))<br>
+# question:what college did jerry rice attend?<br>
+# s-expression:(AND (JOIN common.topic.notable_types City/Town/Village) (JOIN (R<br>
+location.location.contains) Oakland County))<br>
+# question:what cities are in oakland county michigan?<br>
+# s-expression:(JOIN (R people.marriage.spouse) (AND (JOIN people.marriage.time_macro<br>
+2015ˆˆhttp://www.w3.org/2001/XMLSchema#date) (AND (JOIN people.marriage.<br>
+type_of_union Marriage) (JOIN (R people.person.spouse_s) Jane Krakowski))))<br>
+# question:who is married to jane krakowski?<br>
+# s-expression:(AND (JOIN people.person.gender Female) (JOIN (R people.marriage.spouse<br>
+) (ARGMAX (JOIN (R people.person.spouse_s) Robert Downey Jr.) people.marriage.from<br>
+)))<br>
+# question:who is robert downey jr wife?<br>
+# s-expression:(JOIN (R location.religion_percentage.religion) (ARGMAX (JOIN (R<br>
+location.statistical_region.religions) United States of America) location.<br>
+religion_percentage.percentage))<br>
+# question:what is the most practiced religion in the united states?<br>
+# s-expression:(ARGMAX (AND (JOIN sports.sports_championship_event.champion Dallas<br>
+Cowboys) (JOIN (R sports.sports_team.championships) Dallas Cowboys)) time.event.<br>
+end_date)<br>
+# question:when was the last dallas cowboys super bowl win?<br>
+# s-expression:(ARGMAX (JOIN (R film.performance.film) (JOIN (R film.actor.film)<br>
+Brittany Murphy)) film.film.initial_release_date)<br>
+# question:what is the last movie brittany murphy made?<br>
+# s-expression:(AND (JOIN book.written_work.subjects Evolution) (AND (JOIN common.<br>
+topic.notable_types Book) (JOIN (R book.author.works_written) Charles Darwin)))<br>
+# question:what book did charles darwin write on evolution?<br>
+&hellip;&hellip;<br>
+# s-expression:</p>
+<p>Listing 3. Example Prompt for KQA Pro <br>
+### Convert the sparqls to natural language questions.<br>
+# sparql:SELECT DISTINCT ?e WHERE { ?e <a href="pred:instance_of">pred:instance_of</a> ?c . ?c <a href="pred:name">pred:name</a> &ldquo;town&rdquo; .<br>
+?e <TOID> ?pv . ?pv <a href="pred:value">pred:value</a> &ldquo;4000000074573917&rdquo; . ?e &lt;OS_grid_reference&gt; ?<br>
+pv_1 . ?pv_1 <a href="pred:value">pred:value</a> &ldquo;SP8778&rdquo; . }<br>
+# question:Which town has a TOID of 4000000074573917 and has an OS grid reference of<br>
+SP8778?<br>
+# sparql:SELECT DISTINCT ?pv WHERE { ?e <a href="pred:instance_of">pred:instance_of</a> ?c . ?c <a href="pred:name">pred:name</a> &ldquo;human&rdquo;<br>
+. ?e <ISNI> ?pv_1 . ?pv_1 <a href="pred:value">pred:value</a> &ldquo;0000 0001 2136 4821&rdquo; . ?e &lt;date_of_birth&gt;<br>
+?pv . }<br>
+# question:When was the person with ISNI 0000 0001 2136 4821 born?<br>
+# sparql:ASK { ?e <a href="pred:name">pred:name</a> &ldquo;Eve Myles&rdquo; . ?e &lt;official_website&gt; ?pv . ?pv &lt;pred:<br>
+value&gt; &ldquo;<a href="http://www.cheechandchong.com">http://www.cheechandchong.com</a>&rdquo; . }<br>
+# question:Is <a href="http://www.cheechandchong.com">http://www.cheechandchong.com</a> Eve Myles’s official website?<br>
+# sparql:SELECT DISTINCT ?p WHERE { ?e_1 <a href="pred:name">pred:name</a> &ldquo;alternative rock&rdquo; . ?e_2 &lt;pred:<br>
+name&gt; &ldquo;Greg Graffin&rdquo; . ?e_1 ?p ?e_2 . }<br>
+# question:What has alternative rock in common with Greg Graffin?<br>
+# sparql:ASK { ?e <a href="pred:instance_of">pred:instance_of</a> ?c . ?c <a href="pred:name">pred:name</a> &ldquo;human&rdquo; . ?e <ISNI> ?pv_1 . ?<br>
+pv_1 <a href="pred:value">pred:value</a> &ldquo;0000 0001 0893 552X&rdquo; . ?e &lt;name_in_native_language&gt; ?pv . ?pv &lt;<br>
+pred:value&gt; &ldquo;Elias Koteas&rdquo; . }<br>
+# question:Is Elias Koteas the name in native language of the person with ISNI 0000<br>
+0001 0893 552X?<br>
+# sparql:SELECT DISTINCT ?qpv WHERE { ?e_1 <a href="pred:name">pred:name</a> &ldquo;Gregg Allman&rdquo; . ?e_2 &lt;pred:<br>
+name&gt; &ldquo;Cher&rdquo; . ?e_2 &lt;birth_name&gt; ?pv . ?pv <a href="pred:value">pred:value</a> &ldquo;Cherilyn Sarkisian&rdquo; . ?<br>
+e_1 <spouse> ?e_2 . [ <a href="pred:fact_h">pred:fact_h</a> ?e_1 ; <a href="pred:fact_r">pred:fact_r</a> <spouse> ; <a href="pred:fact_t">pred:fact_t</a><br>
+?e_2 ] &lt;end_time&gt; ?qpv . }<br>
+# question:When did Gregg Allman stop being the spouse of Cher (the one whose birth<br>
+name is Cherilyn Sarkisian)?<br>
+# sparql:SELECT (COUNT(DISTINCT ?e) AS ?count) WHERE { ?e <a href="pred:instance_of">pred:instance_of</a> ?c . ?c &lt;<br>
+pred:name&gt; &ldquo;town&rdquo; . ?e &lt;postal_code&gt; ?pv . ?pv <a href="pred:value">pred:value</a> &ldquo;VLT&rdquo; . ?e <area> ?<br>
+pv_1 . ?pv_1 <a href="pred:unit">pred:unit</a> &ldquo;square mile&rdquo; . ?pv_1 <a href="pred:value">pred:value</a> ?v . FILTER ( ?v &lt;<br>
+&ldquo;530&quot;ˆˆxsd:double ) . }<br>
+# question:How many towns’ postal code is VLT and area is less than 530 square miles?<br>
+# sparql:SELECT (COUNT(DISTINCT ?e) AS ?count) WHERE { ?e <a href="pred:instance_of">pred:instance_of</a> ?c . ?c &lt;<br>
+pred:name&gt; &ldquo;sovereign state&rdquo; . ?e <population> ?pv . ?pv <a href="pred:unit">pred:unit</a> &ldquo;1&rdquo; . ?pv &lt;<br>
+pred:value&gt; ?v . FILTER ( ?v != &ldquo;7600000000&quot;ˆˆxsd:double ) . }<br>
+# question:What number of sovereign states have a population not equal to 7600000000?<br>
+# sparql:SELECT DISTINCT ?pv WHERE { ?e <a href="pred:name">pred:name</a> &ldquo;63rd Golden Globe Awards&rdquo; . ?e &lt;<br>
+edition_number&gt; ?pv . }<br>
+# question:What is the edition number of the 63rd Golden Globe Awards?<br>
+# sparql:ASK { ?e <a href="pred:instance_of">pred:instance_of</a> ?c . ?c <a href="pred:name">pred:name</a> &ldquo;film&rdquo; . ?e &lt;official_website<br>
+&gt; ?pv_1 . ?pv_1 <a href="pred:value">pred:value</a> &ldquo;<a href="http://www.lovelybones.com">http://www.lovelybones.com</a>&rdquo; . ?e <duration> ?pv . ?<br>
+pv <a href="pred:unit">pred:unit</a> &ldquo;minute&rdquo; . ?pv <a href="pred:value">pred:value</a> ?v . FILTER ( ?v &gt; &ldquo;60&quot;ˆˆxsd:double ) .<br>
+}<br>
+# question:Does the film, whose official website is <a href="http://www.lovelybones.com">http://www.lovelybones.com</a>, have a<br>
+duration greater than 60 minutes?<br>
+&hellip;&hellip;<br>
+# sparql:</p>
+<h4 id="3执行引导的自训练execution-guided-self-training-egst-">3.<strong>执行引导的自训练（Execution-Guided Self Training, EGST）</strong> ：</h4>
+<p>这个策略通过迭代过程来提高知识库问答（KBQA）模型的性能，尤其是在数据稀缺的情况下。这个策略的核心思想是利用模型的预测结果来指导模型的自我改进。</p>
+<p>EGST步骤：</p>
+<p>（1）初始化模型</p>
+<p>首先，使用大型语言模型（LLM）生成的合成数据对（程序和对应的自然语言问题）来微调一个轻量级模型（学生模型）。这个合成数据集是通过上述的&quot;Low-Resource Program Translation&quot;方法生成的。</p>
+<p>（2）生成伪标签</p>
+<p>在每次迭代中，使用当前的学生模型（教师模型）来预测未标记的真实用户问题。这些预测的程序（伪标签）是基于模型对问题的理解和知识库中的数据生成的。</p>
+<p>（3）执行引导过滤</p>
+<p>对生成的伪标签进行过滤，以确保它们的质量和准确性。这个过程包括以下几个步骤：</p>
+<p>*<strong>错误过滤（Error Filtering）</strong> ：移除那些执行错误或无法从知识库中检索答案的程序。</p>
+<p>*<strong>语义过滤（Semantic Filtering）</strong> ：使用预训练的句子转换器（如Sentence-BERT）来计算自然语言问题和预测程序中关系之间的语义相似度，过滤掉低相似度的数据对。</p>
+<p>*<strong>内在推理过滤（Inherent Reasoning Filtering）</strong> ：排除那些伪答案与LLM直接推理结果不一致的样本。</p>
+<p>（4）微调学生模型</p>
+<p>使用经过过滤的合成数据和原始的合成数据对来微调学生模型。这个过程允许模型从真实世界的数据中学习，同时保持对合成数据的泛化能力。</p>
+<p>（5）更新教师模型</p>
+<p>将微调后的学生模型作为下一次迭代的教师模型，模型可以在每次迭代中不断改进。</p>
+<p>（6）迭代直至收敛</p>
+<p>重复上述步骤，直到模型的性能不再显著提高，即达到收敛。这个过程允许模型逐渐适应真实用户问题的数据分布，从而提高其在实际应用中的性能。</p>
+<p><strong>小结</strong> ：EGST策略的关键优势在于它能够结合合成数据和真实用户数据，通过迭代过程不断优化模型。这种方法特别适用于那些难以获得大量标注数据的场景，如零样本（Zero-shot）或少量样本（Few-shot）学习。该文通过这种方式，FlexKBQA能够在资源有限的情况下，有效地提升KBQA模型的性能。</p>
+<h4 id="4内在推理增强inherent-reasoning-augmentation-">4.<strong>内在推理增强（Inherent Reasoning Augmentation）</strong> ：</h4>
+<p>在EGST阶段，选择那些答案与LLM生成的答案一致的样本，以减少训练数据中的噪声。此外，当语义解析方法失败时，可以使用LLM的内在推理结果作为最终答案。（主要起到补充语义的作用）</p>
+<h4 id="总结">总结</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGBmkdJKCkicgFU1WhzfsmiakqvrRAGAa37Gic6Z9jjAIrVFJOvU6HZqKiaevCVLR6Ka8fy8KHl2rsgvOA/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGBmkdJKCkicgFU1WhzfsmiakqUs7kRiaLIrLWr0ExGWK6IrVPiaUamD34Gia89XZaPWvoPpyIW8AvwGoXA/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGBmkdJKCkicgFU1WhzfsmiakqX7CVAOVp0uyBERp3yGQ55UENrPwWJCnOgicV8ZdmsiaDMMTDVnYZZoJA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>从上面结果来看还是取得了比较好的结果的，文章中对于数据合成-从知识库中自动化生成<strong>SPARQL查询</strong> （中间结果）比较有意思的。最后在语义解析失败时，使用了LLM进行兜底。</p>
+<h4 id="参考文献">参考文献</h4>
+<p>1.FlexKBQA: A Flexible LLM-Powered Framework for Few-Shot Knowledge Base Question Answering，https://arxiv.org/abs/2308.12060v3</p>
+<p>2.https://github.com/leezythu/FlexKBQA</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)       
+</code></pre>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
