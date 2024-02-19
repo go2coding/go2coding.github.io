@@ -1,0 +1,799 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>图解大模型计算加速系列：FlashAttentionV2，从原理到并行计算 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 ####**【点击】加入大模型技术交流群** 原文：https://mp.weixin.qq.com/s/gMRZV-ZCrFccKPKSkOpxsQ 在V1的讲解中，我们通过详细的图解和公式推导，一  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">图解大模型计算加速系列：FlashAttentionV2，从原理到并行计算</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              February 19, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklAY20XtwxADqUvTs4ibuAp6lTX5cITQzOoAZniaHaZat1mbBQlqOWkibO9A/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/1MV5OcNWs2lwX_GfcQFvoA">吃果冻不吐果冻皮</a></p>
+<p>####**<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群** </a></p>
+<p>原文：https://mp.weixin.qq.com/s/gMRZV-ZCrFccKPKSkOpxsQ</p>
+<p>在<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247486824&amp;idx=1&amp;sn=3016c0506123c23b26c582ccf81d02d2&amp;chksm=fd3be43bca4c6d2de1904c1941da3aba62fe45909146ad51f31f2b0949fabdfd1357fcb8dc90&amp;scene=21#wechat_redirect">V1的讲解</a>中，我们通过详细的图解和公式推导，一起学习了Flash Attention的整体运作流程。如果大家理解了V1的这块内容，就会发现V2的原理其实非常简单：<strong>无非是将V1计算逻辑中的内外循环相互交换，以此减少在shared memory上的读写次数，实现进一步提速。那当你交换了循环位置之后，在cuda层面就可以配套做一些并行计算优化。这就是V2的整体内容。</strong></p>
+<p><strong>总结起来一句话：“交换了循环位置“，虽是短短一句话，却蕴含着深深的人生哲理：只要基座选得好，回回都有迭代点，年年勇破okr！</strong></p>
+<p><strong>回归正题，本文也分两个部分进行讲解：原理与cuda层面的并行计算。</strong></p>
+<p>在阅读本文前，需要先阅读<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247486824&amp;idx=1&amp;sn=3016c0506123c23b26c582ccf81d02d2&amp;chksm=fd3be43bca4c6d2de1904c1941da3aba62fe45909146ad51f31f2b0949fabdfd1357fcb8dc90&amp;scene=21#wechat_redirect">V1的讲解</a>，本文会沿用V1的表达符号及推演思路。</p>
+<h4 id="一flash-attention-v2整体运作流程">一、Flash Attention V2整体运作流程</h4>
+<h4 id="11-v1的运作流程">1.1 V1的运作流程</h4>
+<p>我们先快速回顾一下V1的运作流程：以K，V为外循环，Q为内循环。</p>
+<p>，遍历:</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklALboP61wuEBbicfqicibb7gvIYvPHVBU1OnU8hJwF2RQnRUf9pJEWOZsuA/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>，遍历:</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklAGX2whUpreuMcuPSgsibpylI6pEcyndJOSX9DRmghx5O6ax7QoFKiceZg/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>为了帮助大家更好理解v1中数据块的流转过程，在图中我们画了6块O。但实际上最终只有三块O：。</p>
+<p><strong>以<strong><strong>为例，它可理解成是由</strong></strong>经过某些处理后汇总而来的。</strong> 进一步说，</p>
+<ul>
+<li>
+<p>我们在外循环j = 0时，先遍历一次所有的i，在这个阶段中我们产出，并将它和一些别的重要数据写回HBM中</p>
+</li>
+<li>
+<p>接下来我们进行第二次外循环，即j=1，在这个阶段中我们产出。同时我们把和那些重要的数据从HBM传入shared memory中，然后从shared memory中读取它们，以配合产出最终的</p>
+</li>
+</ul>
+<p>（关于如何得到的细节我们在V1讲解中详细推导过，这里不再赘述）</p>
+<p><strong>在这个过程中，你是不是隐隐觉得有些别扭：</strong></p>
+<ul>
+<li>
+<p>其实都和有关系，那我为什么不以Q为外循环，以KV为内循环做遍历呢？这样我不就能避免往shared memory上读写中间结果，从而一次性把乃至最终的给算出来？</p>
+</li>
+<li>
+<p>同时，softmax这个操作也是在row维度上的，所以我固定Q循环KV的方式，更天然符合softmax的特性。</p>
+</li>
+</ul>
+<h4 id="12-v2的运作流程">1.2 V2的运作流程</h4>
+<p>基于1.1中的思想，我们在V2中将原本的内外循环置换了位置（示意图就不画了，基本可以对比V1示意图想象出来）。我们直接来看V2的伪代码（如果对以下伪代码符号表示或解读有疑惑的朋友，最好先看一下V1的讲解）。</p>
+<h4 id="1v2-fwd">（1）V2 FWD</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklAnGpUpia0Jic4bEvlcxpn8IydNEm631vuSiaqQCK3Ef9xDuwxjyyibhnmZA/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>现在，想象自己固定住了一块Q（i），依此循环K和V的分块（j），在这个想象下我们来解读这份FWD为代码。</p>
+<ul>
+<li>
+<p>第8行，计算分块</p>
+</li>
+<li>
+<p>第9行：</p>
+<ul>
+<li>
+<p>表示截止到当前分块(包含当前分块)为止的rowmax</p>
+</li>
+<li>
+<p>表示使用当前每行最大值计算归一化前的（我们在V1中说过，不带波浪号的P表示(s-rowmax)/rowsum的结果，带波浪号表示(s-rowmax)）</p>
+</li>
+<li>
+<p>表示截止到当前分块（包含当前分块为止）的rowsum</p>
+</li>
+</ul>
+</li>
+<li>
+<p>第10行：表示截止到当前分块(包含当前分块)为止计算出的O值。由第9和第10行知，当我们固定Q循环KV时，我们每个分块都是用当前最新的rowmax和rowsum计算的，同理对应的也是用当前最新的rowmax和rowsum计算的。这样当我们遍历完所有的KV时，得到的就等于最终全局的结果。相关的证明我们在V1讲解中给过，这里不再赘述，只额外提两点：</p>
+<p><em><strong>可能在有些朋友下载的V2论文中，第十行这里O前面的因子项是</strong></em>*，这个公式应该是错误的** （大家动手推一下就可知，初次看到时让我困扰了很久）。在作者个人主页的论文链接中，这个typo已经被修正。</p>
+<ul>
+<li>你可能已发现这个<strong>O的计算中缺少归一化的一项****，这一项其实放到了第12行做统一计算。这也是V2优化的一个点：尽量减少非矩阵的计算，因为在GPU中，非矩阵计算比矩阵计算慢16倍。</strong></li>
+</ul>
+</li>
+</ul>
+<p><strong>比起V1，V2中不用再存每一Q分块对应的<strong><strong>和</strong></strong>了。但是在BWD的过程中，我们仍需要<strong><strong>来做</strong></strong>和****的重计算</strong> ，这样才能用链式求导法则把dQ，dK，dV正常算出来。<strong>V2在这里用了一个很巧妙的方法，它只存一个东西（代码13行，这样又能进一步减少shared memory的读写）</strong> ：，这个等式中小写的m和l可以理解成是全局的rowmax和rowsum。在接下来BWD的讲解中，我们会来看到这一项的妙用。</p>
+<h4 id="2v2-bwd">（2）V2 BWD</h4>
+<p>⚠️⚠️一个建议：如果你在阅读本节中觉得很困惑，一定记得先去看V1的BWD部分，有非常详细的推导介绍。看完再来看本节就很顺畅了。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklAJ7MCTaEgnko3Q55ChBx2Kn0qY1Vs4qK4EXPgibfC4fhsd7XFLeYlAcQ/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>我们观察到，<strong>在V2 BWD中，内外循环的位置又换回来了，即还是KV外循环，Q内循环，这是为什么呢？</strong></p>
+<p>我们知道在BWD的过程中，我们主要是求（为了求它们还需要求中间结果，<strong>我们来总结一下这些梯度都需要沿着哪些方向AllReduce：</strong></p>
+<ul>
+<li>
+<p>：沿着i方向做AllReduce，也就是需要每行的结果加总</p>
+</li>
+<li>
+<p>：沿着i方向做AllReduce，也就是需要每行的结果加总</p>
+</li>
+<li>
+<p>：沿着j方向做AllReduce，也就是需要每列的结果加总</p>
+</li>
+<li>
+<p>：只与当前i,j相关</p>
+</li>
+</ul>
+<p>基于此，如果你还是保持Q外循环，KV外循环不变的话，这种操作其实是固定行，遍历列的，那么在这些梯度中，只有从中受益了，K和V的梯度则进入了别扭的循环（也意味着要往shared memory上写更多的中间结果）；但<strong>如果你采用KV外循环，Q内循环，这样K和V都受益，只有Q独自别扭，因此是一种更好的选择。</strong> （S和P的计算不受循环变动影响）。</p>
+<p>前面说过，在BWD过程中读写我们要用全局的重新计算，计算公式如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBHojcVdibgOlCowj2Le7PWQOjSOicuxEVYxiaiaC2nIMWdBX5C2a5jQaJCxoGNolOXF0lw2xMTV8ybuibA/640?wx_fmt=png&amp;from=appmsg" alt="">但如此一来，我们就要从shared memory上同时读取，似乎有点消耗读写。所以在V2中，我们只存储，然后计算：</p>
+<p><strong>很容易发现这两个计算是等价的，但V2的做法节省了读写量</strong></p>
+<p>好，现在我们就把V2相对于V1在计算原理上的改进介绍完了。接下来我们总结一下V2相对于V1所有的改进点。</p>
+<h4 id="二v2相对v1的改进点">二、V2相对V1的改进点</h4>
+<p>之所以把这块内容放到“V2整体流程介绍”之后，是想让大家在先理解V2是怎么做的基础上，更好体会V2的优点。</p>
+<p>总体来说，<strong>V2从以下三个方面做了改进：</strong></p>
+<p>*<strong>置换内外循环位置，同时减少非矩阵的计算量。</strong> （这两点我们在第一部分中已给出详细说明）</p>
+<p>*<strong>优化Attention部分thread blocks的并行化计算</strong> ，新增seq_len维度的并行，使SM的利用率尽量打满。这其实也是内外循环置换这个总体思想配套的改进措施</p>
+<p>*<strong>优化thread blocks内部warp级别的工作模式，</strong> 尽量减少warp间的通讯和读取shared memory的次数。</p>
+<p>第二和第三点都可以归结为是cuda gemm层面的优化，我们马上来细看这两点。</p>
+<h4 id="三v2中的thread-blocks排布">三、V2中的thread blocks排布</h4>
+<pre><code>// gridDim in V1  
+// params.b = batch_size, params.h = num_heads  
+dim3 grid(params.b, params.h);  
+  
+// gridDim in V2  
+const int num_m_block = (params.seqlen_q + Kernel_traits::kBlockM - 1) / Kernel_traits::kBlockM;  
+dim3 grid(num_m_block, params.b, params.h);  
+</code></pre>
+<p><strong>这段代码整合自flash attention github下的cutlass实现，为了方便讲解做了一点改写。</strong></p>
+<p>这段代码告诉我们：</p>
+<p>*<strong>在V1中，我们是按batch_size和num_heads来划分block的</strong> ，也就是说一共有batch_size * num_heads
+个block，每个block负责计算O矩阵的一部分</p>
+<p>*<strong>在V2中，我们是按batch_size，num_heads和num_m_block来划分block的，其中num_m_block可理解成是沿着Q矩阵行方向做的切分。</strong> 例如Q矩阵行方向长度为seqlen_q（其实就是我们熟悉的输入序列长度seq_len，也就是图例中的N），我们将其划分成num_m_block份，每份长度为kBlockM（也就是每份维护kBlockM个token）。这样就一共有batch_size * num_heads * num_m_block个block
+，每个block负责计算矩阵O的一部分。</p>
+<p><strong>为什么相比于V1，V2在划分thread block时，要新增Q的seq_len维度上的划分呢？</strong></p>
+<p><strong>先说结论，这样做的目的是尽量让SM打满。</strong> 我们知道block是会被发去SM上执行的。以1块A100 GPU为例，它有108个SM，如果此时我们的block数量比较大（例如论文中所说&gt;=80时），我们就认为GPU的计算资源得到了很好的利用。现在回到我们的输入数据上来，当batch_size和num_heads都比较大时，block也比较多，此时SM利用率比较高。但是如果我们的数据seq_len比较长，此时往往对应着较小的batch_size和num_heads，这是就会有SM在空转了。而为了解决这个问题，我们就可以引入在Q的seq_len上的划分。</p>
+<p><strong>看到这里你可能还是有点懵，没关系，我们通过图解的方式，来一起看看V1和V2上的thread block到底长什么样。</strong></p>
+<h4 id="31-v1-thread-block">3.1 V1 thread block</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklAY20XtwxADqUvTs4ibuAp6lTX5cITQzOoAZniaHaZat1mbBQlqOWkibO9A/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>假设batch_size = 1，num_heads = 2，我们用不同的颜色来表示不同的head。</p>
+<p><strong>我们知道在Multihead Attention中，各个head是可以独立进行计算的，在计算完毕后将结果拼接起来即可。所以我们将1个head划分给1个block，这样就能实现block间的并行计算，如此每个block只要在计算完毕后把结果写入自己所维护的O的对应位置即可。</strong></p>
+<p>而每个block内，就能执行V1中的&quot;KV外循环，Q内循环”的过程了，这个过程是由block的再下级warp level层面进行组织，thread实行计算的。这块我们放在第四部分中讲解。</p>
+<h4 id="32-v2-thread-block">3.2 V2 thread block</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklACfwJ27jnmSKuiaYLzovSDsy2uT4InlTXNahj8shTXUyej8SH0phHONw/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>现在我们继续假设batch_size = 1，num_heads = 2。</p>
+<p>与V1不同的是，我们在Q的seq_len维度上也做了切分，将其分成四份，即num_m_block = 4。所以现在我们共有1<em>2</em>4 = 8个block在跑。<strong>这些block之间的运算也是独立的，</strong> 因为：</p>
+<p>*<strong>head的计算是独立的，所以红色block和蓝色block互不干扰</strong></p>
+<p>*<strong>采用Q做外循环，KV做内循环时，行与行之间的block是独立的，因此不同行的block互相不干扰。</strong></p>
+<p>每个block从Q上加载对应位置的切块，同时从KV上加载head0的切块，计算出自己所维护的那部分O，然后写入O的对应位置。</p>
+<p><strong>在这里你可能想问，为什么只对Q的seq_len做了切分，而不对KV的seq_len做切分呢？</strong></p>
+<p>在V2的cutlass实现中，确实也提供了对KV的seq_len做切分的方法。但除非你认为SM真得打不满，否则尽量不要在KV维度上做切分，<strong>因为如此一来，不同的block之间是没法独立计算的</strong> （比如对于O的某一行，它的各个部分来自不同的block，为了得到全局的softmax结果，这些block的结果还需要汇总做一次计算）。</p>
+<h4 id="33-seq-parallel不是v2特有">3.3 seq parallel不是V2特有</h4>
+<p>如果你看过V1的代码，你会发现，<strong>其实在V1后期的版本中，也出现了seq维度的并行：</strong></p>
+<pre><code>// V1 seq parallel: csrc/flash_attn/src/fmha_fwd_launch_template.h  
+dim3 grid(launch_params.params.b, launch_params.params.h, launch_params.params.num_splits);  
+  
+// nums_splits计算方法  
+// Find the number of splits that maximizes the occupancy. For example, if we have  
+// batch * n_heads = 48 and we have 108 SMs, having 2 splits (efficiency = 0.89) is  
+// better than having 3 splits (efficiency = 0.67). However, we also don't want too many  
+// splits as that would incur more HBM reads/writes.  
+// So we find the best efficiency, then find the smallest number of splits that gets 95%  
+// of the best efficiency.  
+// [2022-11-25] TD: Mark this as &quot;inline&quot; otherwise we get &quot;multiple definition&quot; error.  
+inline int num_splits_heuristic_fwd(int batch_nheads, int num_SMs, int ctas_per_sm, int max_splits) {  
+    float max_efficiency = 0.f;  
+    std::vector&lt;float&gt; efficiency;  
+    efficiency.reserve(max_splits);  
+    for (int num_splits = 1; num_splits &lt;= max_splits; num_splits++) {  
+        float n_waves = float(batch_nheads * num_splits) / (num_SMs * ctas_per_sm);  
+        float eff = n_waves / ceil(n_waves);  
+        // printf(&quot;num_splits = %d, eff = %f\n&quot;, num_splits, eff);  
+        if (eff &gt; max_efficiency) { max_efficiency = eff; }  
+        efficiency.push_back(eff);  
+    }  
+    for (int num_splits = 1; num_splits &lt;= max_splits; num_splits++) {  
+        if (efficiency[num_splits - 1] &gt; 0.95 * max_efficiency) {  
+            // printf(&quot;num_splits chosen = %d\n&quot;, num_splits);  
+            return num_splits;  
+        }  
+    }  
+    return 1;  
+}  
+  
+....  
+// 可以发现num_splits也是由Q的seq_len维度切分来的  
+launch_params.params.num_splits = num_splits_heuristic_fwd(  
+                launch_params.params.b * launch_params.params.h, dprops-&gt;multiProcessorCount,  
+                ctas_per_sm,  
+                /*max_splits=*/std::min(30, (launch_params.params.seqlen_q + M - 1 / M))  
+            );  
+</code></pre>
+<p>上图代码中的num_splits
+也是在由Q的seq_len维度切分来的。通过这段代码，我猜想作者在V1后期引入seq_len维度切分的原因是：<strong>V1也需要解决seq_len过长时，batch_size和num_heads较小而造成SM打不满的问题。</strong></p>
+<p>num_splits_heuristic_fwd
+这个函数的作用概括起来就是，我先提供一连串num_splits值的备选，然后由这个函数计算出每个备选值下SM的利用率。计算完之后，我先找到最高的利用率，然后再找出满足利用率&gt;=0.95 * max(利用率)的那个最小的num_split值，作为最终的选择。</p>
+<p><strong>细心的你此时可能已经观察到了，虽然V1也引进过seq parallel，但是它的grid组织形式时</strong>**(batch_size, num_heads, num_m_blocks)
+，但V2的组织形式是(num_m_blocks, batch_size, num_heads)
+，这种顺序调换的意义是什么呢？**</p>
+<p>直接说结论，这样的调换是为了提升L2 cache hit rate。大家可以看下3.2中的图（虽然block实际执行时不一定按照图中的序号），对于同一列的block，它们读的是KV的相同部分，因此同一列block在读取数据时，有很大概率可以直接从L2 cache上读到自己要的数据（别的block之前取过的）。</p>
+<h4 id="34-fwd和bwd过程中的thread-block划分">3.4 FWD和BWD过程中的thread block划分</h4>
+<p><strong>在3.1～3.3中，我们其实给出的是FWD过程中thread block的划分方式，我们知道V2中FWD和BWD的内外循环不一致，所以对应来说，thread block的划分也会有所不同</strong> ，我们详细来看：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklAkZVSyZ9TVuDJzVwcNJbiaTC7rLoRlHc2nmaUH4byrtXrZ1a4NAic0l1g/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>在图中：</p>
+<p>*<strong>worker表示thread block，不同的thread block用不同颜色表示</strong></p>
+<p>*<strong>整个大方框表示输出矩阵O</strong></p>
+<p><strong>我们先看左图，它表示FWD下thread block的结构。</strong> 每一行都有一个worker，它表示O矩阵的每一行都是由一个thread block计算出来的（假设num_heads = 1），这就对应到我们3.1～3.3中说的划分方式。那么白色的部分表示什么呢？我们知道如果采用的是casual attention，那么有一部分是会被mask掉的，所以这里用白色来表示。但这不意味着thread block不需要加载白色部分数据对应的KV块，只是说在计算的过程中它们会因被mask掉而免于计算（论文中的casual mask一节有提过）。</p>
+<p><strong>我们再看右图，它表示BWD下thread block的结构</strong> ，每一列对应一个worker，这是因为BWD中我们是KV做外循环，Q做内循环，这种情况下dK, dV都是按行累加的，而dQ是按列累加的，少数服从多数，因此这里thread_block是按的列划分的。</p>
+<h4 id="四warp级别并行">四、Warp级别并行</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklAoD4V4Xb97RF5ibu2Lk0XJ8icsX3HEPk02F6gmtmNG6ibL84fbC8I3DgZQ/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>讲完了thread block，我们就可以再下一级，看到warp level级别的并行了。左图表示V1，右图表示V2。不管是V1还是V2，<strong>在Ampere架构下，每个block内进一步被划分为4个warp，在Hopper架构下则是8个warp。</strong></p>
+<p><strong>在左图（V1）中，每个warp都从shared memory上读取相同的Q块以及自己所负责计算的KV块。</strong> 在V1中，每个warp只是计算出了列方向上的结果，这些列方向上的结果必须汇总起来，才能得到最终O矩阵行方向上的对应结果。所以每个warp需要把自己算出来的中间结果写到shared memory上，再由一个warp（例如warp1）进行统一的整合。<strong>所以各个warp间需要通讯、需要写中间结果，这就影响了计算效率。</strong></p>
+<p><strong>在左图（V2）中，每个warp都从shared memory上读取相同的KV块以及自己所负责计算的Q块。</strong> 在V2中，行方向上的计算是完全独立的，即每个warp把自己计算出的结果写到O的对应位置即可，warp间不需要再做通讯，通过这种方式提升了计算效率。<strong>不过这种warp并行方式在V2的BWD过程中就有缺陷了：由于bwd中dK和dV是在行方向上的AllReduce，所以这种切分方式会导致warp间需要通讯。</strong></p>
+<p>针对V2 warp切分影响BWD这点，作者在论文中依然给出了“BWD过程相比V1也有提升”的结论，针对这点，我在github issue上找到了一条作者的回复（在“安装报错”组成的issue海洋里捞出的宝贵一条）：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkPp7JUQc9xM3ibds8gULGklArXv48aCxt2eCVWXLbL9hibvqMjsXxXYInDxF3zIfNaiaobEUsQqAiaX9A/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>最关键的可能是第1和第2点，关于第1点，我想作者应该是说，之前需要反复读取KV的数据，现在只用反复读取Q的数据，因此从一定程度上节省了shared memory的读写次数。第2点理解起来有点复杂，个人觉得是将warp处理的tile划分得更像方形。这样做的好处是在做casual mask的时候可以方便写代码大块丢掉被mask掉的tile（见论文casual masking部分），进一步加速计算。第3点是关于一些底层的优化，就不提了。</p>
+<p>好！关于V2我们就介绍到这了，写这篇文章的时候，我刚粗过了一遍triton的flash attention实现，以及扫了一下cutlass实现的入口。如果后续有时间，我会出一些源码解读的文章（从cuda gemm -&gt; triton gemm -&gt; triton flash attention，看，又给自己挖了一个坑）。如果出不了，那一定不是我鸽人，那肯定是我不会（没错，就是这样）。</p>
+<p><strong>历史文章：</strong> <a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487067&amp;idx=2&amp;sn=33594e6a82cf79a7580272c064635d75&amp;chksm=fd3be708ca4c6e1ece0e1f6cc22bfd286bf3e9073350b91369b1d0e7fb52b50fac8113288e43&amp;scene=21#wechat_redirect">2024年1月大模型文章集锦</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
