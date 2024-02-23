@@ -1,0 +1,765 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>​探索Sora背后秘密：结合OpenAISora技术报告来看其能力和技术点 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 【点击】加入大模型技术交流群 最近被Sora刷屏，今天结合OpenAI Sora的技术报告Video generation models as world simulators来看下Sora具备哪些能力，以及这些能力是怎么来的。功能上除了文生图，还  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">​探索Sora背后秘密：结合OpenAISora技术报告来看其能力和技术点</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              February 23, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALothkfQn4OIXVdFTYiccXEJNseQfRISFvWx8EEczia1QXgBTuYOGJcgwng/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/nmt-QORQGB3_-S2aXZyx6Q">吃果冻不吐果冻皮</a></p>
+<h4 id="heading"></h4>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群</a></p>
+<p>最近被Sora刷屏，今天结合OpenAI Sora的技术报告Video generation models as world simulators来看下Sora具备哪些能力，以及这些能力是怎么来的。功能上除了文生图，还支持以图片、视频作为prompt，极大拓展使用场景。技术上，利用spacetime patches，统一了时空分割语言，为后续模型训练以及使用场景的拓展打下基础。数据侧在准备高质量的caption数据做了专门的优化。另外模型基础架构采用Diffusion Transformer，通过Scalling，显著提升生成质量。</p>
+<p><strong>技术：</strong> <strong>将视频信息处理成spacetime patches，统一了时空分割的语言，方便支持不同尺寸、时间、分辨率的数据</strong> 。使用Diffusion Transformer作为主干网络进行建模，方便对模型规模进行扩展。训练Video compression network降低视觉数据维度，在压缩潜在空间训练生成模型和解码模型。通过Scalling显著提升生成质量。</p>
+<p><strong>数据工程：</strong>  通过专门训练一个高度描述性的标题模型，或利用 GPT4 将简短的用户提示转化成更长、更详细的标题，来获取高质量的每一帧图像的标题；</p>
+<p><strong>能力：</strong>  可以根据文本、图片或视频创建视频，也可以做其他视频编辑工具，如根据静态图片生成动态图片、在时间上向前或向后拓展视频、直接通过 prompt 提示词修改视频背景、插针融合两个风格完全不同的视频等；</p>
+<p><strong>涌现3D世界建模能力：</strong>  能够模拟物理世界中的人、动物和环境的变化，包括 3D 一致性、有效地模拟物体短程和远程依赖关系、模拟简单的动作来影响世界的状态、模拟数字世界。</p>
+<p>ps：为了防止个人理解出现问题，技术报告中英文原文和翻译都有保留，视频只截图处理，原始视频请看原报告。</p>
+<h4 id="一概述">一、概述</h4>
+<h4 id="1-motivation">1 Motivation</h4>
+<ul>
+<li>
+<p>之前视频生成技术方案主要包括循环网络[^1][^2][^3]、生成对抗网络[^4][^5][^6][^7]、和扩散模型[^8][^9]，这些工作主要关注一小部分类别的数据，并且只能生成一些时间长度较短或者时间固定的视频。</p>
+</li>
+<li>
+<p>能够生成不同时长、长宽比和分辨率的视频和图像，长度达一分钟的高清视频的方案还没出现。</p>
+</li>
+</ul>
+<h4 id="2-method">2 Method</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoiaibtoic8bK0kVQGM6SP4kxQIq0Vv472qyaefblMhkPxrk3ylKZ496YGA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="21-turning-visual-data-into-patches">2.1 Turning visual data into patches</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALooK2b0QRahvPq4tU8kxZfyvVWBicibPN5CgvVCGC361fZON0xtuPJotibg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>We take inspiration from large language models which acquire generalist capabilities by training on internet-scale data.13,14 The success of the LLM paradigm is enabled in part by the use of tokens that elegantly unify diverse modalities of text—code, math and various natural languages. In this work, we consider how generative models of visual data can inherit such benefits. Whereas LLMs have text tokens, Sora has visual <em>patches</em>. Patches have previously been shown to be an effective representation for models of visual data.15,16,17,18 We find that patches are a highly-scalable and effective representation for training generative models on diverse types of videos and images.</p>
+<p>我们从大型语言模型中获得灵感，这些模型通过在互联网规模的数据上进行训练来获得通用能力。LLM 范式的成功在一定程度上是由于使用了令牌Token，这些令牌Token优雅地统一了文本的多种模式——代码、数学和各种自然语言。在这项工作中，我们考虑视觉数据的生成模型如何继承这些好处。虽然 LLM 具有文本令牌Token，但 Sora 具有视觉补丁Patches。之前已经表明，补丁Patches是视觉数据模型的有效表示。我们发现补丁Patches是一种高度可扩展且有效的表示形式，可以对不同类型的视频和图像进行生成模型的训练。</p>
+<h4 id="22-video-compression-network">2.2 Video compression network</h4>
+<p>We train a network that reduces the dimensionality of visual data.20 This network takes raw video as input and outputs a latent representation that is compressed both temporally and spatially. Sora is trained on and subsequently generates videos within this compressed latent space. We also train a corresponding decoder model that maps generated latents back to pixel space.</p>
+<p>我们训练了一个网络来降低视觉数据的维度。这个网络以原始视频作为输入，并输出一个在时间和空间上都经过压缩的潜在表示。Sora 在这个压缩的潜在空间中进行训练，并随后生成视频。我们还训练了一个相应的解码器模型，将生成的潜在表示映射回像素空间。</p>
+<h4 id="23-spacetime-latent-patches">2.3 Spacetime latent patches</h4>
+<p>Given a compressed input video, we extract a sequence of spacetime patches which act as transformer tokens. This scheme works for images too since images are just videos with a single frame. Our patch-based representation enables Sora to train on videos and images of variable resolutions, durations and aspect ratios. At inference time, we can control the size of generated videos by arranging randomly-initialized patches in an appropriately-sized grid.</p>
+<p>给定一个压缩的输入视频，我们提取一系列spacetime patches 作为 Transformer 的tokens。该方案也适用于图像，因为图像只是具有单个帧的视频。我们基于patch的表示使 Sora 能够在具有不同分辨率、持续时间和纵横比的视频和图像上进行训练。<strong>在推理时，我们可以通过在适当大小的网格中排列随机初始化的补丁来控制生成视频的大小。</strong></p>
+<h4 id="24-scaling-transformers-for-video-generation">2.4 Scaling transformers for video generation</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoIPudiaFK6wIkFv6upKGnu5WwyxCQHhUoGe2UkU4tPswRy1sniaMH3A4w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>Sora is a diffusion model21,22,23,24,25; given input noisy patches (and conditioning information like text prompts), it’s trained to predict the original “clean” patches. Importantly, Sora is a diffusion <em>transformer</em>.26 Transformers have demonstrated remarkable scaling properties across a variety of domains, including language modeling,13,14 computer vision,15,16,17,18 and image generation.27,28,29</p>
+<p>Sora 是一种扩散模型；在给定输入噪声patches（以及诸如文本提示之类的条件信息）的情况下，它经过训练以预测原始的“干净”补丁。重要的是，Sora 是一个扩散 Transformer。Transformer 已经在包括语言建模、计算机视觉、图像生成等在内的多个领域中表现出了出色的扩展属性。</p>
+<p>In this work, we find that diffusion transformers scale effectively as video models as well. Below, we show a comparison of video samples with fixed seeds and inputs as training progresses. Sample quality improves markedly as training compute increases.</p>
+<p>在这项工作中，我们发现diffusion Transformer 作为视频模型也具有出色的扩展能力。下面，我们展示了<strong>随着训练的进行，固定种子和输入的视频样本的比较。随着训练计算的增加，样本质量有了显著的提高。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALowZEGqaVDSn6TrUiaia3eqGPBV10ib9SGrZM8maMxTkiawodMvoKGicb6jcw/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219145442531</p>
+<h4 id="25-variable-durations-resolutions-aspect-ratios">2.5 Variable durations, resolutions, aspect ratios</h4>
+<p>Past approaches to image and video generation typically resize, crop or trim videos to a standard size—e.g., 4 second videos at 256x256 resolution. We find that instead training on data at its native size provides several benefits.</p>
+<p>过去的图像和视频生成方法通常会调整、裁剪或修剪视频到标准尺寸——例如，4 秒的视频，分辨率为 256x256。我们发现，在<strong>其原始大小的数据上进行训练反而有几个好处</strong> 。</p>
+<p><strong>Sampling flexibility</strong></p>
+<p>Sora can sample widescreen 1920x1080p videos, vertical 1080x1920 videos and everything inbetween. This lets Sora create content for different devices directly at their native aspect ratios. It also lets us quickly prototype content at lower sizes before generating at full resolution—all with the same model.</p>
+<p>Sora 可以采样宽屏 1920x1080p 视频、竖屏 1080x1920 视频以及介于两者之间的所有视频。这使得 Sora 可以直接为不同设备创建与其原始宽高比匹配的内容。它还可以让我们在生成全分辨率内容之前，先以较小的尺寸快速制作内容原型——所有这些都使用相同的模型。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoBGNPM8KbZ5bZpg0eswO84Ah16oiaibrTos5vEFGic4liblibwbumOqshAow/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219145912201</p>
+<p><strong>Improved framing and composition</strong></p>
+<p>We empirically find that training on videos at their native aspect ratios improves composition and framing. We compare Sora against a version of our model that crops all training videos to be square, which is common practice when training generative models. The model trained on square crops (left) sometimes generates videos where the subject is only partially in view. In comparison, videos from Sora (right) have improved framing.</p>
+<p>我们通过实验发现，<strong>以原始宽高比进行视频训练可以提高构图和取景效果</strong> 。我们将 Sora 与我们的另一个模型进行了比较，该模型将所有训练视频都裁剪成正方形，这是训练生成式模型时常用的做法。经过方形裁剪训练的模型（左侧）有时会生成主体部分只在画面中出现一部分的视频。相比之下，Sora 生成的视频（右侧）取景效果更好。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoKWfiaReiaynjM792jJI7hBvVW14RqsKnYCHdibNnrBxa4uZVDkWSnkBfA/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219150338293</p>
+<h4 id="26-language-understanding">2.6 Language understanding</h4>
+<p>Training text-to-video generation systems requires a large amount of videos with corresponding text captions. We apply the re-captioning technique introduced in DALL·E 330 to videos. We first train a highly descriptive captioner model and then use it to produce text captions for all videos in our training set. We find that training on highly descriptive video captions improves text fidelity as well as the overall quality of videos.</p>
+<p>训练文本到视频生成系统需要大量带有相应文本标题的视频。我们将 DALL·E 3[^30] 中介绍的重写标题技术应用于视频。我们<strong>首先训练一个高度描述性的标题模型，然后使用它为我们训练集中的所有视频生成文本标题。我们发现，在高度描述性的视频标题上进行训练可以提高文本保真度以及视频的整体质量。</strong></p>
+<p>Similar to DALL·E 3, we also leverage GPT to turn short user prompts into longer detailed captions that are sent to the video model. This enables Sora to generate high quality videos that accurately follow user prompts.</p>
+<p><strong>与 DALL·E 3</strong> 类似，我们还利用 GPT 将简短的用户提示转化为更长、更详细的标题，然后将其发送到视频模型。这使得 Sora 能够生成高质量的视频，准确地遵循用户提示。</p>
+<h4 id="3-conclusion">3 Conclusion</h4>
+<p><strong>强悍的视频图像生成、修改、融合等能力：</strong>  可以根据文本、图片或视频创建视频，也可以做其他视频编辑工具，如根据静态图片生成动态图片、在时间上向前或向后拓展视频、直接通过 prompt 提示词修改视频背景、插针融合两个风格完全不同的视频；</p>
+<p><strong>涌现3D世界建模能力：</strong>  能够模拟物理世界中的人、动物和环境的变化，包括 3D 一致性、有效地模拟物体短程和远程依赖关系、模拟简单的动作来影响世界的状态、模拟数字世界。</p>
+<h4 id="4-limitation">4 Limitation</h4>
+<p>Sora currently exhibits numerous limitations as a simulator. For example, it does not accurately model the physics of many basic interactions, like glass shattering. Other interactions, like eating food, do not always yield correct changes in object state. We enumerate other common failure modes of the model—such as incoherencies that develop in long duration samples or spontaneous appearances of objects—in our landing page.</p>
+<p>Sora 作为模拟器目前存在许多限制。例如，它<strong>不能准确模拟许多基本交互的物理特性，如玻璃破碎。</strong>  其他交互，如进食，并<strong>不总是导致对象状态的正确变化</strong> 。我们在登录页面中列举了模型的其他常见故障模式，例如在<strong>长时间采样中出现的不一致</strong> 或物体的自发出现。</p>
+<h4 id="二相关应用">二、相关应用</h4>
+<h4 id="1-文本可以作为prompt图片或者视频也行">1 文本可以作为prompt，图片或者视频也行！</h4>
+<p>All of the results above and in our landing page show text-to-video samples. But Sora can also be prompted with other inputs, such as pre-existing images or video. This capability enables Sora to perform a wide range of image and video editing tasks—creating perfectly looping video, animating static images, extending videos forwards or backwards in time, etc.</p>
+<p>上述所有结果和我们的登录页面均显示了文本到视频的示例。但 Sora 也可以使用其他输入来作为提示，例如现有的图像或视频。此功能使<strong>Sora 能够执行各种图像和视频编辑任务-创建完美循环的视频、为静态图像制作动画、在时间上向前或向后扩展视频</strong> 等。</p>
+<h4 id="animating-dalle-images使用静态图生成动态图片">Animating DALL·E images（使用静态图生成动态图片）</h4>
+<p>Sora is capable of generating videos provided an image and prompt as input. Below we show example videos generated based on DALL·E 231 and DALL·E 330 images.</p>
+<p>Sora 可以根据输入的图像和提示生成视频。下面我们展示一些基于 DALL·E 2和 DALL·E 3 图像生成的示例视频。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoaiaTjyBMVmcIGx1OgnNpJq89dc86ibExxBlY2N1z2icPQoSa2ADMzas5A/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219155306672</p>
+<p>A Shiba Inu dog wearing a beret and black turtleneck.</p>
+<h4 id="extending-generated-videos拓展视频">Extending generated videos（拓展视频）</h4>
+<p>Sora is also capable of extending videos, either forward or backward in time. Below are four videos that were all extended backward in time starting from a segment of a generated video. As a result, each of the four videos starts different from the others, yet all four videos lead to the same ending.</p>
+<p>Sora 还能够延长视频，无论是向前还是向后。以下是3个视频，它们都是从生成的视频的一个片段开始，然后向回扩展。因此，这四个视频的起点各不相同，但它们都导向同一个结局。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoibcX0NibCBbL2AwjF1iaiabWTodX4sl1CLo1g6HDrbXp7rXYS7Zkf8dQ7A/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219160608031</p>
+<h4 id="video-to-video-editing视频修改和编辑">Video-to-video editing（视频修改和编辑）</h4>
+<p>Diffusion models have enabled a plethora of methods for editing images and videos from text prompts. Below we apply one of these methods, SDEdit,32 to Sora. This technique enables Sora to transform the styles and environments of input videos zero-shot.</p>
+<p>扩散模型使得从文本提示中编辑图像和视频的方法大量涌现。下面我们将其中一种方法，即 SDEdit，应用于 Sora。这种技术使得 Sora 能够对输入视频进行零样本的风格和环境转换。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoNX2DFUibdNOEaXwX3vBadvAWIxXX764aHicaQq4ZzGianY5JCUbJPb2Ow/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219163930360</p>
+<h4 id="connecting-videos视频融合">Connecting videos（视频融合）</h4>
+<p>We can also use Sora to gradually interpolate between two input videos, creating seamless transitions between videos with entirely different subjects and scene compositions. In the examples below, the videos in the center interpolate between the corresponding videos on the left and right.</p>
+<p>我们还可以使用 Sora**在两个输入视频之间逐渐插值，从而在主题和场景构图完全不同的视频之间创建无缝过渡。**在下面的示例中，中间的视频在左侧和右侧的相应视频之间进行插值。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALothkfQn4OIXVdFTYiccXEJNseQfRISFvWx8EEczia1QXgBTuYOGJcgwng/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219164146021</p>
+<h4 id="2-image-generation-capabilities单帧图像生成能力">2 Image generation capabilities（单帧图像生成能力）</h4>
+<p>Sora is also capable of generating images. We do this by arranging patches of Gaussian noise in a spatial grid with a temporal extent of one frame. The model can generate images of variable sizes—up to 2048x2048 resolution.</p>
+<p>Sora 还能够生成图像。我们通过在具有一帧时间范围的空间网格中排列高斯噪声补丁来实现这一点。该模型可以生成可变大小的图像，最高可达 2048x2048 分辨率。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoVzqfgibOexpAIhAPfcZIU1plkYCSLrwXicbib2gmic67LsgWiad8tO6BD5A/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219164340681</p>
+<h4 id="3-emerging-simulation-capabilities模拟物理世界">3 Emerging simulation capabilities（模拟物理世界）</h4>
+<p>We find that video models exhibit a number of interesting emergent capabilities when trained at scale. These capabilities enable Sora to simulate some aspects of people, animals and environments from the physical world. These properties emerge without any explicit inductive biases for 3D, objects, etc.—they are purely phenomena of scale.</p>
+<p>我们发现，在大规模训练时，视频模型表现出许多有趣的新兴能力。这些能力使 Sora 能够模拟物理世界中的人、动物和环境的某些方面。这些属性是在没有任何针对 3D、对象等的明确归纳偏差的情况下出现的——它们纯粹是规模的现象。</p>
+<h4 id="3d-consistency保持3d一致性">3D consistency（保持3D一致性）</h4>
+<p>Sora can generate videos with dynamic camera motion. As the camera shifts and rotates, people and scene elements move consistently through three-dimensional space.</p>
+<p>Sora 可以生成带有动态摄像机运动的视频。随着摄像机的移动和旋转，人物和场景元素在三维空间中持续移动。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoIXIVvTdia6YhXRzjXC14Ym2lzERYIWvyK92bWLRibWIfWwvpHanRjBdA/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219165237128</p>
+<p><strong>Long-range coherence and object permanence（保持长时依赖）</strong></p>
+<p>A significant challenge for video generation systems has been maintaining temporal consistency when sampling long videos. We find that Sora is often, though not always, able to effectively model both short- and long-range dependencies. For example, our model can persist people, animals and objects even when they are occluded or leave the frame. Likewise, it can generate multiple shots of the same character in a single sample, maintaining their appearance throughout the video.</p>
+<p>视频生成系统面临的一个重大挑战是在采样长视频时保持时间一致性。我们发现，Sora 通常（尽管并非总是）能够有效地模拟短程和远程依赖关系。例如，我们的模型即使在人物、动物和物体被遮挡或离开画面时也能保持它们的存在。同样，它可以在单个样本中生成同一个角色的多个镜头，并在整个视频中保持他们的外观。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALouVQKpnVZXeXjN4VTSq2icL0Kvj0eRp3HzUbwhr9URR7DNfYMIWDWDVg/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219165442666<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoIZZR4Q48KYRfz24V5gBMCia8hbIdptFbaAHR4m1gLqt3ZdXuTTp8opA/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219165604417<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALoVIHO4D4Us4EIJCftiaRosuImbLSb4w1UPyiab1av9FwFEI1icKagSYsLA/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219165640451</p>
+<h4 id="interacting-with-the-world模拟与真实世界交互">Interacting with the world（模拟与真实世界交互）</h4>
+<p>Sora can sometimes simulate actions that affect the state of the world in simple ways. For example, a painter can leave new strokes along a canvas that persist over time, or a man can eat a burger and leave bite marks.</p>
+<p>Sora 有时可以模拟简单的动作来影响世界的状态。例如，画家可以在画布上留下新的笔触，这些笔触会随着时间的推移而保留下来，或者一个人可以吃汉堡并留下咬痕。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALo5ksWxMiaOLc3icnCByHxwTVeiczARKoI5rXNYuBksFMDEBlxGqJtLgrXw/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219165804446</p>
+<h4 id="simulating-digital-worlds模拟数字世界">Simulating digital worlds（模拟数字世界）</h4>
+<p>Sora is also able to simulate artificial processes–one example is video games. Sora can simultaneously control the player in Minecraft with a basic policy while also rendering the world and its dynamics in high fidelity. These capabilities can be elicited zero-shot by prompting Sora with captions mentioning “Minecraft.”</p>
+<p>Sora 还能够模拟人工过程——其中一个例子是电子游戏。Sora 可以在使用基本策略控制 Minecraft 中的玩家的同时，以高保真度渲染世界及其动态。这些功能可以通过提示 Sora 使用提到“Minecraft”的标题来实现零镜头。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALotTn2eJ4ZElsPY94kpD05jicHg7wVC5yJFT0o8f6vwBTHOyQTXPdE70g/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219170010314</p>
+<p>These capabilities suggest that continued scaling of video models is a promising path towards the development of highly-capable simulators of the physical and digital world, and the objects, animals and people that live within them.</p>
+<p>这些能力表明，继续扩展视频模型是朝着开发高度能力的物理和数字世界模拟器以及生活在其中的物体、动物和人的有前途的道路。</p>
+<h4 id="三总结">三、总结</h4>
+<p>1.<strong>相关技术主要包括：</strong>  1. 将视频信息处理成spacetime patches，统一了时空分割的语言，方便支持不同尺寸、时间、分辨率的数据。2. 使用Diffusion Transformer作为主干网络进行建模。3. 训练Video compression network降低视觉数据维度，在压缩潜在空间训练生成模型和解码模型。4. 通过Scalling显著提升生成质量。</p>
+<p>*<strong>语言模型与视觉数据建模</strong> ：大语言模型如ChatGPT通过Embedding技术将人类语言编码，并利用注意力机制提取知识，生成回应。类似地，Sora项目在视觉数据建模中采用Token Embedding思路，将视频和图像压缩为低维的潜变量空间，即时空碎片（Spacetime Latent Patches），作为统一的时空数据表示。</p>
+<p>*<strong>spacetime patches（时空碎片）的重要性</strong> ：时空碎片是Sora项目中的关键概念，它不仅有效地表示了视觉数据，而且统一了时空分割的语言，为后续的时空建模提供了基础。</p>
+<p>*<strong>Scaling是有用的：随着训练计算量的增加，视频生成质量有了明显的提升。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMwE32r3QwsKKyKj5LHdALowZEGqaVDSn6TrUiaia3eqGPBV10ib9SGrZM8maMxTkiawodMvoKGicb6jcw/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240219145442531</p>
+<p>2.<strong>数据工程：在原始大小的数据上进行训练反而有几个好处。</strong></p>
+<ul>
+<li>
+<p>更方便创造不同分辨率的图片</p>
+</li>
+<li>
+<p>更好的构图和取景效果</p>
+</li>
+</ul>
+<p>*<strong>数据工程：高度描述性的视频标题上进行训练可以提高文本保真度以及视频的整体质量。</strong>  本文采取两个策略获取高质量的每一帧图像的caption。通过这种方式，Sora能够更精确地关联GPT4的语言空间和视觉数据，实现了Token（文本）与Patch（视觉数据）之间的统一。</p>
+<ul>
+<li>
+<p>专门训练一个高度描述性的标题模型。</p>
+</li>
+<li>
+<p>利用GPT4将简短的用户提示转化成更长、更详细的标题。</p>
+</li>
+</ul>
+<p>*<strong>能力展现：文本可以作为prompt，图片或者视频也行！</strong>  这意味着我们除了根据文本创建视频，还可以做非常多其他的视频编辑工具，这在视频创作，电影等行业都可以带来非常大的变革。应用方法包括但不限于：</p>
+<ul>
+<li>
+<p>根据静态图片生成动态图片</p>
+</li>
+<li>
+<p>在时间上向前或者向后拓展视频</p>
+</li>
+<li>
+<p>视频编辑：直接通过prompt提示词修改视频背景</p>
+</li>
+<li>
+<p>视频融合：插针融合两个风格完全不同的视频</p>
+</li>
+</ul>
+<p>*<strong>涌现能力：Sora能够模拟物理世界中的人、动物和环境的变化。</strong>  文章提出，没有对3D数据进行优化，随着模型规模的变大，发现视频生成模型能够涌现出3D世界的模拟能力。主要包括以下几个方面。</p>
+<ul>
+<li>
+<p>3D一致性：场景元素能在在三维空间中持续移动</p>
+</li>
+<li>
+<p>有效地模拟物体短程和远程依赖关系：狗被遮挡还是能持续保持状态</p>
+</li>
+<li>
+<p>模拟简单的动作来影响世界的状态：画画动作反馈，咬东西物体反馈</p>
+</li>
+<li>
+<p>模拟数字世界：模拟游戏玩家，渲染画面</p>
+</li>
+</ul>
+<p>*<strong>还是存在类似于LLM的幻觉现象。</strong>  比如不能准确模拟许多基本交互的物理特性，如玻璃破碎；其他交互，如进食，并不能总是导致对象状态的正确变化；而且在长时间采样中会出现不一致或物体的自发出现等问题。</p>
+<p><strong>历史文章：</strong> <a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487067&amp;idx=2&amp;sn=33594e6a82cf79a7580272c064635d75&amp;chksm=fd3be708ca4c6e1ece0e1f6cc22bfd286bf3e9073350b91369b1d0e7fb52b50fac8113288e43&amp;scene=21#wechat_redirect">2024年1月大模型文章集锦</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

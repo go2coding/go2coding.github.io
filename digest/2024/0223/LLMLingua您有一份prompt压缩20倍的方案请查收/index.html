@@ -1,0 +1,851 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>LLMLingua｜您有一份prompt压缩20倍的方案请查收 作者： AINLP 来源： AINLP 今天分享微软公司的一篇文章，Title: LLMLingua: Compressing Prompts for Accelerated Inference of Large Language Models。这篇文章介绍了一种名为LLMLingua的粗到细的提示压缩方法，能够在保持语义完整性的同时，将提示prompt压缩20倍，并且基本不损失性能。 主要分为三  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">LLMLingua｜您有一份prompt压缩20倍的方案请查收</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              February 23, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBtEMiaD201J8ibfCXzk327YiaNxxegYG2jQ9mXCvdiby6pqXolFpFgzK5XLA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/CtgRSMd3VSzshlKzXcKI9A">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p>今天分享微软公司的一篇文章，Title: LLMLingua: Compressing Prompts for Accelerated Inference of Large Language Models。这篇文章介绍了一种名为LLMLingua的粗到细的提示压缩方法，能够在保持语义完整性的同时，将提示prompt压缩20倍，并且基本不损失性能。</p>
+<p>主要分为三个步骤来完成prompt的有效压缩，同时确保基本不损失性能。</p>
+<p>*<strong>预算控制(budget controller)：</strong>  为各种组件（instructions, demonstrations, and questions）分配不同的压缩比，通过预算控制器在高压缩比率下维护整体语义完整性。</p>
+<p>*<strong>迭代压缩算法(token-level iterative compression algorithm)：</strong>  使用基于token的迭代算法，准确捕捉压缩内容之间的关联性，从而更有效地压缩prompt并保留知识。</p>
+<p>*<strong>指令调整(instruction tuning)：</strong>  通过指令调整实现语言模型间的分布对齐，解决小模型和黑盒大模型之间的分布差异。</p>
+<h4 id="一概述">一、概述</h4>
+<p><strong>Title:</strong>  LLMLingua: Compressing Prompts for Accelerated Inference of Large Language Models</p>
+<p><strong>URL:</strong>  <a href="https://arxiv.org/abs/2310.05736">https://arxiv.org/abs/2310.05736</a></p>
+<p><strong>CODE:</strong>  <a href="https://github.com/microsoft/LLMLingua">https://github.com/microsoft/LLMLingua</a></p>
+<p><strong>Authors:</strong>  Huiqiang Jiang, Qianhui Wu, Chin-Yew Lin, Yuqing Yang, Lili Qiu</p>
+<h4 id="1-motivation">1 Motivation</h4>
+<ul>
+<li>
+<p>随着COT[1]方法、RAG检索方法技术的出现，prompt越来越长，导致比较费API cost，时间成本、金额成本都比较高。</p>
+</li>
+<li>
+<p>Natrual Language本身是冗余的，尤其是口语下，另外ChatGPT实际上能很好的理解某种被压缩的文字[2]。</p>
+</li>
+<li>
+<p>LLM本身已经学会了非常多知识，即prompt中更高置信的部分token完全不需要交给LLMs，他也能从上下文中猜测出来。</p>
+</li>
+</ul>
+<blockquote>
+<p>prompt压缩的一些关键问题：</p>
+</blockquote>
+<p>1.<strong>压缩和性能平衡:</strong>  我们应该如何去设计一个prompt 压缩算法，从而能够最大化的压缩prompt，同时又不影响LLMs的性能。</p>
+<p>2.<strong>能否即插即用:</strong>  这种被压缩的prompt能直接用在下游任务中吗？</p>
+<p>3.<strong>泛化性:</strong>  它的泛化性怎么样？</p>
+<p>4.<strong>为什么压缩prompt对LLM有效，如何证明？</strong>  有什么证据能证明Black-box LLMs能理解这种被压缩的prompt？</p>
+<p>5.<strong>上界在哪:</strong>  这种压缩方法的有上界吗？</p>
+<p>6.<strong>为什么不用GPT-X:</strong>  为什么不用GPT-X来做这件事？</p>
+<h4 id="2-methods">2 Methods</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBtTgjm1SyBKKsPngx1MlQCV018cTSw8X3Lz3HYhyKmK7QTxbTq13SiaYg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="21-budget-controller">2.1 Budget controller</h4>
+<p>预算控制器（Budget Controller）是LLMLingua方法中的一个重要组件，用于在压缩提示（prompt）时动态分配不同的压缩比率给原始提示中的不同部分。</p>
+<p><strong>背景：</strong>  Prompt中不同成分对于压缩的敏感程度是不同的，例如System prompt，question prompt的敏感度更高，而demonstrations（示例）敏感度低，可以分配<strong>更高</strong> 的压缩比。</p>
+<p><strong>目标：</strong>  给Instructions（指令）以及question（用户问题）分配较小的压缩比，保留更重要的指令信息。对于demonstrations（示例）可以分配更高的压缩比，去除其冗余信息。</p>
+<p><strong>方法:</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBtmF6dzZV29pzTMMYoGBKueYu02dLEO1co8RKWOc0JiaRDxW7D3gZDA6w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>1.<strong>设置选定的示例集 D</strong> ：确定一个初始的示例集 D，这个集合将包含经过压缩后的 Demonstrations。</p>
+<p>2.<strong>计算示例的压缩率</strong> ：</p>
+<ul>
+<li>根据目标整体压缩率 π 和预定义的指令和问题部分的压缩率 π_ins 和 π_que，计算 Demonstrations 部分的压缩率 π_dems，公式为:</li>
+</ul>
+<p>其中，和</p>
+<p>分别表示指令和问题部分的令牌长度。</p>
+<p>*<strong>计算每个示例Demonstrations 的困惑度（Perplexity）</strong> ：使用一个小语言模型（如 GPT-2 或 LLaMA）计算原始示例集中每个 Demonstration 的困惑度。</p>
+<p>*<strong>按困惑度对示例Demonstrations 进行排序</strong> ：将所有 Demonstrations 按照它们的困惑度降序排列，形成一个列表。</p>
+<p>*<strong>迭代选择示例</strong> ：</p>
+<ul>
+<li>
+<p>如果当前已选择的示例数量加上当前示例的困惑度超过了目标压缩率 π_dems 乘以示例集的总令牌数，那么停止迭代。</p>
+</li>
+<li>
+<p>否则，将当前 Demonstration 添加到选定的示例集 D 中。</p>
+</li>
+<li>
+<p>更新计数器 α。</p>
+</li>
+<li>
+<p>初始化一个计数器 α，用于跟踪已选择的示例Demonstrations数量。</p>
+</li>
+<li>
+<p>对于列表中的每个 Demonstration（从第一个开始）：</p>
+</li>
+</ul>
+<p>*<strong>分配剩余预算</strong> ：在完成 Demonstrations 部分的压缩后，将剩余的预算分配给指令和问题部分。这可以通过调整 和  的值来实现。</p>
+<p>*<strong>输出结果</strong> ：输出经过粗粒度压缩的示例集 D，以及为指令和问题部分分配的额外预算 和 。</p>
+<p>通过这个过程，预算控制器能够确保在压缩过程中，关键信息得以保留，同时实现对原始提示的有效压缩。这种方法特别适用于处理包含多个 Demonstrations 的提示，可以通过示例级别的控制来满足压缩要求。</p>
+<h4 id="22-iterative-token-level-prompt-compression-itpc">2.2 Iterative Token-level Prompt Compression (ITPC)</h4>
+<p><strong>背景:</strong></p>
+<p>在LLMLingua方法中，利用困惑度（Perplexity）进行提示（prompt）压缩遇到了一个固有的局限性，即独立性假设。这个假设认为提示中的每个令牌（token）都是相互独立的，即一个令牌的出现概率仅取决于它之前的令牌，而与其他令牌无关。然而，在自然语言中，令牌之间往往存在复杂的依赖关系，这种关系对于理解上下文和保持语义完整性至关重要。</p>
+<p>在数学上，这个独立性假设可以表示为：</p>
+<p>$$P(x) = \prod_{i=1}^{N} P(x_i | x_{&lt;i}) $$=&quot;&quot;</p>
+<p><strong>这个假设的局限性在于，它忽略了令牌之间的条件依赖性，这可能导致在压缩过程中丢失关键信息，尤其是在进行高比例压缩时。例如，如果一个令牌在上下文中提供了关键的推理步骤或逻辑连接，那么仅仅基于其困惑度来决定是否保留这个令牌可能会导致推理过程的不完整。</strong></p>
+<p>为了解决这个问题，LLMLingua提出了迭代令牌级提示压缩（Iterative Token-level Prompt Compression, ITPC）算法。这个算法通过迭代地处理提示中的每个段（segment），并考虑每个令牌在当前上下文中的条件概率，从而更好地保留了令牌之间的依赖关系。这种方法允许算法在压缩提示时更加精细地评估每个令牌的重要性，而不是仅仅基于其独立的概率。</p>
+<p>总结来说，利用困惑度进行提示压缩的固有局限性在于它简化了令牌之间的复杂关系，而LLMLingua通过迭代算法来克服这一局限性，实现了更有效的提示压缩，同时保持了语义的完整性。</p>
+<p><strong>方法:</strong></p>
+<p>迭代令牌级提示压缩（Iterative Token-level Prompt Compression, ITPC），其旨在通过考虑令牌之间的条件依赖关系来保留提示中的关键信息。以下是ITPC的详细步骤：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBtK6ZqQAZqeTUSIlELvY3MlsCY7Lsdx1mWMyy605GP9SaicSEDg1hqVsw/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240218165043788</p>
+<p>1.<strong>设置选定的令牌集 T</strong> ：初始化一个空的令牌集 T，用于存储压缩后的令牌。</p>
+<p>2.<strong>获取分段集合 S</strong> ：将目标提示 x&rsquo; 分割成若干个段 S = {s1, s2, &hellip;, sN}。</p>
+<p>3.<strong>迭代处理每个段</strong> ：对于每个段 （从第一个开始）：</p>
+<ul>
+<li>使用小语言模型  计算该段的所有令牌的条件概率分布，公式：</li>
+</ul>
+<p>其中，x&rsquo; 是原始提示经过prompt压缩后的结果； 是第 i 个段；x&rsquo;<em>{i-1} 是第 i-1 个令牌；s</em>{i-1} 是第 i-1 个段的最后一个令牌。</p>
+<ul>
+<li>根据困惑度分布和相应的压缩比率  动态计算压缩阈值 ：</li>
+</ul>
+<p>其中，是段  的压缩比率，可以根据段的来源（来自 、 或）来确定，不同的来源设置不同的压缩比例。</p>
+<ul>
+<li>将满足条件（PPL &gt; ）的令牌添加到令牌集 T 中。</li>
+</ul>
+<p>*<strong>输出压缩后的提示</strong> ：将令牌集 T 中的所有令牌连接起来，形成最终的压缩提示。</p>
+<p>通过这个迭代过程，ITPC算法能够在保持提示语义完整性的同时，有效地压缩提示的长度，从而减少大型语言模型（LLM）的推理成本。</p>
+<h4 id="23-instruction-tuning">2.3 Instruction Tuning</h4>
+<p>指令调整（Instruction Tuning）是LLMLingua方法中的一个关键步骤，旨在缩小小型语言模型（用于压缩提示）与大型语言模型（LLM）之间的分布差异。以下是指令调整的详细步骤：</p>
+<p>1.<strong>初始化小型语言模型</strong> ：从一个预训练的小型语言模型  开始，例如 GPT-2 或 LLaMA。</p>
+<p>2.<strong>使用LLM生成数据</strong> ：使用目标LLM生成一些数据，这些数据将用于调整小型语言模型的参数。</p>
+<p>3.<strong>定义优化目标</strong> ：设定一个优化目标，使得小型语言模型  生成的指令  和LLM生成的文本  的分布尽可能相似。优化目标可以表示为：</p>
+<p>其中， 是小型语言模型的参数， 是第  个训练样本对， 是损失函数， 是样本总数。</p>
+<p>4.<strong>执行指令调整</strong> ：使用上述优化目标对小型语言模型进行微调，以最小化两个模型之间的分布差异。</p>
+<p>5.<strong>评估和应用调整</strong> ：</p>
+<ul>
+<li>
+<p>在调整完成后，评估小型语言模型的性能，确保其能够更准确地模拟目标LLM的分布。</p>
+</li>
+<li>
+<p>将调整后的小型语言模型用于后续的提示压缩过程。</p>
+</li>
+</ul>
+<p>通过指令调整，LLMLingua方法能够提高压缩提示的质量和LLM推理的效率，尤其是在处理复杂任务时，这种方法有助于保留关键信息并提高推理的准确性。</p>
+<h4 id="3-conclusion">3 Conclusion</h4>
+<p>*<strong>压缩算法表现突出：</strong>  在GSM8K、BBH、ShareGPT和Arxiv-March23四个来自不同场景的数据集上的实验表明，LLMLingua能够实现高达20倍的压缩比率，并且几乎不损失性能。</p>
+<ul>
+<li>LLM能有效的恢复压缩的prompt，同时prompt压缩对输出长度的减少也有益处，还有个潜在的好处是可以处理更长的文本。</li>
+</ul>
+<p>*<strong>推理加速：</strong>  提供了一种有效的加速模型推理的方法，显著减少了因长提示而导致的成本。</p>
+<h4 id="4-limitation">4 Limitation</h4>
+<p>*<strong>适应性：</strong>  需要测试在更多场景与任务下压缩算法的适用性和表现。</p>
+<p>*<strong>鲁棒性：</strong>  需要进一步研究压缩算法对于不同类型和结构的长提示的鲁棒性。</p>
+<h4 id="二详细内容">二、详细内容</h4>
+<h4 id="1-做了哪些实验">1 做了哪些实验？</h4>
+<p>1.<strong>数据集</strong> ：</p>
+<p>*<strong>GSM8K</strong> ：一个数学推理数据集，包含8,000个问题，用于评估模型在数学推理和公式推导方面的能力。</p>
+<p>*<strong>BBH (Big-bench Hard)</strong> ：一个包含多种语言和符号推理任务的数据集，用于评估链式推理（chain-of-thought）提示的有效性。</p>
+<p>*<strong>ShareGPT</strong> ：一个对话数据集，包含用户与ChatGPT的对话，用于评估模型在对话理解和生成方面的能力。</p>
+<p>*<strong>Arxiv-March23</strong> ：一个学术文章摘要数据集，包含2023年3月从arXiv预印本库收集的最新学术文章，用于评估模型在文本摘要方面的能力。</p>
+<p>*<strong>评估指标</strong> ：</p>
+<ul>
+<li>
+<p>对于GSM8K和BBH，使用精确匹配（Exact Match, EM）作为评估指标。</p>
+</li>
+<li>
+<p>对于ShareGPT和Arxiv-March23，使用BLEU、ROUGE和BERTScore作为评估指标。</p>
+</li>
+</ul>
+<p>*<strong>实验方法</strong> ：</p>
+<p>*<strong>LLMLingua</strong> ：文章提出的方法，包括预算控制器（Budget Controller）、迭代令牌级提示压缩（Iterative Token-level Prompt Compression）和分布对齐（Distribution Alignment）。</p>
+<p>*<strong>Baselines</strong> ：包括GPT4-Generation（直接使用GPT-4压缩提示）、随机选择（Random Selection）、Selective-Context（基于小语言模型的自信息选择性压缩）等。</p>
+<p>*<strong>实验设置</strong> ：</p>
+<ul>
+<li>
+<p>在GSM8K和BBH数据集上，设置了不同的压缩比（如1-shot、half-shot、quarter-shot等）来评估模型在不同压缩程度下的性能。</p>
+</li>
+<li>
+<p>在ShareGPT和Arxiv-March23数据集上，设置了不同的目标压缩比（如2x、3x、5x等）。</p>
+</li>
+</ul>
+<p>*<strong>实现细节</strong> ：</p>
+<ul>
+<li>
+<p>使用了GPT-3.5-Turbo-0301和Claude-v1.3作为目标LLMs，通过OpenAI和Claude API进行访问。</p>
+</li>
+<li>
+<p>使用Alpaca-7B或GPT2-Alpaca作为小型预训练语言模型（）进行压缩。</p>
+</li>
+<li>
+<p>实现基于PyTorch 1.12.05和Huggingface的Transformers库。</p>
+</li>
+</ul>
+<p>*<strong>恢复压缩提示</strong> ：</p>
+<ul>
+<li>使用GPT-4模型尝试恢复压缩后的提示，并展示了恢复结果，以验证LLMs理解压缩提示的能力。</li>
+</ul>
+<h4 id="2-在对话sharegpt和摘要ariv--march23数据集上的表现">2 在对话（ShareGPT）和摘要（Ariv- March23）数据集上的表现</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBt5To5cQGIHv0cXHIQCnZTvia9G2jv0kwuesoeJ6GHb5ny9IvNWRnNic9Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>实验说明：</strong></p>
+<p>1.<strong>Constraint I (2x constraint)</strong> : 目标压缩比为2倍。</p>
+<p>2.<strong>Constraint II (3x constraint)</strong> : 目标压缩比为3倍。</p>
+<p>3.<strong>Selective-Context</strong> : 使用小语言模型计算每个词汇单元（如句子、短语或令牌）的自信息，然后删除信息量较低的内容以实现提示压缩。</p>
+<p>4.<strong>Ours (LLMLingua)</strong> : 提出了LLMLingua方法，包括预算控制器、迭代令牌级提示压缩和分布对齐。</p>
+<p><strong>性能指标：</strong></p>
+<p>*<strong>Tokens</strong> : 在给定压缩比下，压缩后的提示中的令牌数量。</p>
+<p>*<strong>BLEU</strong> ,<strong>ROUGE</strong> ,<strong>RougeL</strong> ,<strong>BS</strong> ,<strong>F1</strong> : 这些是评估摘要任务性能的指标，分别代表BLEU分数、ROUGE分数、RougeL分数、BERTScore分数和F1分数。</p>
+<p>*<strong>Tokens 1/π</strong> : 在给定压缩比下，压缩后的提示长度与原始提示长度的比例。</p>
+<p><strong>结论：</strong></p>
+<ul>
+<li>
+<p>LLMLingua方法在大多数情况下都优于其他方法，尤其是在BLEU、ROUGE和BERTScore F1分数上。这表明LLMLingua能够在保持较高性能的同时实现显著的压缩比。</p>
+</li>
+<li>
+<p>在ShareGPT任务中，LLMLingua在4倍压缩比下，BLEU分数为27.36，ROUGE分数为48.87，BERTScore F1分数为90.33，而Selective-Context在相同压缩比下的性能略低。</p>
+</li>
+<li>
+<p>在Arxiv-March23任务中，LLMLingua在9倍压缩比下，BERTScore F1分数为89.03，同样优于Selective-Context。</p>
+</li>
+</ul>
+<p>这些结果表明LLMLingua方法在对话和摘要任务中都能够有效压缩提示，同时保持了良好的性能，这对于减少大型语言模型（LLM）的推理成本和提高效率具有重要意义。</p>
+<h4 id="3-在数学推理gsm8k和复杂语言任务big-bench-hard-bbh数据集上的表现">3 在数学推理（GSM8K）和复杂语言任务（Big-bench Hard, BBH）数据集上的表现</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBtEMiaD201J8ibfCXzk327YiaNxxegYG2jQ9mXCvdiby6pqXolFpFgzK5XLA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>说明：</strong></p>
+<p>1.<strong>1-shot constraint</strong> : 目标压缩比为1倍，即不压缩。</p>
+<p>2.<strong>Selective-Context</strong> : 使用小语言模型基于自信息选择性地压缩提示。</p>
+<p>3.<strong>GPT4 Generation</strong> : 使用GPT-4生成压缩后的提示。</p>
+<p>4.<strong>Ours (LLMLingua)</strong> : 使用LLMLingua方法进行提示压缩。</p>
+<p><strong>性能指标：</strong></p>
+<p>*<strong>EM</strong> : Exact Match，即精确匹配分数，用于评估数学推理任务的性能。</p>
+<p>*<strong>Tokens</strong> : 在给定压缩比下，压缩后的提示中的令牌数量。</p>
+<p>*<strong>1/π</strong> : 压缩比，表示压缩后的提示长度与原始提示长度的比例。</p>
+<p><strong>结论：</strong></p>
+<p>LLMLingua方法在不同的压缩比下都显示出了较好的性能。例如，在GSM8K数据集上，LLMLingua在5倍压缩比下达到了79.08%的EM分数，而在BBH数据集上，在3倍压缩比下达到了70.11%的EM分数。这些结果表明LLMLingua能够在保持较高推理性能的同时实现显著的压缩效果。</p>
+<p>相比之下，GPT4 Generation方法在压缩提示时可能会遗漏关键信息，导致性能下降。Selective-Context方法虽然在某些情况下表现良好，但在压缩比增加时性能下降较快。LLMLingua通过预算控制器和迭代令牌级压缩算法，能够在保持语义完整性的同时实现更高的压缩比。</p>
+<p>总的来说，LLMLingua方法在数学推理和复杂语言任务中都显示出了其有效性，能够在不牺牲太多性能的情况下实现提示的高效压缩。</p>
+<h4 id="4-消融实验">4 消融实验</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBtqS4oX5BSD6z0xB4usevHT3MmtXj645SSpKTTnALq6Uy9ZZPM6rlhDA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>说明：</strong></p>
+<p>1.<strong>Ours</strong> : LLMLingua方法的完整实现。</p>
+<p>2.<strong>w/o Iterative Token-level Prompt Compression</strong> : 移除了迭代令牌级压缩，改为单次推理进行令牌级压缩。</p>
+<p>3.<strong>w/o Budget Controller</strong> : 移除了预算控制器，直接使用迭代令牌级压缩算法（ITPC）并应用相同的压缩比率给所有组件。</p>
+<p>4.<strong>w/o Dynamic Compression Ratio</strong> : 使用相同的压缩比率给所有组件，不进行动态调整。</p>
+<p>5.<strong>w/ Random Selection in Budget Controller</strong> : 在预算控制器中随机选择示范或句子进行示范级提示压缩。</p>
+<p>6.<strong>w/o Distribution Alignment</strong> : 移除了分布对齐模块，直接使用预训练的LLaMA-7B作为小型语言模型。</p>
+<p>7.<strong>w/ Remove Stop Words</strong> : 在原始提示中移除停用词，使用NLTK库实现。</p>
+<p><strong>性能指标：</strong></p>
+<p>*<strong>EM</strong> : Exact Match，即精确匹配分数，用于评估数学推理任务的性能。</p>
+<p>*<strong>Tokens</strong> : 在给定压缩比下，压缩后的提示中的令牌数量。</p>
+<p>*<strong>1/π</strong> : 压缩比，表示压缩后的提示长度与原始提示长度的比例。</p>
+<p><strong>结论：</strong></p>
+<p>*<strong>迭代令牌级压缩</strong> （Iterative Token-level Prompt Compression）对于保持压缩提示的精确匹配分数至关重要。没有这个组件，精确匹配分数会显著下降。</p>
+<p>*<strong>预算控制器</strong> （Budget Controller）有助于在不同组件之间平衡压缩比，以保持语义完整性。没有预算控制器，性能会有所下降。</p>
+<p>*<strong>动态压缩比率</strong> （Dynamic Compression Ratio）允许模型根据提示的不同部分调整压缩策略，这对于保持性能是有益的。</p>
+<p>*<strong>分布对齐</strong> （Distribution Alignment）通过调整小型语言模型以更接近目标LLM的分布，进一步提高了性能。</p>
+<p>*<strong>随机选择</strong> （Random Selection）在预算控制器中可能导致信息丢失，因为不是基于困惑度选择示范。</p>
+<p>*<strong>移除停用词</strong> （Remove Stop Words）可能会移除一些对推理过程重要的信息，导致性能下降。</p>
+<h4 id="三总结">三、总结</h4>
+<p><strong>总结1：LLMLingua展示了在不损失大型语言模型性能的前提下，大幅度压缩模型输入提示的可能性，这为在资源受限情境下使用复杂模型提供了一条有效途径。</strong>  本文利用经过Alignment的well-trained的小的语言模型，例如GPT2-small或者LLaMA-7B，来检测和剔除prompt中的不重要token，将其转化为一种人类很难理解但是LLMs能很好理解的形势。并且这种被压缩的prompt可以直接用在black-box LLMs中，实现最高20倍的压缩，且几乎不影响下游任务性能。[2] <strong>总结2：（Iterative Token-level Prompt Compression）对于保持压缩提示的精确匹配分数至关重要。没有这个组件，精确匹配分数会显著下降。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBtqS4oX5BSD6z0xB4usevHT3MmtXj645SSpKTTnALq6Uy9ZZPM6rlhDA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>总结3：LLM的确能懂被压缩后人类难以理解的prompt，甚至还能复原原始prompt出来。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrMdkcD3wFnpvWqiakyPRcsBtDzuOX5PuZlpqP22mBysQfnzibXtP1f6J6TBWK9ctH8athrzQ9XjaKPQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="四参考">四、参考</h4>
+<p>[1]: Wei J, Wang X, Schuurmans D, et al. Chain-of-thought prompting elicits reasoning in large language models[J]. Advances in Neural Information Processing Systems, 2022, 35: 24824-24837.</p>
+<p>[2]: (Long)LLMLingua: 从压缩Prompt出发, 探究属于 LLMs 的语言，缓解Lost in the middle, 提升Long Context 下的性能：https://zhuanlan.zhihu.com/p/660805821</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)       
+</code></pre>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
