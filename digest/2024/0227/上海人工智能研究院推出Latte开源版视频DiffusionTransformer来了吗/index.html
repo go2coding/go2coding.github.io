@@ -1,0 +1,824 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>上海人工智能研究院推出Latte，开源版视频DiffusionTransformer来了吗？ 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 【点击】加入大模型技术交流群 今天分享的这篇文章来自于上海人工智能实验室，论文的Title为：Latte: Latent Diffusion Transformer for Video Generation。该方法探索如何有效的对视频中的时间、空间信息进行建模，将视频  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#967ddd9c88acd8d5889dffd17a06bf87" class="smooth">
+                                            <i class="fas fa-gift fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>免费ChatGPT</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e1b7cee794666669f55acead93513971" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7fcf42edf5817042904f4a122ff77582" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">上海人工智能研究院推出Latte，开源版视频DiffusionTransformer来了吗？</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              February 27, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49RPs9iauev6btBEEJxYvAg1c8q5tqn1ZlNwAJ58QjkHOeuc3q1ic3oOfA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/EoIhEyuGvdpedT9LBpoEew">吃果冻不吐果冻皮</a></p>
+<h4 id="heading"></h4>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群</a></p>
+<p>今天分享的这篇文章来自于上海人工智能实验室，论文的Title为：Latte: Latent Diffusion Transformer for Video Generation。该方法<strong>探索如何有效的对视频中的时间、空间信息进行建模，将视频信息有效的处理成连续的tokens。另外在如何提高视频生成质量上，也做了非常多的实验。</strong>  项目已开源，相关实验结果可以借鉴～</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49CZLrT5TYUzaAmzrXhJfWNMH5evnuuMvUXkfo5Qz0AUC01tRdR5J8Hg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>• 标题: Latte: Latent Diffusion Transformer for Video Generation</p>
+<p>• URL: <a href="https://arxiv.org/abs/2401.03048v1">https://arxiv.org/abs/2401.03048v1</a></p>
+<p>• 代码：https://github.com/Vchitect/Latte</p>
+<p>• 作者: Xin Ma, Yaohui Wang, Gengyun Jia, Xinyuan Chen, Ziwei Liu, Yuan-Fang Li, Cunjian Chen, Yu Qiao</p>
+<h4 id="一概述">一、概述</h4>
+<h4 id="1-motivation">1 Motivation</h4>
+<ul>
+<li>
+<p>• 视频生成技术如何提高生成质量是一个难题，如何更好的挖掘时序、空间的信息？采用何种架构对模型进行建模？这些都值得探索。</p>
+</li>
+<li>
+<p>• 本文提出了一个全新的Latent Diffusion Transformer，名为Latte，用于视频生成。其目标是在潜在空间中对视频分布进行建模，并提高生成视频的质量。</p>
+</li>
+</ul>
+<h4 id="2-methods">2 Methods</h4>
+<p>####<strong>方法概述:</strong></p>
+<p>Latte首先从输入视频中提取spatio-temporal tokens（空间-时间标记），然后采用一系列的Transformer块来在潜在空间对视频分布进行建模。</p>
+<p>这里有两个难题，一个是<strong>如何充分挖掘视频的时间和空间维度的信息，从视频中抽取出连续的tokens。</strong>  本文对比了四种高效的模型变体来探索最优处理视频输入的方式。</p>
+<p>另外一个难题是<strong>如何提升视频生成质量。</strong>  本文在模型变种 (Model Variants)、timestep-class information injection (时间步长类信息注入)、temporal positional embedding (时间位置嵌入)、and learning strategies (学习策略)等方面进行了充分的实验，来探索最优提升质量的方法。</p>
+<h4 id="21-the-model-variants-of-latte">2.1 The model variants of Latte</h4>
+<p>为了对<strong>从视频中提取的spatio-temporal information进行建模</strong> ，我们从分解输入视频的空间和时间维度的角度引入了四种高效的变体。这些变体旨在通过不同的方式分解输入视频的空间和时间维度，以提高视频生成的质量。以下是这四种模型变体的详细介绍：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49qGXXBS8yB3sXwydnU0btp90fueffstbkbpQeia9bCllLOrwWMegsFhw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<ol>
+<li>
+<p>1.<strong>Variant 1</strong> ：这个变体的Transformer骨干由两种不同类型的Transformer块组成：空间Transformer块和时间Transformer块。空间Transformer块专注于在具有相同时间索引的token之间捕捉空间信息，而时间Transformer块则以“交错融合”的方式在时间维度上捕捉信息。</p>
+</li>
+<li>
+<p>2.<strong>Variant 2</strong> ：与Variant 1中的“交错融合”设计不同，<strong>Variant 2采用了“后期融合”方法来结合时空信息。</strong> 这个变体同样包含与Variant 1相同数量的Transformer块，输入形状与Variant 1相似，但融合时空信息的方式不同。</p>
+</li>
+<li>
+<p>3.<strong>Variant 3</strong> ：专注于<strong>分****解Transformer块中的多头注意力</strong> （multi-head attention）。这个变体<strong>首先在空间维度上计算自注意力，然后是时间维度，从而每个Transformer块都能捕捉到时空信息。</strong></p>
+</li>
+<li>
+<p>4.<strong>Variant 4</strong> ：多头注意力（MHA）被分解为两个组件，每个组件使用一半的注意力头。<strong>不同的组件分别处理空间和时间维度的token。两个不同的注意力操作计算完成后，时间维度的token被重塑并添加到空间维度的token中，然后作为Transformer块下一个模块的输入。</strong></p>
+</li>
+</ol>
+<p>这些模型变体的设计旨在<strong>通过不同的策略来优化视频生成过程中的时空信息处理</strong>  ，以期达到更好的视频生成效果。在实验部分，作者通过综合分析这些变体，确定了最佳的实践方法，包括视频片段嵌入、模型变体、时间步长-类别信息注入、时间位置嵌入和学习策略，以实现高质量的视频生成。</p>
+<h4 id="22-the-empirical-analysis-of-latte">2.2 The empirical analysis of Latte</h4>
+<p>为了<strong>提高生成视频的质量</strong>  ，我们通过严格的实验分析确定了 Latte 的最佳实验，包括video clip patch embedding（视频剪辑补丁嵌入）、model variants（模型变体）、timestep-class information injection,（时间步长-类信息注入）、temporal positional embedding（时间位置嵌入和学习策略），以下是这一节内容的详细介绍：</p>
+<ol>
+<li>1.<strong>Latent video clip patch embedding</strong> ：</li>
+</ol>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49s1KPDYoXwxSdrGdSEHVC3GTRWE7NS3jgJklA58PANv6F4Fw9Fso0wQ/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240220220330989</p>
+<ul>
+<li>
+<p>• 作者探索了两种视频片段嵌入方法：<strong>均匀帧补丁嵌入（uniform frame patch embedding）和压缩帧补丁嵌入（compression frame patch embedding）</strong> 。</p>
+</li>
+<li>
+<p>• 均匀帧补丁嵌入是<strong>将每个视频帧单独嵌入到token中</strong> ，类似于ViT（Vision Transformer）的方法。</p>
+</li>
+<li>
+<p>• 考虑捕获时间信息，然后将 ViT patch 嵌入方法从 2D 扩展到 3D，随后沿着时间维度提取，通过按一定步长提取时间序列中的“管状”结构，然后映射到token。</p>
+</li>
+<li>
+<p>2.<strong>Timestep-class information injection</strong> ：</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49fhe4OdreYxqQMbL9jLibsKg60QHicOxBIF7Q79Ih1EQuPyPW26FiapOhQ/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240226160731409</p>
+<p>图 4：（a）第 3.3.2 节中描述的 S-AdaLN 架构。（b）图 2（a）和（b）中使用的 vanilla transformer 块的架构。MLP 和 MHA 分别表示多层感知层和多头注意力。</p>
+<ul>
+<li>
+<p>• 为了将时间步长或类别信息集成到模型中，作者尝试了两种方法：将信息作为token处理（all tokens），以及采用可扩展自适应层归一化（S-AdaLN）。</p>
+</li>
+<li>
+<p>• S-AdaLN通过线性回归计算γc和βc，然后应用到Transformer块的隐藏嵌入上，以适应性地编码时间步长或类别信息。</p>
+</li>
+<li>
+<p>3.<strong>Temporal positional embedding</strong> ：</p>
+<ul>
+<li>
+<p>• 为了使模型理解时间信号，作者探索了两种时间位置嵌入方法：绝对位置编码（absolute positional encoding）和相对位置编码（relative positional encoding）。</p>
+</li>
+<li>
+<p>• 绝对位置编码使用不同频率的正弦和余弦函数，而相对位置编码则使用旋转位置编码（RoPE）来捕捉连续帧之间的时间关系。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>4.<strong>Enhancing video generation with learning strategies</strong> ：</p>
+<ul>
+<li>
+<p>• 作者研究了两种学习策略：使用预训练模型（ImageNet预训练）和图像-视频联合训练（image-video joint training）。</p>
+</li>
+<li>
+<p>• 使用预训练模型可以利用ImageNet上学习到的图像生成知识，而图像-视频联合训练则通过在每个视频样本后附加随机选择的视频帧来提高模型的多样性和性能。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>通过这些实证分析，作者确定了<strong>最佳的模型配置和训练策略，使得Latte模型能够在多个标准视频生成数据集上实现最先进的性能****。这些分析结果对于理解如何将Transformer架构有效地集成到扩散模型中，以及如何优化视频生成过程具有重要意义。</strong></p>
+<h4 id="3-conclusion">3 Conclusion</h4>
+<ul>
+<li>
+<p>• Latte模型在四个标准视频生成数据集（FaceForensics, SkyTimelapse, UCF101和Taichi-HD）上展示了其最先进的性能。</p>
+</li>
+<li>
+<p>• Latte还被扩展到了文本到视频的生成任务上，并取得了与最新T2V模型相媲美的结果。</p>
+</li>
+<li></li>
+</ul>
+<h4 id="二详细内容">二、详细内容</h4>
+<h4 id="1-在4个不同数据集上的视频生成效果">1 在4个不同数据集上的视频生成效果</h4>
+<p><strong>定性：</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49qNMD295ibzkNCqsOFnSZgWtbmiaxqDutRsIlFJzur7UhibIzpDzecvrUg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<ul>
+<li>• 在具有挑战性的 UCF101 数据集内合成高质量视频方面表现出色，而其他方法往往在这项任务中失败。</li>
+</ul>
+<p><strong>定量：</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49RPs9iauev6btBEEJxYvAg1c8q5tqn1ZlNwAJ58QjkHOeuc3q1ic3oOfA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49BD8WJ2ruFlgAJUqDzqURmTpWO6P6vUHmtcSShciaiaicibjNtT68FezDJA/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240221085158693</p>
+<p><strong>数据集选择：</strong></p>
+<ul>
+<li>
+<p>• 实验主要在四个公开的视频数据集上进行：FaceForensics、SkyTimelapse、UCF101 和 Taichi-HD。</p>
+</li>
+<li>
+<p>• 这些数据集用于训练和测试模型，以生成具有高分辨率（256×256像素）的视频。</p>
+</li>
+</ul>
+<p><strong>评估指标</strong> ：</p>
+<ul>
+<li>
+<p>• 评估指标：Fréchet Video Distance (FVD)，FVD是一种评估视频生成质量的指标，它衡量生成视频与真实视频之间的相似度。</p>
+</li>
+<li>
+<p>• FID和IS则用于评估视频帧的质量。</p>
+</li>
+</ul>
+<p><strong>基线比较</strong> ：</p>
+<ul>
+<li>
+<p>• 与当前最先进的视频生成方法进行了比较，包括MoCoGAN、VideoGPT、MoCoGAN-HD、DIGAN、StyleGAN-V、PVDM、MoStGAN-V 和 LVDM。</p>
+</li>
+<li>
+<p>• Latte（本文提出的方法）</p>
+</li>
+<li>
+<p>• Latte+IMG（本文提出的方法，结合了图像-视频联合训练）：放方法在4项任务中，都取得了sota。</p>
+</li>
+</ul>
+<h4 id="2-消融实验">2 消融实验</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49dK46icwibAO9lvZnymaId8dmicONK5jDDTnzibjQCpnia8V27ib9hscwSmEQ/640?wx_fmt=png&amp;from=appmsg" alt="">image-20240221091118624</p>
+<ol>
+<li>
+<p>1.<strong>Video sampling interval</strong> ：研究不同的视频采样间隔对模型性能的影响。</p>
+</li>
+<li>
+<p>2.<strong>Temporal positional embedding</strong> ：比较绝对位置编码和相对位置编码对模型性能的影响。</p>
+</li>
+<li>
+<p>3.<strong>ImageNet pretraining：</strong>  比较是否在ImageNet数据上进行预训练对实验结果的影响。</p>
+</li>
+<li>
+<p>4.<strong>Model variants</strong> ：比较Latte模型的不同变体（Variant 1, Variant 2, Variant 3, Variant 4）在FVD上的表现。</p>
+</li>
+<li>
+<p>5.<strong>Video clip patch embedding</strong> ：研究不同的视频片段嵌入方法对FVD的影响，例如均匀帧补丁嵌入与压缩帧补丁嵌入。</p>
+</li>
+<li>
+<p>6.<strong>Timestep-class information injection</strong> ：分析将时间步长或类别信息以不同方式注入模型（如所有token或可扩展自适应层归一化S-AdaLN）对FVD的影响。</p>
+</li>
+</ol>
+<p>结论：</p>
+<ol>
+<li>
+<p>1.<strong>Video sampling interval</strong> ：不同的采样间隔在训练初期对性能有显著影响，但随着训练的进行，这些影响逐渐减小。</p>
+</li>
+<li>
+<p>2.<strong>Temporal positional embedding</strong> ：绝对位置编码在某些情况下能提供稍微更好的结果。</p>
+</li>
+<li>
+<p>3.<strong>ImageNet pretraining：</strong>  使用在ImageNet上预训练的模型作为初始权重可以帮助视频生成模型更快地学习，但随着训练的进行，模型可能会遇到适应特定视频数据集分布的挑战。这可能导致性能在达到一定水平后趋于稳定，不再显著提高。</p>
+</li>
+<li>
+<p>4.<strong>Model variants</strong> ：Variant 1在迭代增加时表现最佳，而Variant 4由于计算效率较高，尽管性能稍逊，但在资源受限的情况下可能是一个不错的选择。</p>
+</li>
+<li>
+<p>5.<strong>Video clip patch embedding</strong> ：均匀帧补丁嵌入在某些情况下表现更好，因为它可能更好地保留了视频的时空信息。</p>
+</li>
+<li>
+<p>6.<strong>Timestep-class information injection</strong> ：S-AdaLN方法更有效地将信息传递给模型，从而提高了性能。</p>
+</li>
+</ol>
+<h4 id="3-模型大小对性能的影响">3 模型大小对性能的影响</h4>
+<p><strong>模型参数设置：</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw49HWEQjZzWsSiadiabp5ia35j7JHgRot4MWA5brYWXibs1O9uAwWQFfHpgeQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>不同参数模型效果：</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw494jsW9GAzydwBJThfnpeaSCTLJqbfotv0QTOsNcQgdyib2cDfgnm3Arg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>图表可能显示随着模型大小的增加，模型在视频生成任务上的性能（如FVD分数）通常会有所提高。这表明更大的模型能够捕捉更复杂的视频特征，从而生成更高质量的视频。</p>
+<h4 id="4-文本到视频生成t2v任务的表现">4 文本到视频生成（T2V）任务的表现</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/gTSf9kr5zrN5IbzaMxqib31J9euZoXw494UmhlRvgf6JKzuJqXHVTVZ7TEicUibXzGficm1W1uXwYiacGDBiata1VytA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>结论：Latte文生图能力也能与当前领先的VideoFusion和Align your Latents T2V模型相比了。</p>
+<h4 id="三总结">三、总结</h4>
+<p><strong>亮点总结:</strong></p>
+<ul>
+<li>
+<p>•<strong>Latte采用Transformer技术实现了视频生成的模型革新。</strong>  创新性地提取空间-时间标记并在潜在空间建模视频，效果在多个视频生成数据集上取得sota。</p>
+</li>
+<li>
+<p>•<strong>四种效率变体的引入允许更灵活地处理视频数据。</strong>  模型内部transformer结构上，探索了多种变体用于处理视频的时间、空间信息。</p>
+</li>
+<li>
+<p>•<strong>丰富的实验和分析确保了最佳实践的确定。</strong>  为了提升视频生成质量，在多个方面进行详细的实验与结果分析，相关经验都可借鉴！</p>
+</li>
+</ul>
+<p><strong>应用价值和行业影响:</strong></p>
+<ul>
+<li>
+<p>• Latte模型极具潜力，能够在视频生成和相关领域如自动动画制作、虚拟现实内容创建等方面发挥重大作用。</p>
+</li>
+<li>
+<p>• 文本到视频的生成能力显示Latte在跨媒体内容生成领域的广泛适用性，对未来研究影响深远。</p>
+</li>
+</ul>
+<p>目前代码已经开源，相关代码实现和实验经验，可以给大家做一个有效的参考！</p>
+<p><strong>历史文章：</strong> <a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487067&amp;idx=2&amp;sn=33594e6a82cf79a7580272c064635d75&amp;chksm=fd3be708ca4c6e1ece0e1f6cc22bfd286bf3e9073350b91369b1d0e7fb52b50fac8113288e43&amp;scene=21#wechat_redirect">2024年1月大模型文章集锦</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
