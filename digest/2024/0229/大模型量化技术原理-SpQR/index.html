@@ -1,0 +1,867 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>大模型量化技术原理-SpQR 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 【点击】加入大模型技术交流群 近年来，随着Transformer、MOE架构的提出，使得深度学习模型轻松突破上万亿规模参数，从而导致模型变得越来越大，因此，我们需要一些大模型压缩技术来降低模型部署的  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">大模型量化技术原理-SpQR</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              February 29, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLzflg0qzyCv1o1yUm662KlNSVffcFWEicicRBQtQ7h9xLtIoiamia0P3YMw/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/fG1v6KD45QQ0AO6fiA4nCA">吃果冻不吐果冻皮</a></p>
+<h4 id="heading"></h4>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群</a></p>
+<p>近年来，随着Transformer、MOE架构的提出，使得深度学习模型轻松突破上万亿规模参数，从而导致模型变得越来越大，因此，我们需要一些大模型压缩技术来降低模型部署的成本，并提升模型的推理性能。模型压缩主要分为如下几类：</p>
+<ul>
+<li>
+<p>剪枝（Pruning）</p>
+</li>
+<li>
+<p>知识蒸馏（Knowledge Distillation）</p>
+</li>
+<li>
+<p>量化</p>
+</li>
+</ul>
+<p>本系列将针对大模型的一些常见训练后量化方案（GPTQ、LLM.int8()、SmoothQuant、AWQ等）进行讲述。</p>
+<ul>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247486162&amp;idx=1&amp;sn=383038c220cba02bca1936f31e95f776&amp;chksm=fd3be381ca4c6a97406f1ff4a1190fa315643abfb5b2f66112541362fa52b2fa5039eb8ecc50&amp;scene=21#wechat_redirect">大模型量化概述</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487032&amp;idx=1&amp;sn=66c07e9a9bdeedc1f6c3156a0d8ea9f0&amp;chksm=fd3be76bca4c6e7dae44c9d11d2e449fdd5629080fc434fb05440b1e2e98ada6b3ef6991dc23&amp;scene=21#wechat_redirect">大模型量化技术原理-GPTQ、LLM.int8()</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487126&amp;idx=2&amp;sn=a8955d0c31a8c15c050758fb9d87f5be&amp;chksm=fd3be7c5ca4c6ed31e1990b7329e73879c24f90bab047d50768200487f7dfe72a6e30b1390e2&amp;scene=21#wechat_redirect">大模型量化技术原理-SmoothQuant</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487141&amp;idx=2&amp;sn=e5f814add640b3100183416015644524&amp;chksm=fd3be7f6ca4c6ee05430ed0c299c9a4ed28eef2246eb8cb189f952126fa98f2e5172bfa8949e&amp;scene=21#wechat_redirect">大模型量化技术原理-AWQ、AutoAWQ</a></p>
+</li>
+<li>
+<p>大模型量化技术原理-SpQR</p>
+</li>
+<li>
+<p>大模型量化技术原理-ZeroQuant系列</p>
+</li>
+</ul>
+<p>还记得之前提到的量化方案 LLM.int8() 吗？本文讲述作者提出的另一种量化方案SpQR。</p>
+<blockquote>
+<p>文章较长，建议先点赞收藏，后续再慢慢观看。另外，我撰写的<strong>大模型相关的博客及配套代码</strong> 均整理放置在Github：llm-action，有需要的朋友自取。</p>
+</blockquote>
+<h4 id="背景">背景</h4>
+<p>随着大模型的参数越来越大，通常需要通过量化将此类LLMs压缩为每个参数3-4比特，以适合笔记本电脑和移动电话等内存有限的设备，从而实现个性化使用。但现有的技术方案（如：GPTQ）将参数量化至 3-4 比特通常会导致显著的精度损失，特别是对于 1-10B 参数范围内的较小模型，而这些模型却非常适合边缘部署。</p>
+<p>为了解决这个精度的问题，作者引入了稀疏量化表示（SpQR），这是一种新的压缩格式和量化技术，首次实现了<strong>跨模型参数规模</strong> 的<strong>近乎无损</strong> 的（near-lossless） LLM 压缩，同时达到与以前的方法类似的压缩水平。</p>
+<h4 id="spqr-简介">SpQR 简介</h4>
+<p>SpQR （论文：<strong>SpQR: A Sparse-Quantized Representation for Near-Lossless LLM Weight Compression</strong> ）是一种混合稀疏量化格式，其工作原理是<strong>识别和隔离异常值权重</strong> （这些权重会导致特别大的量化误差），<strong>并以更高的精度存储它们，同时将所有其他权重压缩到3-4位，并实现小于1%的精度损失</strong> 。这使得在单张 24 GB 消费级 GPU 上运行 33B 参数的 LLM 成为可能，并且在提升 15% 的推理速度情况下不会出现任何精度下降。</p>
+<p>另外，SpQR 提供了高效的算法，可以将权重编码为 SpQR 格式，并在运行时对其进行高效解码。并且为 SpQR 提供了一种高效的 GPU 推理算法，该算法以近似的精度产生比 16 比特基线更快的推理，同时实现超过 4 倍的内存压缩增益。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLw2E4TTia26JibCBF3t6LruhmUT30pWoG8gMxWTYSHTfiasqbHMa60V7Iw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p>为了将给定的预训练LLM转换为SpQR格式，作者采用了GPTQ的扩展版本。该方法通过未压缩模型传递校准数据；为了压缩每一层，它针对未压缩模型的输出和量化权重的输出之间的 L2 误差应用逐层（layer-wise）求解器。本方法将这个过程分为两个步骤：</p>
+<ul>
+<li>
+<p>异常值检测步骤，隔离直接量化对层输出行为产生巨大影响的权重，</p>
+</li>
+<li>
+<p>实际压缩步骤，大多数（≥ 99%）权重被压缩到低位宽。</p>
+</li>
+</ul>
+<p>通过提取离群值，并通过进一步压缩量化元数据使整个表示更加有效。</p>
+<p>该分析表明LLM权重量化误差表现出垂直和水平组相关性（group correlations），对应于与输入特征维度和输出隐藏维度相对应的系统性大误差。虽然，之前在 LLM.int8 已经观察到<strong>异常值输入特征</strong> ，但本文首次证明，类似的异常值出现在权重(对于特定输出隐藏维度)中。<strong>与输入特征异常值不同，输出隐藏维度异常值仅出现在特定输出隐藏维度的小片段中</strong> 。</p>
+<p>因此，作者提出的量化算法隔离此类异常值，并以 SpQR 格式有效地对给定模型进行编码。为了利用所得结构，还开发了一种基于压缩稀疏行（CSR）格式的专门稀疏矩阵乘法算法。为了使用 SpQR 进行逐个token生成，我们将这种稀疏算法与 3-4 比特权重的密集量化矩阵乘法结合起来。与LLM 生成 16 比特推理相比，SpQR 将 LLMs 的内存占用减少了约 3.4 倍或更多，而不会降低精度（以语言模型的损失或困惑度来衡量）。</p>
+<h4 id="之前的工作">之前的工作</h4>
+<p>早期的工作[LLM.int8()、Smoothquant]表明激活和权重都可以量化为 8 比特，而对精度的影响相对较低。这些研究对 LLMs 场景下压缩错误的原因产生了一些有趣的见解。具体来说，[LLM.int8()，Smoothquant]观察到在大语言模型的输入/输出中存在显著较高值的“离群特征”，这会导致更高的量化误差，并提出不同的缓解策略。</p>
+<p>而本文的作者从权重量化的角度来分析这个现象。特别是，作者研究了权重矩阵中输入特征异常值之外的异常值结构。虽然发现<strong>当前层的输入特征异常值与前一层的隐藏单元异常值权重相关，但并不存在严格的对应关系</strong> 。这种部分结构化的异常值模式需要一种细粒度的混合压缩格式，该格式超越了利用先前工作中发现的异常值特征的列结构的算法。</p>
+<p>因此，作者提出：</p>
+<ul>
+<li>
+<p>一种高效且准确的训练后压缩算法，该算法将异常值识别为导致高输出误差的权重。</p>
+</li>
+<li>
+<p>一种将异常值压缩到相对于常规权重更高位宽的格式。</p>
+</li>
+<li>
+<p>本文的格式将异常值存储在块中，从而可以高效地实现 GPU kernels。</p>
+</li>
+</ul>
+<h4 id="llm-权重参数量化灵敏度分析">LLM 权重参数量化灵敏度分析</h4>
+<p>由于神经网络模型中并非所有参数都同等重要。如果权重的舍入误差较大，则权重可以被视为对量化敏感。</p>
+<p>权重  在与另一个权重  强相关时，可能具有较大的舍入误差，这意味着可以通过向下舍入  很好地补偿对进行舍入的误差。之前的量化算法（如：GPTQ、ZeroQuant）正利用了这一想法，带来了对普通舍入的重大改进，尤其是低位宽。正确捕捉这方面的敏感性需要更健全的定义。</p>
+<p>为了计算易处理，作者使用一小组校准集，通过输入 X 来评估 per-layer 级别的灵敏度，这些校准输入 X 是通过将模型运行到特定层来收集的。我们将层权重矩阵 W 中某个权重  的灵敏度  定义为 X 上的原始预测与该权重被量化的任何权重矩阵  的预测之间的最小平方差。如：。</p>
+<p>更重要的是，除了  之外的  的所有权重都可以采用任意的、不一定是量化的值，以便补偿因舍入  而产生的量化误差，从而捕获上面讨论的相关性。此外，由于我们允许连续值，因此该问题认为是封闭式解决方案。这可以通过遵循广义的OBC(Optimal Brain Compression)来确定，其中，是对应于优化问题的逆Hessian矩阵：</p>
+<p>这种显著性度量可以通过量化求解器（例如：GPTQ）有效地近似。更详细地说，GPTQ 逐列量化权重矩阵，同时在每个步骤中调整尚未量化的部分，以在与上述定义类似的意义上补偿量化误差。因此，不是预先静态地决定所有敏感度，而是可以在算法处理每一列时，通过使用与所有尚未量化的权重相对应的 Hessian 子选择的逆来动态计算它们。该矩阵已由 GPTQ 有效计算，因此，不会产生任何额外的开销。这种方法的主要优点是  总是根据  的最新值确定；因此，也考虑了由于先前量化的权重而进行的调整。</p>
+<p><strong>权重矩阵中敏感权重的位置不是随机的，而是具有特定的结构</strong> 。为了在量化过程中突出这些结构元素，我们计算了每个权重的灵敏度，并将它们可视化。下图可视化了 LLaMA-65B<strong>最后一个自注意力层的输出投影的权重敏感度</strong> 。利用敏感度分析，作者观察到在权重矩阵中存在的<strong>几种模式</strong> ，通常在单行或单列中。由于 LLaMA-65B 中的大权重矩阵有太多的行/列，无法在紧凑的图像（默认值: 8k × 32k 像素）中重新呈现，下图左边采用最大池化来可视化矩阵，选 32×32 行和列的每个正方形中的最大敏感度。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLZkRoticyHUbmEvtbCYdDibNZCRu8PfxsBN9AFDMSKj8DsgaVOzBJTIUw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><strong>量化误差模式受到层类型和层深度的影响</strong> 。通过可视化观察到量化误差模式随层类型（例如：attention与MLP）和层深度的不同而变化。特别是，<strong>发现更深的层存在更敏感的异常值</strong> 。</p>
+<p>以注意力权重矩阵为例，对异常值结构进行分类：</p>
+<p><em><strong>行异常值</strong> ：如图底部中心所示，对应于</em><em>输出特征的高敏感度区域</em>* 。其中一些模式横跨整行，而另一些模式则是部分。在注意力层中，一些部分行异常值对应于注意力头的某个子集。</p>
+<p><em><strong>列异常值</strong> ：如图右下角所示，显示了所有行的选择</em><em>输入维度（列）的高灵敏度</em>* 。</p>
+<p>*<strong>敏感注意力头</strong> ：如图顶部中心区域所示，<strong>出现了宽度为 128 的规则条纹，这对应了一个注意力头的所有权重</strong> 。对应的“条纹”在 Q &amp; K 投影矩阵中是水平的，在输出投影矩阵中是垂直的，在 V 投影矩阵和任何 MLP 权重中都没有。值得注意的是，即使在敏感的头（sensitive heads）内，单独的权重敏感性也存在显著差异。</p>
+<p>*<strong>旋转嵌入模式</strong> ：如图右上角所示，展示了 64 个单位周期的重复垂直敏感度模式，<strong>这是旋转嵌入位置编码的特有模式。任何不使用旋转嵌入的层都没有这种模式。</strong></p>
+<p><em><strong>非结构化异常值</strong> ：除此之外，每一层都有许多</em><em>单独的敏感度权重</em>* ，这些权重不适合任何上述模式。这些非结构化异常值更频繁地出现在具有最大输入索引的列中(即在图像的右侧)。但在热力图上很难看到这种效果。</p>
+<p>因此，作者将利用这些发现提出一个压缩表示，可以支持所有这些不同的离群值类型。</p>
+<h4 id="spqr-技术原理">SpQR 技术原理</h4>
+<p>SpQR确定并隔离了异常权重，将其存储在更高的精度中，并将所有其他权重压缩为3-4比特。具体工作原理如下：</p>
+<ul>
+<li>
+<p>首先，我们隔离离群权重，我们发现其量化会导致不成比例的高误差。因此，将这些权重保持高精度，而其他权重存储在低得多的精度中，例如：3比特格式。</p>
+</li>
+<li>
+<p>其次，我们实现了一种具有非常小的组大小（group size）的分组量化的变体，例如：16 个连续元素，但我们<strong>将量化缩放（scales）本身量化为 3 比特表示</strong> 。</p>
+</li>
+</ul>
+<p>之前的 LLM 量化算法同等对待低敏感度权重和高敏感度权重；然而，通过上面的讨论表明这可能会导致次优量化。理想情况下，将表示将更多的大小预算（size budge）分配给敏感权重。然而，这些权重作为单独权重或小组（small groups）分散在权重矩阵中，例如：部分行或注意力头。为了捕获这种结构，我们对量化过程进行了两项更改：一个用于捕获小敏感组，另一个用于捕获单个异常值。</p>
+<p><strong>通过双层量化捕获小组（small groups ）权重</strong> 。在上一节中，我们观察到了几种情况，其中权重在连续的小组中表现相似，但组之间发生突然变化，例如：某些注意力头和部分行异常值。当应用标准方法时，在很多情况下，这些权重将被分组在一起，共享相同的量化统计数据。为了减少此类情况的数量，我们使用极小的组进行分组量化，通常为 β 个权重。也就是说，对于每 β 个连续权重，都有一个单独的量化 scale 和 zero-point。</p>
+<p>这种选择与当前的直觉相悖，之前的工作认为存储量化统计数据的开销将超过精度优势。为了避免这个问题，我们使用与权重相同的量化算法——非对称（最小-最大）量化来量化分组统计数据本身。由于最小-最大量化的工作原理，量化值的范围将适合具有最大（或最小）量化scale的组，从而完美地量化它们。</p>
+<p>换句话说，我们对来自 β 个连续值的分组统计数据进行分组，并以相同的位数将它们一起量化，这样具有非典型量化参数的组最终会使用更多的“量化预算”。最后，第一层和第二层量化都直接在量化过程中进行，允许算法尽可能补偿第二层量化误差。</p>
+<p><strong>高灵敏度异常值</strong> 。我们的分析表明，存在一小部分敏感权重出现在小群体（在自注意力中）或独立的“异常值”（在 MLP 中）的情况。<strong>在某些情况下，1% 的权重占总量化误差的 75% 以上</strong> 。由于这些权重似乎会导致较高的、不可减少的误差，因此我们选择以高精度（16 位）保留这些异常值。由于这些离群值通常是非结构化的，因此我们以类似于压缩稀疏行（CSR）表示的按行排列方式对它们进行单独编码。这可以对<strong>不符合上述组（group）定义的</strong> 单个异常值和小结构进行编码。</p>
+<h4 id="spqr-量化算法">SpQR 量化算法</h4>
+<p>SpQR 量化算法如下所示：左侧片段描述了完整的过程，右侧包含用于bilevel量化和查找异常值的子例程。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLcI1wEibYrP1ia9LQeribKrLSIe8KSPaV5JDz06Zw09kz5sHylJiaFLhLQg/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p>上面伪代码详细描述了检测异常值的过程。</p>
+<ul>
+<li>
+<p>(1) 查找异常值并将其隔离为 16 位权重，</p>
+</li>
+<li>
+<p>(2) 将非异常值“base”权重量化为 3-4 位，并将剩余量化迁移到 16 位异常值权重中。</p>
+</li>
+</ul>
+<p>对于异常值隔离步骤，该算法基于等式（）中的灵敏度标准实现了过滤技术。<strong>用于将离群值与基本权值隔离分离</strong> 。<strong>在全局范围内，对于每个矩阵，该算法的目标是选择一个敏感度阈值 τ 以获得整个模型中所需的异常值数量，通常约为权重的 1%</strong>。具体来说，如果将权重保持为 16 位可以减少等式()中的误差，那么，特定权重(至少 τ )被视为异常值。</p>
+<p>在第一个异常值检测步骤之后，我们量化base权重，忽略同一量化组中出现的所有异常值。因此，量化统计数据（例如:scale）是通过排除异常值来计算的。这导致错误方面的显著改善，因为例如最小-最大scales将显著减小。然后算法继续应用 GPTQ 来量化剩余的权重。</p>
+<p>有趣的是，与LLM.int8()不同，权重不仅可以被选择为离群值，如果它本身导致错误，而且如果GPTQ算法可以使用这个权重来补偿许多其他权重的错误。因此，生成的 16 位值将不包含原始权重，而是包含经过调整以最小化输出误差的权重。因此，<strong>SpQR 超越了仅检测异常值，而是实现了隔离和处理量化过程中出现的异常值的更一般概念</strong> 。最后，该算法收集并压缩<strong>稀疏异常值矩阵</strong> 以及<strong>双层量化的最终量化统计数据</strong> ，并返回压缩的权重及其元数据。</p>
+<h4 id="稀疏量化表示的实现和利用">稀疏量化表示的实现和利用</h4>
+<p>我们的算法<strong>将同质权重转换为不同大小和精度的多种数据结构</strong> 。</p>
+<p>总体而言，该表示由（1）量化权重、（2）第一层量化量化统计数据、第二层量化统计数据、（3）CSR异常值指数和值组成。</p>
+<p>下面是单个权重张量的 SpQR 表示的高级概述。右侧描述了所有存储的数据类型及其维度。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLiazBTVnG5bEBEU98qso8N9TzBFOGdmibkR19ibwW30CA7YYibhe2OR3ANQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>上图中总结了 SpQR 的整体结构，下面是每个组件的描述。</p>
+<p><strong>存储量化组</strong> 。所有非异常值权重均被编码为包含以下内容的结构：</p>
+<ul>
+<li>
+<p>比特独立的权重；</p>
+</li>
+<li>
+<p>每组大小为 B 的  比特 scale 和 zero point；</p>
+</li>
+<li>
+<p>用于量化  量化组（scale 和 zero point）的 16 比特统计数据。</p>
+</li>
+</ul>
+<p><strong>存储异常值</strong> 。我们的异常值是非结构化的；为了存储，我们按行（首先）列（其次）对它们进行排序，以便同一行中的异常值在内存中是连续的。对于每个异常值，我们存储两个标量：16 比特权重值和 16 比特列索引。对于每一行，我们还存储一个 32 比特数字（到当前行为止的行中离群值的总数，以便进行高效推理）。这导致每个敏感权重的平均存储成本为 32.03 至 32.1 比特。</p>
+<p><strong>使用 SpQR 进行推理</strong> 。作者为 SpQR 格式设计了一个基于 GPU 的高效解码实现，重点关注流行的逐个 Token 生成的场景。</p>
+<p>由于 GPU 上的自回归推理受内存限制，因此高压缩率可以在很大程度上隐藏解码开销。</p>
+<p>我们的算法将组统计数据和量化权重加载到共享内存 (SRAM) 中，反量化为 16 位，然后与 16 位输入执行矩阵乘法。为了处理异常值，我们设计了一种稀疏矩阵算法，该算法利用行中出现的异常值。粗略地说，该算法的工作原理如下：</p>
+<ul>
+<li>
+<p>首先，我们将矩阵划分为大小相等的块(block)。</p>
+</li>
+<li>
+<p>然后，每个 GPU core（线程块block）将一大片异常值加载到共享内存 (SRAM) 中。</p>
+</li>
+<li>
+<p>并且，每个 GPU core 确定异常值是否是该段的一部分。</p>
+</li>
+<li>
+<p>之后从主存加载相应的权重；最后进行矩阵乘法。</p>
+</li>
+</ul>
+<p>该算法本质上通过步骤（1-3）执行负载平衡，而步骤（4）由于异常值的row-like模式而倾向于具有连续的内存访问。</p>
+<h4 id="spqr-实验细节">SpQR 实验细节</h4>
+<p>在相似的模型大小下，SpQR 的性能明显优于 GPTQ、RTN，尤其是在较小的模型上。这一改进来自于 SpQR 实现了更多压缩，同时还减少了损失退化。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLzflg0qzyCv1o1yUm662KlNSVffcFWEicicRBQtQ7h9xLtIoiamia0P3YMw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p>此外，如果我们测量每个参数所需的位数，使其在困惑度方面达到 16 位性能的 1% 范围内，下图显示使用 SpQR 每个参数仅需 4.6 至 4.71 位即可接近非量化模型。</p>
+<p>针对 LLaMa 模型：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLGRneyW3vMiadVOsXH9vKlT7M7WW1JJ76yI8lnJZBXqaLGBVvNdn5xkw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p>针对 Falcon 模型：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLd9Jek3auo6Imt7ZCQVKeDvLvzs2MQtIZo1M1PE1k4JVAicfybCx7NQQ/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p>最后，还评估了 SpQR 自回归推理的推理速度，重点是测量单个 A100 GPU 上批量大小为 1 的token生成延迟。</p>
+<p>我们在两种设置中测量推理速度：</p>
+<ul>
+<li>
+<p>i）从头开始生成 100 个token，</p>
+</li>
+<li>
+<p>ii）在 1024 个token前缀（提示）上增加 100 个token。</p>
+</li>
+</ul>
+<p>我们将专门的稀疏矩阵乘法算法与 PyTorch (cuSPARSE) 中实现的算法进行比较。同时还与 16 位基线进行比较。我们将完整 SpQR 算法（即密集乘法部分和稀疏乘法部分）的端到端延迟测量为每秒推理步数。</p>
+<p>结果如下表所示。可以看到，我们优化的 SpQR 算法比 16 位基线更快，可实现约 20-30% 的加速；比量化矩阵乘法 + 标准 PyTorch 稀疏矩阵乘法基线快近 2.0 倍。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFsTYdYibU0L0eRFmTBI4OHLIUaLQ7o8hXGvvXhs4Pv2ylOEkwibfgHbc5ibKFFbibzhu95NFnP6YjHzA/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<h4 id="spqr-应用">SpQR 应用</h4>
+<ul>
+<li>SpQR量化代码：https://github.com/Vahe1994/SpQR</li>
+</ul>
+<p>通过以下命令压缩模型，然后使用WikiText2、C4和Penn Treebank数据集测试其perplexity 方面的性能。</p>
+<pre><code>export MODEL_PATH=&lt;PATH_TO_MODEL_DIR&gt;  
+export DATASET=&lt;INSERT DATASET NAME OR PATH TO CUSTOM DATA&gt;  
+  
+python main.py $MODEL_PATH $DATASET \  
+    --wbits 4 \  
+    --groupsize 16 \  
+    --perchannel \  
+    --qq_scale_bits 3 \  
+    --qq_zero_bits 3 \  
+    --qq_groupsize 16 \  
+    --outlier_threshold=0.2 \  
+    --permutation_order act_order \  
+    --percdamp 1e0 \  
+    --nsamples 128  
+</code></pre>
+<p>参数说明：</p>
+<ul>
+<li>
+<p>MODEL_PATH
+&ndash; 模型文件的路径，其中包含 config.json
+。</p>
+</li>
+<li>
+<p>DATASET
+&ndash; 用于压缩的数据集名称， [c4, ptb, wikitext2, pajama, refinedweb, none]数据集之一，或可供选择的预处理和tokenized数据集的路径。</p>
+</li>
+<li>
+<p>&ndash;wbits 3
+&ndash; 量化权重表示的比特数。</p>
+</li>
+<li>
+<p>&ndash;groupsize 16
+&ndash; 用于压缩的 first-order groups 的大小。</p>
+</li>
+<li>
+<p>&ndash;qq_groupsize 16
+&ndash; 用于压缩的 second-order (量化) groups的大小。</p>
+</li>
+<li>
+<p>&ndash;qq_scale_bits 3 &ndash;qq_zero_bits 3
+&ndash; 用于量化first-order权重的scale和zeros的比特大小。</p>
+</li>
+<li>
+<p>&ndash;offload activations
+&ndash; 不使用时将激活移动到 RAM。减少 VRAM 使用量，同时运行速度将减慢约 10%。</p>
+</li>
+<li>
+<p>&ndash;save &ndash;load
+&ndash; 保存/加载量化模型的路径。</p>
+</li>
+</ul>
+<h4 id="总结">总结</h4>
+<p>本文简要介绍了SpQR，其工作原理是识别和单独处理会导致大量化误差的异常值权重，并以更高的精度存储它们，同时将所有其他权重压缩到 3-4 比特，对于高精度的 LLaMA 和 Falcon LLM，在困惑中实现了小于 1% 的相对精度损失。这使得在单个 24 GB 消费级 GPU 上运行 33B 参数 LLM 成为可能。总之，作者通过小量化group和非结构化异常值处理都独立地改善了困惑度，并且比其他策略表现得更好。</p>
+<p>码字不易，如果觉得我的文章能够能够给您带来帮助，期待您的点赞收藏加关注~~</p>
+<h4 id="参考文档">参考文档</h4>
+<ul>
+<li>
+<p><a href="https://github.com/TimDettmers/bitsandbytes">https://github.com/TimDettmers/bitsandbytes</a></p>
+</li>
+<li>
+<p>SpQR code:https://github.com/Vahe1994/SpQR</p>
+</li>
+<li>
+<p>SpQR paper：https://arxiv.org/abs/2306.03078</p>
+</li>
+<li>
+<p>AWQ vs SpQR: 量化又见量化</p>
+</li>
+<li>
+<p>稀疏量化表示（SpQR）：3到4比特近乎无损压缩大规模语言模型</p>
+</li>
+</ul>
+<p><strong>历史文章：</strong> <a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487067&amp;idx=2&amp;sn=33594e6a82cf79a7580272c064635d75&amp;chksm=fd3be708ca4c6e1ece0e1f6cc22bfd286bf3e9073350b91369b1d0e7fb52b50fac8113288e43&amp;scene=21#wechat_redirect">2024年1月大模型文章集锦</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
