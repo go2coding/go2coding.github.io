@@ -1,0 +1,835 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>社区供稿｜快速上手谷歌Gemma模型中文指令微调 作者： Hugging Face 来源： Hugging Face 文/ 魏巍 谷歌在 2 月 21 日放出开放权重的 Gemma 系列大模型，包括 2B 和 7B 两个大小，并且有预训练和指令微调两个版本。虽然 Gemma 的预训练数据里面包含多种语言，不过在官方的技术报告里，明确指出了做指令微调的时候，只用了英文: 经过英文指令微调的  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#a84f4bdf2e3a0b87f8fd94655ababf18" class="smooth">
+                                            <i class="fas fa-store-alt  fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>电商工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#0c87301b4acfa4b78461c39487d4c06b" class="smooth">
+                                            <i class="fas fa-clone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>分辨AI</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6f9f33fdf2d26699cf1b921da90ea8f5" class="smooth">
+                                            <i class="fas fa-bone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开发框架</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">社区供稿｜快速上手谷歌Gemma模型中文指令微调</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 8, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2pnM9RgliaVCa0ruBAbxiatGyCicBDaiadHL25aoXblyZKou4pO4t2KMtKRvHDmZ6mCwBoGaQ8zjnnvkg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： Hugging Face  来源： <a href="https://mp.weixin.qq.com/s/jXymgChgWbfj4k9zr2vqmw">Hugging Face</a></p>
+<p>文/ 魏巍</p>
+<p>谷歌在 2 月 21 日放出开放权重的 <a href="http://mp.weixin.qq.com/s?__biz=Mzk0MDQyNTY4Mw==&amp;mid=2247490714&amp;idx=1&amp;sn=fd6f17929d52e11efe98b2e254ead7aa&amp;chksm=c2e0b426f5973d3014a0f46c0f1d17aefb045031b2c244aa7081a6e41e38d654cb1023acf68d&amp;scene=21#wechat_redirect">Gemma 系列大模型</a>，包括 2B 和 7B 两个大小，并且有预训练和指令微调两个版本。虽然 Gemma 的预训练数据里面包含多种语言，不过在官方的技术报告里，明确指出了做指令微调的时候，只用了英文:</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2pnM9RgliaVCa0ruBAbxiatGy6djf5qpa6N2E4lp5D99Cnj60GMxWx1xOYhot2gh4eJC90qbAcmYU0A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>经过英文指令微调的 Gemma 模型，仍然保留一定程度的指令跟随能力，可以理解一部分中文指令，但有些时候我们未必希望使用官方的指令微调模型，而是希望将预训练模型重新进行中文指令微调，来达到我们的要求，所以在这里我们就分享 3 个方法来进行 Gemma 的中文指令微调。</p>
+<p>注意在这里我们统一使用 gemma-2b 这个模型，同时我们选择了 Hello-SimpleAI/HC3-Chinese 数据集来作为微调数据。这个数据集有不同主题的问答，包括问题，人类回答和 ChatGPT 回答，涵盖了金融，百科，法律等等诸多题材，我们只使用 baike 这个子集，且不使用 ChatGPT 回答。</p>
+<ul>
+<li>
+<p>gemma-2bhttps://hf.co/google/gemma-2b-it</p>
+</li>
+<li>
+<p>Hello-SimpleAI/HC3-Chinesehttps://hf.co/datasets/Hello-SimpleAI/HC3-Chinese</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2pnM9RgliaVCa0ruBAbxiatGyCicBDaiadHL25aoXblyZKou4pO4t2KMtKRvHDmZ6mCwBoGaQ8zjnnvkg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="方法一hugging-face-trl--colab-gpu">方法一：Hugging Face TRL + Colab GPU</h4>
+<p>Hugging Face 的工程师 Phil Schmid 在 2024 年 1 月底写了 一篇很好的博客，详细讲解如何用 Hugging Face TRL 库来进行模型微调。其中的代码绝大部分都可以复用，不过他使用的是 b-mc2/sql-create-contex 数据集（用于自然语言生成 SQL 语句），所以我们只需要将数据这部分换成我们想要的中文指令微调数据即可。</p>
+<ul>
+<li>
+<p>Phil 博文链接https://www.philschmid.de/fine-tune-llms-in-2024-with-trl</p>
+</li>
+<li>
+<p>HF TRL 库https://hf.co/docs/trl/en/index</p>
+</li>
+<li>
+<p>b-mc2/sql-create-contex 数据集https://hf.co/datasets/b-mc2/sql-create-context</p>
+<p>from datasets import load_dataset</p>
+<p># Convert dataset to OAI messages<br>
+system_message = &ldquo;&ldquo;&ldquo;你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题<br>
+&quot;&rdquo;&rdquo;</p>
+<p>def create_conversation(sample):<br>
+  return {<br>
+    &ldquo;messages&rdquo;: [<br>
+      {&ldquo;role&rdquo;: &ldquo;system&rdquo;, &ldquo;content&rdquo;: system_message},<br>
+      {&ldquo;role&rdquo;: &ldquo;user&rdquo;, &ldquo;content&rdquo;: sample[&ldquo;question&rdquo;]},<br>
+      {&ldquo;role&rdquo;: &ldquo;assistant&rdquo;, &ldquo;content&rdquo;: sample[&ldquo;human_answers&rdquo;][0]} # for whatever reason the dataset uses a list of answers<br>
+    ]<br>
+  }</p>
+<p># Load dataset from the hub<br>
+dataset_dict = load_dataset(&ldquo;Hello-SimpleAI/HC3-Chinese&rdquo;, name=&ldquo;baike&rdquo;)<br>
+dataset = dataset_dict[&rsquo;train']</p>
+<p>print(create_conversation(dataset[0]))</p>
+<p># # Convert dataset to OAI messages<br>
+dataset = dataset.map(create_conversation, remove_columns=[&ldquo;id&rdquo;, &ldquo;chatgpt_answers&rdquo;], batched=False)</p>
+<p>dataset = dataset.train_test_split(test_size=0.1)</p>
+<p># save datasets to disk<br>
+dataset[&ldquo;train&rdquo;].to_json(&ldquo;train_dataset.json&rdquo;, orient=&ldquo;records&rdquo;)<br>
+dataset[&ldquo;test&rdquo;].to_json(&ldquo;test_dataset.json&rdquo;, orient=&ldquo;records&rdquo;)</p>
+</li>
+</ul>
+<p>TRL 库可以自行处理 ChatML 格式，所以我们只需要将提问和人类回答填入模板即可。之后即可运行 trainer.train()
+进行 LoRA 训练。在免费的 Colab T4 GPU 上大约需要 3.5 小时完成训练（当前设置为 3 个 epoch，可酌情减少）。</p>
+<p>在进行指令微调之前，如果我们测试模型的中文能力：</p>
+<pre><code>Query:  
+你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题  
+我有一个信息科学相关的问题，请用中文回答，什么是 rm  
+Generated Answer:  
+，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，请 rm，  
+</code></pre>
+<p>模型很快陷入循环（注意这里使用的不是已经做过指令微调的模型 gemma-2b-it，所以陷入循环是正常的，也正是我们要进行指令微调的原因）。完成我们的微调之后再测试：</p>
+<pre><code>Query:  
+我有一个信息科学相关的问题，请用中文回答，什么是 rm  
+Original Answer:  
+RM 格式是 RealNetworks 公司开发的一种流媒体视频文件格式，可以根据网络数据传输的不同速率制定不同的压缩比率，从而实现低速率的 Internet 上进行视频文件的实时传送和播放。它主要包含 RealAudio、RealVideo 和 RealFlash 三部分。  
+Generated Answer:  
+rm 是 remove 的缩写，用于删除指定的目录或文件，语法形式为：rm -r /path/to/file。  
+</code></pre>
+<p>这里生成的答案就很合理也没有陷入循环（虽然跟 label，也就是 Origianl answer 不一样，但也是正确答案）。</p>
+<p>所以这就是方案一。注：Phil Schmid 比较高产，最近两天又放出了一个 Gemma 7B + Dolly 数据集的 微调代码，稍微改改数据部分也可进行中文指令微调。</p>
+<ul>
+<li>微调代码链接https://hf.co/philschmid/gemma-7b-dolly-chatml</li>
+</ul>
+<h4 id="方法二keras-jax-后端--kaggle-tpu---hugging-face">方法二：Keras （JAX 后端） + Kaggle TPU -&gt; Hugging Face</h4>
+<p>这个方法的思路是修改谷歌官方的微调教程，使用 Keras 在 Kaggle TPU 上微调 gemma-2b 模型，然后将模型转换成 Hugging Face 模型。用于这里使用 TPU v3，速度比 Colab 上的 T4 GPU 快很多。</p>
+<p>官方教程 使用的是 IMDB 数据集，我们替换为 Hello-SimpleAI/HC3-Chinese baike 数据集:</p>
+<ul>
+<li>
+<p>官方教程链接https://ai.google.dev/gemma/docs/distributed_tuning</p>
+<p>!wget -O baike.jsonl https://huggingface.co/datasets/Hello-SimpleAI/HC3-Chinese/raw/main/baike.jsonl<br>
+import re<br>
+import json<br>
+data = []<br>
+context = &ldquo;你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题。\n&rdquo;<br>
+with open(&ldquo;baike.jsonl&rdquo;) as file:<br>
+    for line in file:<br>
+        features = json.loads(line)        <br>
+        template = context + &ldquo;问题：\n{question}\n答案：\n{human_answers[0]}&rdquo;<br>
+        data.append(template.format(**features))</p>
+<p># Manually construct a test case; <br>
+# Already made sure the finetuning dataset contains nothing about zsh<br>
+test_prompt = context + &ldquo;问题：\n我有一个信息科学相关的问题，请用中文回答，什么是 zsh\n答案：\n&rdquo;<br>
+# 4616 in total in baike split<br>
+train_data = data[:4600]</p>
+</li>
+</ul>
+<p>之后进行训练，完成之后将模型转化为 Hugging Face 模型:</p>
+<pre><code># Download the conversion script from KerasNLP tools  
+!wget -nv -nc https://raw.githubusercontent.com/keras-team/keras-nlp/master/tools/gemma/export_gemma_to_hf.py  
+  
+# Run the conversion script  
+# Note: it uses the PyTorch backend of Keras (hence the KERAS_BACKEND env variable)  
+!KERAS_BACKEND=torch python export_gemma_to_hf.py \  
+    --weights_file $FINETUNED_WEIGHTS_PATH \  
+    --size $MODEL_SIZE \  
+    --vocab_path $FINETUNED_VOCAB_PATH \  
+    --output_dir $HUGGINGFACE_MODEL_DIR  
+</code></pre>
+<p>接下来就可以使用 Hugging Face 去调用微调过的模型:</p>
+<pre><code>import transformers  
+model = transformers.GemmaForCausalLM.from_pretrained(  
+    HUGGINGFACE_MODEL_DIR,  
+    local_files_only=True,  
+    device_map=&quot;auto&quot;,  # Library &quot;accelerate&quot; to auto-select GPU  
+)  
+tokenizer = transformers.GemmaTokenizer.from_pretrained(  
+    HUGGINGFACE_MODEL_DIR,  
+    local_files_only=True,  
+)  
+  
+def test_transformers_model(  
+    model: transformers.GemmaForCausalLM,  
+    tokenizer: transformers.GemmaTokenizer,  
+) -&gt; None:     
+    inputs = tokenizer([test_prompt], return_tensors=&quot;pt&quot;).to(model.device)  
+    outputs = model.generate(**inputs, max_length=200)  
+  
+    output = tokenizer.decode(outputs[0], skip_special_tokens=True)  
+    print(f&quot;{output}\n{'- '*40}&quot;)  
+  
+# This run on CPU so it is a bit slow  
+test_transformers_model(model, tokenizer)  
+</code></pre>
+<p>对比微调前的输出：</p>
+<pre><code>'你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题。\n问题：\n我有一个信息科学相关的问题，请用中文回答，什么是 zsh\n答案：\nzsh 是一个命令行界面（CLI）的 shell，它支持许多命令行工具，包括 bash， fish， ksh， mksh， pdksh， tcsh， zsh， 和 yash。\nzsh 是一个命令行界面（CLI）的 shell，它支持许多命令行工具，包括 bash， fish， ksh， mksh， pdksh， tcsh， zsh， 和 yash。\nzsh 是一个命令行界面（CLI）的 shell，它支持许多命令行工具，包括 bash， fish， ksh， mksh， pdksh， tcsh， zsh， 和 yash。\nzsh 是一个命令行界面（CLI）的 shell，它支持'  
+</code></pre>
+<p>和微调后的输出：</p>
+<pre><code>你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题。  
+问题：  
+我有一个信息科学相关的问题，请用中文回答，什么是 zsh  
+答案：  
+zsh（Z Shell）是一个POSIX兼容的shell，它在BSD/OS和Linux系统上被广泛使用。   
+zsh是Z shell的缩写，Z shell是Unix shell的一种，它继承了Bourne shell的特性，并增加了许多新的特性。   
+zsh的特性包括：   
+1.支持多级目录   
+2.支持命令别名   
+3.支持命令补全   
+4.支持命令历史   
+5.支持命令行参数  
+</code></pre>
+<h4 id="方法三使用苹果-mlx-框架">方法三：使用苹果 MLX 框架</h4>
+<p>该方法只适用于拥有苹果 M 系列 Mac 的同学。苹果的 MLX 框架 是专门针对苹果 M 系列芯片打造的机器学习框架，在 Apple Silicon 上性能非常好，能充分利用 Mac CPU/GPU 统一的内存高效训练 / 推理模型。有兴趣的同学可以去看 MLX 文档深入学习，在这里我们主要关注使用 MLX 对 gemma-2b 进行微调。</p>
+<p>MLX 现在已经对多个流行的模型进行了支持，包括 Bert，Whisper, Stable Diffusion 等等，对 LLM 也对各种模型，如 Gemma, Llama, Mistral 等有了支持。在 LLM 微调文档 里，详细介绍了微调的步骤，我们只需要将数据整理成 MLX 需要的格式即可。MLX 的数据格式要求为 jsonl，即每一行为一个 json，且只有一个子域 “text”，例如：</p>
+<ul>
+<li>
+<p>MLX 框架https://github.com/ml-explore/mlx</p>
+</li>
+<li>
+<p>LLM 微调文档https://github.com/ml-explore/mlx-examples/blob/main/llms/mlx_lm/LORA.md</p>
+<p>{&ldquo;text&rdquo;: &ldquo;你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题。\n问题：\n我有一个信息科学相关的问题，请用中文回答，什么是 简单波长分配协议\n答案：\n简单波长分配协议在波分复用技术中，根据流量状况建立交换通路和支持信息流的合并与疏导的一种信令协议。 \n当有一个流进入网络时，SWAP为其保持两种类型的状态信息：入口和出口状态信息。每一个输入支流都有它特有的入口状态，而且只有一个出口状态。入口状态的改变会激发更多的出口状态的改变，反之亦然。&rdquo;}</p>
+<p>{&ldquo;text&rdquo;: &ldquo;你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题。\n问题：\n我有一个信息科学相关的问题，请用中文回答，什么是 多标签分类算法\n答案：\n多标签分类问题可以正式表述如下： \n假设有K类标签y={c1,c2,..,cK}，给定网络G=(V,E,Y)，其中V是顶点集，E是边集，Yi⊆y是顶点vi⊆V的类标签，并且已知道一些顶点vi∈VL(VL⊆V)的值，我们如何推断其余顶点VU=V-VL的Yi值（或针对每个标签的概率分布）？&rdquo;}</p>
+<p>{&ldquo;text&rdquo;: &ldquo;你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题。\n问题：\n我有一个信息科学相关的问题，请用中文回答，什么是 顺序队列\n答案：\n顺序队列是队列的顺序存储结构，顺序队列实际上是运算受限的顺序表。和顺序表一样，顺序队列用一个向量空间来存放当前队列中的元素。由于队列的队头和队尾的位置是变化的，设置两个指针front和rear分别指示队头元素和队尾元素在向量空间中的位置，它们的初值在队列初始化时均应设置为0。&rdquo;}</p>
+</li>
+</ul>
+<p>我们可以从 Hugging Face 上下载 Hello-SimpleAI/HC3-Chinese baike 子集的 jsonl 文件，然后运行这个脚本处理数据：</p>
+<pre><code>import json, jsonlines  
+context = &quot;你是一个知识丰富的人工智能助手，用户将用中文向你提问，你将根据你的知识用中文来如实回答问题。\n&quot;  
+data = []  
+with open(&quot;baike.jsonl&quot;) as file:  
+    for line in file:  
+        features = json.loads(line)  
+        template = context + &quot;问题：\n{question}\n答案：\n{human_answers[0]}&quot;  
+        data.append({'text' : template.format(**features)})  
+  
+# 4616 in total in baike split  
+train_data = data[:4600]  
+valid_data = data[4600:]  
+  
+with jsonlines.open('train.jsonl', 'w') as writer:  
+    writer.write_all(train_data)  
+  
+with jsonlines.open('valid.jsonl', 'w') as writer:  
+    writer.write_all(valid_data)  
+</code></pre>
+<p>之后即可运行 MLX 进行微调：</p>
+<pre><code>python -m mlx_lm.lora --model google/gemma-2b --train --batch-size 2 --data &lt;DATA_FOLDER&gt;  --iters 6001  
+</code></pre>
+<p>完成后会生成一个 LoRA adapter.npz 文件，可以用 MLX 将它 fuse 进 base 模型并上传到 Hugging Face 上：</p>
+<pre><code>python -m mlx_lm.fuse \  
+    --model &lt;MODEL_FOLDER&gt; \  
+    --upload-repo mlx-community/gemma-2b-cn-it \  
+    --hf-path google/gemma-2b  
+</code></pre>
+<h4 id="总结">总结</h4>
+<p>今天我们介绍了 3 个针对谷歌 gemma-2b 模型进行中文指令微调的简单方法，这里展示的 所有的代码 都在 GitHub 上，并且配有有 2 个简短的视频 讲解。</p>
+<ul>
+<li>
+<p>本文展示的代码https://github.com/windmaple/Gemma-Chinese-instruction-tuning</p>
+</li>
+<li>
+<p>两个讲解视频https://www.bilibili.com/video/BV14x4y1C7wi/https://www.bilibili.com/video/BV1YH4y177t9/</p>
+</li>
+</ul>
+<p>当然这里我们使用的数据，模型和算力都是比较小的，所以完成以后的模型性能肯定不能和最先进的模型相比，我们更重要的是分享思路方便大家学习。如果有足够资源的同学可以自己去探索收集更多的中文数据，使用 7b 模型，使用多 GPU/TPU 分布式训练等途径来打造更强大的自由模型。</p>
+<p>最后，我们建立了一个 Gemma 中文群，欢迎对 Gemma 有兴趣的同学加入。如果人数已满或者二维码过期请添加群主微信 hustwindmaple 后拉入。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2pnM9RgliaVCa0ruBAbxiatGyHQbbrDYIhmrmmicxADz9GOxOhVF3zEmTT5gic5HHJ5Up0qvRD4GElJpg/640?wx_fmt=jpeg" alt=""></p>
+<p><strong>请先我们的群聊行为守则</strong> ，扫码入群即视为你认同并将遵守我们下面列出的行为守则:</p>
+<ul>
+<li>
+<p>💬 请只讨论与群聊主题相关的内容，勿讨论任何违反法律和 Hugging Face 社区规定的内容</p>
+</li>
+<li>
+<p>📢 请勿将群用于 AI 文章链接 / 活动群发渠道</p>
+</li>
+<li>
+<p>🧑‍🤝‍🧑 群内加好友前请在群里使用 at 的方式请求同意</p>
+</li>
+<li>
+<p>🧹 以上情况如有一次发生即视为违规，违规者会被移出所有群聊</p>
+</li>
+<li>
+<p>🚔 如果你发现自己的隐私被侵犯，请直接拨打 110 报警</p>
+</li>
+</ul>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
