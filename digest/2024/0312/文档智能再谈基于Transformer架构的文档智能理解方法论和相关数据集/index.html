@@ -1,0 +1,764 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>【文档智能】再谈基于Transformer架构的文档智能理解方法论和相关数据集 作者： AINLP 来源： AINLP 前言 文档的智能解析与理解成为知识管理的关键环节。特别是在处理扫描文档时，如何有效地理解和提取表单信息，成为了一个具有挑战性的问题。扫描文档的复杂性，包括其结构的多样性、非文本元素的融合以及手写与印刷内容的混合，都为自动化处理  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">【文档智能】再谈基于Transformer架构的文档智能理解方法论和相关数据集</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 12, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfECmkZBJcRDCETPQvjfeCc0RS6NxUTRcexianc16vaNW4PU2GwHY8lJFg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/rsXN9Fh2EdkB9AgIKiKH9Q">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<h4 id="前言">前言</h4>
+<p>文档的智能解析与理解成为知识管理的关键环节。特别是在处理扫描文档时，如何有效地理解和提取表单信息，成为了一个具有挑战性的问题。扫描文档的复杂性，包括其结构的多样性、非文本元素的融合以及手写与印刷内容的混合，都为自动化处理带来了难题。本文记录了基于Transformer架构的文档理解模型常见方法和相关数据集。</p>
+<h4 id="基于transformer架构的文档理解模型">基于Transformer架构的文档理解模型</h4>
+<p>1.<strong>Layout-Visual Fusion Models</strong> ：这类模型专注于整合文档图像的布局和视觉信息与文本内容，以增强文档理解。这些模型结合了边界框坐标、图像嵌入和空间关系等特征，以捕获文档的结构布局。常见的有：</p>
+<p>更多的多模态的文档智能方法介绍可以参考之前文章《<a href="https://mp.weixin.qq.com/s?__biz=Mzg4NjI0NDg0Ng==&amp;mid=2247484335&amp;idx=1&amp;sn=f5f9236ef8ef361d7d9cf594c472f543&amp;scene=21#wechat_redirect">【文档智能】多模态预训练模型及相关数据集汇总</a>》、《<a href="http://mp.weixin.qq.com/s?__biz=MjM5ODkzMzMwMQ==&amp;mid=2650439114&amp;idx=5&amp;sn=4177471db3a3625b3c9ac592f26f2144&amp;chksm=becdfb9089ba7286a4776c4e5c28837a1d4da6fa0c917991808d9909aaf21e7d05b252de9846&amp;scene=21#wechat_redirect">【文档智能】：GeoLayoutLM：一种用于视觉信息提取（VIE）的多模态预训练模型</a>》</p>
+<p>*<strong>LayoutLM</strong> ：这是第一个将文本级文档信息（使用WordPiece表示）与文本的二维位置表示结合进行联合训练的Transformer模型。LayoutLM在微调阶段还加入了图像嵌入，以考虑文档图像中令牌区域的空间布局。它在包括表单理解在内的多个下游任务上取得了新的最先进结果。</p>
+<p>*<strong>LayoutLMv2</strong> ：这是LayoutLM模型的进化版本。关键思想是进一步整合文本、布局和视觉信息之间的关系。作者通过在预训练阶段引入图像信息以及引入新的预训练任务来实现这一点。LayoutLMv2在预训练时使用了空间感知的自注意力机制，这使得模型能够考虑令牌之间的一维和二维关系。</p>
+<p>*<strong>Graph-Based Models</strong> ：基于图的文本关系建模技术使用图神经网络（GNNs）来捕获文档中文本片段之间的复杂关系。这些模型使用编码器处理文本和视觉特征，然后通过图模块构建一个软邻接矩阵来表示片段之间的成对关系。</p>
+<p>*<strong>PICK</strong> ：PICK模型使用文本和布局特征，结合图学习模块来捕获文档中文本片段之间的关系。PICK的架构由三个独立的模块组成：编码器模块、图模块和解码器模块。编码器模块处理原始文档，将文本和图像特征结合起来。图模块构建一个软邻接矩阵来表示文本片段之间的成对关系。解码器模块结合编码器和图模块的结果，执行序列标注任务。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEPqzfbWc4h9HhO8FlnCLXTJia2LELTDNFqkOGEC2QnHcByn08JBrm76g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：PICK: Processing Key Information Extraction from Documents using Improved Graph Learning-Convolutional Networks</p>
+<p>*<strong>TRIE</strong> ：TRIE模型将文本阅读和文本理解任务融合到一个端到端训练的网络中。该模型包含文本阅读模块、多模态上下文块和信息提取模块。文本阅读模块使用ResNet CNN和Feature Pyramid Network (FPN)提取输入图像的卷积特征。这些特征随后被用于确定可能的文本区域。多模态上下文块融合文本、位置和视觉特征。信息提取模块使用这些特征来分离实体并提取它们的值。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEoU1QCsA1YYibiaaqQzyOM8EuZicoZw5QX4FuCItgeO6Z8TCxz1UceRTCw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：TRIE: End-to-End Text Reading and Information Extraction for Document Understanding</p>
+<p>*<strong>Multi-Modal Fusion Models</strong> ：这些大型模型通过引入新机制来更好地整合文本、布局和视觉信息。它们通常对Transformer架构进行修改，例如引入空间感知的自注意力机制，以捕获令牌之间的多维关系。</p>
+<p>*<strong>SelfDoc</strong> ：SelfDoc模型在编码文本特征时采用了一种新颖的方式。它不是在词级别上工作，而是将文本按语义相关组件（如文档对象提案，包括文本块、标题、列表、表格、图形）进行分组，作为模型输入。SelfDoc使用Faster R-CNN在公共文档数据集上进行文档对象检测任务的训练。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEeLGhAtX4z8aEtB1o6bicYuRnv9Qb8tLJ72qkrbmrt7rePPaeI45YscA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：SelfDoc: Self-Supervised Document Representation Learning</p>
+<p>*<strong>UniLMv2</strong> ：UniLMv2允许统一语言模型的预训练，该模型由自编码和部分自回归模型组成。自编码模型类似于BERT，通过上下文预测令牌。部分自回归模型基于掩蔽和伪掩蔽令牌，可以预测一个或多个掩蔽（或伪掩蔽）令牌。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEAQibcB6gMycT1VOIBiaOt5hRmE0DYaicEkiccEZv98tUU8b8Ro7icjPVQwQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：UniLMv2: Pseudo-Masked Language Models for Unified Language Model Pre-Training</p>
+<p>*<strong>DocFormer</strong> ：DocFormer通过融合视觉和语言网络层来改进多模态训练。它使用ResNet CNN获取视觉特征，并使用OCR结果对文档图像进行文本嵌入。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEmsDzDu4jge7iaFViahUQPGynibxebzqibGja4ZfLOU3zA6pWibiaVYsgHbfQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：Docformer:End-to-end transformer for document understanding</p>
+<p>*<strong>StrucText</strong> ：StrucText模型使用视觉和文本文档特征的多模态组合。文本嵌入由语言令牌嵌入组成，其中每个文本句子都被连贯地处理以保持语义上下文。此外，还使用ResNet来提取图像特征，并结合序列ID嵌入来利用文本段的顺序。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEgCXxQvwVwog8O6M9uibLGabtEUeeaWkIDNMQrP70hib5h2WElPtDGC1Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：StrucTexT: Structured Text Understanding with Multi-Modal Transformers</p>
+<p>*<strong>BROS</strong> ：BROS模型在预训练时不包含文本图像，而是专注于结合文本和位置信息，忽略布局模态。BROS引入了一个自定义文本序列化器，根据相邻令牌的位置对令牌进行排序。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEUvyoXficuTGfk50a0bZ9wJT0LI551ydiaicKGjc1uR0n92NV8KEMnhwlg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：BROS: A Pre-trained Language Model Focusing on Text and Layout for Better Key Information Extraction from Documents</p>
+<p>*<strong>Cross-Modal Interaction Models</strong> ：跨模态交互模型促进不同模态（如文本和布局）之间的交互。它们采用注意力机制和融合策略，以实现跨模态信息交换，增强数据的感知和理解。</p>
+<p>*<strong>UDoc</strong> ：UDoc是一个框架，采用了多层门控交叉注意力编码器，能够在单个模型内实现有效的跨模态交互。与传统方法不同，UDoc考虑了文档的复杂性和多样性，结合了文本和视觉特征。UDoc采用三种预训练任务：掩蔽句子建模（MSM）、视觉对比学习（VCL）和视觉-语言对齐（VLA）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEGNgZpjg8oBic7GtciakNAJdyFiaI5jQNDx1PTmXH9jEibX8R1a8THRUx6w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：Unified Pretraining Framework for Document Understanding</p>
+<p>*<strong>TILT</strong> （Text-Image-Layout Transformer）：TILT是为了解决文档中超出纯文本的自然语言理解的复杂挑战而设计的神经网络架构。TILT旨在同时捕获布局信息、视觉特征和文本语义，使其能够处理具有丰富空间布局的文档，如表格和表单。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfECmkZBJcRDCETPQvjfeCc0RS6NxUTRcexianc16vaNW4PU2GwHY8lJFg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：Going full-tilt boogie on document understanding with text-image-layout transformer</p>
+<p>*<strong>Sequence-to-Sequence Models</strong> ：编码器-解码器和序列到序列模型涉及编码器处理输入数据和解码器生成序列输出。这些模型可以用于文本生成、翻译和序列预测等任务。</p>
+<p>*<strong>GenDoc</strong> ：GenDoc模型采用了编码器-解码器架构，使其能够适应不同输出格式的多样化下游任务。GenDoc的预训练任务包括掩蔽文本预测、掩蔽图像令牌预测和掩蔽坐标预测，以适应多种模态。该模型整合了模态特定的指令、解耦注意力和混合模态专家（MoE）方法，以有效地捕获每个模态的信息。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfE9BlwqOiaVxFfAicibq1jgIqeUL5WhhI47tu4qp1Zsiazqibu43u0hBibp39w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：Sequence-to-Sequence Pre-training with Unified Modality Masking for Visual Document Understanding</p>
+<p>*<strong>DocFormerv2</strong> ：DocFormerv2包含一个专门处理文档的多模态编码器，该编码器能够处理文本内容和文档固有的空间特征。模型采用了创新的预训练任务，如token-to-line和token-to-grid预测，以捕获文档布局和结构。这使得模型能够理解文档元素的空间排列。为了有效地整合来自文档图像的空间信息，作者引入了空间特征，编码了位置、大小和类别等关键元素。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEYoVo84n2ORNtzepksvFb4tXXxNtjq4dks6ibfLSV2QOnicEG5sLicHCGQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：DocFormerv2: Local Features for Document Understanding</p>
+<p>*<strong>Layout Representation and Language-Independent Models</strong> ：布局表示模型专注于捕获和表示文档中组件的空间排列。语言独立模型旨在处理多种语言的文档理解。</p>
+<p>*<strong>MCLR</strong> ：MCLR（Multi-Scale Cell-Based Layout Representation）提出了一种基于单元格的布局表示方法。这种方法使用行和列索引来定义文档中组件的位置，与人类阅读习惯相一致，有助于更直观地理解布局结构。MCLR架构包括三个主要组成部分：基于单元格的布局、多尺度布局和数据增强。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfESoE0ib8mpcYKnbjibdUjAYwQ6r4HpWsiaaILE6ClA7JwQKGoYfLHszNAQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：Multi-scale Cell-based Layout Representation for Document Understanding</p>
+<p>*<strong>LiLT</strong> （Language-independent Layout Transformer）：LiLT是一个新颖的框架，它允许在单一语言的文档上进行预训练，然后针对多种语言进行微调。LiLT的核心架构基于并行双流Transformer模型，有效地处理文本和布局信息。在预训练期间，LiLT解耦文档的文本和布局方面，并采用双向注意力互补机制（BiACM）来促进这些模态之间的交互。然后，模型使用现成的预训练文本模型进行下游任务的微调，确保LiLT能够从单语言文档中学习和泛化布局知识到多语言环境中。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEm6Hd3ib4nAxZWFxbYCo9THH6L4m9EvAwQrkZCLAY3oFvvUes7JkFia4A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：LiLT: A Simple yet Effective Language-Independent Layout Transformer for Structured Document Understanding</p>
+<p>*<strong>Hybrid Transformer Architectures</strong> ：混合Transformer架构利用创新设计来解决文档理解中的计算复杂性和多样化结构表示的挑战。这些模型通常结合了新的注意力机制，并利用Transformer架构来高效处理多模态信息。</p>
+<p>*<strong>StructuralLM</strong> ：StructuralLM是LayoutLM模型的后继者。与LayoutLM不同，StructuralLM操作的是2D单元格位置嵌入，而不是2D词嵌入。其核心思想是通过分组来更好地捕获词之间的关系。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEQU40B9pzPCW40wyYjj60u3CRic9lxWdjmGoicFOVIwfcttVGgicnQo7rA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：StructuralLM:Structural pre-training for form understanding</p>
+<p>*<strong>StrucTexTv2</strong> ：StrucTexTv2结合了视觉和文本信息，有效地分析文档图像。该模型采用了独特的预训练策略，包括Mask Language Modeling (MLM)和Mask Image Modeling (MIM)，利用文本区域级别的掩蔽来预测视觉和文本内容。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEmWbjru9Dqxv1YlE4G5BK64wq893PJIy68I8oNYNn7vEnOgbLtZySdg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：StrucTexTv2: Masked Visual-Textual Prediction for Document Image Pre-training</p>
+<p>*<strong>Fast-StrucTexT</strong> ：Fast-StrucTexT是一个创新且高效的基于Transformer的框架，专为文档理解任务设计。该模型通过引入新颖的Transformer架构、模态引导的动态令牌合并和对称交叉注意力（Symmetry Cross-Attention, SCA）来实现高性能和效率。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDgGIB4dVsVQKstxibLQ8mfEYKCTJZuHYQ6hQhL7LC0MODsRq2TJy5jqJX2elGnaxibxuZ7BjwicKvow/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>链接：Fast-StrucTexT: An Efficient Hourglass Transformer with Modality-guided Dynamic Token Merge for Document Understanding</p>
+<h4 id="文档理解数据集">文档理解数据集</h4>
+<p>数据集文档内容颜色语言文档数文档类型</p>
+<p>FUNSD
+Machine Written / Handwritten
+B/W
+EN
+199
+Form Documents</p>
+<p>XFUND
+Machine Written / Handwritten
+B/W
+Multi-lingual
+199/language
+Form Documents</p>
+<p>NAF
+Machine written pre-printed text and mostly handwritten
+B/W
+EN
+865
+Multiple</p>
+<p>IIT-CDIP
+Machine Written, Handwritten
+B/W
+EN
+6,919,192
+Multiple</p>
+<p>RVL-CDIP
+Machine Written, Handwritten
+B/W
+EN
+400,000
+Multiple</p>
+<p>PubLayNet
+Machine Written
+Color
+EN
+364,232
+Medical Literature</p>
+<p>SROIE
+Machine Written with occasional handwriting
+Color, B/W
+EN
+1,000
+Receipts</p>
+<p>CORD
+Machine Written with occasional handwriting
+Color
+EN
+1,000
+Receipts</p>
+<p>DocVQA
+Machine Written, Handwritten
+Color, B/W
+EN
+12,767
+Multiple</p>
+<p>Form-NLU
+Machine Written, Handwritten
+Color, B/W
+EN
+10,857
+Multiple</p>
+<p>VRDU
+Machine Written
+Color, B/W
+EN
+2,556
+Ad-buy</p>
+<p>*<strong>RVL-CDIP和IIT-CDIP</strong> ：Ryerson Vision Lab复杂文档信息处理RVL-CDIP数据集是为了评估深度卷积神经网络（Deep CNNs）而创建的。该数据集是IIT复杂文档信息处理测试集合IIT-CDIP的一个子集，后者包含了来自加州大学旧金山分校的遗产烟草文档图书馆（LTDL）的文档集合。IIT-CDIP由6,919,192个文档记录组成，每个记录都包含OCR识别的文本和各种结构和质量的元数据信息。此外，IIT-CDIP还包含扫描文档的源图像。总的来说，RVL-CDIP数据集包含400,000张灰度图像，分为16个类别（包括表单文档），每个类别有25,000张图像。该数据集分为320k训练图像、40k验证图像和40k测试图像。</p>
+<p><strong>链接</strong> ：https://adamharley.com/</p>
+<p>*<strong>FUNSD</strong> ：是一个用于表单理解任务的集合，包含了199个完全注释的表单，这些表单来自市场营销、科学等多个领域。所有表单都是经过光栅化处理的低分辨率单页表单，并且包含噪声。具体来说，从RVL-CDIP数据集的表单类别中手动挑选了3,200个符合条件的文档，并使用随机抽样的方法最终确定了199个文档。这些文档中的大多数文本内容是机器打印的，这可能不完全反映现实生活中手写内容更为常见的情况。</p>
+<p>链接1：https://guillaumejaume.github.io/FUNSD/</p>
+<p>FUNSD数据集中的每个表单都编码在一个JSON文件中，其中每个表单被视为一系列相互关联的语义实体（例如，一个名称字段与其对应的答案框相互关联）。每个语义实体包含一个标识符、一个标签、一个边界框、与其他实体的链接列表以及一个单词列表。总的来说，该数据集包含了9,707个语义实体和5,304个关系。另外的有人发现FUNSD数据集中存在一些错误和不一致之处，包括文本内容和边界框的错误以及关系注释的不一致性。他们发布了一个更新版本的数据集来修复发现的问题。</p>
+<p>链接2：https://drive.google.com/drive/folders/1HjJyoKqAh-pvtg3eQAmrbfzPccQZ48rz?fbclid=IwAR2ouj5Sh0vkcKAMNfSoZjSM7vSpGnbK-AowWZZ8_Lltcn34hr7_nVcazu0</p>
+<p>*<strong>XFUND</strong> ：是FUNSD数据集的扩展，它将数据集翻译成了七种其他语言，包括中文、日语、西班牙语、法语、意大利语、德语和葡萄牙语。与FUNSD类似，XFUND数据集包含了文档中的语义实体及其相互关系的信息。该数据集是通过从互联网收集上述语言的表单模板手动创建的。每个表单都使用合成信息填写一次，以防止表单重复并避免共享敏感信息。表单可以是数字填写或手写，然后扫描，以再次类似于原始的FUNSD数据集。为了为每个语义实体生成边界框，使用了Microsoft Read API。关系提取则是由注释者手动完成的。总的来说，XFUND数据集包含了每种语言199个表单（总共1,393个），并且分为训练/测试集，其中训练集和测试集分别包含149和50个文档。</p>
+<p>链接：https://github.com/doc-analysis/XFUND</p>
+<p>*<strong>NAF</strong> ：NAF数据集是从美国国家档案馆的历史表单图像中创建的注释数据集。这些表单具有不同的布局，并且由于它们的退化和用于打印的机械原因，图像带有噪声。数据集中的表单通常包含英文预印文本和英文输入文本，这些输入文本可能包括手写、打字和盖章内容。总的来说，该数据集包含了865张注释的灰度表单图像。这些图像的注释方式并未公开。NAF数据集被手动分为训练集、验证集和测试集，以确保每个集合包含具有不同表单布局的图像。通过这种方式，作者创造了一个场景，即训练集训练的分类器在测试集中不会遇到之前未见过的表单布局。</p>
+<p>*<strong>PubLayNet</strong> ：是一个自动创建的数据集，通过匹配来自PubMed CentralTM的1,162,856篇科学PDF文章的XML表示和内容。该数据集主要是为了推进文档布局分析研究而创建的，因此它不是专门为表单检测制作的。注释是通过使用PDFMiner软件解析文章的PDF表示，然后将生成的布局与相应的XML表示匹配来创建的。虽然论文中没有提到，但在质量控制过程中似乎已经移除了大多数注释文档，因为只有364,232篇文档在这一步骤后仍然存在于数据集中。该数据集分为340,391页用于训练，11,858页用于开发，以及11,983页用于测试。开发和测试集都从多个不同的期刊中选择，并包含足够数量的表格、列表和图形。</p>
+<p>链接：https://github.com/ibm-aur-nlp/PubLayNet</p>
+<p>*<strong>SROIE</strong> ：数据集是作为2019年ICDAR扫描收据OCR和信息提取竞赛的一部分创建的。该数据集包含1000张扫描收据图像，根据三个竞赛任务（文本定位、OCR和关键信息提取）之一，收据有不同的注释。收据的纸张、墨水或打印质量可能较差，分辨率低，包含扫描伪影。此外，收据可能包含复杂布局中的不需要的干扰文本、长文本和小字体大小。每张收据都包含英文字符文本字段，如商品名称和数字字段，如单价和总成本。论文没有提到收据的来源。</p>
+<p>链接：https://drive.google.com/drive/folders/1ShItNWXyiY1tFDM5W02bceHuJjyeeJl2</p>
+<p>*<strong>CORD</strong> ：CORD数据集是为了OCR后解析而创建的第一个公共数据集，包含了11,000张来自印度尼西亚商店和餐厅的收据图像。这些图像是通过众包方式收集的。每张图像首先通过一个基于网络的注释工具进行注释，然后进行检查以确保其正确性和符合注释指南。由于担心意外发布敏感个人数据，最终的收据集中对敏感信息（如信用卡号码或个人全名）进行了模糊处理。在11,000张收据中，只有1,000张因这些担忧而对公众开放。根据论文的一位作者的说法，未来的数据发布情况尚不明确。</p>
+<p>*<strong>DocVQA</strong> ：DocVQA是一个包含12,767张文档图像的数据集，用于视觉问答任务。这些文档图像来自UCSF工业文档图书馆。为了确保图像质量合适并且包含表格、表单、列表和图形等元素，这些文档是经过精心挑选的。文档被随机分为训练集、验证集和测试集，比例分别为80%、10%和10%。远程工作人员使用基于网络的三步注释工具为这些文档定义了50,000个问题和答案。在第一步中，工作人员为每个文档定义多达十个问题和答案对。在第二步中，另一位工作人员尝试回答这些定义的问题，而不会看到预定义的答案。如果在第一步的答案与第二步的答案之间没有匹配，那么这个问题将进入第三步，此时论文的作者可以手动编辑问题和答案对。除了问题和答案对，数据集还为每个问题定义了九种问题类型之一。一个问题类型的例子是表格/列表，它指定了回答问题是否需要理解表格或列表。一个问题可以被分配多个问题类型。</p>
+<p>*<strong>Form-NLU</strong> ：Form-NLU是一个全面的数据库，旨在推进基于表单文档的自然语言理解（NLU）领域。该数据库总共包含857张文档图像、6,000个表单键和值，以及4,000个表格键和值。这些文档包括数字、打印和手写的各种表单类型。Form-NLU构成了一个公共可访问的财务表单数据库的一部分，该数据库起源于Form 604，由SIRCA收集。它提供了从2003年到2015年向澳大利亚证券交易所（ASX）提交的重要股东通知的文本记录。作者将注释分为三个专门的子任务：12种类型的键的键注释、成对值的值注释，以及标题、章节和其他组件的非键值注释。每个注释者负责处理一个子任务。</p>
+<p>SIRCA：https://asic.gov.au/regulatory-resources/forms/forms-folder/604-notice-of-changeof-%20interests-of-substantial-holder/</p>
+<p>ASX：https://www.asx.com.au/</p>
+<p>*<strong>VRDU</strong> ：VRDU是一个用于视觉丰富文档理解的基准数据集，它由两个不同的数据集组成：广告购买表单（Ad-buy Forms）和注册表单（Registration Forms）。这些数据集旨在解决从视觉复杂文档中提取结构化数据的挑战。基准数据集包含五个关键要素：丰富的模式、布局丰富的文档、多样化的模板、高质量的OCR结果和标记级别的注释。该基准数据集专注于三个任务：</p>
+<ol>
+<li>
+<p>单模板学习（STL）：模型在属于单一模板的文档上进行训练和评估。这意味着训练集、验证集和测试集都包含具有相同结构布局或模板的文档。此任务的目标是评估模型在面对一致且熟悉的文档布局时提取结构化数据的能力。</p>
+</li>
+<li>
+<p>混合模板学习（MTL）：模型在来自一组模板的文档上进行训练和评估。训练集、验证集和测试集包括来自不同但预定义模板的文档。此任务评估模型将其学习泛化到多样化文档布局的能力。</p>
+</li>
+<li>
+<p>未见模板学习（UTL）：未见模板学习任务挑战模型超越其训练经验。在此任务中，模型在来自模板子集的文档上进行训练，然后在训练期间从未遇到过的模板的文档上进行评估。目标是评估模型适应新的、以前未见过的文档布局和模板的能力。</p>
+</li>
+</ol>
+<h4 id="总结">总结</h4>
+<p>文档理解本质上是一个序列标注任务，类似于命名实体识别（NER），通常被称为关键信息提取（KIE）。本文总结了常见的文档智能理解相关模型方法及数据集，在文档理解领域，涉及到分析不同格式和模态（如文本、图像、表格和图表）的文档内容和结构。语言模型和Transformer架构在各种自然语言处理任务中展示了显著的能力，并且在计算机视觉和音频处理任务中也表现出色，这些模型在文档理解中的变革潜力已被广泛认可。</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+</code></pre>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

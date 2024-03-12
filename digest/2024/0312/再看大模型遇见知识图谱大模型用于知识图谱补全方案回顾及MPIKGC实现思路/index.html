@@ -1,0 +1,680 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>再看大模型遇见知识图谱：大模型用于知识图谱补全方案回顾及MPIKGC实现思路 作者： 老刘说NLP 来源： 老刘说NLP 今天是2024年3月12日，星期二。北京，天气晴。 我们今天来看看大模型用于知识图谱推理的一些话题。 知识图谱与大模型进行融合，我们已经有过多个工作介绍，我们在之前的文章《大模型用于知识图谱推理常用范式：兼论  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">再看大模型遇见知识图谱：大模型用于知识图谱补全方案回顾及MPIKGC实现思路</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 12, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcHIGtrpzLHvT89vHXLc0vBX21vRiapGabIEBAJOibBMwAgchrXomaXkYA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/Ohvdt97dPTC-BTE4nOmeXw">老刘说NLP</a></p>
+<p>今天是2024年3月12日，星期二。北京，天气晴。</p>
+<p>我们今天来看看大模型用于知识图谱推理的一些话题。</p>
+<p>知识图谱与大模型进行融合，我们已经有过多个工作介绍，我们在之前的文章《<strong>大模型用于知识图谱推理常用范式：兼论基于TransE模型的知识推理实践》，https://mp.weixin.qq.com/s/qTRi3CY6kHTx_hUYx4aNYw</strong> 中系统介绍了关于知识图谱补全的一些工作。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcanCHEbcnxR0LXnTWVibOqfwVMvvcnC2Fn2PyXREWUYSibiaBOu4DuiaQkA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在工作**《Text-Augmented Open Knowledge Graph Completion via Pre-Trained Language Models》**  一文将大模型应用于知识图谱推理，这个我们在之前的文章《预训语言模型在知识图谱补全任务上的探索：TAGREAL高质量提示自动化生成与KG补全框架工作解读》<strong><a href="https://mp.weixin.qq.com/s/UmCbanlUpJQnj4A1i7m0mg">https://mp.weixin.qq.com/s/UmCbanlUpJQnj4A1i7m0mg</a>，(<a href="https://arxiv.org/pdf/2305.15597.pdf">https://arxiv.org/pdf/2305.15597.pdf</a></strong> )中已有介绍，该方法自动生成高质量的查询prompt提示，并从大型文本语料库中检索支持信息，以探测PLM中的知识，从而完成KG补全。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFc02WR4SWTsFbdcusmN71Mjjib5QSBIQdZG3yMia1JyekLMRVrOyZaXs1A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>我们来看看基于大模型的多角度知识图谱补全框架MPIKGC这一工作，</p>
+<p>最近的工作：<strong>《Multi-perspective Improvement of Knowledge Graph Completion with Large Language Models》(<a href="https://arxiv.org/pdf/2403.01972.pdf">https://arxiv.org/pdf/2403.01972.pdf</a>，https://github.com/quqxui/MPIKGC)</strong>  提出了MPIKGC框架，通过从各个角度查询大型语言模型（LLM）来弥补上下文知识的不足，包括利用LLM的推理、解释和摘要功能来分别扩展实体描述、理解关系和提取结构，其旨在回答<strong>如何有效地利用语言模型的能力和知识来改进图形学习？</strong> 的经典问题。</p>
+<p>其核心解决的问题是，<strong>从三个角度研究通过查询LLM来提高KGs的质量</strong> ，通过设计思想链提示来扩展实体描述，通过设计全局、局部和反向提示来增强对关系的理解，以及通过关键词摘要和匹配来提取结构数据这一工作。</p>
+<p>供大家一起参考并思考。</p>
+<h4 id="一关于大模型用于知识图谱补全的回顾">一、关于大模型用于知识图谱补全的回顾</h4>
+<p>知识图补全（KGC）通过对缺失链接进行预测来解决知识图中的不完备问题，KGC的链接预测任务是基于已知的文本和结构数据来推断遗漏的事实，它包括两个部分，即当给定（h，r，？）时预测尾部实体，当提供（？，r，t）时预测头部实体，通常的实现方案是<strong>通过计算正三元组和负三元组的得分函数来对E中的所有实体进行排名。</strong></p>
+<p><strong>1）基于基于结构的KGC方案</strong></p>
+<p>基于结构的KGC，例如TransE、Dist-Mult、RotatE、ConvE等只考虑来自观察到的三元组事实的图结构信息，并将每个实体和关系分别嵌入到可训练的索引嵌入中，例如：《Knowledge Graph Embedding: A Survey of Approaches and Applications，https://arxiv.org/abs/2211.03536》的一些论述。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcSkica68icyeeXartJicIpWz2NBCdsMw5SyvzEiaInTvqO3dvE5q6CNseFQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这类方法的核心思想是是嵌入KG，包括将实体和关系转化为连续的向量空间，从而简化操作，同时保留KG的原有的结构。那些实体和关系嵌入能进一步应用于各种任务中，如KG补全、关系提取、实体分类和实体解析。</p>
+<p>在实现上，其使用连续向量空间表示实体关系，关系通常被视为向量空间的运算，然后定义评分函数，用来测量事实的合理性，最后，学习实体关系的表示，优化问题：最大化全局观测事实的合理性。</p>
+<p>其中，平移距离模型利用基于距离的评分函数。通常是在通过关系进行翻译之后，用两个实体之间的距离来衡量一个事实的合理性，TransE是一个典型代表：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcnabDiagEjv8YSVISyRsSFibyJqhRNjP9oWsgzI8lo9xBxVQFeP5yWZWw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>实体和关系都在同一空间，对于每一个三元组（h,r,t），TransE希望：h+r=t</p>
+<p>关于这一块的工作，可以看看</p>
+<p><strong>2）基于基于结构的KGC方案</strong></p>
+<p>与基于结构的KGC不同，基于<strong>描述的KGC方法使用预先训练的语言模型将实体和关系的文本编码到语义空间中，通过计算头部实体、关系和尾部实体之间的三元组或匹配语义相似性的评分函数来预测事实的合理性。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcjwO1JKwb5vPcM0Tiadx7dPqU4RI9jLbWZeTV5eqgeZsPc4KL9j6cuibg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>例如：</p>
+<p>DKRL（《Representation Learning of Knowledge Graphs with Entity Descriptions》,http://nlp.csai.tsinghua.edu.cn/~lzy/publications/aaai2016_dkrl.pdf）使用卷积神经网络对实体描述进行编码；</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcFapBW2k7bWaKLria3uCJT5wuLJB9N9CxaG2WWjjmNGX7icnxCK2Kcz9g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>KG-BERT（《KG-BERT: BERT for Knowledge Graph Completion》,https://arxiv.org/pdf/1909.03193.pdf）使用预先训练的BERT模型来学习实体和关系的嵌入；</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcfb5FxcYag5icLR9NnWibuHRTnbsQjJG45t4mN2FZibTSzgicIGQ5XtsHxA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>KEPLER（《KEPLER: A Unified Model for Knowledge Embedding and Pre-trained Language Representation》，https://arxiv.org/pdf/1911.06136.pdf）进一步微调预先训练的语言模型，以同时优化知识嵌入和语言建模目标。MMRNS利用描述的相似性对硬样本进行负采样。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFclzy6ssjsWtS7JAgiaP5qJR6Lxk9ibAQbOyzOjZxPL7rX89ibb5k2ZLmHA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>LMKE(《Language Models as Knowledge Embeddings》，https://arxiv.org/pdf/2206.12617.pdf)利用语言模型和文本信息为实体，特别是长尾实体生成知识嵌入。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcpufviapJ7JichUgCiaQCXeEUqvzxojTEuBJfy1E5yVDK0uOXEzH0DwDTw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>CSProm-KG(《Dipping PLMs Sauce: Bridging Structure and Text for Effective Knowledge Graph Completion via Conditional Soft Prompting》，https://arxiv.org/pdf/2307.01709.pdf，https://github.com/chenchens190009/CSProm-KG)认为经过微调的PLM往往过分关注文本信息而忽视结构知识。为了解决这个问题，提出CSProm-KG（KGC的条件软提示），它保持了结构信息和文本知识之间的平衡，在训练过程中，CSProm-KG仅调整实体和关系表示生成的附加软提示的参数。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcH6Y5ZWfLmgEswEOIJwdbvvJhvib21uXk6SZC3uCticYzggeynCCv2smA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>SimKGC(《SimKGC: Simple Contrastive Knowledge Graph Completion with Pre-trained Language Models》,https://arxiv.org/pdf/2203.02167.pdf)引入对比学习任务来增强嵌入学习。</p>
+<p>通过这种方式，文本编码器有助于将模型简单地概括为看不见的图实体，从而比实体嵌入具有更好的可伸缩性。</p>
+<p>然而，尽管基于描述的KGC在学习文本和结构知识方面取得了显著的成功，但其有效性仍然受到互联网抓取文本质量和不完整结构的限制。</p>
+<p>例如，在图1中，对《伊恩·布莱斯》和《变形金刚：黑暗的月亮》的简短描述是没有信息的。在这种情况下，仅依赖“producer”关系的名称可能会导致对实体类型的理解不明确</p>
+<p>同时，从已知图中学习结构模式对长尾实体来说是一项挑战。这些限制使得KGC很难在涉及不充分和不完整知识图的现实应用中实现高性能。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcHIGtrpzLHvT89vHXLc0vBX21vRiapGabIEBAJOibBMwAgchrXomaXkYA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>基于描述的KGC利用预训模型来学习具有名称或描述的实体和关系表示，但其仍然受到文本质量和不完整结构的限制，因为它缺乏足够的实体描述，并且仅依赖于关系名称。</p>
+<h4 id="二基于大模型的多角度知识图谱补全框架mpikgc">二、基于大模型的多角度知识图谱补全框架MPIKGC</h4>
+<p>鉴于当前大模型的能力，最近的工作：<strong>《Multi-perspective Improvement of Knowledge Graph Completion with Large Language Models》(<a href="https://arxiv.org/pdf/2403.01972.pdf">https://arxiv.org/pdf/2403.01972.pdf</a>，https://github.com/quqxui/MPIKGC)</strong> 提出了MPIKGC框架，通过从各个角度查询大型语言模型（LLM）来弥补上下文知识的不足，包括利用LLM的推理、解释和摘要功能来分别扩展实体描述、理解关系和提取结构，其旨在回答<strong>如何有效地利用语言模型的能力和知识来改进图形学习？</strong> 的经典问题。</p>
+<p>其核心解决的问题是，<strong>从三个角度研究通过查询LLM来提高KGs的质量</strong> ，通过设计思想链提示来扩展实体描述，通过设计全局、局部和反向提示来增强对关系的理解，以及通过关键词摘要和匹配来提取结构数据。我们来看看这个工作。</p>
+<p><strong>1、基本架构</strong></p>
+<p>为了解决实体信息不完整的问题，使用LLM获取的知识来扩展实体描述，并通过设计思想链来实现，该提示允许LLM将查询分解为不同的方面，并逐步生成描述。</p>
+<p>除了解决关系歧义问题外，采用一种提高KGC模型对关系含义理解的解决方案，包括使用三种精心策划的提示策略（即全局、局部和反向提示）查询LLM，以捕捉关系之间的关联并促进更好的反向预测。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFc44YHaicBve5Wel2RlRiaEgianCDGBz05VcRI5h4PChlIxjc3m4aHmc7zg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>为了解决稀疏图链接的问题，特别是对于长尾实体，通过查询LLM来提取额外的结构信息，使用LLM总结的关键字来测量实体之间的相似性，从而丰富知识图谱，以及创建新的三元组，这些三元组构建相关实体之间的关联，并能够在KGC模型中形成新的结构模式。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcjYmCUGfxHgynIyQ0eBPeBmE59Xib8IQL0iaiclNVcVSJ7vxBckk7tN5JQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>2、描述扩展：Description Expansion</strong></p>
+<p>从LLM中归一化一个实体的全面知识并非易事，因为很难确定LLM是否生成并包含了该实体的所有信息。如下图所示，其设计一种思想链（CoT）提示策略，使LLM将复杂的查询分解为不同的方向，并逐步生成描述，而不需要明确的手动输入。它指示LLM自己隐式地查询相关信息，从而产生更高效、更广泛的回复。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcZEP3URduLHQBqLN8B3IQwFZ7Pf25jNX0bFFxSCeRicvYuDibiavtDMlRQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>对应的模板为MPIKGC-E，要求LLM在回答之前提供全面的实体描述并提供基本理由，这可以作为回答的依据，并提高KGC模型的召回率。</p>
+<p>例如，图2展示了“Michael Bay”的例子，LLM生成了一个描述，其中包含了个人的各种职业和个人详细信息，并附有每个回应的理由，以增强LLM的陈述。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcJlXCUf2VaBA4Iv3tSPJiaSxsqpkM9R3QGW7AcstM5qZtIutdvBclxRQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>3、关系理解Relation Understanding</strong></p>
+<p>知识图中异构关系的存在在区分两个实体方面起着至关重要的作用。然而，仅依赖关系名称可能会导致歧义解释，尤其是对于复杂的关系类别（如多对多和多对一），更重要的是，链接预测任务需要额外的反向预测，即预测给定（？，r，t）的头部实体，而反向的性能 多对一关系的预测显著低于正向预测。</p>
+<p>基于结构的KGC方法试图通过为每个正向关系添加反向关系来解决这个问题，从而使关系的可训练嵌入加倍。相反，基于描述的KGC方法，如SimKGC，在关系名称后附加一个字符串“reverse”，但这种方法不能使模型完全理解关系的含义，导致性能较差。</p>
+<p>因此，我们提出了三种提示策略，即全局(MPIKGC-R Global)、局部(MPIKGC-R Local)和反向(MPIKGC-R Reverse，对应的prompt如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcJGpSZvm8jMUzrSqGyW2xtlx2o0tE0WdniaEBOic6UMCZcrHmw24IB08g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>MPIKGC-R Global从整个KG的角度推断一种关系的意义，从而促进两种关系之间更好的关联。例如，“制片方”“produced by”和“导演”“director”都与电影业有关，而“上映地区”“release region” 和“出生地”“place of birth” 则与国家或地区的名称有关。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcsriaiclapJe4WBubyzG4iam6PNvttDiaXLdqTnncQDAXJx5iaUibv0dgmeRQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>MPIKGC-R Local从三元组的角度推断关系的含义，从而增强理解，并在预测缺失事实的同时提出可能的头/尾实体类型。例如，当查询“(head entity, release region, tail entity)（头部实体、发布区域、尾部实体）”的含义时，LLM认为这种关系可能与电影和区域有关。</p>
+<p>此外，MPIKGC-R Reverse反向需要LLM将关系表示为动词，并将其转换为被动语态。例如，“product”可以转换为“producted by”，从而增强压缩并实现更好的反向预测。生成的文本被附加到关系名称，并根据每个KGC模型处理关系名称的工作流进行处理。</p>
+<p><strong>4、结构提取Structure Extraction</strong></p>
+<p>KGC模型能够从训练三元组中学习结构模式，并推广到测试三元组中缺失的环节。例如，拥有制片人或导演职业的个人实体可能与电影实体有关。然而，从图结构中进行模式学习仅限于稀疏链接，特别是对于长尾实体。</p>
+<p>为了解决这个问题，通过MPIKGC-S查询LLM以生成额外的结构信息来丰富KGs。为了将LLM的生成文本转换为基于图的数据，利用LLM的汇总能力从描述中提取相关关键词，对应的prompt如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcVbhCAzibW09gxs7NFxvVHwLBfa7rbJmwNNRY98uJmiasake4H2CYPibLQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>然后根据匹配关键词的数量计算实体之间的匹配分数s：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcLCBbicp9TgKl71ibWKHAbTl3tsVgPg3iaT8rHU8A6mhGUv3x0QGTjXziaw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>其中，kh和kt分别表示头/尾实体的关键词，m是kh和kt的交集。在对匹配分数进行排序后，选择了前k对，并以（head，SameAs，tail）的形式创建新的三元组，然后将其附加到训练集。</p>
+<p>除了这些基于相似性的三元组之外，还考虑为每个实体添加一个具有关系“SameAs”的自循环三元组：（head，SameAs，head），以加强KGC模型对“SameAs”关系的学习。这些额外的三元组构建了相关实体之间的关联，并允许在KGC模型中形成新的结构模式。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFctoico22PMbEeLy3dBcic0uHoeLgiay4J5mQnx1mexIwrjtc0NTRKibOX3Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>例如，通过在“IanBryce”和“MichaelBay”之间添加“SameAs”关系，“IanBlyce”可以通过明确的路径到达“Transformers: Dark of the Moon”实体，从而成为KGC模型学习过程的一个补充。</p>
+<p><strong>5、送入模型进行建模</strong></p>
+<p>在后续阶段使用四个基于描述的KGC模型将改进的KGs与原始KGs进行了比较：KG-BERT、SimKGC、LMKE和CSProm-KG，并在大模型基座上使用Calma-2（Calma-2-7b-Chat）、ChatGLM2-6b、ChatGPT、GPT4，效果如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhQOwkTnicdEib0d4gXuauxFcbtMlhLtFISakcsSV9teTzs1xo2ia0LSNLyemGicicaWYosqxp1yibWKTYw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>可以看到，从实体、关系和结构的角度进行增强后，KGC模型在所有四个指标上都实现了改进。此外，MPIKGC-E&amp;R将生成的实体描述与关系的描述性文本相结合，可以使对单独使用任何一种方法的轻微改进，这表明了这两种方法的兼容性。</p>
+<h4 id="总结">总结</h4>
+<p>本文主要介绍了利用大模型进行知识图谱补全的一些工作，其核心问题还是如何利用好大模型这种参数化知识。</p>
+<h4 id="参考文献">参考文献</h4>
+<p>1、https://arxiv.org/pdf/2403.01972.pdf</p>
+<p>2、https://github.com/quqxui/MPIKGC</p>
+<p>3、https://mp.weixin.qq.com/s/qTRi3CY6kHTx_hUYx4aNYw</p>
+<h4 id="关于该工作">关于该工作</h4>
+<p>老刘，刘焕勇，NLP开源爱好者与践行者，主页：https://liuhuanyong.github.io。</p>
+<p>老刘说NLP，将定期发布语言资源、工程实践、技术总结等内容，欢迎关注。</p>
+<p><strong>对于想加入更优质的知识图谱、事件图谱、大模型AIGC实践、相关分享的，可关注公众号，在后台菜单栏中点击会员社区-&gt;会员入群加入。</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
