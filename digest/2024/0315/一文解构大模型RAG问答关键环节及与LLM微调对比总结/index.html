@@ -1,0 +1,662 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>一文解构大模型RAG问答关键环节及与LLM微调对比总结 作者： 老刘说NLP 来源： 老刘说NLP ####一、解构RAG ####1.Context 近日OpenAI联合创始人的Andrej Karpathy表示LLM更像是一种新型操作系统的CPU。正如现代计算机具有RAM和文件访问权限一样，LLM也有一个Context Windo  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">一文解构大模型RAG问答关键环节及与LLM微调对比总结</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 15, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ZQRiaaQzL4WH41GOjbFcO97fYROyJmy4NdlgN1qU43fzQTWwQSuOFoRKHeiaZdxicUFuRH8b4M6O8WkNdqcLmLAcg/640?wx_fmt=jpeg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/XA72X45nctcv9lkizzjIyw">老刘说NLP</a></p>
+<p>####<strong>一、解构RAG</strong></p>
+<p>####<strong>1.Context</strong></p>
+<p>近日OpenAI联合创始人的Andrej Karpathy表示LLM更像是一种新型操作系统的CPU。正如现代计算机具有RAM和文件访问权限一样，LLM也有一个Context Window，可以加载从多个数据源检索到的信息。如下图。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ZQRiaaQzL4WH41GOjbFcO97fYROyJmy4NDYoqQelDpgGeKYicccaR1DwclbJSicMZZ9UicjQzafEN2qibRf1wSxjdAw/640?wx_fmt=jpeg" alt=""></p>
+<p>所有检索到的信息被加载到Context Window中，并用于LLM输出生成，这个过程通常称为检索增强生成（RAG）。RAG是LLM应用程序开发中最重要的概念之一，因为它是将外部信息传递给LLM的简单方法，与更复杂的微调相比具有一定的优势。通常RAG系统涉及：确定要检索哪些信息的问题（通常来自用户），从数据源（或来源）检索该信息的过程，以及将检索到的信息作为提示词（prompt）的一部分直接传递给LLM的过程。</p>
+<p>####<strong>2.挑战</strong></p>
+<p>随着RAG的应用越来越广泛，也衍生出很多问题！最典型的就是用户对从哪里开始？！以及如何考虑各种方法产生一定程度的疑虑和困惑！下面我们将集中讨论一些概念和进展以便给大家解除一些疑惑，提供一些可行的方案。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ZQRiaaQzL4WH41GOjbFcO97fYROyJmy4Nu3FbW3libGpTGjRbfIzcpZ4Gic38Rkp67jKG7MqEKqz5W5AJE5JbSWFg/640?wx_fmt=jpeg" alt=""></p>
+<p>####<strong>3.查询转换</strong></p>
+<p>考虑RAG落地时要问的第一个问题是：我们如何使检索对用户输入的变异性稳健？</p>
+<h4 id="查询扩展">查询扩展</h4>
+<p>例如，用户的问题可能措辞不当，不严谨。查询转换是一套专注于修改用户输入以改善检索的方法。下面我们想象一个应用场景，用户的问题是：</p>
+<p>“谁最近赢得了冠军，红袜队还是爱国者队？”</p>
+<p>回答这个问题可以通过询问两个具体的子问题中而获得更加精准的答案：</p>
+<p>“红袜队上一次赢得冠军是什么时候？”</p>
+<p>“爱国者队上一次赢得冠军是什么时候？”</p>
+<p>查询扩展将输入分解为子问题，每个子问题都是范围更小更加具体的检索挑战。multi-query retriever执行子问题生成、检索，并返回检索到的文档。</p>
+<h4 id="查询重写">查询重写</h4>
+<p>为了解决框架或措辞不当的用户输入，Rewrite-Retrieve-Read（论文）是一种重写用户问题以改善检索的方法。</p>
+<h4 id="查询压缩">查询压缩</h4>
+<p>在一些RAG应用程序中，如WebLang（open source research assistant），用户问题遵循更广泛的聊天对话。为了正确回答问题，可能需要完整的对话上下文。为了解决这个问题，我们使用此提示将聊天历史记录压缩为最后一个问题以供检索。</p>
+<p>####<strong>4.Routing（路由）</strong></p>
+<p>思考RAG落地时要问的第二个问题：数据在哪里？在许多RAG演示案例中，数据通常会存在单一数据存储中，但在生产环境中通常并非如此。当数据在一组不同的数据存储中运行时，就需要路由传入的查询。</p>
+<p>####<strong>5.查询构建</strong></p>
+<p>思考RAG落地的第三个问题是：在考虑RAG时需要问的一个问题是，查询数据所需的语法是什么？虽然路由的问题是用自然语言提出的，但数据存储在诸如关系型数据库或图数据库等源中，这些源需要特定的语法来检索数据。即使是向量存储也利用结构化的元数据进行过滤。在所有情况下，查询中的自然语言需要转换为检索的查询语法。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ZQRiaaQzL4WH41GOjbFcO97fYROyJmy4NJuEXInlCz2GlDcu81kcpNJHQvqVicNibAq8q2HMeuE2xXccsUxjTbL6w/640?wx_fmt=jpeg" alt=""></p>
+<p>文本到SQL</p>
+<p>相当多的工作集中在将自然语言翻译成SQL请求上。通过向LLM提供自然语言问题以及相关表格信息，可以轻松完成从文本到SQL的转换。开源LLM可以轻松完成此类任务。</p>
+<h4 id="文本到cypher">文本到Cypher</h4>
+<p>虽然向量存储很容易处理非结构化数据，但它们不理解向量之间的关系。虽然SQL数据库可以对关系进行建模，但模式更改可能具有破坏性且成本高昂。知识图谱可以通过对数据之间的关系进行建模和扩展关系类型来应对这些挑战。对于具有难以以表格形式表示的多对多关系或层次结构的数据，它们也是比较适合的。</p>
+<h4 id="文本到metadata-filter">文本到Metadata Filter</h4>
+<p>配备Metadata Filter的向量存储使结构化查询能够过滤嵌入式非结构化文档。self-query retriever可以使用向量存储中元数据字段的规范，使用元数据过滤器将自然语言转换为这些结构化查询。</p>
+<p>####<strong>6.索引</strong></p>
+<p>思考RAG落地时要问的第四个问题：如何设计我的索引？</p>
+<p>对于向量存储有相当多的机会调整块大小和/或文档嵌入策略等参数，以支持可变数据类型。块大小在OpenAI的RAG策略中仅仅通过在文档嵌入期间尝试块大小就看到了性能的显著提升。这是有道理的，因为块大小控制我们向上下文窗口（或LLM操作系统类比中的“RAM”）加载多少信息。由于这是索引构建的核心步骤，推荐开源的Streamlit应用程序。</p>
+<h4 id="文档嵌入策略">文档嵌入策略</h4>
+<p>索引设计中最简单和最有用的想法之一是将您嵌入的内容（用于检索）与您传递给LLM的内容（用于答案合成）解耦。例如，考虑大量带有冗余细节的文本。我们可以嵌入一些不同的表示方式来改善检索。</p>
+<h4 id="多向量检索">多向量检索</h4>
+<p>也适用于包含文本和表格混合的半结构化文档。在这些情况下，可以提取每个表，生成适合检索的表摘要，但将原始表返回到LLM进行答案合成。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ZQRiaaQzL4WH41GOjbFcO97fYROyJmy4NH8IVg5aQMhTg73BqnCxorLWTXfQQdibYiaZOZoEodd04icGrrWm7xAs5A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ZQRiaaQzL4WH41GOjbFcO97fYROyJmy4NdlgN1qU43fzQTWwQSuOFoRKHeiaZdxicUFuRH8b4M6O8WkNdqcLmLAcg/640?wx_fmt=jpeg" alt=""></p>
+<p>####<strong>7.Post-Processing（后处理）</strong></p>
+<p>考虑RAG落地时要问的最后一个问题是：如何合并我检索到的文件？这很重要，因为Content Windows的大小有限。</p>
+<h4 id="重新排名">重新排名</h4>
+<p>在我们检索大量文档的情况下，Cohere ReRank endpoint可用于文档压缩（减少冗余）。与之相关，RAG-fusion从检索器返回的ReRank文档（类似于多查询）。</p>
+<h4 id="分类">分类</h4>
+<p>OpenAI根据每个检索到的文档的内容进行分类，然后根据该分类选择不同的提示。这种基于标签的文本标记，用于逻辑路由（在这种情况下，用于提示）进行分类。最后我们来探讨一下RAG与LLM微调的对比，究竟什么时候用RAG什么时候采用LLM微调的方式。</p>
+<p>####<strong>二、与LLM微调（fine-tune）对比</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ZQRiaaQzL4WH41GOjbFcO97fYROyJmy4NO0rQdKw3lEbDtIZSM8lfLX3bBPZkdLYqspNMcviaibM9lkmt97FEewzA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ZQRiaaQzL4WH41GOjbFcO97fYROyJmy4Ncu2SOp1DvK7vR36GqgBpQc2LQv9t7fCdxzQWDicKwff0hDqAh8QXJog/640?wx_fmt=png" alt=""></p>
+<p>RAG和微调为使大模型具有实时性并减少幻觉等问题行为提供了互补的优势和劣势。微调有助于使大模型专注于特定领域、词汇或新颖数据，但需要时间和计算资源，存在灾难性遗忘的风险，并且无法解决互联网快速演变的特性。RAG利用外部知识以增加事实和时效性，但仍然面临有关最佳检索的挑战。</p>
+<p>两种方法都不能完全解决LM的所有缺陷，但都有助于解决一些即时的问题。随着LLMs不断渗透到我们的数字体验中，我们可以预期进一步尝试将微调、RAG和其他信息检索技术结合起来，为LLMs提供更及时、真实的知识。目前meta的技术人员就开发了一个模型RA-DIT, 知识密集型的零和少量次学习基准范围内实现了最先进的性能。更多详细内容可以关注我们的课程《LLM外部智能大脑-向量化、RAG、Langchain、Agent技术》。下方查阅课程介绍加老师微信咨询。</p>
+<p><em>参考文章：</em></p>
+<p><em><a href="https://www.rungalileo.io/blog/optimizing-llm-performance-rag-vs-finetune-vs-both">https://www.rungalileo.io/blog/optimizing-llm-performance-rag-vs-finetune-vs-both</a></em></p>
+<p><em><a href="https://zhuanlan.zhihu.com/p/676381098">https://zhuanlan.zhihu.com/p/676381098</a></em></p>
+<p><em><a href="https://blog.langchain.dev/deconstructing-rag/">https://blog.langchain.dev/deconstructing-rag/</a></em></p>
+<p><em><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ZQRiaaQzL4WFI4GjsCK7cDars16sgEctWeaicVtqNqj8qZQjuic9gy7kv5SFdzWepZWWNVgRcWufOsHiaII5e1ic9vA/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></em></p>
+<p>《LLM外部智能大脑-向量化、RAG、Langchain、Agent技术》</p>
+<p>超越大语言模型的局限,开发智能外部大脑</p>
+<h4 id="课程亮点">课程亮点</h4>
+<p>l学习如何让大模型拥有专业知识和记忆能力；</p>
+<p>l学习通过向量化连接外部知识；</p>
+<p>l掌握检索增强生成RAG技术；</p>
+<p>l掌握langchain、MemGPT、Autogen工具的使用方法；</p>
+<p>l掌握Agent技术；</p>
+<p>l学习构建prompt、设计复杂流程、链接矢量数据库；</p>
+<p>l实现SalesGPT这样的专业商务助手；</p>
+<p>l基于LangChain+GPT-4v实现多模态内容查询问答示例；</p>
+<p>lSelf-RAG高阶技术。</p>
+<h4 id="课程形式">课程形式</h4>
+<p>录播课学习，共计50课时（约7-8小时），PC端、小程序、APP均可看课，一对一答疑。</p>
+<p><em><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ZQRiaaQzL4WFI4GjsCK7cDars16sgEctWeaicVtqNqj8qZQjuic9gy7kv5SFdzWepZWWNVgRcWufOsHiaII5e1ic9vA/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></em></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

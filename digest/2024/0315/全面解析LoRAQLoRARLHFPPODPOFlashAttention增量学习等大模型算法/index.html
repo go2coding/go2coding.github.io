@@ -1,0 +1,1597 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>全面解析LoRA、QLoRA、RLHF，PPO，DPO，FlashAttention、增量学习等大模型算法 作者： PaperWeekly 来源： PaperWeekly 随着大模型的飞速发展，在短短一年间就有了大幅度的技术迭代更新，从LoRA、QLoRA、AdaLoRa、ZeroQuant、Flash Attention、KTO、蒸馏技术到模型增量学习、数据处理、新的开源模型的理解等，几乎每天  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">全面解析LoRA、QLoRA、RLHF，PPO，DPO，FlashAttention、增量学习等大模型算法</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 15, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/mbWhecw83cQvevoStyk9QTEP2EB74Szgb27ickFc11OTjiaVdvkwp1MtrTPc1cYiacgeMqa6LJKT7mBF3poP3iag6A/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： PaperWeekly  来源： <a href="https://mp.weixin.qq.com/s/Xd7nZiYGqDHqepl9TvlK9A">PaperWeekly</a></p>
+<p>随着大模型的飞速发展，在短短一年间就有了大幅度的技术迭代更新，从LoRA、QLoRA、AdaLoRa、ZeroQuant、Flash Attention、KTO、蒸馏技术到模型增量学习、数据处理、新的开源模型的理解等，几乎每天都有新的发展。</p>
+<p>作为算法工程师，面对如此飞快的技术迭代，是否感觉到自己的学习步伐有点跟不上技术的发展？而且对这些新兴技术的理解仅仅停留在应用层面上，实际上对背后的原理没有具体剖析过？如果希望在大模型赛道上持续保持竞争壁垒，对技术本身的深入理解可能也是很必要的选项。</p>
+<p>鉴于这类痛点，并迎合技术的发展，贪心科技一如即往地在这个关键时间点推出《大模型微调算法实战营》，通过3个月的时间，全面掌握大模型领域主流的技术以及背后的精髓，帮大家大大节省学习成本。</p>
+<p>下面是7阶段学习安排，对于核心的技术同时也配代表性的项目讲解，感兴趣的朋友们欢迎扫码咨询。</p>
+<p><strong>已为本号用户申请优惠！</strong></p>
+<p><strong>前20位<strong><strong>报名学员享受</strong></strong>早鸟福利价</strong>**！**</p>
+<p><strong>请联系课程顾问老师咨询~</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/mbWhecw83cQvevoStyk9QTEP2EB74SzghBgLicYerDibfKwjUEHPuBtb2qaHj4JIOsI2tKna8804E40I1NflicbrA/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<h4 id="heading"></h4>
+<p><strong>详细大纲</strong></p>
+<p><strong>第一阶段：大模型基础</strong></p>
+<p><strong>第一章：开营典礼</strong></p>
+<ul>
+<li>
+<p>介绍课程目标、安排和预期成果</p>
+</li>
+<li>
+<p>明确对学员的要求和期望</p>
+</li>
+<li>
+<p>概述课程中将探讨的项目和技术</p>
+</li>
+<li>
+<p>讨论大模型技术的行业现状</p>
+</li>
+<li>
+<p>推荐关注的工具和开源项目</p>
+</li>
+</ul>
+<p><strong>第二章：大模型是怎么炼成的</strong></p>
+<ul>
+<li>
+<p>大模型的定义和重要性</p>
+</li>
+<li>
+<p>大模型发展历程和关键里程碑</p>
+</li>
+<li>
+<p>预训练与微调的基本概念</p>
+</li>
+<li>
+<p>大模型预训练、数据处理、微调、对齐</p>
+</li>
+<li>
+<p>大模型训练的基础设施和资源需求</p>
+</li>
+<li>
+<p>面临的挑战和未来发展方向</p>
+</li>
+</ul>
+<p><strong>第三章：Transformer模型原理剖析（1）</strong></p>
+<ul>
+<li>
+<p>Transformer模型的基本架构</p>
+</li>
+<li>
+<p>Self-Attention机制的原理和计算过程</p>
+</li>
+<li>
+<p>Multi-Head Attention的设计和作用</p>
+</li>
+<li>
+<p>注意力权重的计算和可视化</p>
+</li>
+<li>
+<p>Self-Attention在模型中的作用和优势</p>
+</li>
+</ul>
+<p><strong>第四章：Transformer模型原理剖析（2）</strong></p>
+<ul>
+<li>
+<p>Positional Encoding的概念和实现方法</p>
+</li>
+<li>
+<p>Rotary Positional Embedding</p>
+</li>
+<li>
+<p>BPE tokenizer，SentencePiece Encoding</p>
+</li>
+<li>
+<p>Transformer中的Feed-Forward Networks</p>
+</li>
+<li>
+<p>Layer Normalization的原理和重要性</p>
+</li>
+<li>
+<p>Transformer模型中的残差连接</p>
+</li>
+<li>
+<p>编码器和解码器的结构差异</p>
+</li>
+</ul>
+<p><strong>第五章：Transformer模型原理剖析（3）</strong></p>
+<ul>
+<li>
+<p>Transformer的训练策略和优化方法</p>
+</li>
+<li>
+<p>参数初始化和学习率调度</p>
+</li>
+<li>
+<p>Transformer模型的正则化技术</p>
+</li>
+<li>
+<p>Attention机制的变种和改进</p>
+</li>
+<li>
+<p>Greedy Decoding, Beam-search</p>
+</li>
+<li>
+<p>Top-K Sampling, Top-p Sampling</p>
+</li>
+<li>
+<p>Transformer源码解读</p>
+</li>
+</ul>
+<p><strong>第六章：Transformer模型全量微调和高效微调</strong></p>
+<ul>
+<li>
+<p>全量微调与高效微调的区别</p>
+</li>
+<li>
+<p>Transformer模型微调的常见策略</p>
+</li>
+<li>
+<p>选择合适的微调任务和数据集</p>
+</li>
+<li>
+<p>微调中的挑战和最佳实践</p>
+</li>
+<li>
+<p>评估微调效果的标准和工具</p>
+</li>
+</ul>
+<p><strong>第七章：【项目实战1】大模型PEFT微调项目</strong></p>
+<ul>
+<li>
+<p>PEFT的安装</p>
+</li>
+<li>
+<p>PEFT的使用说明，核心模块讲解</p>
+</li>
+<li>
+<p>指令数据准备和预处理的技巧</p>
+</li>
+<li>
+<p>实施微调的详细步骤</p>
+</li>
+<li>
+<p>微调项目的性能评估和分析</p>
+</li>
+</ul>
+<p><strong>第八章：GPT模型家族剖析</strong></p>
+<ul>
+<li>
+<p>GPT系列模型的发展历程</p>
+</li>
+<li>
+<p>GP1到GPT4，GPT3模型剖析</p>
+</li>
+<li>
+<p>GPT代码解读</p>
+</li>
+<li>
+<p>InstructGPT模型剖析</p>
+</li>
+<li>
+<p>Zero-shot Prompting</p>
+</li>
+<li>
+<p>Few-shot Prompting</p>
+</li>
+<li>
+<p>GPT模型的局限性和挑战</p>
+</li>
+</ul>
+<p><strong>第九章：LLaMA家族模型剖析</strong></p>
+<ul>
+<li>
+<p>LLaMA模型的特点和技术创新</p>
+</li>
+<li>
+<p>LLaMA模型的原理剖析</p>
+</li>
+<li>
+<p>LLaMA源码解读</p>
+</li>
+<li>
+<p>LLaMA与其他大模型的对比</p>
+</li>
+<li>
+<p>LLaMA模型的训练和微调策略</p>
+</li>
+<li>
+<p>面对LLaMA模型的未来发展方向</p>
+</li>
+</ul>
+<p><strong>第十章：ChatGLM家族模型剖析</strong></p>
+<ul>
+<li>
+<p>ChatGLM的架构和设计理念</p>
+</li>
+<li>
+<p>ChatGLM模型解读</p>
+</li>
+<li>
+<p>ChatGLM1到ChatGLM3的技术迭代</p>
+</li>
+<li>
+<p>ChatGLM模型的优势和应用领域</p>
+</li>
+<li>
+<p>ChatGLM模型微调和部署的实践指南</p>
+</li>
+<li>
+<p>ChatGLM模型的评估和性能优化</p>
+</li>
+</ul>
+<p><strong>第十一章：Baichuan家族模型剖析</strong></p>
+<ul>
+<li>
+<p>Baichuan模型的概述和核心技术</p>
+</li>
+<li>
+<p>Baichuan原理剖析和源码解读</p>
+</li>
+<li>
+<p>Baichuan模型与其他模型的比较</p>
+</li>
+<li>
+<p>Baichuan模型在特定任务上的应用</p>
+</li>
+<li>
+<p>微调Baichuan模型的策略和技巧</p>
+</li>
+<li>
+<p>Baichuan模型的局限</p>
+</li>
+</ul>
+<p><strong>第二阶段：大模型指令微调之- LoRA</strong></p>
+<p><strong>第十二章：指令微调基础</strong></p>
+<ul>
+<li>
+<p>指令微调的定义与应用背景</p>
+</li>
+<li>
+<p>指令微调与传统微调的对比</p>
+</li>
+<li>
+<p>指令微调在大模型中的重要性</p>
+</li>
+<li>
+<p>指令微调流程概览</p>
+</li>
+<li>
+<p>指令微调的挑战与策略</p>
+</li>
+</ul>
+<p><strong>第十三章：必要矩阵知识</strong></p>
+<ul>
+<li>
+<p>矩阵和向量的基本概念</p>
+</li>
+<li>
+<p>矩阵运算与性质</p>
+</li>
+<li>
+<p>特征值和特征向量</p>
+</li>
+<li>
+<p>矩阵分解（SVD）技术简介</p>
+</li>
+<li>
+<p>矩阵在LoRA算法中的应用</p>
+</li>
+</ul>
+<p><strong>第十四章：LoRA算法剖析</strong></p>
+<ul>
+<li>
+<p>LoRA算法的原理与动机</p>
+</li>
+<li>
+<p>Lora中的Low-rank假设</p>
+</li>
+<li>
+<p>LoRA的关键技术组件</p>
+</li>
+<li>
+<p>LoRA算法的实现步骤</p>
+</li>
+<li>
+<p>LoRA算法的优化与调试</p>
+</li>
+<li>
+<p>LoRA算法源码解读</p>
+</li>
+</ul>
+<p><strong>第十五章：指令数据搜集和生成</strong></p>
+<ul>
+<li>
+<p>指令数据的重要性与来源</p>
+</li>
+<li>
+<p>自动化和手动搜集指令数据的方法</p>
+</li>
+<li>
+<p>指令数据的预处理和标准化</p>
+</li>
+<li>
+<p>生成高质量指令数据的技巧</p>
+</li>
+<li>
+<p>指令数据集的维护与更新</p>
+</li>
+<li>
+<p>指令数据的人工质量评估与自动质量评估</p>
+</li>
+</ul>
+<p><strong>第十六章：【项目实战2】Alpaca微调大模型</strong></p>
+<ul>
+<li>
+<p>Alpaca微调项目的设计与目标</p>
+</li>
+<li>
+<p>准备Alpaca微调所需的指令数据</p>
+</li>
+<li>
+<p>实施Alpaca微调的详细步骤</p>
+</li>
+<li>
+<p>评估Alpaca微调效果的方法</p>
+</li>
+<li>
+<p>分析与解决Alpaca微调中遇到的问题</p>
+</li>
+<li>
+<p>解读Alpaca项目源码</p>
+</li>
+</ul>
+<p><strong>第十七章：AdaLoRA算法剖析</strong></p>
+<ul>
+<li>
+<p>AdaLoRA与LoRa的比较</p>
+</li>
+<li>
+<p>动态改变矩阵权重的意义</p>
+</li>
+<li>
+<p>SVD与AdaLoRA</p>
+</li>
+<li>
+<p>训练AdaLoRA</p>
+</li>
+<li>
+<p>AdaLoRA源码解读</p>
+</li>
+<li>
+<p>AdaLoRA案例讲解</p>
+</li>
+</ul>
+<p><strong>第十八章：【项目实战3】Vicuna微调大模型</strong></p>
+<ul>
+<li>
+<p>Vicuna微调项目的背景与应用场景</p>
+</li>
+<li>
+<p>ShareGPT数据收集</p>
+</li>
+<li>
+<p>Vicuna微调的实施流程和技术细节</p>
+</li>
+<li>
+<p>Vicuna微调效果的评估与分析</p>
+</li>
+<li>
+<p>基于Vicuna微调项目的经验总结与展望</p>
+</li>
+</ul>
+<p><strong>第三阶段：大模型指令微调之- Quantization</strong></p>
+<p><strong>第十九章：模型Quantization基础</strong></p>
+<ul>
+<li>
+<p>Quantization在深度学习中的作用与原理</p>
+</li>
+<li>
+<p>常见的Quantization技术及其分类</p>
+</li>
+<li>
+<p>模型Quantization对性能和精度的影响</p>
+</li>
+<li>
+<p>Quantization的实践步骤和工具</p>
+</li>
+<li>
+<p>模型Quantization的挑战与解决策略</p>
+</li>
+</ul>
+<p><strong>第二十章：QLoRA算法剖析</strong></p>
+<ul>
+<li>
+<p>QLoRA算法的定义和背景</p>
+</li>
+<li>
+<p>QLoRA与LoRA的关键区别和改进</p>
+</li>
+<li>
+<p>QLoRA算法的详细实现过程</p>
+</li>
+<li>
+<p>4bit NormalFloat, double quantization</p>
+</li>
+<li>
+<p>QLoRA算法的优化和调试技巧</p>
+</li>
+<li>
+<p>QLoRA源码解读</p>
+</li>
+</ul>
+<p><strong>第二十一章：【项目实战4】QLoRA微调LLaMA大模型</strong></p>
+<ul>
+<li>
+<p>技术方案的设计</p>
+</li>
+<li>
+<p>收集和预处理指令数据</p>
+</li>
+<li>
+<p>基于PEFT进行QLora大模型微调</p>
+</li>
+<li>
+<p>评估QLoRA微调之后的效果</p>
+</li>
+<li>
+<p>分析QLoRA微调过程中遇到的问题及其解决方案</p>
+</li>
+</ul>
+<p><strong>第二十二章：模型Compression技术</strong></p>
+<ul>
+<li>
+<p>模型压缩的必要性和技术背景</p>
+</li>
+<li>
+<p>常见的模型压缩方法概述</p>
+</li>
+<li>
+<p>模型压缩与Quantization的关系</p>
+</li>
+<li>
+<p>实施模型压缩的步骤和注意事项</p>
+</li>
+<li>
+<p>模型压缩技术的最新研究进展</p>
+</li>
+</ul>
+<p><strong>第二十三章：模型蒸馏技术探索</strong></p>
+<ul>
+<li>
+<p>模型蒸馏的基本概念和工作原理</p>
+</li>
+<li>
+<p>模型蒸馏在模型优化中的应用</p>
+</li>
+<li>
+<p>不同蒸馏技术的比较和选择</p>
+</li>
+<li>
+<p>实施模型蒸馏的具体方法</p>
+</li>
+<li>
+<p>模型蒸馏技术面临的挑战及其解决策略</p>
+</li>
+</ul>
+<p><strong>第二十四章：ZeroQuant算法剖析</strong></p>
+<ul>
+<li>
+<p>ZeroQuant算法的基本原理和应用背景</p>
+</li>
+<li>
+<p>ZeroQuant在模型Quantization中的创新点</p>
+</li>
+<li>
+<p>实现ZeroQuant的关键步骤和技术要求</p>
+</li>
+<li>
+<p>ZeroQuant源码解读</p>
+</li>
+<li>
+<p>ZeroQuant技术的局限性和未来方向</p>
+</li>
+</ul>
+<p><strong>第二十五章：SmoothQuant算法剖析</strong></p>
+<ul>
+<li>
+<p>SmoothQuant算法的设计理念和核心技术</p>
+</li>
+<li>
+<p>SmoothQuant与传统Quantization方法的区别</p>
+</li>
+<li>
+<p>实施SmoothQuant算法的具体流程</p>
+</li>
+<li>
+<p>SmoothQuant源码解读</p>
+</li>
+<li>
+<p>SmoothQuant面临的技术挑战和改进路径</p>
+</li>
+</ul>
+<p><strong>第四阶段：大模型对齐之-RLHF</strong></p>
+<p><strong>第二十六章：RLHF算法概述</strong></p>
+<ul>
+<li>
+<p>RLHF的起源和背景</p>
+</li>
+<li>
+<p>RLHF在人工智能中的作用和重要性</p>
+</li>
+<li>
+<p>强化学习与人类反馈：结合的优势</p>
+</li>
+<li>
+<p>RLHF的主要应用领域和案例研究</p>
+</li>
+<li>
+<p>从InstructGPT到GPT4</p>
+</li>
+</ul>
+<p><strong>第二十七章：人类反馈的集成</strong></p>
+<ul>
+<li>
+<p>人类反馈在强化学习中的角色</p>
+</li>
+<li>
+<p>不同形式的人类反馈：标注、偏好、指导</p>
+</li>
+<li>
+<p>从人类反馈中学习：方法和策略</p>
+</li>
+<li>
+<p>人类反馈数据的收集和处理</p>
+</li>
+<li>
+<p>人类反馈强化学习的挑战和解决方案</p>
+</li>
+</ul>
+<p><strong>第二十八章：PPO算法概述</strong></p>
+<ul>
+<li>
+<p>PPO的起源和动机</p>
+</li>
+<li>
+<p>PPO与其他策略梯度方法的对比</p>
+</li>
+<li>
+<p>算法核心概念和原理</p>
+</li>
+<li>
+<p>PPO的优势和局限性</p>
+</li>
+<li>
+<p>PPO的应用领域和案例</p>
+</li>
+</ul>
+<p><strong>第二十九章：强化学习和数据基础</strong></p>
+<ul>
+<li>
+<p>强化学习基本概念介绍</p>
+</li>
+<li>
+<p>数据在强化学习中的作用和重要性</p>
+</li>
+<li>
+<p>状态、动作和奖励的数据结构</p>
+</li>
+<li>
+<p>数据收集、处理和利用的方法</p>
+</li>
+<li>
+<p>使用模拟环境进行数据生成和测试</p>
+</li>
+</ul>
+<p><strong>第三十章：策略优化基础</strong></p>
+<ul>
+<li>
+<p>策略梯度方法简介</p>
+</li>
+<li>
+<p>优势函数和回报</p>
+</li>
+<li>
+<p>基线的概念和作用</p>
+</li>
+<li>
+<p>累积回报与折扣回报</p>
+</li>
+<li>
+<p>探索与利用的权衡</p>
+</li>
+</ul>
+<p><strong>第三十一章：PPO核心技术细节</strong></p>
+<ul>
+<li>
+<p>目标函数和KL散度</p>
+</li>
+<li>
+<p>裁剪目标函数的原理</p>
+</li>
+<li>
+<p>多次迭代优化策略</p>
+</li>
+<li>
+<p>广义优势估计（GAE）</p>
+</li>
+<li>
+<p>重要性采样和策略更新</p>
+</li>
+</ul>
+<p><strong>第三十二章：基于开源大模型从零实现PPO算法</strong></p>
+<ul>
+<li>
+<p>构建神经网络模型</p>
+</li>
+<li>
+<p>实现PPO的优化循环</p>
+</li>
+<li>
+<p>自适应学习率调整</p>
+</li>
+<li>
+<p>调试和性能分析技巧</p>
+</li>
+<li>
+<p>评估对齐之后的大模型</p>
+</li>
+</ul>
+<p><strong>第三十三章：高级PPO技术和强化学习进阶</strong></p>
+<ul>
+<li>
+<p>PPO变体和改进策略</p>
+</li>
+<li>
+<p>处理高维输入和模型泛化</p>
+</li>
+<li>
+<p>多智能体环境中的PPO应用</p>
+</li>
+<li>
+<p>强化学习中的迁移学习和多任务学习</p>
+</li>
+<li>
+<p>强化学习中的安全性和可解释性</p>
+</li>
+</ul>
+<p><strong>第三十四章：【项目实战5】RLHF医疗大模型微调</strong></p>
+<ul>
+<li>
+<p>项目需求分析和技术方案设计</p>
+</li>
+<li>
+<p>环境设置和任务定义</p>
+</li>
+<li>
+<p>对齐数据的收集和预处理</p>
+</li>
+<li>
+<p>实现PPO训练流程</p>
+</li>
+<li>
+<p>结果分析和性能优化</p>
+</li>
+</ul>
+<p><strong>第五阶段：大模型对齐之-DPO</strong></p>
+<p><strong>第三十五章：DPO算法概述</strong></p>
+<ul>
+<li>
+<p>DPO（Direct Preference Optimization）介绍</p>
+</li>
+<li>
+<p>与PPO算法对比</p>
+</li>
+<li>
+<p>DPO的应用场景和重要性</p>
+</li>
+<li>
+<p>基本原理和工作机制</p>
+</li>
+<li>
+<p>DPO算法的优势和挑战</p>
+</li>
+</ul>
+<p><strong>第三十六章：排序和偏好的基础</strong></p>
+<ul>
+<li>
+<p>偏好与排序问题在AI中的角色</p>
+</li>
+<li>
+<p>数据表示：成对比较和偏好矩阵</p>
+</li>
+<li>
+<p>偏好学习的挑战</p>
+</li>
+<li>
+<p>排序和偏好预测的评估指标</p>
+</li>
+<li>
+<p>经典偏好学习算法概览</p>
+</li>
+</ul>
+<p><strong>第三十七章：DPO核心技术细节</strong></p>
+<ul>
+<li>
+<p>偏好建模的数学框架</p>
+</li>
+<li>
+<p>直接与间接偏好优化的对比</p>
+</li>
+<li>
+<p>DPO中的关键算法组件</p>
+</li>
+<li>
+<p>成对比较数据的处理方法</p>
+</li>
+<li>
+<p>DPO的损失函数和优化策略</p>
+</li>
+</ul>
+<p><strong>第三十八章：DPO算法的从零实现</strong></p>
+<ul>
+<li>
+<p>数据整理与预处理</p>
+</li>
+<li>
+<p>构建偏好学习模型的步骤</p>
+</li>
+<li>
+<p>使用Python实现基础DPO模型</p>
+</li>
+<li>
+<p>在benchmark上测试DPO性能</p>
+</li>
+<li>
+<p>DPO的优势和缺点</p>
+</li>
+</ul>
+<p><strong>第三十九章：【项目实战6】DPO在推荐系统中的应用</strong></p>
+<ul>
+<li>
+<p>推荐系统中的偏好学习</p>
+</li>
+<li>
+<p>设计DPO驱动的推荐算法</p>
+</li>
+<li>
+<p>处理实时用户反馈</p>
+</li>
+<li>
+<p>实施DPO进行推荐模型微调</p>
+</li>
+<li>
+<p>评估推荐系统的性能</p>
+</li>
+</ul>
+<p><strong>第四十章：高级DPO技术</strong></p>
+<ul>
+<li>
+<p>多任务学习与DPO的结合</p>
+</li>
+<li>
+<p>DPO在非监督学习中的应用</p>
+</li>
+<li>
+<p>深度学习方法与DPO</p>
+</li>
+<li>
+<p>交互式偏好学习</p>
+</li>
+<li>
+<p>DPO技术的变种</p>
+</li>
+</ul>
+<p><strong>第六阶段：大模型其他微调技术</strong></p>
+<p><strong>第四十一章：Prefix Tuning算法剖析</strong></p>
+<ul>
+<li>
+<p>Prefix Tuning的基本原理</p>
+</li>
+<li>
+<p>实现Prefix Tuning的关键步骤</p>
+</li>
+<li>
+<p>Prefix Tuning源码解读</p>
+</li>
+<li>
+<p>Prefix Tuning与其他微调方法的比较</p>
+</li>
+<li>
+<p>在NLP任务中应用Prefix Tuning的案例</p>
+</li>
+<li>
+<p>Prefix Tuning的局限性和挑战</p>
+</li>
+</ul>
+<p><strong>第四十二章：Adaptor Tuning算法剖析</strong></p>
+<ul>
+<li>
+<p>Adaptor Tuning的基本原理</p>
+</li>
+<li>
+<p>如何在大模型中插入Adaptor层</p>
+</li>
+<li>
+<p>Adaptor Tuning的优点和应用场景</p>
+</li>
+<li>
+<p>Adaptor Tuning源码解读</p>
+</li>
+<li>
+<p>实际案例：Adaptor Tuning在分类任务中的应用</p>
+</li>
+<li>
+<p>Adaptor Tuning的效率和扩展性问题</p>
+</li>
+</ul>
+<p><strong>第四十三章：Flash Attention算法剖析</strong></p>
+<ul>
+<li>
+<p>Flash Attention的设计思想和算法原理</p>
+</li>
+<li>
+<p>优化Transformer模型中的注意力机制</p>
+</li>
+<li>
+<p>Flash Attention在提升处理速度和效率上的作用</p>
+</li>
+<li>
+<p>应用Flash Attention改进大模型的案例分析</p>
+</li>
+<li>
+<p>Flash Attention的实现挑战和解决方案</p>
+</li>
+</ul>
+<p><strong>第四十四章：Flash Attention 2算法剖析</strong></p>
+<ul>
+<li>
+<p>介绍Flash Attention 2与前版本的区别</p>
+</li>
+<li>
+<p>深入探讨Flash Attention 2的技术改进点</p>
+</li>
+<li>
+<p>Flash Attention 2在复杂任务处理中的应用示例</p>
+</li>
+<li>
+<p>评估Flash Attention 2的性能和适用范围</p>
+</li>
+<li>
+<p>Flash Attention 2的实现细节和调优建议</p>
+</li>
+</ul>
+<p><strong>第四十五章：Kahneman-Tversky Optimization (KTO) 算法剖析</strong></p>
+<ul>
+<li>
+<p>KTO算法背景和理论基础</p>
+</li>
+<li>
+<p>Kahneman-Tversky优化在微调中的应用</p>
+</li>
+<li>
+<p>实施KTO的关键技术步骤</p>
+</li>
+<li>
+<p>KTO在提高决策质量中的角色</p>
+</li>
+<li>
+<p>KTO应用案例和性能分析</p>
+</li>
+</ul>
+<p><strong>第四十六章：【项目实战7】QLoRA+Flash Attention微调大模型</strong></p>
+<ul>
+<li>
+<p>结合QLoRA和Flash Attention的微调策略</p>
+</li>
+<li>
+<p>任务选取和数据准备</p>
+</li>
+<li>
+<p>微调流程详解：从预处理到模型评估</p>
+</li>
+<li>
+<p>分析微调后模型的性能改进</p>
+</li>
+<li>
+<p>面临的挑战及解决方案分享</p>
+</li>
+</ul>
+<p><strong>第七阶段：大模型增量学习</strong></p>
+<p><strong>第四十七章：大模型增量学习概述</strong></p>
+<ul>
+<li>
+<p>增量学习（Continual learning）的重要性</p>
+</li>
+<li>
+<p>与传统从零训练的对比</p>
+</li>
+<li>
+<p>增量学习的应用场景</p>
+</li>
+<li>
+<p>任务选取和数据准备</p>
+</li>
+<li>
+<p>微调流程详解：从预处理到模型评估</p>
+</li>
+</ul>
+<p><strong>第四十八章：增量学习与灾难性遗忘</strong></p>
+<ul>
+<li>
+<p>什么是灾难性遗忘</p>
+</li>
+<li>
+<p>解决灾难性遗忘的思路</p>
+</li>
+<li>
+<p>正则化、动态网络架构、元学习</p>
+</li>
+<li>
+<p>通用数据与垂直数据的混合训练</p>
+</li>
+<li>
+<p>数据中的信息分析</p>
+</li>
+<li>
+<p>调整学习率</p>
+</li>
+</ul>
+<p><strong>第四十九章：增量学习中的高级主题</strong></p>
+<ul>
+<li>
+<p>增量学习在大规模数据集上的应用</p>
+</li>
+<li>
+<p>多模态与跨领域增量学习</p>
+</li>
+<li>
+<p>自适应学习和在线学习技术</p>
+</li>
+<li>
+<p>强化学习与增量学习的结合</p>
+</li>
+<li>
+<p>未来增量学习的发展方向</p>
+</li>
+</ul>
+<p><strong>类别</strong></p>
+<p><strong>说明</strong></p>
+<p><strong>课****程形式</strong></p>
+<p>线上直播+课程学习群答疑</p>
+<p><strong>课程安排</strong></p>
+<p>13次直播授课，每周1次，每次3-3.5小时</p>
+<p><strong>课程服务</strong></p>
+<p>25人以内学习群，助教答疑，保证遇到的问题被快速解决</p>
+<p>专属咨询顾问与班主任老师全程伴学</p>
+<p>全程直播讲解与演示+可反复观看课程视频</p>
+<p><strong>课程主讲</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/mbWhecw83cQvevoStyk9QTEP2EB74Szgb27ickFc11OTjiaVdvkwp1MtrTPc1cYiacgeMqa6LJKT7mBF3poP3iag6A/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p><strong>郑老师</strong></p>
+<p>人工智能、大模型领域专家</p>
+<ul>
+<li>
+<p>清华大学计算机科学与人工智能研究部博士后</p>
+</li>
+<li>
+<p>长期在大厂从事对话系统，预训练语言模型的研发和商业化</p>
+</li>
+<li>
+<p>主要从事自然语言处理，对话领域的先行研究与商业化</p>
+</li>
+<li>
+<p>先后在AAAI，NeurIPS，ACM，EMNLP等国际顶会及期刊发表高水平论文十余篇</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/mbWhecw83cQvevoStyk9QTEP2EB74Szgb27ickFc11OTjiaVdvkwp1MtrTPc1cYiacgeMqa6LJKT7mBF3poP3iag6A/640?wx_fmt=png&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p><strong>李文哲</strong></p>
+<p>贪心科技创始人兼CEO</p>
+<p>人工智能、大模型领域专家</p>
+<ul>
+<li>
+<p>多家上市公司技术战略顾问</p>
+</li>
+<li>
+<p>曾任金融科技独角兽公司首席科学家</p>
+</li>
+<li>
+<p>曾任量化投资初创公司首席科学家</p>
+</li>
+<li>
+<p>曾任美国亚马逊推荐系统工程师</p>
+</li>
+<li>
+<p>深耕人工智能领域十余年，授课培养AI学员数万人</p>
+</li>
+</ul>
+<p><strong>报名咨询</strong></p>
+<p><strong>已为本号用户申请优惠！</strong></p>
+<p><strong>前20位<strong><strong>报名学员享受</strong></strong>早鸟福利价</strong>**！**</p>
+<p><strong>请联系课程顾问老师咨询~</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/mbWhecw83cQvevoStyk9QTEP2EB74SzghBgLicYerDibfKwjUEHPuBtb2qaHj4JIOsI2tKna8804E40I1NflicbrA/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
