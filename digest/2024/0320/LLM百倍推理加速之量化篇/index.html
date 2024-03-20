@@ -1,0 +1,828 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>LLM百倍推理加速之量化篇 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 【点击】加入大模型技术交流群 原文：https://zhuanlan.zhihu.com/p/680341931 本文主要基于当前主流GPU硬件、量化算法最新论文，参考量化开源项目，探讨一下量化推理加  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">LLM百倍推理加速之量化篇</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 20, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycyKCVYIJfZcWq854NSouZzDAlRgd4rzxbTnRmjibaibGydDuLsSTjqr4w/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/SD2jljQb9DsRDhSU3ZS67w">吃果冻不吐果冻皮</a></p>
+<h4 id="heading"></h4>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群</a></p>
+<p>原文：https://zhuanlan.zhihu.com/p/680341931</p>
+<p>本文主要基于当前主流GPU硬件、量化算法最新论文，参考量化开源项目，探讨一下量化推理加速的下一步可行方向。</p>
+<h4 id="量化简易介绍">量化简易介绍</h4>
+<p>模型量化（Quantization）是一种模型压缩技术，用于通过修改权重、激活的位宽（bit-width）来减小模型大小，从而降低计算负载、降低GPU显存I/O与占用，最终起到降低latency并提升throughput的效果。<br>
+如下的深度学习加速器示意图所示，简单的描述量化如何进行加速：</p>
+<ul>
+<li>
+<p>步骤1，权重和激活存储由内存中被加载到 MatMul 计算单元中，权重和激活的位宽会对数据传输的latency起到较大的影响。</p>
+</li>
+<li>
+<p>步骤2，MatMul 计算单元进行矩阵乘法计算，位宽和格式同时对latency起到较大的影响。</p>
+</li>
+<li>
+<p>步骤3，累加器一般具有较高的位宽，进行高精度求和。求和完成之后，累加器中的值可能会被重新量化（输出位宽决定传输和存储回内存中的位数），写回内存以进行下一步处理。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycF5dpreV7Ixv054tibphrg4Skeqwb2ibe7t9L4G55XJMRwn9VxScVydBg/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>A schematic overview of a deep learning accelerator<br>
+根据量化方案的不同，分为量化感知训练（QAT）和后训练量化（PTQ）。</p>
+<ul>
+<li>
+<p>QAT（Quant-Aware Training） 也可以称为在线量化（On Quantization）。它需要利用额外的训练计算量，在量化的同时结合反向传播对模型权重进行调整，意在确保量化模型的精度不掉点。</p>
+</li>
+<li>
+<p>PTQ （Post Training Quantization）也可以称为离线量化（Off Quantization）。它是在已训练的模型上，使用少量或不使用额外数据，对模型量化过程进行校准，可能伴有模型权重的缩放。其中：</p>
+<ul>
+<li>
+<p>训练后动态量化（PostDynamic Quantization）不使用校准数据集，直接对每一层 layer 通过量化公式进行转换。如：LLM.int8()。</p>
+</li>
+<li>
+<p>训练后校正量化（Post Calibration Quantization）需要输入有代表性的数据集，根据模型每一层 layer 的输入输出调整量化权重。如：GPTQ 。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="硬件支持">硬件支持</h4>
+<p>NVIDIA系列<br>
+NV系列的卡，因为CUDA生态的原因，对不同精度、不同类型的数据支持，一直保持较为领先的地步。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyc0cVWZ73dQoWHd0iaujvia7q7QJ0Sh3MMp0Ntv2WSgUBuPy0icZyBrJvXw/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>AMD系列<br>
+AMD的MI300系列卡，在性能测试上，某些指标已经超过H100，会是比较好的下一个选择，同样支持了FP8类型的支持。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycvK9HDHbg89pV9JCRRB2ogFicuBgecps6FMAqJ6mlv7NQWiaDRAqQTB9w/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>除了NVIDIA和AMD系列的卡之外，国产卡同样对着FP16和INT8等数据类型有着较好的支持（目前相对欠缺FP8等数据格式的支持），在此就不一一列举。</p>
+<h4 id="如何对llm做量化">如何对LLM做量化</h4>
+<h4 id="llm量化难点">LLM量化难点</h4>
+<p>我们先做个简单对比，分别对ResNet18和OPT-13B做简单的INT量化，发现ResNet18的性能基本上没有损失，但OPT-13B却有着较大的损失。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycQ6nXt1OMFwFQdaRI67FIhuAJbZCDY9z7L3JARctY1XVkXJDHJZzCPg/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>为什么同为高斯分布的神经网络，会存在如此的差异？这主要与LLM的异常值，或者说离群值，有较大关系。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycyuUjQfg4Br9qe0a80bKUTwtzXBjeNRWlhCWpxBJP7RceDRYM9ZfKdg/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>A single transformer block, consisting of the self-attention module and the linear module. The connection in red is the problematic connection in transformers with outliers.</p>
+<p>如上图transformer结构当中的红色标记位置所示，transformer量化的问题发生在网络的一个非常特定的部分。<strong>在一些全连接模块中，特别是在网络的最后几层中，进入层范数的求和存在显着的异常值。</strong> 简单地剪掉这些异常值，会明显降低网络的准确性，因为它们有特定的用途。因为这些异常值，会迫使下一层的注意力机制关注文本中出现的一些无意义的标记，例如句子分隔符标记、句点或逗号，导致该特定标记不会显著地更新。<br>
+通过论文LLM.int8()[1]得知，激活中存在一些离群值，它们的绝对值明显更大；并且这些离群值分布在少量的几个特征 (features) 中，称为离群特征 (Emergent Features)。通过[2]可知，离群值对模型的性能影响非常大，直接舍弃，不是一个可行的方案。<br>
+异常值会让fp16的范围非常大，这样用int8来表示，一个数就得表示很宽的一个fp16范围，自然误差就大了。传统cnn中也考虑了这个问题，提出了校准的方法进行解决，具体就是把fp16的数值做一些统计，然后用一些算法（比如KL散度）来对一些大的值进行舍弃，从而缩小int8要表示的fp16范围，提升精度，具体舍弃多少，就是靠KL算法不断迭代，找到一个最优的范围。<br>
+幸运的是，这些异常值非常特殊。它们仅出现在某些注意块中，并且在这些块中仅出现在一层中，并且在这些层中仅出现在几个输出通道中。这些甚至是每个数据点的相同通道（ [1,3]）。<br>
+基于上述的结论，LLM.int8()[1]提出了混合精度的算法。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycicR27axsicg3ICibnukGJloichUJyia8RBLCkp1bZZLniaX8HuQRkrTCpRqw/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>Schematic of LLM.int8()</p>
+<p>根据上图，X就表示每层的activations，有sequence length这么多行，有hidden-size这么多列。图中黄色的竖条就代表异常值，非常形象的表达了它的分布规律（就是第二个结论）。vector-wise quantization的意思是对于不是异常值的列，按照int8对称量化来处理，既然取的是列，在矩阵乘中，对应的权重W就要取出对应的行。进行int8运算。对于黄色的异常值列，按照列和行来取出，进行fp16的运算。最后再把两部分结果相加，等价于直接矩阵乘。<br>
+通过LLM.int8()的混合量化方法，精度几乎是与fp32完全一样，实验结果数据不再粘贴。</p>
+<h4 id="fp8与int8">FP8与INT8</h4>
+<p>为什么单独说一下fp8与int8？主要因为最新的GPU架构，例如hopper架构，tensor core都支持fp8运算精度，因此探讨一下fp8的量化，就比较有必要。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycyKCVYIJfZcWq854NSouZzDAlRgd4rzxbTnRmjibaibGydDuLsSTjqr4w/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>Tensor Core (Hopper)(a)Allocate 1 bit to either range or precision(b)Support for multiple accumulator and output types</p>
+<p>Int8与fp8不同的是，没有中间的指数exponent，只有尾数mantissa，这种数据表达结构，如下图所示，更适合去表达均匀分布。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycSvytWP5BXVstRXajrGLnw1sGbKicqxWJd9a8AEw4fmnvXjKLFEAxTLg/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>通过[4]可知，如果分布具有非常明显的异常值，则 FP8-E4/FP8-E5 格式会更准确，但如果分布表现良好且更呈高斯形状，则 INT8 或 FP8-E2/FP8-E3 预计会表现更好。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycicw0I0ajzD6yCno1ibHx9RvltrXmOMku4JW7ZxvzibWeic3C6SrLzdK7lg/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>Here we plot, for several distributions, ‘bits of accuracy’: inverted and normalized RMSE</p>
+<p>如上图所示，<strong>对于均匀分布，INT8 是最好的。对于正态分布，FP8-E2 是最佳的，INT8 紧随其后</strong> 。神经网络中的许多分布都是正态分布，这意味着该分布的结果是一个非常相关的性能指标。只有当异常值出现时，具有更多指数位的格式才会开始提供更好的结果。最佳量化器是基于 Lloyd-Max 量化器针对这些分布可以获得的最佳量化器。<br>
+对于像 ResNet18、MobileNetV2等网络，因为层大多是高斯形状的，FP8-E2 和 INT 格式的性能最佳，而 FP8-E4 和 FP8-E5 等格式的性能则明显较差。我们还发现 ViT和 BERT等transformer模型在 FP8-E4 上表现最佳，正是因为transformer中的一些层具有非常大的异常值。具体来说，有一些层在层范数之前的激活具有较多的异常值。由于这些异常值会显着影响性能，导致裁剪时出现0错误，因此 FP8-E4 格式性能最佳，而 FP8-E2/INT8 格式则明显较差。</p>
+<p>如此看来，是不是FP8相对INT8而言，在LLM领域有着绝对的领先优势？<br>
+结论可能正好相反，主要有以下两个方面原因：</p>
+<ul>
+<li>
+<p>根据电路设计中的定点累加和浮点累加原理，FP8 MAC 单元的效率比 INT8 单元低 50% 到 180%。如果工作负载受计算限制，使专用芯片的处理速度变的更慢。</p>
+</li>
+<li>
+<p>对于大多数网络，FP8相对 INT8 会更糟糕，即便 transformer这种具有大量异常值的结构，可以通过混合精度或者量化感知训练的方法去解决此类问题。</p>
+</li>
+</ul>
+<p>总体而言，单纯量化的场景，浮点格式 FP8-E4 和 FP8-E5 在深度学习推理的性能和准确性方面并不能替代 INT8。</p>
+<p>**如此说来，那FP8格式的优势和定位在哪？<br>
+** 首先整理一下FP8格式的优势：</p>
+<ul>
+<li>
+<p>FP8 Tensor Cores 比 16-bit Tensor Cores 快</p>
+</li>
+<li>
+<p>减少 memory movement</p>
+</li>
+<li>
+<p>如果模型已经在 FP8 中进行，部署更加方便</p>
+</li>
+<li>
+<p>FP8 拥有更宽的动态范围</p>
+</li>
+<li>
+<p>FP8 到 FP16/FP32/BF16 之间的转换电路，可以设计得更简单直接，而不需要像INT8/UINT8到FP的转化需要乘法和加法的开销。</p>
+</li>
+</ul>
+<p>基于以上优点，不难看出，<strong>FP8其实更适合训练</strong> 。<br>
+参考[5],在不修改学习率和权重衰减等任何超参数，不管是预训练任务还是下游任务，使用 FP8 训练的模型与使用 BF16 高精度训练的模型的表现相当。值得注意的是，在 GPT-175B 模型的训练期间，相比于 TE 方法，在 H100 GPU 平台上，新提出的 FP8 混合精度框架可将训练时间减少 17%，同时内存占用少 21%。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycAxq8TASLrPebibNSAGRCC4mL3icvgQrqIc6SabJcBWV2kiaHDoduXHgMw/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>Zero-shot performance on downstream tasks. The models are trained with either the standard BF16 mixed-precision scheme or the proposed FP8 low-precision scheme</p>
+<p><strong>通过FP8格式训练的模型进行推理，可以避免了QAT或者PTQ的过程（避免降低精度），同时加上FP8到FP16等格式更高转化效率，相对能较大提升推理性能</strong> 。</p>
+<h4 id="量化最佳性价比">量化最佳性价比</h4>
+<p>就像exllamav2项目，支持GPTQ算法的2、3、4、5、6和8-bit量化，但对于LLM来说，多少长度和什么格式，才是量化性价比最高的方案？<br>
+参考[6],在一系列LLM架构上进行了大量实验，得出了不同的位数分配对模型性能的影响：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycpPr8TpAlCkkbtJG4RgIibEnEy5hh6Y6GdAlf6CpuCe9lXg90UscFsQw/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>Bit-level scaling laws for mean zero-shot performance across four datasets for 125M to 176B parameter OPT models. Zero-shot performance increases steadily for fixed model bits as we reduce the quantization precision from 16 to 4 bits. At 3-bits, this relationship reverses, making 4-bit precision optimal.</p>
+<p>对于给定的Zero-shot性能，4位精度为几乎所有模型系列和模型规模提供最佳缩放（4 位精度对模型性能，不会产生太大下降）。唯一的例外是 BLOOM-176B，其中 3 位稍好，但没有明显好转。</p>
+<p><strong>4 位精度是目前逐位最有效的精度，同时表明 3 位精度的效果可以得到改进。因此，对 4 位以下的低位精度研究，是一个值得研究的方向。</strong></p>
+<p>对bit-level进行研究，发现data types和block size是bit-level量化效果的关键因素。</p>
+<p>通过上述，我们简易的得到一个结论，4位精度的量化，是当前性价比最高的方案，但4-bit的数据当中，那种数据类型会有更好的量化效果？<br>
+参考[7],提出 LLM-FP4的FP4量化方法，用于以训练后的方式将大型语言模型 (LLM) 中的权重和激活量化为 4 位浮点值。现有PTQ解决方案主要基于整数，并且难以应对低于 8 位的位宽。与整数量化相比，浮点（FP）量化更加灵活，可以更好地处理长尾或钟形分布，并且已成为许多硬件平台的默认选择。项目参考：https://github.com/nbasyl/LLM-FP4P4<br>
+FP量化的特点之一是其性能很大程度上取决于指数位和限幅范围的选择。LLM-FP4通过搜索最佳量化参数构建了强大的 FP-PTQ 基线。此外，<strong>激活分布中存在较高的通道间方差和较低的通道内方差模式</strong> ，<strong>这增加了激活量化的难度</strong> 。为了解决这个问题，LLM-FP4提出每通道激活量化，并表明这些额外的缩放因子可以重新参数化为权重的指数偏差，从而产生的成本可以忽略不计。<br>
+LLM-FP4首次将 LLaMA-13B 中的权重和激活量化为仅 4 位，并在常识零样本推理任务上取得了 63.1 的平均分数，仅比全样本低 5.8，明显优于之前的最先进模型 12.7 个百分点。<br>
+具体数据，参考下图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycrD9MdIKnU7oibHEqebVp9YrRvouYn7U92C4Sak5ebgNHTbryaic74NBQ/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>Zero-shot performance on common sense reasoning tasks with LLaMA models. We denote E/W/A as the bit-width of word embeddings, model weight and activations, respectively</p>
+<p>从上图可以得出以下的主要结论：</p>
+<ul>
+<li>
+<p>activations不量化，word embeddings与weight进行4位量化，LLM-FP4(FP类型)对比GPTQ(INT类型)等算法有微弱的优势。</p>
+</li>
+<li>
+<p>activations进行8位量化，word embeddings与weight进行4位或者8位量化，LLM-FP4(FP类型)与其它算法(INT类型)相比，效果相差无几。</p>
+</li>
+<li>
+<p>activations进行4位量化，LLM-FP4(FP类型)与其它算法(INT类型)相比，效果提升较为明显。</p>
+</li>
+</ul>
+<p>综上，我们可以得出一个结论，如果activations不进行4位量化，FP4对比INT4，暂无较为明显的优势。</p>
+<h4 id="值得关注的量化项目">值得关注的量化项目</h4>
+<p>GPTQ-for-LLaMa<br>
+使用GPTQ[8]量化的模型具有很大的速度优势,简单来讲，GPTQ 对某个 block 内的所有参数逐个量化，每个参数量化后，需要适当调整这个 block 内其他未量化的参数，以弥补量化造成的精度损失。<br>
+GPTQ 量化需要准备校准数据集，对模型进行 post-training quantization，来得到量化权重，其思想最初来源于 Yann LeCun 在 1990 年提出的 OBD 算法，随后 OBS、OBC（OBQ） 等方法不断进行改进，而 GPTQ 是 OBQ 方法的加速版。GPTQ 的量化有严谨的数学理论推导，所有的算法步骤都有理论支撑。<br>
+GPTQ-for-LLaMa是专门针对 LLaMa 提供 GPTQ量化方案的仓库，如果考虑 GPU 部署 LLaMa 模型， 建议尝试。<br>
+项目地址：https://github.com/qwopqwop200/GPTQ-for-LLaMaGPTQ-for-LLaMa<br>
+ExLlama<br>
+ExLlama有ExLlama和ExLlamaV2 两个版本，是个推理库，用于在现代消费级 GPU 上运行本地 LLM。<br>
+ExLlamaV2 支持与 V1 相同的 4 位 GPTQ 模型，但也支持新的“EXL2”格式。EXL2基于与GPTQ相同的优化方法，支持2、3、4、5、6和8位量化。该格式允许在模型内混合量化级别，以实现每个权重 2 到 8 位之间的任何平均比特率。<br>
+此外，ExLlamaV2可以将多个量化级别应用于每个线性层，产生类似于稀疏量化的东西，其中更重要的权重（列）用更多的位进行量化。让 ExLlama 与行为顺序模型高效工作的相同重新映射技巧允许这种格式混合发生，而对性能几乎没有影响。<br>
+普遍来说，ExLlama对比其它量化方案，推理速度相对更快一点。<br>
+项目地址：https://github.com/turboderp/exllamav2https://github.com/turboderp/exllamav2<br>
+GGML<br>
+GGML是一个专注于机器学习的C库。它是由Georgi Gerganov创建的，这就是缩写“GG”的意思。该库不仅提供机器学习的基础元素（例如张量），还提供用于分发LLM的独特二进制格式，使用 C 编写，支持 Integer quantization（4-bit, 5-bit, 8-bit） 以及 16-bit float。<br>
+GGML可与llama.cpp库无缝协作，确保从业者能够有效利用LLM的力量。llama.cpp库的主要目标是允许在MacBook上使用INT4量化的LLaMA模型。<br>
+项目地址：https://github.com/ggerganov/ggmlhttps://https://github.com/ggerganov/ggmlml<br>
+Transformer Engine<br>
+Transformer Engine (TE) 是一个用于在 NVIDIA GPU 上加速 Transformer 模型的库，包括在 Hopper GPU 上使用 8 位浮点 (FP8) 精度，从而在训练和推理中以更低的内存利用率提供更好的性能。TE 为流行的 Transformer 架构提供了一系列高度优化的构建块，以及可与特定于框架的代码无缝使用的自动混合精度类 API。TE 还包括一个与框架无关的 C++ API，可以与其他深度学习库集成，以实现对 Transformer 的 FP8 支持。<br>
+重点如下：</p>
+<ul>
+<li>
+<p>易于使用的模块，用于构建支持 FP8 的 Transformer 层</p>
+</li>
+<li>
+<p>Transformer 模型的优化（例如融合内核）</p>
+</li>
+<li>
+<p>在 NVIDIA Hopper 和 NVIDIA Ada GPU 上支持 FP8</p>
+</li>
+<li>
+<p>支持 NVIDIA Ampere GPU 架构各代及更高版本上所有精度（FP16、BF16）的优化</p>
+</li>
+</ul>
+<p>项目地址：https://https://github.com/NVIDIA/TransformerEngine</p>
+<p>formerEngine<br>
+**attention测试<br>
+** import te.LayerNormLinear进行引用，测试attention计算的平均时间。</p>
+<p>阶段
+模型结构
+数据格式
+RTX 4090
+RTX 3090</p>
+<p>基础attension
+pytorch原生attention
+fp16
+92ms
+183ms</p>
+<p>基础attenion+te的
+基础attention中对Linear和LayerNorm进行tx替换
+fp16
+96ms
+不支持</p>
+<p>基础attenion+te的LayerNorm算子优化
+基础attention+te.LayerNormLinear
+fp16
+96ms
+不支持</p>
+<p>te全量
+te的全量attension算法
+fp16
+74ms
+不支持</p>
+<p>te全量+fp8
+进行fp的前向传播替换
+fp8
+42ms
+不支持</p>
+<p>测试结论：Transformer Engine，fp16的情况下，整体相对基础的attention算法，有着20%左右的提升；fp8能达到54.5%的提升，相对值得花时间提升推理性能。<br>
+bitsandbytes<br>
+bitsandbytes 是 CUDA 自定义函数的轻量级包装器，特别是 8 位优化器、矩阵乘法 (LLM.int8()) 和量化函数，主要支持LLM.int8()量化算法。<br>
+bitsandbytes库支持分位数、线性和动态量化，属于最简单方法之一，不需要量化校准数据及校准过程。任何模型只要含有torch.nn.Linear模块，开箱即用。目前[9]的分析表明, NF4 (NormalFloat数据类型是)和 FP4 属于同等效果的 4 位量化技术，具有相似的属性，例如推理速度、内存消耗、以及生成内容的质量。<br>
+NormalFloat数据类型是分位数量化技术的增强，在信息论意义上是正态分布权重的最佳表示,主要由QLoRA[10]方法使用，以4位精度加载模型以进行微调,下图是QLoRA当中的部分数据。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyclNQQtngE4iaGchlWVk2O45B7J8aS2ajJJYfgiaZ0Yd3zcvLZiaruX6IqA/640?wx_fmt=jpeg&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p>Pile Common Crawl mean perplexity for different data types for 125M to 13B OPT, BLOOM, LLaMA, and Pythia models.<br>
+AIMET<br>
+AIMET一个高通为神经网络模型提供高级模型量化和压缩技术的库，提高推理速度，同时降低计算和内存要求，并且对准确性影响最小。例如，模型在 Qualcomm Hexagon DSP 上的运行速度比 Qualcomm Kyro CPU 上的运行速度快 5 至 15 倍。<br>
+项目地址：https://github.com/quic/aimet<br>
+<strong>AIMET其实是一个非NV系列硬件在量化实现上的一个缩影，往往是硬件厂商提供的基础量化能力，当前并没有某个项目，能对不同硬件提供通用的量化能力。</strong></p>
+<h4 id="总结">总结</h4>
+<ul>
+<li>4-bit量化是当前性价比最高的量化方案，但根据word embeddings、weight与activations三者的量化程度，不同数据类型各有优劣，目前整体来说，除了activations的4-bit量化，其余场景的Int类型量化会更有性价比，同时技术相对成熟。因此，通过低bit对activations在内的PTQ量化，会是一个新的量化加速方向。</li>
+</ul>
+<p>*<strong>INT8是当前最为通用的量化方案</strong> ，FP8与之相比，并不能在量化场景对INT8进行取代，但却适合做模型训练，从无须量化的角度去解决推理性能问题。FP8相关的技术，如何与硬件tenser core相结合，从而最大化推理速度，是一个新的方向。</p>
+<ul>
+<li>
+<p>GPTQ算法一系列项目，占据LLM场景的主流方案，不可否认，新的数据类型（FP4、NF4）、更低bit以及动态量化等新场景，会带来新的创新点，值得去研究。</p>
+</li>
+<li>
+<p>除了NV系列的GPU之外，新的GPU以及CPU（AMD\国产GPU\高通等）都有新的机会。量化算法如何快速适配不同硬件并最大化硬件性能，同样是个新的方向。</p>
+</li>
+</ul>
+<p>**参考论文</p>
+<p>[1]LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale<br>
+[2]Outliers Dimensions that Disrupt Transformers Are Driven by Frequency<br>
+[3]Smoothquant: Accurate and efficient post-training quantization for large language models<br>
+[4]FP8 versus INT8 for efficient deep learning inference<br>
+[5]FP8-LM: Training FP8 Large Language Models<br>
+[6]The case for 4-bit precision: k-bit Inference Scaling Laws<br>
+[7]LLM-FP4: 4-Bit Floating-Point Quantized Transformers<br>
+[8]GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers<br>
+[9]Understanding the Impact of Post-Training Quantization on Large Language Models<br>
+[10]QLoRA: Efficient Finetuning of Quantized LLMs</p>
+<p><strong>历史文章：</strong> <a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487320&amp;idx=2&amp;sn=522fdf838d4ec03f24dbc7a11a3a5a65&amp;chksm=fd3be60bca4c6f1d0c9b0643db0d7334940fb592dac3b5fbf286c7232f6bb08b968fbd237a20&amp;scene=21#wechat_redirect">2024年2月大模型文章集锦</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
