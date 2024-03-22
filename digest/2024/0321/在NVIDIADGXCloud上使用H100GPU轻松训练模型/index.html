@@ -1,0 +1,673 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>在NVIDIADGXCloud上使用H100GPU轻松训练模型 作者： Hugging Face 来源： Hugging Face 近期，我们正式宣布推出DGX 云端训练 (Train on DGX Cloud) 服务，这是 Hugging Face Hub 上针对企业 Hub 组织的全新服务。 通过在 DGX 云端训练，你可以轻松借助 NVIDIA DGX Cloud 的高速计算基础设施来使用开放的模型。这项服务旨在让企业 Hub 的用户能够通过几次点击，就在Huggi  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">在NVIDIADGXCloud上使用H100GPU轻松训练模型</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 21, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2qy9TnWCYj3GLJym9opia5kRGlU2pceMaibOq85tc8td7vy3UpIpJxfBzyl2DxEuJRwib0lAsLQVoURg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： Hugging Face  来源： <a href="https://mp.weixin.qq.com/s/HtVlyr9SN4rKbXflto1PEQ">Hugging Face</a></p>
+<p>近期，我们正式宣布推出<strong>DGX 云端训练 (Train on DGX Cloud)</strong>  服务，这是 Hugging Face Hub 上针对企业 Hub 组织的全新服务。</p>
+<p>通过在 DGX 云端训练，你可以轻松借助 NVIDIA DGX Cloud 的高速计算基础设施来使用开放的模型。这项服务旨在让企业 Hub 的用户能够通过几次点击，就在Hugging Face Hub中轻松访问最新的 NVIDIA H100 Tensor Core GPU，并微调如 Llama、Mistral 和 Stable Diffusion 这样的流行生成式 AI (Generative AI) 模型。</p>
+<ul>
+<li>Hugging Face Hubhttps://hf.co/models</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2qy9TnWCYj3GLJym9opia5kRdnTZgl8bia50vYbvlLsNchP7ryeQQGcDgYzA2De6rZcAPlicW0hX01iaw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="gpu-不再是稀缺资源">GPU 不再是稀缺资源</h4>
+<p>这一新体验基于我们去年宣布的战略合作，旨在简化 NVIDIA 加速计算平台上开放生成式 AI 模型的训练和部署。开发者和机构面临的主要挑战之一是 GPU 资源稀缺，以及编写、测试和调试 AI 模型训练脚本的工作繁琐。在 DGX 云上训练为这些挑战提供了简便的解决方案，提供了对 NVIDIA GPUs 的即时访问，从 NVIDIA DGX Cloud 上的 H100 开始。此外，该服务还提供了一个简洁的无代码训练任务创建体验，由 Hugging Face AutoTrain 和 Hugging Face Spaces 驱动。</p>
+<ul>
+<li>战略合作https://nvidianews.nvidia.com/news/nvidia-and-hugging-face-to-connect-millions-of-developers-to-generative-ai-supercomputing</li>
+</ul>
+<p>通过企业版的 HF Hub，组织能够为其团队提供强大 NVIDIA GPU 的即时访问权限，只需按照训练任务所用的计算实例分钟数付费。</p>
+<ul>
+<li>企业版的 HF Hubhttps://hf.co/enterprise</li>
+</ul>
+<blockquote>
+<p>在 DGX Cloud 上训练是目前训练生成式 AI 模型最简单、最快速、最便捷的方式，它结合了强大 GPU 的即时访问、按需付费和无代码训练，这对全球的数据科学家来说将是一次变革性的进步！</p>
+<p>—— Abhishek Thakur, Hugging Face AutoTrain 团队创始人</p>
+</blockquote>
+<blockquote>
+<p>今天发布的 Hugging Face Autotrain，得益于 DGX Cloud 的支持，标志着简化 AI 模型训练过程向前迈出了重要一步，通过将 NVIDIA 的云端 AI 超级计算机与 Hugging Face 的友好界面结合起来，我们正在帮助各个组织加速他们的 AI 创新步伐。</p>
+<p>—— Alexis Bjorlin, NVIDIA DGX 云副总裁</p>
+</blockquote>
+<h4 id="操作指南">操作指南</h4>
+<p>在 NVIDIA DGX Cloud 上训练 Hugging Face 模型变得非常简单。以下是针对如何微调 Mistral 7B 的分步教程。</p>
+<blockquote>
+<p>注意：你需要访问一个拥有企业版的 HF Hub 订阅的组织账户，才能使用在 DGX Cloud 上训练的服务</p>
+</blockquote>
+<p>你可以在支持的生成式 AI 模型的模型页面上找到在 DGX Cloud 上训练的选项。目前，它支持以下模型架构：Llama、Falcon、Mistral、Mixtral、T5、Gemma、Stable Diffusion 和 Stable Diffusion XL。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2qy9TnWCYj3GLJym9opia5kRqPKfYic1NfDaMvWVluHSfF8BMBcnfkBiaKd61fxXmwz6bX5oOrjaFybA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>点击“训练 (Train)”菜单，并选择“NVIDIA DGX Cloud”选项，这将打开一个页面，让你可以选择你的企业组织。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2qy9TnWCYj3GLJym9opia5kRsxyGr4nzm5qCUfica5wb8s9XIDibQmQMrazbkUhkPia4JdBsDgENQkNYQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>接下来，点击“Create new Space”。当你首次使用在 DGX Cloud 上训练时，系统将在你的组织内创建一个新的 Hugging Face 空间，使你可以利用 AutoTrain 创建将在 NVIDIA DGX 云上执行的训练任务。当你日后需要创建更多训练任务时，系统将自动将你重定向到已存在的 AutoTrain Space 应用。</p>
+<p>进入 AutoTrain Space 应用后，你可以通过配置硬件、基础模型、任务和训练参数来设置你的训练任务。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2qy9TnWCYj3GLJym9opia5kRGlU2pceMaibOq85tc8td7vy3UpIpJxfBzyl2DxEuJRwib0lAsLQVoURg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在硬件选择方面，你可以选择 NVIDIA H100 GPUs，提供 1x、2x、4x 和 8x 实例，或即将推出的 L40S GPUs。训练数据集需要直接上传至“上传训练文件”区域，目前支持 CSV 和 JSON 文件格式。请确保根据以下示例正确设置列映射。对于训练参数，你可以直接在右侧的 JSON 配置中进行编辑，例如，将训练周期数从 3 调整为 2。</p>
+<p>一切设置完成后，点击“开始训练”即可启动你的训练任务。AutoTrain 将验证你的数据集，并请求你确认开始训练。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2qy9TnWCYj3GLJym9opia5kRic44Ctibm37ZgNReaw8LVcyz6efHgBkMKcZdWjxylbt9q8IfZKmOSIFw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>你可以通过查看这个 Space 应用的“Logs 日志”来查看训练进度。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2qy9TnWCYj3GLJym9opia5kRjgicIgROjKNtpVYXLK9cczYVetEEyib8EAXJavGHPvhTxGOeticibn96OQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>训练完成后，你微调后的模型将上传到 Hugging Face Hub 上你所选择的命名空间内的一个新的私有仓库中。</p>
+<p>从今天起，所有企业 Hub 组织都可以使用在 DGX Cloud 上训练的服务了！欢迎尝试并分享你的反馈！</p>
+<h4 id="在-dgx-cloud-上训练的定价">在 DGX Cloud 上训练的定价</h4>
+<p>使用在 DGX Cloud 上训练服务，将根据你训练任务期间使用的 GPU 实例分钟数来计费。当前的训练作业价格为：H100 实例每 GPU 小时 8.25 美元，L40S 实例每 GPU 小时 2.75 美元。作业完成后，费用将累加到你企业 Hub 组织当前的月度账单中。你可以随时查看企业 Hub 组织的计费设置中的当前和历史使用情况。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5LJDib8HPR2qy9TnWCYj3GLJym9opia5kRnrMJYmhnSdD5ShpXfZCcxiaEEE49oPJVb755koJKRfJib8VGx8wchusA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>例如，微调 1500 个样本的 Mistral 7B 在一台 NVIDIA L40S 上大约需要 10 分钟，成本约为 0.45 美元。</p>
+<h4 id="我们的旅程刚刚开始">我们的旅程刚刚开始</h4>
+<p>我们很高兴能与 NVIDIA 合作，推动加速机器学习在开放科学、开源和云服务领域的普惠化。</p>
+<p>通过BigCode项目的合作，我们训练了StarCoder 2 15B，这是一个基于超过 600 种编程语言训练的全开放、最先进的代码大语言模型 (LLM) 。</p>
+<ul>
+<li>
+<p>BigCodehttps://hf.co/bigcode</p>
+</li>
+<li>
+<p>StarCoder 2 15Bhttps://hf.co/bigcode/starcoder2-15b</p>
+</li>
+</ul>
+<p>我们在开源方面的合作推动了新的optimum-nvidia 库的开发，加速了最新 NVIDIA GPUs 上大语言模型的推理，已经达到了 Llama 2 每秒 1200 Tokens 的推理速度。</p>
+<ul>
+<li>optimum-nvidia 库https://github.com/huggingface/optimum-nvidia</li>
+</ul>
+<p>我们在云服务方面的合作促成了今天的在 DGX Cloud 上训练服务。我们还在与 NVIDIA 合作优化推理过程，并使加速计算对 Hugging Face 社区更容易受益。此外，Hugging Face 上一些最受欢迎的开放模型将出现在今天 GTC 上宣布的NVIDIA NIM 微服务上。</p>
+<ul>
+<li>NVIDIA NIM 微服务https://developer.nvidia.com/zh-cn/blog/nvidia-nim-offers-optimized-inference-microservices-for-deploying-ai-models-at-scale/</li>
+</ul>
+<p>本周参加 GTC 的朋友们，请不要错过周三 3/20 下午 3 点 PT 的会议S63149，Jeff将带你深入了解在 DGX Cloud 上训练等更多内容。另外，不要错过下一期 Hugging Cast，在那里我们将现场演示在 DGX Cloud 上训练，并且你可以直接向Abhishek和Rafael提问，时间是周四 3/21 上午 9 点 PT / 中午 12 点 ET / 17h CET -请在此注册。</p>
+<ul>
+<li>
+<p>S63149https://www.nvidia.com/gtc/session-catalog/?tab.allsessions=1700692987788001F1cG&amp;search=S63149#/session/1704937870817001eXsB</p>
+</li>
+<li>
+<p>Jeffhttps://hf.co/jeffboudier</p>
+</li>
+<li>
+<p>Abhishekhttps://hf.co/abhishek</p>
+</li>
+<li>
+<p>Rafaelhttps://hf.co/rafaelpierrehf</p>
+</li>
+<li>
+<p>请在此注册https://streamyard.com/watch/YfEj26jJJg2w</p>
+</li>
+</ul>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
