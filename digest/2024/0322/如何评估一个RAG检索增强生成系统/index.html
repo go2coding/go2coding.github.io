@@ -1,0 +1,921 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>如何评估一个RAG（检索增强生成）系统 作者： 莫尔索随笔 来源： 莫尔索随笔 写这篇文章的原因是我构建的 RAG 框架已经基本成型，现在只剩下最后一块拼图，即评估模块 ，这也是真正投入生产后，RAG 系统迭代的关键，本篇文章我将分享 3 种方案，第一种我自己跑出来的实践经验，第二种是比较成熟的框架 RA  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">如何评估一个RAG（检索增强生成）系统</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 22, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89jTudsXxThB4p2EV8VNb4xpn7ib2eqyUuolAXLd5Dh4EKqR9Igs7WCs2w/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 莫尔索随笔  来源： <a href="https://mp.weixin.qq.com/s/yvaYhzr7TEDZ4nncH9pJYw">莫尔索随笔</a></p>
+<blockquote>
+<p>写这篇文章的原因是我构建的 RAG 框架已经基本成型，现在只剩下最后一块拼图，即<strong>评估模块</strong> ，这也是真正投入生产后，RAG 系统迭代的关键，本篇文章我将分享 3 种方案，第一种我自己跑出来的实践经验，第二种是比较成熟的框架 RAGAs[1]，通过定量指标来评估，最后一种是则是通过噪声、拒答、反事实、信息整合等四大指标来定性分析，来自论文《在 RAG 中对大语言模型进行基准测试》[2]，大家可以结合起来设计自己的方案。</p>
+</blockquote>
+<p>RAG 概念最初来源于 2020 年 Facebook 的一篇论文，这是 Facebook 博客对论文内容的进一步解释 👉《检索增强生成：简化智能自然语言处理模型的创建》[3]。大家都知道在今天构建一个 RAG 应用的概念证明很容易，但要正经投入生产却非常困难，俗称「一周出 Demo、半年用不好 🫠」，要使 RAG 应用的性能达到令人满意的状态尤其困难，如何正确的评估 RAG 应用是当前一个热门的研究主题，例如 RAG 三元组指标[4]、ROUGE[5]、ARES[6]、BLEU[7] 等。RAG 流程中包含三大组件：</p>
+<p>*<strong>数据索引组件</strong> ：数据向量和索引创建的工作</p>
+<p>*<strong>检索器组件</strong> ：为 LLM 检索额外的上下文信息，以回答查询。</p>
+<p>*<strong>生成器组件</strong> ：基于检索到的信息增强的提示生成答案。</p>
+<p>评估 RAG 流程时，针对数据索引组件（包含数据提取、嵌入、创建索引等）没有太多评估工作，而对检索器和生成器组件，需要充分测试以了解 RAG 流程是否仍需要改进以及在哪些方面需要改进。</p>
+<ol>
+<li>实践经验</li>
+</ol>
+<p>这个是我实践探索出的经验，当前还比较粗，我选取了流畅有用、上下文支持率、上下文有效率 3 个指标进行的评估，且听我一一解释。</p>
+<h4 id="流畅有用">流畅有用</h4>
+<p>这个好理解，<strong>流畅</strong> 侧重生成的内容是否流畅连贯，以当下大模型的能力基本不存在这方面问题，就算胡说八道，但是表达也是流畅自然的，其次<strong>有用</strong> 指的是生成的内容是否有用，用户正常使用过程中很容易感知，而且这部分的指标收集来源也是用户交互数据，系统推上去后，每条回答都有一个点赞 👍 点踩 👎 的按钮。</p>
+<h4 id="上下文支持率a">上下文支持率（a）</h4>
+<p>检索到的上下文内容在全部的生成内容中占比多少，用于评估最终结果中到底用了多少检索到的知识库内容。</p>
+<p>上下文支持率 = 有检索到的上下文信息进行支撑的生成内容 / 总的生成内容</p>
+<h4 id="上下文有效率b">上下文有效率（b）</h4>
+<p>检索到的和问题意图关联程度较强的上下文片段与检索到的全部上下文片段的占比，用于评估检索到的上下文信息质量</p>
+<p>上下文有效率 = 与问题强相关的上下文片段/检索到的全部上下文片段</p>
+<p>最后计算出上下文效率和上下文支持率的调和平均数 H（调和平均数的计算方法是将所有数值的倒数求和，然后再取这个和的倒数，<strong>受极端值影响较小</strong> ）</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89jP9gHoBzSMLiaDibeQZkybNYrOo2oV3BM6D48lEA6HBFtKKKVLKqXCL1A/640?wx_fmt=png" alt=""></p>
+<p>然后后台每一条问答，都会有 a，b，H 三个指标数据进行标记。</p>
+<h4 id="总结">总结</h4>
+<p>有意思的是，我按照自己摸索的这套方案做出一个版本后，去搜相关资料才发现和 《生成式搜索引擎中验证性评估》[8]这篇论文的思路挺相近的，不过论文中探讨的更严谨，正在做这方面工作的朋友可以去读一下，或者去看下Devv[9]（一款面向开发者的新一代 AI 搜索引擎）作者的解读[10]，我这里结合他的解读快速过下论文中的方案：</p>
+<p>论文提到了一个值得信赖的 Generative Search Engine 的先决条件就是：可验证性（verifiability）。理想的 RAG 系统应该是：</p>
+<ul>
+<li>
+<p>高引用召回率（high citation recall），即所有的生成内容都有引用（外部知识）充分支持</p>
+</li>
+<li>
+<p>高引用精度（high citation precision），即每个引用是否真的支持生成的内容</p>
+</li>
+</ul>
+<p>实际上这两个指标不可能做到 100%，根据论文中的实验结果，现有的 Generative Search Engine 生成的内容经常包含无据陈述和不准确的引文，这两个数据分别是 51.5% 和 74.5%。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89jAqZN344Rtfr9IyoFWgwnVp4JbN1wQCmqc7FqSQ90jWLNGHnNNEqj4w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>于是采用了 4 个指标来进行评估：</p>
+<ol>
+<li>
+<p>fluency，流畅性，生成的文本是否流畅连贯（例如 xxx 算是流畅的，并用 Five-point Likert 量表来进行计算，从 Strongly Disagree 到 Strongly Agree）</p>
+</li>
+<li>
+<p>perceived utility，实用性，生成的内容是否有用 （让评测者对「The response is a helpful and informative answer to the query」这个说法的同意程度进行打分）</p>
+</li>
+<li>
+<p>citation recall，引文召回率，引文支持的生成内容 / 总的生成内容 （和我的上下文支持率差不多含义）</p>
+</li>
+<li>
+<p>citation precision，引文精度，与特定主题相关的文献数量 / 检索到的内容 （和我的上下文有效率概念也近似）</p>
+</li>
+</ol>
+<p>一个优秀的 GSE （生成式搜索引擎）系统应该在 citation recall 和 citation precision 上都获得比较高的评分。</p>
+<p><strong>F1 分数</strong> 是精确率和召回率的调和平均数，它为了同时考虑精确率和召回率的影响，是二者之间的一种平衡。F1 分数的计算公式为：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89j7VIqia7tYXmsIANEXXROAuwO6x5FaIZrIOox8icnj60cZ4N4TTfIIbTg/640?wx_fmt=png&amp;from=appmsg" alt="">F1 分数</p>
+<p><strong>F2 分数</strong> 是一个更为一般化的版本，它允许调整精确率和召回率的相对重要性。F2 分数通过引入一个参数 β，可以对精确率和召回率进行加权。具体来说，当 β&gt;1 时，召回率的权重大于精确率；当 β&lt;1 时，精确率的权重大于召回率。F2 分数就是在这个公式中设 β=2，使得召回率的重要性高于精确率。Fβ 分数的计算公式为：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89jp4MgBmHWZ1stxsOzvD9qBecaXcmqw2N5zuftXnrjVvUb8UMuJIJ50Q/640?wx_fmt=png&amp;from=appmsg" alt="">F2 分数</p>
+<p>这两种分数都用于评估模型的性能，特别是在数据不平衡的情况下，它们比单纯的准确率更能反映模型的性能。</p>
+<h4 id="2-ragas">2. RAGAs</h4>
+<p>RAGAs（<strong>R</strong> etrieval-<strong>A</strong> ugmented<strong>G</strong> eneration<strong>As</strong> sessment）是一个框架（GitHub[11]、文档[12]），该框架考虑<strong>检索系统识别相关和重点上下文段落的能力，LLM 以忠实方式利用这些段落的能力，以及生成本身的质量</strong> 。为了了解 RAG 应用性能是否在提高，必须通过<strong>评估指标和评估数据集</strong> 进行定量评估。</p>
+<h4 id="评估数据">评估数据</h4>
+<p>最开始的 RAGAs 在评估数据集时，不必依赖人工标注的标准答案，而是通过底层的大语言模型 (LLM) 来进行评估（提供了自动测试数据生成[13]的工具），不过 RAGAs 现在已经扩展了需要依赖真实标签的指标（例如，context_recall
+和 answer_correctness
+）（详见 评估指标[14]）。</p>
+<p>为了评估 RAG 流程，RAGAs 需要以下几种数据信息：</p>
+<ul>
+<li>
+<p>question
+：RAG 流程的输入，即用户查询问题。</p>
+</li>
+<li>
+<p>answer
+：RAG 流程生成的答案，也就是最终输出结果。</p>
+</li>
+<li>
+<p>contexts
+：用于回答 question
+的从外部知识源检索到的上下文。</p>
+</li>
+<li>
+<p>ground_truths(真实答案)
+：question
+的真实答案。这是唯一需要人工标注的信息。这个信息仅在评估 context_recall
+这一指标时才需要。（详见 评估指标[15]）。</p>
+</li>
+</ul>
+<h4 id="评估指标">评估指标</h4>
+<p>RAGAs 提供了一些 指标[16]，可用于从组件层面和整体流程两个方面评估 RAG 流程的性能。</p>
+<p>在<strong>组件层面</strong> 上，RAGAs 提供了评估检索组件（context_relevancy
+和 context_recall
+）和生成组件（faithfulness
+和 answer_relevancy
+）的指标，所有指标的评分范围在 [0, 1] 之间，分数越高表示性能越出色：</p>
+<ul>
+<li>
+<p>context_precision（上下文精度）[17] ：衡量与查询问题最相关的上下文片段是否都被优先展示在前几项。该指标通过问题
+、真实答案
+和上下文
+来计算。</p>
+</li>
+<li>
+<p>context_recall（上下文召回率）[18] ：衡量是否检索到了所有必要信息以回答问题。该指标基于 真实答案
+（框架中唯一基于人工标注的真实数据的指标）和 上下文
+计算得出。</p>
+</li>
+<li>
+<p>faithfulness（事实一致性）[19] ：衡量生成答案的事实准确性。从给定上下文中正确的陈述数量除以生成答案中陈述的总数。该指标结合了 问题
+、上下文
+和 答案
+。</p>
+</li>
+<li>
+<p>answer_relevance（答案相关性）[20] ：衡量生成答案与问题的相关性。该指标使用 问题
+和 答案
+计算得出。例如，对于问题 “<em>北京在哪里，它的首都是什么？</em>”，答案 “<em>北京位于亚洲。</em>” 的答案相关性会很低，因为它只回答了问题的一半。</p>
+</li>
+</ul>
+<p>在<strong>整体流程</strong>  上，例如 答案的语义相似度[21] 和 答案的正确性[22]可以作为评估 RAG 整体流程的指标。</p>
+<h4 id="使用-ragas-评估-rag">使用 RAGAs 评估 RAG</h4>
+<p>下面是一个使用 RAGAs 评估 RAG 应用的过程，主要代码来自这篇文章[23]。</p>
+<h4 id="rag-应用示例">RAG 应用示例</h4>
+<p>代码部分还是以 LangChain 为例：</p>
+<pre><code>import requests  
+from langchain.document_loaders import TextLoader  
+from langchain.text_splitter import CharacterTextSplitter  
+  
+url = &quot;https://raw.githubusercontent.com/langchain-ai/langchain/master/docs/docs/modules/state_of_the_union.txt&quot;  
+res = requests.get(url)  
+with open(&quot;state_of_the_union.txt&quot;, &quot;w&quot;) as f:  
+    f.write(res.text)  
+  
+# 加载数据  
+loader = TextLoader('./state_of_the_union.txt')  
+documents = loader.load()  
+  
+# 分块数据  
+text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)  
+chunks = text_splitter.split_documents(documents)  
+</code></pre>
+<p>接下来，使用 OpenAI 嵌入模型为每个块生成向量嵌入，并将它们存储在向量数据库中。</p>
+<pre><code>from langchain.embeddings import OpenAIEmbeddings  
+from langchain.vectorstores import Weaviate  
+import weaviate  
+from weaviate.embedded import EmbeddedOptions  
+from dotenv import load_dotenv,find_dotenv  
+  
+# 从 .env 文件加载 OpenAI API 密钥  
+load_dotenv(find_dotenv())  
+  
+# 设置向量数据库  
+client = weaviate.Client(  
+  embedded_options = EmbeddedOptions()  
+)  
+  
+# 填充向量数据库  
+vectorstore = Weaviate.from_documents(  
+    client = client,  
+    documents = chunks  
+    ,  
+    embedding = OpenAIEmbeddings(),  
+    by_text = False  
+)  
+  
+# 定义向量存储为检索器以启用语义搜索  
+retriever = vectorstore.as_retriever()  
+</code></pre>
+<p>最后，设置一个提示模板和 OpenAI LLM，并将它们与检索器组件结合成一个 RAG 流程。</p>
+<pre><code>from langchain.chat_models import ChatOpenAI  
+from langchain.prompts import ChatPromptTemplate  
+from langchain.schema.runnable import RunnablePassthrough  
+from langchain.schema.output_parser import StrOutputParser  
+  
+# 定义 LLM  
+llm = ChatOpenAI(model_name=&quot;gpt-3.5-turbo&quot;, temperature=0)  
+  
+# 定义提示模板  
+template = &quot;&quot;&quot;您是一个问答任务的助手。  
+使用以下检索到的上下文片段回答问题。  
+如果您不知道答案，只需说您不知道。  
+最多使用两个句子，保持答案简洁。  
+问题：{question}  
+上下文：{context}  
+答案：  
+&quot;&quot;&quot;  
+  
+prompt = ChatPromptTemplate.from_template(template)  
+  
+# 设置 RAG 流程  
+rag_chain = (  
+    {&quot;context&quot;: retriever,  &quot;question&quot;: RunnablePassthrough()}  
+    | prompt  
+    | llm  
+    | StrOutputParser()  
+)  
+</code></pre>
+<h4 id="准备评估数据">准备评估数据</h4>
+<p>由于 RAGAs 在评估数据集时，不必依赖人工标注的标准答案，所以评估数据集所需的准备工作是最小的。只需要准备 问题
+和 真实答案
+对，从中可以推导出其他所需信息，如下所示：</p>
+<pre><code>from datasets import Dataset  
+  
+# 问题  
+questions = [&quot;美国总统对 Justice Breyer 说了什么？&quot;,  
+          &quot;美国总统对 Intel 的 CEO 说了什么？&quot;,  
+          &quot;美国总统对枪支暴力说了什么？&quot;,  
+         ]  
+# 真实答案  
+ground_truths = [[&quot;美国总统说 Justice Breyer 致力于服务国家，并感谢他的服务。&quot;],  
+             [&quot;美国总统说 Pat Gelsinger 准备将 Intel 的投资增加到 1000 亿美元。&quot;],  
+             [&quot;美国总统要求国会通过经过验证的措施来减少枪支暴力。&quot;]]  
+answers = []  
+contexts = []  
+  
+# 推导信息  
+for query in questions:  
+  answers.append(rag_chain.invoke(query))  
+  contexts.append([docs.page_content for docs in retriever.get_relevant_documents(query)])  
+  
+# 转换为字典  
+data = {  
+    &quot;question&quot;: questions,   # 问题  
+    &quot;answer&quot;: answers, # 答案  
+    &quot;contexts&quot;: contexts, # 上下文  
+    &quot;ground_truths&quot;: ground_truths  # 真实答案  
+}  
+  
+  
+# 将字典转换为数据集  
+dataset = Dataset.from_dict(data)  
+</code></pre>
+<p>如果不关注 context_recall
+指标，就不必提供 ground_truths
+数据，只需 question
+数据即可。</p>
+<h4 id="进行应用评估">进行应用评估</h4>
+<p>从 ragas.metrics
+导入所有想要使用的指标，然后使用 evaluate()
+函数，传入相关的指标和准备好的数据集即可。</p>
+<pre><code>from ragas import evaluate  
+from ragas.metrics import (  
+    faithfulness,  
+    answer_relevancy,  
+    context_recall,  
+    context_precision,  
+)  
+  
+result = evaluate(  
+    dataset = dataset,  
+    metrics=[  
+        context_precision,  
+        context_recall,  
+        faithfulness,  
+        answer_relevancy,  
+    ],  
+)  
+  
+df = result.to_pandas()  
+</code></pre>
+<p>下面是最终的 RAGAs 得分（上下文相关性、上下文召回率、忠实度和答案相关性）：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89jicEoj3icfAwH2gnjwqmLiaARibjj8IS18BAQDxU0vS2YBaVSK3Miavb17Hw/640?wx_fmt=png&amp;from=appmsg" alt="">img</p>
+<ul>
+<li>
+<p>context_precision（上下文精度）
+：上下文精确度的值在 0 到 1 之间，数值越接近 1，表示检索结果的相关性越高，即检索到的信息与查询问题的相关度越紧密，如果上下文精确度的值接近 0，则意味着检索结果中包含的相关项很少或者排名非常靠后，这表明检索系统的性能需要改进。</p>
+</li>
+<li>
+<p>context_recall（上下文召回率）
+：LLM 评估检索到的上下文包含了正确回答问题所需的相关信息。</p>
+</li>
+<li>
+<p>faithfulness（事实一致性）
+：虽然 LLM 判断第一个和最后一个问题的答案正确，但第二个问题的答案错误地声称「美国总统没有提到 Intel 的 CEO」，其事实一致性被判断为 0.5。</p>
+</li>
+<li>
+<p>answer_relevance（答案相关性）
+：所有生成的答案都被判断为与问题相关性较高，都大于 0.8。</p>
+</li>
+</ul>
+<h4 id="3-rag-对大语言模型的影响">3. RAG 对大语言模型的影响</h4>
+<p>这个来自论文《Benchmarking Large Language Models in Retrieval-Augmented Generation》[24]，定性分析了不同大模型在进行 RAG 时基本能力的表现，包括<strong>噪声鲁棒性、拒答、信息整合和反事实鲁棒性</strong> 4 个测试维度，虽然论文题目强调是 RAG 对大模型的输出效果影响，但等同于对 RAG 流程的生成器组件评估，可以作为一种思路。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89jTudsXxThB4p2EV8VNb4xpn7ib2eqyUuolAXLd5Dh4EKqR9Igs7WCs2w/640?wx_fmt=png" alt=""></p>
+<p>4个测试维度</p>
+<p>在对比模型上，选用 ChatGPT , ChatGLM-6B , ChatGLM2-6B , Vicuna-7b-v1.3 , Qwen-7B- Chat , BELLE-7B-2M 等模型。</p>
+<h4 id="噪声鲁棒性noise-robustness">噪声鲁棒性（Noise Robustness）</h4>
+<p>模型能从噪声文档中提取有用信息。噪声文档定义为与问题相关但不包含任何相关信息的文档。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89jicK0PeicHLbkhrywicVibpGMo90TibheNDGdHT3E0z7bM9wMxXK0Curp6uw/640?wx_fmt=png" alt=""></p>
+<p>噪声鲁棒性测试结果</p>
+<p>当噪声率超过 80%时，模型的准确性就会明显下降。例如，ChatGPT 的性能从 96.33%降至 76.00%，而 ChatGLM2-6B 的性能则从 91.33%降至 57.33%，RAG 可以有效改善 LLM 的回复，即使在有噪声的情况下，LLM 也能表现出不错的性能。</p>
+<h4 id="拒答negative-rejection">拒答（Negative Rejection）</h4>
+<p>当检索到的文档中不存在所需的知识点时，模型应拒绝回答问题。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89jcIshwamL03xFuCMBMDicPUIhFwmUcZBXB2ajUh3d21FicaeMZVpkTFJg/640?wx_fmt=png" alt=""></p>
+<p>拒答测试结果</p>
+<p>上图显示了评估只提供噪声文档时的拒答率，除了通过精确匹配来评估拒答率（Rej 指标）外，还利用 ChatGPT 来确定大模型的回复是否包含任何拒绝信息（Rej∗ 指标），可以看到大模型很容易被噪声文档误导，从而导致错误的答案。</p>
+<h4 id="信息整合information-integration">信息整合(information integration)</h4>
+<p>评估模型能否回答需要整合多个文档信息的复杂问题。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/bXmpy9tJpTRoSpF84J9bO64KDYPkG89j9lwAkHwicygl0UpgEWR15EZco0IyV43adfX5SZLpOu17NyKbDfrbaAw/640?wx_fmt=png" alt=""></p>
+<p>信息整合测试结果</p>
+<p>可以看到，即使在没有噪声的情况下，大模型的最高准确率也只能达到英文 60%和中文 67%，加入噪声后，最高准确率下降到 43%和 55%；当噪声比为 0.4 时，性能下降明显，复杂问题更容易受到噪声的干扰。大模型难以有效整合信息，不适合直接回答复杂问题。</p>
+<h4 id="反事实鲁棒性counterfactualrobustness">反事实鲁棒性（CounterfactualRobustness）</h4>
+<p>评估当通过指令向 LLMs 发出关于检索信息中潜在风险的警告时，大模型能否识别检索文档中已知事实错误的风险。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/bXmpy9tJpTRoSpF84J9bO64KDYPkG89j0y4H6F8JsgFTOzU0m7NhmtlDssRNls6QqS0x9SpvZSHGcGQxh5h8vg/640?wx_fmt=jpeg" alt=""></p>
+<p>反事实鲁棒性测试结果</p>
+<p>横轴包括以下指标：不包含任何文档的准确率、包含反事实文档的准确率、错误检测率和错误纠正率。可以看到，大模型很难识别和纠正文档中的事实错误，很容易被包含错误事实的文件误导。</p>
+<h4 id="总结-1">总结</h4>
+<p>总体上 RAGAs 框架中的指标拆的比较细，考虑的比较全面，大家可以重点阅读下项目整体文档，然后借鉴下部分指标整合进自己的设计，而生成式搜索引擎中的方案，从实践出发，提炼的指标虽然少，但是能够很好的评估出 RAG 应用的效果，直接采用，系统也不需要过多工作量。</p>
+<p>我创建了【<strong>AI 产品</strong> 】和【<strong>AI 开发</strong> 】交流群，用于 AI 产品构建和分享交流，如果你负责的工作和这个领域强相关并且感兴趣，欢迎后台【<strong>点击入群</strong> 】加入交流 ，备注信息务必做简单自我介绍，否则不予通过！如果觉得内容不错，欢迎点个<strong>关注，分享和在看</strong> ～</p>
+<p>👇 点击<strong>阅读原文</strong> 获得更好阅读体验。</p>
+<h4 id="参考资料">参考资料</h4>
+<p>[1] RAGAs: <em><a href="https://arxiv.org/pdf/2309.15217v1.pdf">https://arxiv.org/pdf/2309.15217v1.pdf</a></em></p>
+<p>[2] 《在 RAG 中对大语言模型进行基准测试》: <em><a href="https://arxiv.org/abs/2309.01431">https://arxiv.org/abs/2309.01431</a></em></p>
+<p>[3] 《检索增强生成：简化智能自然语言处理模型的创建》: <em><a href="https://ai.meta.com/blog/retrieval-augmented-generation-streamlining-the-creation-of-intelligent-natural-language-processing-models/">https://ai.meta.com/blog/retrieval-augmented-generation-streamlining-the-creation-of-intelligent-natural-language-processing-models/</a></em></p>
+<p>[4] RAG 三元组指标: <em><a href="https://learn.deeplearning.ai/building-evaluating-advanced-rag/lesson/3/rag-triad-of-metrics">https://learn.deeplearning.ai/building-evaluating-advanced-rag/lesson/3/rag-triad-of-metrics</a></em></p>
+<p>[5] ROUGE: <em><a href="https://aclanthology.org/W04-1013/">https://aclanthology.org/W04-1013/</a></em></p>
+<p>[6] ARES: <em><a href="https://arxiv.org/abs/2311.09476">https://arxiv.org/abs/2311.09476</a></em></p>
+<p>[7] BLEU: <em><a href="https://dl.acm.org/doi/10.3115/1073083.1073135">https://dl.acm.org/doi/10.3115/1073083.1073135</a></em></p>
+<p>[8] 《生成式搜索引擎中验证性评估》: <em><a href="https://arxiv.org/abs/2304.09848">https://arxiv.org/abs/2304.09848</a></em></p>
+<p>[9] Devv: <em><a href="https://devv.ai/">https://devv.ai/</a></em></p>
+<p>[10] 解读: <em><a href="https://twitter.com/Tisoga/status/1736544319199478175">https://twitter.com/Tisoga/status/1736544319199478175</a></em></p>
+<p>[11] GitHub: <em><a href="https://github.com/explodinggradients/ragas">https://github.com/explodinggradients/ragas</a></em></p>
+<p>[12] 文档: <em><a href="https://docs.ragas.io/en/latest/">https://docs.ragas.io/en/latest/</a></em></p>
+<p>[13] 自动测试数据生成: <em><a href="https://docs.ragas.io/en/latest/concepts/testset_generation.html">https://docs.ragas.io/en/latest/concepts/testset_generation.html</a></em></p>
+<p>[14] 评估指标: <em><a href="https://towardsdatascience.com/evaluating-rag-applications-with-ragas-81d67b0ee31a#c52f">https://towardsdatascience.com/evaluating-rag-applications-with-ragas-81d67b0ee31a#c52f</a></em></p>
+<p>[15] 评估指标: <em><a href="https://towardsdatascience.com/evaluating-rag-applications-with-ragas-81d67b0ee31a#c52f">https://towardsdatascience.com/evaluating-rag-applications-with-ragas-81d67b0ee31a#c52f</a></em></p>
+<p>[16] 指标: <em><a href="https://docs.ragas.io/en/latest/concepts/metrics/index.html">https://docs.ragas.io/en/latest/concepts/metrics/index.html</a></em></p>
+<p>[17] context_precision（上下文精度）: <em><a href="https://docs.ragas.io/en/latest/concepts/metrics/context_precision.html">https://docs.ragas.io/en/latest/concepts/metrics/context_precision.html</a></em></p>
+<p>[18] context_recall（上下文召回率）: <em><a href="https://docs.ragas.io/en/latest/concepts/metrics/context_recall.html">https://docs.ragas.io/en/latest/concepts/metrics/context_recall.html</a></em></p>
+<p>[19] faithfulness（事实一致性）: <em><a href="https://docs.ragas.io/en/latest/concepts/metrics/faithfulness.html">https://docs.ragas.io/en/latest/concepts/metrics/faithfulness.html</a></em></p>
+<p>[20] answer_relevance（答案相关性）: <em><a href="https://docs.ragas.io/en/latest/concepts/metrics/answer_relevance.html">https://docs.ragas.io/en/latest/concepts/metrics/answer_relevance.html</a></em></p>
+<p>[21] 答案的语义相似度: <em><a href="https://docs.ragas.io/en/latest/concepts/metrics/semantic_similarity.html">https://docs.ragas.io/en/latest/concepts/metrics/semantic_similarity.html</a></em></p>
+<p>[22] 答案的正确性: <em><a href="https://docs.ragas.io/en/latest/concepts/metrics/answer_correctness.html">https://docs.ragas.io/en/latest/concepts/metrics/answer_correctness.html</a></em></p>
+<p>[23] 这篇文章: <em><a href="https://towardsdatascience.com/evaluating-rag-applications-with-ragas-81d67b0ee31a">https://towardsdatascience.com/evaluating-rag-applications-with-ragas-81d67b0ee31a</a></em></p>
+<p>[24] 《Benchmarking Large Language Models in Retrieval-Augmented Generation》: <em><a href="https://arxiv.org/pdf/2309.01431.pdf">https://arxiv.org/pdf/2309.01431.pdf</a></em></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
