@@ -1,0 +1,759 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>4W字RAG技术总结和串讲 作者： 李rumor 来源： 李rumor 今天给大家总结一下RAG的有关内容，同时给大家把有关内容串起来。当然，串起来的更多是概述和摘记，让大家对RAG的基础有更整体的了解，详情大家可以根据需要再展开了解，我也会在合适的位置加上原文链接。 之前的文  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">4W字RAG技术总结和串讲</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 26, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/AzuXfeINxjWZP1kNgC7lO6OSx9o4kdQhqQtuKibbibTvHxbYr1MTVTQanlQoicQ5aMF7VO1tDzTiareShwg0225gpQ/640?wx_fmt=jpeg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 李rumor  来源： <a href="https://mp.weixin.qq.com/s/F8vgDc0qraah-TpayBaXZg">李rumor</a></p>
+<p>今天给大家总结一下RAG的有关内容，同时给大家把有关内容串起来。当然，串起来的更多是概述和摘记，让大家对RAG的基础有更整体的了解，详情大家可以根据需要再展开了解，我也会在合适的位置加上原文链接。</p>
+<p>之前的文章算下来是三万多字，加上这篇应该能超过4万了，也特此记录一下自己在RAG这块的学习和实践经验。</p>
+<p>首先，我先把之前写的RAG文章都放在前面，方便大家直接去看，后面，涉及到相关的部分，我会重新提起并给出对应给出链接。</p>
+<ul>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489295&amp;idx=1&amp;sn=fcb269e47dc27fcaf31201aa1c75dafb&amp;chksm=e8824f91dff5c687a3a95d18490c8d2ba9b18d1b7cd5bc614e01ef3d7dd6d72aa62bcc0c2b0d&amp;scene=21#wechat_redirect">前沿重器[38] | 微软新文query2doc：用大模型做query检索拓展</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489357&amp;idx=1&amp;sn=4193a9e92c7749e4ecdacbce7cf6b9db&amp;chksm=e8824fd3dff5c6c5b6c04be81624bf075c96fef23fc40f8cd165a600ecaa02d434a5fd21da41&amp;scene=21#wechat_redirect">前沿重器[40] | 高级RAG技术——博客阅读</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489372&amp;idx=1&amp;sn=8fc154edac26943a447d596a4e697ede&amp;chksm=e8824fc2dff5c6d44d8e7a1be4cc1b472e8cdd8e8484bf02d00f78ab708e6340f6f90243cb0c&amp;scene=21#wechat_redirect">前沿重器[41] | 综述-面向大模型的检索增强生成（RAG）</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489393&amp;idx=1&amp;sn=1917808697d84cfd17e628d58b3bfd89&amp;chksm=e8824fefdff5c6f93a322772245c5d4c5c1b22f0f05a45f60d096a99b07bfdb12f54042d5aaf&amp;scene=21#wechat_redirect">前沿重器[42] | self-RAG-大模型决策的典型案例探究</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489437&amp;idx=1&amp;sn=b70db6190484c4056318b8275b014dd6&amp;chksm=e8824f03dff5c61579c9eeb01c588f3713bbfbb0b7786cc81246144c52d65715ca31d975610f&amp;scene=21#wechat_redirect">前沿重器[43] | 谷歌中科院新文：CRAG-可矫正的检索增强生成</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489330&amp;idx=1&amp;sn=23cf88a96441f93f78461ff92be6a03c&amp;chksm=e8824facdff5c6ba95ea2e5822e1ac40037c0312b774b028fb545117911dfbfe38e1deef11f2&amp;scene=21#wechat_redirect">心法利器[104] | 基础RAG-向量检索模块（含代码）</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489343&amp;idx=1&amp;sn=44b5f90ec117a5f4f70881247483f008&amp;chksm=e8824fa1dff5c6b73c7c41ae36ae110e22d2d5f87b7b34796f0fd68e472bd8af1919bdae58c4&amp;scene=21#wechat_redirect">心法利器[105] | 基础RAG-大模型和中控模块代码（含代码）</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489349&amp;idx=1&amp;sn=e68ad131621a0cf94d5532f5da2d0199&amp;chksm=e8824fdbdff5c6cdcb8e683b67b07d996af3cf51107099529e4c12b859e8192be7d05d07f479&amp;scene=21#wechat_redirect">心法利器[106] | 基础RAG-调优方案</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489448&amp;idx=1&amp;sn=93570688b6898b24b18bd07fce3f0689&amp;chksm=e8824f36dff5c62086e63c0d05977081d04009b818bd2d93c2902ce3f74a4031d7517163dd39&amp;scene=21#wechat_redirect">心法利器[108] | 微调与RAG的优缺点分析</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489460&amp;idx=1&amp;sn=78fbfdf04f12e22b322e46be3032ba40&amp;chksm=e8824f2adff5c63ca53ca77e021b2aee9cfaca00de609dbbea7ad8c5a5cfc6cd7e826f3e7409&amp;scene=21#wechat_redirect">心法利器[109] | RAG效果评估经验</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489470&amp;idx=1&amp;sn=50f618e87545a1ef12e3480bd44e64f1&amp;chksm=e8824f20dff5c6365532bd45aa1853086014cad3bc31f5bbb73235da791ee45b16738501ba5c&amp;scene=21#wechat_redirect">心法利器[110] | 知识文档处理和使用流程</a></p>
+</li>
+</ul>
+<p>内容目录：</p>
+<ul>
+<li>
+<p>概念。</p>
+</li>
+<li>
+<p>从baseline到技术拓展。（basleine和高级RAG升级）</p>
+</li>
+<li>
+<p>调优方案。（论文视角和实践视角）</p>
+</li>
+<li>
+<p>效果评估。</p>
+</li>
+<li>
+<p>微调和RAG的权衡。</p>
+</li>
+<li>
+<p>RAG是否会消亡。（本文私货）</p>
+</li>
+</ul>
+<h4 id="概念">概念</h4>
+<p>首先还是得介绍什么是RAG（Retrieval-Augmented Generation）指的是通过将检索模型和生成模型结合在一起，从而提高了生成内容的相关性和质量。说到概念，严谨的，我照旧摘录来自一篇综述的解释（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489372&amp;idx=1&amp;sn=8fc154edac26943a447d596a4e697ede&amp;chksm=e8824fc2dff5c6d44d8e7a1be4cc1b472e8cdd8e8484bf02d00f78ab708e6340f6f90243cb0c&amp;scene=21#wechat_redirect">前沿重器[41] | 综述-面向大模型的检索增强生成（RAG）</a>）：</p>
+<blockquote>
+<p>In the era of Large Language Models, the specific definition of RAG refers to the model, when answering questions or generating text, first retrieving relevant information from a vast corpus of documents. Subsequently, it utilizes this retrieved information to generate responses or text, thereby enhancing the quality of predictions.</p>
+</blockquote>
+<p>说白了就是有检索和对检索的使用，基本都可以说是RAG了（极端的，某种程度上，词典匹配，也算是一种RAG）。</p>
+<p>正因为需要包含检索以及后续大模型的使用，所以RAG和原来常规的深度学习研究不太一样，他不是一个深度模型，更像是一个系统，系统里面可以有多个组件，一般的结构可用下面这张图来表示。（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489372&amp;idx=1&amp;sn=8fc154edac26943a447d596a4e697ede&amp;chksm=e8824fc2dff5c6d44d8e7a1be4cc1b472e8cdd8e8484bf02d00f78ab708e6340f6f90243cb0c&amp;scene=21#wechat_redirect">前沿重器[41] | 综述-面向大模型的检索增强生成（RAG）</a>）</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/jT5Sp7MICPxANVIITnSE6nB4gskBl3XicsYgpKic6dO20VQVh5hziaJuH26b8uheybpwz8O0TThViaKOrRGQu9rCQg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>但概念解释我不想止步于此，在这里我想进一步挖掘，RAG这个概念的起源。早在2020年就已经有人提及RAG的概念（Retrieval-augmented generation for knowledge-intensive nlp tasks，他的首版发布在arxiv于2020年5月，如果有更早的欢迎大家再提出）（这篇论文后面有时间，我也想拿出来详细讲讲），当年还是seq2seq的时代，但实验就已经发现，通过检索，能快速从海量知识中找到和原本问题相关的知识，借助知识带来的信息能让最终的生成效果能够得以提升。</p>
+<h4 id="从baseline到技术拓展">从baseline到技术拓展</h4>
+<h4 id="baseline">baseline</h4>
+<p>最基础的RAG，就是上图左边的Naive RAG，基本只包含两个部分，即检索和生成，为了让大家更好地理解RAG整体结构，我自己写了一版基础RAG项目，这里最大程度还原最基础RAG的结构，同时也给了一定的调优空间，github地址：https://github.com/ZBayes/basic_rag，讲解我分成了两篇文章：</p>
+<ul>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489330&amp;idx=1&amp;sn=23cf88a96441f93f78461ff92be6a03c&amp;chksm=e8824facdff5c6ba95ea2e5822e1ac40037c0312b774b028fb545117911dfbfe38e1deef11f2&amp;scene=21#wechat_redirect">心法利器[104] | 基础RAG-向量检索模块（含代码）</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489343&amp;idx=1&amp;sn=44b5f90ec117a5f4f70881247483f008&amp;chksm=e8824fa1dff5c6b73c7c41ae36ae110e22d2d5f87b7b34796f0fd68e472bd8af1919bdae58c4&amp;scene=21#wechat_redirect">心法利器[105] 基础RAG-大模型和中控模块代码（含代码）</a></p>
+</li>
+</ul>
+<p>里面有几个比较关键的点，着重拿出来讲一下。</p>
+<ul>
+<li>
+<p>这个项目是奔着大型RAG项目去写的。所以里面会划分服务而不是一个流程全部写完，注意看服务和代码文件的拆分，还有具体服务是怎么串起来的。</p>
+</li>
+<li>
+<p>服务是用tornado写的简单版，当然换成别的服务组件也可以，例如flask、fastapi等。</p>
+</li>
+<li>
+<p>里面有几个部分：离线的灌数据模块，一般就是脚本；检索模块是在线的检索，目前使用的是最简单的向量召回；大模型模块用的是一个chatglm，直接封装服务就好了。</p>
+</li>
+<li>
+<p>很多位置我都为后续的迭代留了空间，例如向量检索这里，我切分了很多层，searcher、vec_searcher、vec_index，就是给了很多空间，一个searcher可以有很多不同的索引和索引类型，vec_searcher是向量检索，下面可以有多个vec_index，对应不同的向量模型。</p>
+</li>
+</ul>
+<h4 id="技术拓展">技术拓展</h4>
+<p>有关RAG的拓展，往往会在naive基础上分为两个阶段，高级RAG和模块化RAG。</p>
+<p>高级的RAG能很大程度优化原始RAG的问题，在索引、检索和生成上都有更多精细的优化，主要的优化点会集中在索引、向量模型优化、检索后处理等模块进行优化，模块化RAG是对高级RAG的一种升级，这里面集成了大量优化策略，并将这些策略进行重组，形成完整的模块独立完成特定功能，很多内容和前面的高级RAG提及的内容很接近，只是更加模块化，如搜索模块、记忆模块、额外生成模块、任务适配模块、对齐模块、验证模块等，因为RAG本身是一个高度组织性的项目，因此在迭代过程中，是允许且需要对这些模块进行优化和调整的，可以增减、调整各个模块。</p>
+<p>具体有什么调优方案，我在下一个章节展开说。</p>
+<h4 id="调优方案">调优方案</h4>
+<p>说到调优，无论是学术界还是工业界，可谓是八仙过海各显神通，但是科研和工业界各自会呈现不同的倾向性，所以这里我分两个大块来讲，分别是学术界和工业界的思路。</p>
+<h4 id="学术界">学术界</h4>
+<p>学术界自然离不开综述，1月份我对综述（Retrieval-Augmented Generation for Large Language Models: A Survey）进行了详细的讲解，字数有7千多（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489372&amp;idx=1&amp;sn=8fc154edac26943a447d596a4e697ede&amp;chksm=e8824fc2dff5c6d44d8e7a1be4cc1b472e8cdd8e8484bf02d00f78ab708e6340f6f90243cb0c&amp;scene=21#wechat_redirect">前沿重器[41] | 综述-面向大模型的检索增强生成（RAG）</a>），文章里对RAG的升级路径进行了详细解释，其中重点从检索模块、生成模块、整体等角度对RAG目前的关键技术进行了讲解，为RAG的调优提供了大量思路。简单摘录一下：</p>
+<ul>
+<li>
+<p>检索模块重在关注向量模型的合理表征（领域微调和下游任务微调）、query和文档语义空间的匹配（query改写、实体mask等策略）、大模型和检索模块协同的优化。</p>
+</li>
+<li>
+<p>生成模块关注检索的后处理（重点信息提取、检索结果重排）、生成结果的处理等角度。</p>
+</li>
+<li>
+<p>整体调优从调优阶段（入手点）、数据来源和调优思路三个角度来分析具体的调优方法。</p>
+</li>
+</ul>
+<p>里面的内容过多，不好展开，详情大家可以看我的讲解（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489372&amp;idx=1&amp;sn=8fc154edac26943a447d596a4e697ede&amp;chksm=e8824fc2dff5c6d44d8e7a1be4cc1b472e8cdd8e8484bf02d00f78ab708e6340f6f90243cb0c&amp;scene=21#wechat_redirect">前沿重器[41] | 综述-面向大模型的检索增强生成（RAG）</a>）或者是综述原文（Retrieval-Augmented Generation for Large Language Models: A Survey）。</p>
+<p>另外值得提起的是两篇RAG比较有代表性的文章，这里给出我的解读以及思考，分别是self-RAG（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489393&amp;idx=1&amp;sn=1917808697d84cfd17e628d58b3bfd89&amp;chksm=e8824fefdff5c6f93a322772245c5d4c5c1b22f0f05a45f60d096a99b07bfdb12f54042d5aaf&amp;scene=21#wechat_redirect">前沿重器[42] | self-RAG-大模型决策的典型案例探究</a>）和CRAG（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489437&amp;idx=1&amp;sn=b70db6190484c4056318b8275b014dd6&amp;chksm=e8824f03dff5c61579c9eeb01c588f3713bbfbb0b7786cc81246144c52d65715ca31d975610f&amp;scene=21#wechat_redirect">前沿重器[43] | 谷歌中科院新文：CRAG-可矫正的检索增强生成</a>），具体他们是怎么做的以及我是怎么分析和看待的，都在这里了。</p>
+<h4 id="工业界">工业界</h4>
+<p>工业界也有一篇综述，不过里面体提到的方案和思路更加偏向应用，所以我想把这篇放在工业界（https://pub.towardsai.net/advanced-rag-techniques-an-illustrated-overview-04d193d8fec6），我也写了解读文章（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489357&amp;idx=1&amp;sn=4193a9e92c7749e4ecdacbce7cf6b9db&amp;chksm=e8824fd3dff5c6c5b6c04be81624bf075c96fef23fc40f8cd165a600ecaa02d434a5fd21da41&amp;scene=21#wechat_redirect">前沿重器[40] | 高级RAG技术——博客阅读</a>）。</p>
+<p>和前面的综述类似，这里也提到了基础RAG、高级RAG和区别，然后就展开解释各个模块的优化了：</p>
+<ul>
+<li>
+<p>离线文档处理。</p>
+</li>
+<li>
+<p>文档内容增强。</p>
+</li>
+<li>
+<p>索引构建和选择。</p>
+</li>
+<li>
+<p>检索策略多样性和合并。</p>
+</li>
+<li>
+<p>查询后处理。</p>
+</li>
+<li>
+<p>多轮和聊天引擎。</p>
+</li>
+<li>
+<p>查询路由和智能体。</p>
+</li>
+<li>
+<p>响应合成。</p>
+</li>
+<li>
+<p>模型微调。</p>
+</li>
+</ul>
+<p>这些结构里，能看到很多现实应用才会遇到的特定问题，例如检索策略多样性和合并，工业界和学术界的视角差异还是很大的，工业界更倾向于拆分分别处理，既能更方便特异化处理提升上限，也方便进行分工推进工作，而学术界其实并没有那么擅长尤其是这种横向的拆分，确实是不够学术优雅。</p>
+<p>而且，我自己也根据自己的经验提供了很多优化思路，专门有写文章（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489349&amp;idx=1&amp;sn=e68ad131621a0cf94d5532f5da2d0199&amp;chksm=e8824fdbdff5c6cdcb8e683b67b07d996af3cf51107099529e4c12b859e8192be7d05d07f479&amp;scene=21#wechat_redirect">心法利器[106] 基础RAG-调优方案</a>），尽管现在来看还有很多可以聊的部分（后面有机会我再写！），但这篇也很实用了，希望对大家有多帮助，里面提了很多实践和分析数据才会发现的优化点。我是分为检索调优、prompt、后处理、微调这几个方面去谈的。</p>
+<p>除此之外，知识的处理也是一个非常重要的一环，尤其现在大模型出来后，文档处理能力提升还挺明显的，我正好写了一篇文章，主要是串讲知识的处理和使用流程，同时介绍了里面的常用方案，大家可以在有个大框架的基础上进一步深入学习（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489470&amp;idx=1&amp;sn=50f618e87545a1ef12e3480bd44e64f1&amp;chksm=e8824f20dff5c6365532bd45aa1853086014cad3bc31f5bbb73235da791ee45b16738501ba5c&amp;scene=21#wechat_redirect">心法利器[110] | 知识文档处理和使用流程</a>）。</p>
+<p>有一篇比较取巧地query拓展的文章（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489295&amp;idx=1&amp;sn=fcb269e47dc27fcaf31201aa1c75dafb&amp;chksm=e8824f91dff5c687a3a95d18490c8d2ba9b18d1b7cd5bc614e01ef3d7dd6d72aa62bcc0c2b0d&amp;scene=21#wechat_redirect">前沿重器[38] | 微软新文query2doc：用大模型做query检索拓展</a>），属于对搜索有用，现在视角看对RAG领域也有很大的优化收益，所以在这里也重提，非常推荐大家在早期项目上使用这个方案，虽然多了一次大模型调用的代价，但是效果提升还挺明显，值得推荐。趁此机会也补充说明一下，在之前已经有一篇类似的论文，HyDE（Precise Zero-Shot Dense Retrieval without Relevance Labels），这篇我没出解读，感觉重复不少，我就不重写了，但仍很推荐大家也读读看。</p>
+<h4 id="效果评估">效果评估</h4>
+<p>效果评估是算法的重要一环，我也对这块内容进行了详细调研和经验总结（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489460&amp;idx=1&amp;sn=78fbfdf04f12e22b322e46be3032ba40&amp;chksm=e8824f2adff5c63ca53ca77e021b2aee9cfaca00de609dbbea7ad8c5a5cfc6cd7e826f3e7409&amp;scene=21#wechat_redirect">心法利器[109] | RAG效果评估经验</a>）。类似的，我也是从学术界和实际场景应用两个角度分别阐述两者的评估方案，并从快速验证、稳定评估和问题定位三个角度，给出实践场景下的建议。</p>
+<h4 id="方案选择和权衡">方案选择和权衡</h4>
+<p>RAG只是大模型的一种使用方法，检索技术能快速从海量知识中找到和原本问题相关的知识，借助知识带来的信息能让最终的生成效果能够得以提升，因此RAG本质上并非大模型的专属，从而可以发现大模型不是非RAG不可，RAG也不是非大模型不可，RAG只是大模型的一种打开方式，他所解决的，是对知识的依赖，这可以是知识的可见性（能懂大模型之前没见过或者没学好的东西）、及时性（新知识）、存在性（不会的能拒绝）等问题。</p>
+<p>而它的使用时机，以及和微调之间的权衡，详细地讨论可以参考这篇文章（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489448&amp;idx=1&amp;sn=93570688b6898b24b18bd07fce3f0689&amp;chksm=e8824f36dff5c62086e63c0d05977081d04009b818bd2d93c2902ce3f74a4031d7517163dd39&amp;scene=21#wechat_redirect">心法利器[108] | 微调与RAG的优缺点分析</a>），在这里我有通过论文、社区等角度汇总了多方观点，并通过案例分析的方式给出了我的答案。</p>
+<h4 id="rag检索增强生成会不会消亡呢">RAG（检索增强生成）会不会消亡呢</h4>
+<p>另外，我想在这里驳斥一个社区经常谈及的问题：“RAG（检索增强生成）会不会消亡呢？”（https://www.zhihu.com/question/637421964），这个问题的背景是目前的大模型Context Length变大，RAG就可能会消失。这个问题我本想专门写文章，但又感觉不够长，写一半成了废案，于是就放在这里吧，还挺合适的。</p>
+<p>第一，这个问题能问出来，说明对RAG背后所希望解决的问题理解不足吧，RAG所要解决的是知识依赖的问题，知识依赖这个事和大模型Context Length的关系并不紧密。</p>
+<p>第二，知识依赖这不只是大模型的问题，而是整个领域都要面对的问题。在很早之前（都是21年那会的文章了），我就写过一篇文章（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247487806&amp;idx=1&amp;sn=4fbfe81cf083b7d2937893556cb62558&amp;chksm=e88249a0dff5c0b67d17d31431d96853a747b9031aa1b6907973e9e5f050958039615b7afe8b&amp;scene=21#wechat_redirect">心法利器[45] | 模型需要的信息提供够了吗</a>），从一个更高角度来聊信息传递给模型的重要性，模型要是不知道，那让他干的事就很可能会办不好，而向模型传递信息，一般有两个方法，一个是训练，一个是特征，对应到现在大模型的场景，那就是微调和prompt，前者通过大量相似相关的数据案例告诉模型让模型照着预测，后者则是把规则描述讲给模型听或者把关键信息直接传给模型，降低他的推理压力，只要关键信息没有提供给模型，那效果就好不了，过去的bert是这样，现在的大模型也是这样。</p>
+<p>第三，同样是模型的问题。无论是大模型，还是之前的小模型，对信息反馈的及时性，仍旧不足。大家或多或少都会发现，一些去年前期发布的开源模型，或多或少都对新的知识并不了解，其根本问题就是，没有学习到新知识，要学习新知识，不得不经过严格的训练和评估才能上线，且还要面对遗忘的问题，要做实时的难度非常大，这里就是第二点提出的微调方向。要解决这种，不得不依赖外部信息的支持，然后通过第二点提到的prompt的方式输入到模型中，而这些知识，无法绕开检索来进行。举个例子，某些商店的上架商品信息，天气日期、新闻等的一些实时性要求高的知识，就只能通过数据库来存储，数据库的更新可以非常敏捷，查询后配合prompt交给大模型来解决了。</p>
+<p>综上，只要上面的知识依赖、知识更新问题没有解决，那RAG就仍有一席之地。至于RAG内部说到的搜索，可以说是从来没大火过但是又一直在喝汤的领域了。</p>
+<p><strong>RAG学习不会止步，未完待续。</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/AzuXfeINxjWZP1kNgC7lO6OSx9o4kdQhqQtuKibbibTvHxbYr1MTVTQanlQoicQ5aMF7VO1tDzTiareShwg0225gpQ/640?wx_fmt=jpeg" alt=""></p>
+<h4 id="heading"></h4>
+<p>我是朋克又极客的AI算法小姐姐rumor</p>
+<p>北航本硕，NLP算法工程师，谷歌开发者专家</p>
+<p>欢迎关注我，带你学习带你肝</p>
+<p>一起在人工智能时代旋转跳跃眨巴眼</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

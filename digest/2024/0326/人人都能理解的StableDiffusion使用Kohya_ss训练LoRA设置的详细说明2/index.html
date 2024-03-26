@@ -1,0 +1,847 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>人人都能理解的StableDiffusion，使用Kohya_ss训练LoRA设置的详细说明(2) 作者： 人人都能理解的AI 来源： 人人都能理解的AI 誰でもわかるStable Diffusion Kohya_ssを使ったLoRA学習設定を徹底解説 - 人工知能と親しくなるブログ[1] 这次，我将大致解释 LoRA 的工作原理，然后使用 kohya_ss 来解释 LoRA模型训练的设置。 这篇文章非  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">人人都能理解的StableDiffusion，使用Kohya_ss训练LoRA设置的详细说明(2)</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 26, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbm8O2hsRCDx4pTvA2T3wZVcednW6udibR5sNJqTobI51Dxw9stabXNPTA/640?wx_fmt=other&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 人人都能理解的AI  来源： <a href="https://mp.weixin.qq.com/s/vLMXawlwPD3q4siYf8OKXQ">人人都能理解的AI</a></p>
+<p><strong>誰でもわかるStable Diffusion Kohya_ssを使ったLoRA学習設定を徹底解説 - 人工知能と親しくなるブログ[1]</strong></p>
+<p>这次，我将大致解释 LoRA 的工作原理，然后使用 kohya_ss 来解释 LoRA模型训练的设置。</p>
+<ul>
+<li>这篇文章非常长，请耐心阅读。</li>
+</ul>
+<p>本文仅解释kohya_ss各个设置的含义。有关“准备学习图像的方法”、“如何为图像添加Tag”以及“如何执行训练”等方面的说明将在另一篇文章中进行。我计划在以后的文章中详细解释训练的执行方法。</p>
+<h4 id="35-advanced-configuration-高级配置">3.5 Advanced Configuration 高级配置</h4>
+<p>从现在开始，进入位于“高级配置”部分的选项。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbmjRzNia16sPle6y96P0x1Xrn9oicfEicgwB8xToq6ENJJneKDLUiaMy5y1A/640?wx_fmt=other&amp;from=appmsg" alt="">ALT</p>
+<h4 id="351-weightsblocksconv-权重块转换">3.5.1 Weights、Blocks、Conv 权重、块、转换</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbmURTpxIneR5fTJ5xJxwWicFLWZmUAJ4xlmBDEyFWS24QK9RhZBJT7ibKQ/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p>这些是 U-Net中每个块的“学习权重”和“排名”设置。选择每个选项卡将显示相应的设置界面。</p>
+<blockquote>
+<p>这些设置适用于高阶炼丹师。如果您不想或者不懂怎么设置，可以将所有选项留空。</p>
+</blockquote>
+<h4 id="352-weights-down-lr-weightsmid-lr-weightsup-lr-weights">3.5.2 Weights: Down LR weights/Mid LR weights/Up LR weights</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbmia8uU2Zukx8Be7D54otedSB9yWzIBEhg39hj8KZ2DwDMrSyNBRIWHLw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p>从U-Net结构图中可以看到，U-Net总共由25个块组成：12个IN块、1个MID块和12个OUT块。</p>
+<p>如果你想改变每个块的学习率权重，你可以在这里单独设置。</p>
+<p>这里的权重是“学习的强度”，表示为0到1之间的数字，其中0表示“根本不学习”，1表示“以Learningrate中设置的学习率学习”。您可以改变学习的强度。</p>
+<p>如果权重设置为0.5，则学习率将为Learningrate的一半。</p>
+<p>“Down LR Weights”指定12个IN块中每一个的权重。</p>
+<p>“Mid LR 权重”指定MID 块的权重。</p>
+<p>“Up LR 权重”指定 12 个 OUT 块中每一个的权重。</p>
+<h4 id="353-weights-blocks-lr-zero-threshold">3.5.3 Weights: Blocks LR zero threshold</h4>
+<p>我解释说“LoRA添加了一个神经网络”，但是添加一个权重太小的神经网络是没有意义的（也就是说，它几乎没有学到任何东西）。因此，您可以设置“不要向权重太小的块添加神经网络。”</p>
+<p>神经网络不会添加到未超过此处设置的权重值的块中。例如，如果您在此处指定0.1，则神经网络将不会添加到权重设置低于 0.1的块（请注意，排除目标还包括指定的值！）。</p>
+<p>默认值为空白，在这种情况下为 0（不执行任何操作）。</p>
+<h4 id="354-blocks-block-dims-block-alphas">3.5.4 Blocks: Block dims, Block alphas</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbmtVdHV2fj7Je4Dv9bfgVMibO6ib1nxPKnMPfk8icoKqv9DcP2r8dHiaPRJg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p>在这里，您可以为IN0-11、MID和OUT0-11这25个块中的每一个设置不同的rank（dim）值和alpha值。</p>
+<p>Rank值和alpha值请参见Network Rank和Network alpha的解释。</p>
+<p>具有较高等级的块预计能够保存更多信息。该参数值必须始终指定 25 个数字，但由于 LoRA 将 Attention块作为学习目标，IN0、IN3、IN6、IN9、IN10、IN11、OUT0、IN1 其中 Attention块不存在，因此设置 IN2（数字 1、4、 7、11、12、14、15 和16）在学习过程中被忽略。</p>
+<blockquote>
+<p>此设置适用于高级用户。如果你不特别介意的话，可以留空。如果未指定，“网络排名（维度）”和“网络 Alpha”值将应用于所有块。</p>
+</blockquote>
+<h4 id="355-conv-conv-dims-conv-alphas">3.5.5 Conv: Conv dims, Conv, alphas</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbm8O2hsRCDx4pTvA2T3wZVcednW6udibR5sNJqTobI51Dxw9stabXNPTA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p>LoRA训练的Attention块有一个名为“Conv”的神经网络，它也是通过额外的学习进行更新的（参见文章顶部的注意力层结构图）。这是一个称为“卷积”的过程，其中使用的“过滤器”的大小是1x1 正方形。</p>
+<p>另一方面，除了 Attention 之外的一些块（Res、Down 块）和 OUT 中的一些Attention 块使用 3x3 滤波器进行卷积。本来这不是LoRA的学习目标，但是通过指定这个参数，Res块的3x3卷积也可以作为学习目标。</p>
+<p>由于学习目标的数量增加，可以进行更精确的LoRA学习。</p>
+<p>设置方法与“Blocks: Blocks dims, Blocks alphas”相同。</p>
+<p>3x3 Conv 存在于所有 25 层中。</p>
+<blockquote>
+<p>此设置适用于高级用户。如果你不特别介意的话，可以留空。</p>
+</blockquote>
+<h4 id="356-no-token-padding">3.5.6 No token padding</h4>
+<p>添加到训练图像中的Tag以 75个Token为单位进行处理（“Token”基本上可以被视为“单词”）。</p>
+<p>如果Tag长度少于 75 个标记，则在标题后添加所需数量的终止符，以使其与75 个标记对齐。这称为“填充”。</p>
+<p>此处您可以指定不执行Tag填充。</p>
+<p>默认关闭。基本上，你可以把它去掉。</p>
+<h4 id="357-gradient-accumulation-steps">3.5.7 Gradient accumulation steps</h4>
+<p>通常在每次读取批次时更改权重（或“学习”），但也可以一次对多个批次进行学习。该选项指定一次学习多少个批次。</p>
+<p>这与增加批次数量具有类似的效果（不是相同的效果！）。</p>
+<p>例如，如果批量大小为 4，则一批中同时加载的图像数量为4。换句话说，每读取四张图像就进行一次学习。如果将梯度累积步数设置为2，则每2个批次执行一次学习，因此每读取8张图像就会执行一次学习。这与批次号8 的工作原理类似（但不一样！）。</p>
+<p>增加该值会减少学习次数，使处理速度更快，但会消耗更多内存。</p>
+<p>默认值为 1。</p>
+<h4 id="358-weighted-captions">3.5.8 Weighted captions</h4>
+<p>目前最流行的Stable Diffusion使用环境是“Stable Diffusion WebUI”，它有独特的Prompt写法。例如，如果您在提示中指定“black cat”时想要非常强调“Black”这个词，则可以将要强调的词括在括号中，例如“(black:1.2) cat”并输入“:number” ” 在单词之后。该数字的倍数的单词将被强调。</p>
+<p>此选项还允许您在训练图像的标题中使用此表示法。</p>
+<p>如果你想写一个复杂的标题，你可能想尝试一下。</p>
+<p>默认关闭。</p>
+<h4 id="359-prior-loss-weight">3.5.9 Prior loss weight</h4>
+<p>Prior loss weight决定了训练过程中对“正则化图像”的重视程度（详细信息请参见上面正则化文件夹的解释）。</p>
+<p>当该值较低时，正则化图像被认为不太重要，并且生成的 LoRA显示训练图像的更多特征。</p>
+<p>如果您不使用正则化图像，则此设置没有任何意义。</p>
+<p>这是一个介于 0 和 1 之间的值，默认为 1（也关注正则化图像）。</p>
+<h4 id="3510-lr-number-of-cycles-lr循环数">3.5.10 LR number of cycles LR循环数</h4>
+<p>如果您为调度程序选择“Cosine with restart”或“Polynomial”，则此选项用于指定调度程序在学习期间应运行多少个周期。</p>
+<p>如果此选项的数量为 2 或更高，则调度程序将在一次训练期间运行多次。</p>
+<p>在Cosine with restart和Polynomial中，学习率随着学习的进行逐渐减小到0，但是如果循环数为2或更多，当学习率达到0时，学习率被重置并重新开始。</p>
+<p>下图（源）是重新启动的余弦（紫色）和多项式（浅绿色）之间学习率变化的示例。</p>
+<p>在紫色示例中，循环数设置为 4。在浅绿色示例中，循环数为 1。</p>
+<p>由于在确定的学习步骤内执行了指定数量的循环，因此循环数量增加得越多，学习率变化就越大。</p>
+<p>默认为空，如果留空则为 1。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbmMSOQAEkyicPaGFv0RAMzamfOOYqvf8VAGVm7icKptNEicVcClk2gtWOOg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>学习率变动的例子</p>
+<p>重新启动的余弦で「LR 循环数 = 4」（紫）</p>
+<p>多项式中的“LR power = 2”（浅绿色）</p>
+<h4 id="3511-lr-power">3.5.11 LR power</h4>
+<p>这是当调度器设置为 Polynomial 时的一个选项，这个数字越大，初始学习率就越陡。（上图中浅绿色线的斜率变得更陡。）</p>
+<p>当power为1时，它与线性调度器具有相同的形式。</p>
+<p>注意不要让数字太大，因为学习率会卡在接近 0 的位置，导致学习不足。</p>
+<p>默认值为空，在这种情况下将为 1（即与线性调度程序相同）。</p>
+<h4 id="3512-additional-parameters-附加参数">3.5.12 Additional parameters 附加参数</h4>
+<p>如果您想要修改 kohya_ss GUI上未显示的学习设置参数，请在此处将其作为命令输入。</p>
+<p>通常您可以将其留空。</p>
+<h4 id="3513-save-every-n-steps-每n步保存一次">3.5.13 Save every N steps 每N步保存一次</h4>
+<p>每次完成此处指定的步骤数时，都会创建并保存 LoRA 文件。</p>
+<p>例如，如果学习步骤总数为 1000，而您在此处指定 200，则 LoRA 文件将在第200、400、600 和 800 个步骤结束时保存。</p>
+<p>另请参阅“保存每 N 轮”以获取有关保存 LoRA 进度的信息。</p>
+<p>默认为0（不保存中间LoRA）。</p>
+<h4 id="3514-save-last-n-steps-保存最后-n-步骤">3.5.14 Save last N steps 保存最后 N 步骤</h4>
+<p>当您指定“每 N 个步骤保存一次”以在学习时保存 LoRA时，可以使用此选项。</p>
+<p>如果您只想保留最近的 LoRA 文件并丢弃旧的 LoRA文件，您可以在此处设置“要保留 LoRA 文件的最近步骤数”。</p>
+<p>例如，假设总学习步骤为 600，并且您使用“每 N 个步骤保存一次”选项指定每100 个步骤保存一次。然后，LoRA 文件将在第 100、200、300、400 和 500步保存，但如果指定“每 N 步保存为 300”，则仅保存最近 300 步的 LoRA文件。换句话说，在第500步，早于第200（=500-300）步的LoRA（即第100步LoRA）将被删除。</p>
+<p>默认值为 0。</p>
+<h4 id="3515-keep-n-tokens">3.5.15 Keep n tokens</h4>
+<p>如果您的训练图像有Tag，您可以随机打乱tag中逗号分隔的单词（有关详细信息，请参阅随机打乱Tag选项）。但是，如果您想保留开头的单词，则可以使用此选项指定“将第一个〇 个单词保留在开头”。</p>
+<p>该数字的第一个字始终固定在开头。</p>
+<p>默认值为 0。如果“Shuffle caption”选项关闭，则此选项无效。</p>
+<blockquote>
+<p>此处的“单词”是指以逗号分隔的文本。无论分隔文本包含多少个单词，它都算作一个单词。对于“黑猫，吃，坐”，“黑猫”是一个词。</p>
+</blockquote>
+<h4 id="3516-clip-skip">3.5.16 Clip skip</h4>
+<p>文本编码器使用一种称为“CLIP”的机制，它由 12 个相似的层组成。</p>
+<p>文本（token）最初通过这12层转换为数字序列（向量），最后一层出来的向量被发送到U-Net Attention块。</p>
+<p>然而，一家名为“Novel AI”的服务独立开发的模型，俗称“Novel AI模型”，采用了独特的规范，使用倒数第二个而不是最后一个层级的输出向量。这一规范适用于从 Novel AI 模型派生出的其他模型。因此，需要指定基础模型使用 CLIP 的哪个层级输出向量进行训练。</p>
+<p>“Clip skip”指定此“从末尾算起的第 XX 层号”。</p>
+<p>将其设置为 2 将倒数第二层的输出向量发送到 Attention块。如果为1，则使用最后一层的输出向量。</p>
+<p>如果基础模型使用 Novel AI 模型（或模型混合），最好将其设置为2。在其他情况下，1 就可以了。</p>
+<h4 id="3517-max-token-length">3.5.17 Max Token Length</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbmJIL7s5j9d1Bicdbq32yyYQ2ibRaKSQUicAdqN9MlJbE4WgaNqP28eIe6w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>指定Tag中包含的最大标记长度。</p>
+<p>这里的“Token”不是指字数；Token的数量大约等于字数的1.5倍。请注意，逗号也算作一个标记。</p>
+<p>您很少会使用超过 75个标记的标题，但如果您认为tag太长，请在此处指定更高的数字。</p>
+<h4 id="3518-full-fp16-training-experimental">3.5.18 Full fp16 training (experimental)</h4>
+<p>如果打开上述选项“混合精度”（fp16或bf16），则在训练期间将使用32位和16位数据的混合，但如果打开此选项，则所有权重数据将是16-位（fp16格式）。虽然节省了内存，但某些数据的准确率减半，因此学习准确率也可能会下降。</p>
+<p>默认关闭。除非您真的想节省内存，否则可以将其关闭。</p>
+<h4 id="3519-gradient-checkpointing">3.5.19 Gradient checkpointing</h4>
+<p>通常，在训练过程中，每次加载图像时都会一次性修改和更新大量神经网络权重。通过修改这种“一点一点”而不是“一次全部”，可以减少计算过程并节省内存。</p>
+<p>这个选项指定逐步进行权重计算。无论将其打开或关闭，都不会影响LoRA的训练结果。</p>
+<p>默认关闭。</p>
+<h4 id="3520-shuffle-caption">3.5.20 Shuffle caption</h4>
+<p>如果您的训练图像有Tag，它们很可能会写成一系列逗号分隔的单词，例如“black cat, eating, sitting”。“Shuffle caption”Tag选项每次都会随机更改逗号分隔单词的顺序。</p>
+<p>一般来说，Tag中的单词越接近开头就越重要。因此，如果单词的顺序是固定的，后面的单词可能不会很好地学习，或者前面的单词可能会与训练图像形成意想不到的联系。希望可以通过每次加载图像时更改单词的顺序来纠正这种偏差。</p>
+<p>如果标题是句子而不是逗号分隔，则此选项没有任何意义。</p>
+<p>默认关闭。</p>
+<blockquote>
+<p>此处的“单词”是指以逗号分隔的文本。无论分隔文本包含多少个单词，它都算作一个单词。</p>
+</blockquote>
+<p>对于“black cat, eating, sitting”， “black cat”是一个词。</p>
+<h4 id="3521-persistent-data-loader">3.5.21 Persistent data loader</h4>
+<p>训练所需的数据将被丢弃，并在每个时期后重新加载。这是保留它而不丢弃它的选项。勾选此选项将加快新一轮的训练的开始速度，但会消耗更多内存来保留数据。</p>
+<p>默认关闭。</p>
+<h4 id="3522-memory-efficient-attention">3.5.22 Memory efficient attention</h4>
+<p>勾选此项将减少 VRAM和进程attention的使用。与下一个选项“xformers”相比，速度较慢。如果您没有足够的VRAM，请勾选它。</p>
+<p>默认关闭。</p>
+<h4 id="3523-use-xformers">3.5.23 Use xformers</h4>
+<p>如果您使用名为“xformers”的Python库，您可以减少VRAM的使用并执行Attention块处理，但代价是速度略有下降。如果您没有足够的VRAM，请打开它。</p>
+<p>默认开启。</p>
+<h4 id="3524-color-augmentation">3.5.24 Color augmentation</h4>
+<p>“Augmentation”的意思是“图像增强”。通过每次对训练图像进行轻微处理，我们人为地增加了训练图像的多样性。</p>
+<p>当颜色增强打开时，图像的色调每次都会随机地轻微变化。预计学习到的 LoRA在色调上会有轻微的变化。</p>
+<p>如果启用“Cache latents”，则不可用。</p>
+<p>默认关闭。</p>
+<h4 id="3525-flip-augmentation">3.5.25 Flip augmentation</h4>
+<p>将此选项勾选后，图像将被随机左右翻转。这样做可以让模型学习到左右对称的人物或物体，对于想要学习这些特征的情况会很有帮助。</p>
+<p>默认关闭。</p>
+<h4 id="3526-min-snr-gamma">3.5.26 Min SNR gamma</h4>
+<p>LoRA学习中，会在训练图像中添加各种强度的噪声进行学习（详细内容略），但根据添加噪声的强度，学习会变得更接近或远离学习目标，使学习变得稳定. 引入最小 SNR gamma来补偿这一点。尤其是在学习没有大量噪声的图像时，系统可能会明显偏离目标，因此要尽量抑制这种跳跃。</p>
+<p>我将省略细节，因为它们很复杂，但这个值可以设置在 0 到 20 之间，默认为0。</p>
+<p>根据提出该方法的论文，最佳值为 5。</p>
+<p>目前尚不清楚它的效果如何，但如果您对训练结果不满意，尝试各种值是个好主意。</p>
+<h4 id="3527-dont-upscale-bucket-resolution">3.5.27 Don&rsquo;t upscale bucket resolution</h4>
+<p>默认情况下，bucket大小设置为 256 到 1024像素之间（或者，如果您使用“最大分辨率”选项指定最大分辨率，则该分辨率优先）。垂直或水平超出此尺寸范围的图像将被放大或缩小以适合指定范围（同时保持纵横比）。</p>
+<p>但是，当打开此选项时，将忽略存储桶大小范围设置，并根据训练图像的大小自动准备存储桶，从而加载所有训练图像而不进行缩放。然而，即使在这个时候，也有可能会裁剪部分图像以将大小与Bucket 分辨率步骤（稍后描述）相匹配。</p>
+<p>默认开启。</p>
+<h4 id="3528-bucket-resolution-steps">3.5.28 Bucket resolution steps</h4>
+<p>如果使用Bucket，请在此处指定每个存储桶的解析间隔。</p>
+<p>例如，如果您在此指定 64，则每个训练图像将根据其大小按 64像素分类到单独的桶中。这种分布是垂直和水平进行的。</p>
+<p>如果图像大小不完全是Bucket指定的大小，则多出的部分将被裁剪。</p>
+<p>举例来说，假设最大分辨率为512像素，桶的步长为每64像素，那么桶的大小将分别是512、448、384等等。而对于一个500像素的图像，它将被放入448像素大小的桶中，为了使尺寸相符，多出来的52像素将被裁剪掉。</p>
+<p>默认值为 64 像素。</p>
+<blockquote>
+<p>如果你把这个值设置得太小，bucket的分布就会变得太细，最坏的情况下，你最终会遇到每张图像只有一个bucket的情况。</p>
+</blockquote>
+<p>请注意，每个批次始终从同一个bucket中加载图像，因此如果bucket中的图像太少，则批次数量会无意中变小。</p>
+<h4 id="3529-random-crop-instead-of-center-crop">3.5.29 Random crop instead of center crop</h4>
+<p>如上所述，中等尺寸的图像会被分类到bucket中，然后裁剪一部分以保持尺寸一致，但通常会裁剪图像以保持图像的中心。</p>
+<p>打开此选项将随机确定图片的哪一部分将被裁剪。如果您想将学习范围扩展到图像中心之外，请打开此选项。</p>
+<blockquote>
+<p>当cache latent选项打开时，无法使用此选项。</p>
+</blockquote>
+<h4 id="3530-noise-offset-type">3.5.30 Noise offset type</h4>
+<p>这个选项用于指定在对训练图像添加额外噪声时使用的方法。在训练期间，一定会给图像添加噪声（这里省略了详细信息），而这些噪声最好是“难以预测”的，因此通过添加更多噪声来增加这种“难以预测”的性质。”</p>
+<p>默认为原始。多分辨率以稍微复杂的方式添加噪声。</p>
+<h4 id="3531-noise-offset">3.5.31 Noise offset</h4>
+<p>这是当噪声补偿类型选择“原始”时的选项。如果您在此处输入大于 0的值，则会添加额外的噪声。值范围从 0 到 1，其中 0 根本不添加噪声。1增加了强烈的噪音。</p>
+<p>有文章称，添加约0.1的噪声可以使LoRA的颜色更加鲜艳（亮度变得更加清晰）。默认值为0。</p>
+<h4 id="3532-adaptive-noise-scale">3.5.32 Adaptive noise scale</h4>
+<p>与Noise offset选项配对使用。如果您在此处指定一个值，则由Noise offset指定的附加噪声量将进一步调整并放大或衰减。根据图像中当前的噪声量自动调整放大（或衰减）量。该值介于-1 和 1 之间。指定正值将增加附加噪声量，指定负值将减少附加噪声量。</p>
+<p>默认值为 0。</p>
+<h4 id="3533-multires-noise-iterations">3.5.33 Multires noise iterations</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/4dpPDG3fAhBqV9yRXJpofnpoOiac21fbmc5U8IXrrFRGgQsIgobBicMcbe3IkwODVntDs16wsIOfW5vGl7CbdguA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>当噪声偏移类型选择“Multires”时，这是一个选项。如果您在此处输入大于 0的值，则会添加额外的噪声。</p>
+<p>多分辨率会产生各种分辨率的噪声，并将它们加在一起以创建最终的附加噪声。在此指定要创建的“各种分辨率”的数量。</p>
+<p>默认为0，为0时不添加额外的噪声。如果要使用建议设置为6。</p>
+<h4 id="3534-multires-noise-discount">3.5.34 Multires noise discount</h4>
+<p>与多分辨率噪声迭代选项结合使用。该值用于在一定程度上减弱各分辨率下的噪声量。0 到 1之间的值。数字越小，噪声越弱。顺便说一句，衰减量根据分辨率而变化，并且低分辨率的噪声被衰减很多。</p>
+<p>默认值为 0，使用时将其设置为0.3。通常建议0.8。如果训练图像较少，建议将值降低到0.3左右。</p>
+<h4 id="3535-dropout-caption-every-n-epochs">3.5.35 Dropout caption every n epochs</h4>
+<p>通常，图像和Tag是成对训练的，但也可以在特定时期仅训练“没有标题的图像”而不使用标题。</p>
+<p>此选项允许您指定“不在每个时期使用tag（退出）”。</p>
+<p>例如，如果您在此处指定 2，则将每 2 个 epoch（第 2 个 epoch、第 4 个epoch、第 6 个 epoch…）执行一次不使用说明的图像学习。</p>
+<p>当学习没有tag的图像时，LoRA有望学习到更全面的图像特征。您还可以期待防止过多图像特征与特定单词关联的效果。但是，请注意不要使用太多的标题，因为LoRA 可能最终不会出现任何提示。</p>
+<p>默认值为 0，这意味着没有tag丢失。</p>
+<h4 id="3536-rate-of-caption-dropout">3.5.36 Rate of caption dropout</h4>
+<p>它类似于上面的每n个epoch的Dropout Caption，但它允许您将图像训练为“没有字幕的图像”，而无需在整个学习过程的一定比例中使用字幕。</p>
+<p>您可以在此处设置没有标题的图像的百分比。0是“学习时始终使用字幕”的设置，1 是“学习时从不使用字幕”的设置。</p>
+<p>哪些图像被学习为“没有标题的图像”是随机确定的。</p>
+<p>例如，如果通过加载 20 张图像，每张图像 50 次来进行 1 epoch 的 LoRA训练，则图像训练总数为 20 张图像 x 50 次 x 1 epoch = 1000次。此时，如果将tag丢失率设置为 0.1，则学习将作为“无tag的图像”执行1000 次 x 0.1 = 100 次。</p>
+<p>默认值为 0，这将学习所有带有tag的图像。</p>
+<h4 id="3537-vae-batch-size">3.5.37 VAE batch size</h4>
+<p>将“Cache latents”选项打开后，可以将压缩后的图像数据保留在主内存中。而“VAE batch size”选项则用于设置一组压缩图像中包含的图像数量。通常情况下，VAE batch size应该与批处理大小（Batch size）相匹配，因为它们一起用于一次性训练指定数量的图像。</p>
+<p>默认值为 0，在这种情况下，它设置为与批量大小相同的数字。</p>
+<h4 id="3538-save-training-state">3.5.38 Save training state</h4>
+<p>如果训练图像数量、迭代次数和 epoch 数量较多，LoRA训练将需要很长时间。</p>
+<p>如果您打开此选项，您可以中断学习并在稍后恢复。</p>
+<p>学习期间的进度数据保存在名为“last-state”的文件夹中。</p>
+<h4 id="3539-resume-from-saved-training-state">3.5.39 Resume from saved training state</h4>
+<p>如果您想恢复中断的学习，请在此处指定“最后状态”文件夹的位置。</p>
+<p>要恢复学习，必须保存学习进度数据。</p>
+<h4 id="3540-max-train-epoch">3.5.40 Max train epoch</h4>
+<p>指定训练的最大epoch数。基本上，您可以使用 Epoch选项指定Epoch数，但当达到此处指定的Epoch数时，学习始终会结束。</p>
+<p>默认为空。您可以将此字段留空。</p>
+<h4 id="3541-max-num-workers-for-dataloader">3.5.41 Max num workers for DataLoader</h4>
+<p>该选项指定读取数据进行学习时使用的CPU进程数。每次增加此数字时，都会启用子进程并提高数据加载速度，但增加太多实际上可能会变得低效。</p>
+<p>请注意，无论您指定多大的数量，都不会超过正在使用的CPU的并发执行线程数。</p>
+<p>默认为0，表示数据只能由主CPU进程读取。</p>
+<h4 id="3542wandbapi2--key-wandb-api-密钥">3.5.42WANDB<strong>API[2]</strong>  Key WANDB API 密钥</h4>
+<p>有一种机器学习服务称为“WandB”（Weights&amp;Biases）。这是一项以图表和记录形式显示学习进度并在线共享学习日志以便找到最佳设置的服务，kohya_ss现在也可以使用此服务。</p>
+<p>但是，您需要一个帐户才能使用此服务。创建帐户后，您可以从https://app.wandb.ai/authorize获取“API密钥”。如果您在此处输入获取的API密钥，您将在学习过程中自动登录，并能够链接WandB服务。</p>
+<p>关于WandB我就不多说了，但是那些立志成为“LoRA 炼丹师”的人可以尝试一下。</p>
+<h4 id="3543-wandb-logging-wandb-日志记录">3.5.43 WANDB Logging WANDB 日志记录</h4>
+<p>此处可以指定是否使用WandB服务记录学习状态日志。</p>
+<p>默认是关闭的，如果关闭的话，日志会以一个名为“tensorboard”的工具的形式记录。</p>
+<h4 id="36-sample-images-config-示例图像配置">3.6 Sample images config 示例图像配置</h4>
+<p>ALT</p>
+<p>如果您想在学习时了解使用 LoRA生成图像是什么样子，请在此处输入图像生成提示。</p>
+<p>然而，由于LoRA的学习时间相对较短，因此可能不需要太多图像生成测试。</p>
+<h4 id="361-sample-every-n-steps-每n步采样一次">3.6.1 Sample every n steps 每n步采样一次</h4>
+<p>指定学习过程中要生成图像的步骤。例如，如果指定 100，则每 100步生成一张图像。</p>
+<p>默认为 0，表示不生成图像。</p>
+<h4 id="362-sample-every-n-epochs-每n个epoch采样一次">3.6.2 Sample every n epochs 每n个epoch采样一次</h4>
+<p>指定您想要在训练期间生成图像的时期。例如，指定 2 将每 2 个 epoch生成一个图像。</p>
+<p>默认为 0，表示不生成图像。</p>
+<h4 id="363-sample-sampler-样品取样器">3.6.3 Sample sampler 样品取样器</h4>
+<p>指定用于图像生成的采样器。这里指定的许多采样器与 Stable Diffusion Web UI 提供的采样器相同，因此请参阅 Web UI 说明网站了解详细信息。</p>
+<p>默认为 euler_a。</p>
+<h4 id="364-sample-prompts-提示示例">3.6.4 Sample prompts 提示示例</h4>
+<p>在此输入Prompt。</p>
+<p>但是，您可以在此处输入其他设置以及提示。如果要输入其他设置，请使用两个减号和字母的组合指定设置，例如“–n”。例如，如果你想在Negative Prompt提示中输入“white,dog”，你可以写“–nwhite,dog”。</p>
+<p>最有可能使用的设置如下。</p>
+<p>–n: 否定提示</p>
+<p>–w：图像宽度</p>
+<p>–h：图像高度</p>
+<p>–d：种子</p>
+<p>–l:CFG 比例</p>
+<p>–s：步数</p>
+<p>默认为空。当该字段为空时，示例描述将显示为暗淡，因此请参考。</p>
+<h4 id="4-概括">4. 概括</h4>
+<p>我们解释了 LoRA 的机制（Stable Diffusion的附加学习方法之一），以及用于执行 LoRA 学习的工具 kohya_ss 的设置。</p>
+<p>需要配置的设置太多，可能看起来很混乱，但首先，简要学习推荐的设置，然后根据您的学习结果一点点更改设置。</p>
+<p>请参考此处的说明，旨在创建更高精度的 LoRA。</p>
+<h4 id="参考资料">参考资料</h4>
+<p>[1] 誰でもわかるStable Diffusion Kohya_ssを使ったLoRA学習設定を徹底解説 - 人工知能と親しくなるブログ: <em><a href="https://hoshikat.hatenablog.com/entry/2023/05/26/223229#LoRA">https://hoshikat.hatenablog.com/entry/2023/05/26/223229#LoRA</a>の仕組みを知ろう</em></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
