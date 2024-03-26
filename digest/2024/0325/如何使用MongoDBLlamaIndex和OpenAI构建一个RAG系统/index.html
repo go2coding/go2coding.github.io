@@ -1,0 +1,917 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>如何使用MongoDB、LlamaIndex和OpenAI构建一个RAG系统 作者： 向量检索实验室 来源： 向量检索实验室 原文链接：https://www.mongodb.com/developer/products/atlas/rag-with-polm-stack-llamaindex-openai-mongodb/  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">如何使用MongoDB、LlamaIndex和OpenAI构建一个RAG系统</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 25, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46e77k4zGWo9JCSOiatNdqqtvR2NMnWhBWuxXyKC6txcEibHaMOtn98pKtw/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 向量检索实验室  来源： <a href="https://mp.weixin.qq.com/s/dqVoZISNkw2EMxFOvIMS6w">向量检索实验室</a></p>
+<p>原文链接：https://www.mongodb.com/developer/products/atlas/rag-with-polm-stack-llamaindex-openai-mongodb/</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46eUYpUnreZlib7IsvLEeT2JGINT45KHLfKDQYsWY9c3Yia2ypGSzSKQIJQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="简介">简介</h4>
+<p>大语言模型(LLM)为商业应用带来了巨大的好处,尤其是在提高生产力方面。LLM 及其应用无疑是有利的,但仅依靠 LLM 的参数化知识来响应用户的输入和提示对于私有数据或依赖实时数据的查询来说是不够的。这就是为什么需要一个非参数化的安全知识源来保存敏感数据并可以定期更新,以增强具有当前和相关信息的用户输入到 LLM 中。</p>
+<p>检索增强生成(RAG)是一种系统设计模式,它利用信息检索技术和生成式 AI 模型,通过检索语义相关数据来增强用户查询,并将其作为额外的上下文与用户查询相结合,作为 LLM 的输入,从而提供准确且相关的响应。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46edASI5tibzIoNPXemeZd71WcVEicTwa9iaRVZQEEibECEMwicHYqyuUl9O7Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>关键要点</strong> :</p>
+<ul>
+<li>
+<p>RAG概述</p>
+</li>
+<li>
+<p>了解 AI 技术栈</p>
+</li>
+<li>
+<p>如何使用 MongoDB、LlamaIndex 和 OpenAI 构建一个端到端的 RAG 系统</p>
+</li>
+</ul>
+<h4 id="什么是ai技术栈">什么是AI技术栈</h4>
+<p>本教程将使用<strong>OLM</strong> (OpenAI、LlamaIndex 和 MongoDB)或<strong>POLM</strong> (Python、OpenAI、LlamaIndex、MongoDB)AI 技术栈实现一个端到端的 RAG 系统。<strong>AI 技术栈或 GenAI 技术栈是指用于构建和开发具有生成式 AI 能力的现代应用程序的模型、数据库、库和业务编排框架的组合。</strong></p>
+<p>一个典型的 AI 技术栈实现了一个基础设施,利用来自 LLM 的参数化知识和来自数据的非参数化知识来增强用户查询。AI 技术栈的组件包括:模型、编排器或集成器、操作型和向量数据库。在本教程中,MongoDB 将同时充当操作型和向量数据库。</p>
+<p>AI stack component<br>
+AI堆栈组件OLM/POLM stack<br>
+OLM/POLM 堆栈</p>
+<p>Language<br>
+(语言)
+Python</p>
+<p>Model provider<br>
+(模型提供者)
+OpenAI (GPT-3.5, GPT-4)</p>
+<p>LLM orchestrator<br>
+(LLM 协调器)
+LlamaIndex</p>
+<p>Operational and vector<br>
+database<br>
+(操作型和向量数据库)
+MongoDB Atlas</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46e77k4zGWo9JCSOiatNdqqtvR2NMnWhBWuxXyKC6txcEibHaMOtn98pKtw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>本文的实现步骤可以在<strong>github仓库</strong> [1]中找到。以下步骤的内容详细解释了用于实现 RAG 系统目标的库类、方法和过程。</p>
+<h4 id="步骤-1安装库">步骤 1:安装库</h4>
+<p>下面的代码片段安装了各种库,提供了访问 LLM、重新排序模型、数据库和集合方法的功能,将与广泛编码相关的复杂性抽象为几行代码和方法调用。</p>
+<ul>
+<li>
+<p>LlamaIndex:提供将数据源(文件、PDF、网站或数据源)连接到封闭式(OpenAI、Cohere)和开源(Llama)大语言模型的功能的数据框架;LlamaIndex 框架抽象了与数据摄取、RAG 管道实现和 LLM 应用程序开发(聊天机器人、代理等)相关的复杂性。</p>
+</li>
+<li>
+<p>LlamaIndex (MongoDB):LlamaIndex 扩展库,导入所有必要的方法来连接并操作 MongoDB Atlas 数据库。</p>
+</li>
+<li>
+<p>LlamaIndex (OpenAI):LlamaIndex 扩展库,导入所有必要的方法来访问 OpenAI 嵌入模型。</p>
+</li>
+<li>
+<p>PyMongo:用于与 MongoDB 交互的 Python 库,提供连接到集群并查询存储在集合和文档中的数据的功能。</p>
+</li>
+<li>
+<p>Hugging Face datasets:Hugging Face 库包含音频、视觉和文本数据集。</p>
+</li>
+<li>
+<p>Pandas:使用 Python 提供数据结构进行高效的数据处理和分析。</p>
+<p>!pip install llama-index</p>
+<p>!pip install llama-index-vector-stores-mongodb</p>
+<p>!pip install llama-index-embeddings-openai</p>
+<p>!pip install pymongo</p>
+<p>!pip install datasets</p>
+<p>!pip install pandas</p>
+</li>
+</ul>
+<h4 id="步骤-2数据获取和-openai-密钥设置">步骤 2:数据获取和 OpenAI 密钥设置</h4>
+<p>下面的命令将 OpenAI API 密钥分配给环境变量 OPENAI_API_KEY。这确保 LlamaIndex 使用提供的 OpenAI API 密钥创建一个 OpenAI 客户端,以访问 LLM 模型(GPT-3、GPT-3.5-turbo 和 GPT-4)和嵌入模型(text-embedding-ada-002、text-embedding-3-small 和 text- embeddings-3-large)等功能。</p>
+<pre><code>%env OPENAI\_API\_KEY=openai\_key\_here   
+</code></pre>
+<p>本教程中使用的数据来自 Hugging Face 数据集,特别是<strong>AIatMongoDB/embedded_movies 数据集</strong> [2]。电影数据集中的一个数据点包含与特定电影相对应的信息;为每个数据点捕获情节、流派、演员阵容、运行时间等。将数据集加载到开发环境后,将其转换为 Pandas 数据帧对象,可以相对轻松地进行数据结构操作和分析。</p>
+<pre><code>from datasets import load_dataset  
+  
+import pandas as pd  
+  
+# https://huggingface.co/datasets/AIatMongoDB/embedded\_movies  
+  
+dataset=load_dataset(&quot;AIatMongoDB/embedded\_movies&quot;)  
+  
+# Convert the dataset to a pandas dataframe  
+  
+dataset_df=pd.DataFrame(dataset['train'])  
+  
+dataset_df.head(5)  
+</code></pre>
+<h4 id="步骤-3数据清理准备和加载">步骤 3:数据清理、准备和加载</h4>
+<p>此步骤中的操作侧重于强制执行数据完整性和质量。第一个过程确保每个数据点的 plot
+属性不为空,因为这是我们在嵌入过程中主要利用的数据。此步骤还确保我们从所有数据点中删除 plot_embedding
+属性,因为这将被使用不同模型 text-embedding-3-small
+创建的新嵌入所替换。</p>
+<pre><code># Remove data point where plot column is missing  
+  
+dataset_df=dataset_df.dropna(subset=['plot'])  
+  
+print(&quot;\nNumber of missing values in each column after removal:&quot;)  
+  
+print(dataset_df.isnull().sum())  
+  
+# Remove the plot_embedding from each data point in the dataset as we are going to create new embeddings with the new OpenAI embedding Model &quot;text-embedding-3-small&quot;  
+  
+dataset_df=dataset_df.drop(columns=['plot_embedding'])  
+  
+dataset_df.head(5)  
+</code></pre>
+<p>从 llama_index.embeddings
+模块的 OpenAIEmbedding
+模型初始化一个嵌入对象。具体来说,OpenAIEmbedding
+模型接受两个参数:嵌入模型名称(对于本教程为 text-embedding-3-small
+)和向量嵌入的维度。</p>
+<p>下面的代码片段配置了整个开发环境中使用的嵌入模型和 LLM。用于响应用户查询的 LLM 是通过 LlamaIndex 启用的默认 OpenAI 模型,使用 OpenAI()
+类初始化。为了确保所有 LLM 使用者及其配置的一致性,LlamaIndex 提供了&quot;Settings&quot;模块,可以在环境中全局配置使用的 LLM 和嵌入模型。</p>
+<pre><code>from llama_index.core.settings import Settings  
+  
+from llama_index.llms.openai import OpenAI  
+  
+from llama_index.embeddings.openai import OpenAIEmbedding  
+  
+embed_model=OpenAIEmbedding(model=&quot;text-embedding-3-small&quot;,dimensions=256)  
+  
+llm=OpenAI()  
+  
+Settings.llm=llm  
+  
+Settings.embed_model=embed_model  
+</code></pre>
+<p>接下来,为了将数据集及其内容适当地格式化以供 MongoDB 摄取,至关重要。在接下来的步骤中,我们将把当前数据集的结构 dataset_df
+(目前是一个 DataFrame 对象)转换为 JSON 字符串。这个数据集转换是在代码行 documents = dataset_df.to_json(orient=&lsquo;records&rsquo;)
+中完成的,它将 JSON 格式分配给文档。</p>
+<p>通过指定 orient=&lsquo;records&rsquo;,DataFrame 的每一行都转换为一个单独的 JSON 对象。</p>
+<p>下一步创建一个 Python 字典列表 documents_list
+,每个字典表示原始 DataFrame 中的一个单独记录。此过程的最后一步是将每个字典转换为手动构造的文档,这些文档是保存从数据源提取的信息的一级公民。LlamaIndex 中的文档保存信息,例如在 RAG 管道的下游处理和摄取阶段中使用的元数据。</p>
+<p>需要注意的一点是,在手动创建 LlamaIndex 文档时,可以配置文档的属性,这些属性在作为嵌入模型和 LLM 的输入传递时使用。document 类构造函数上的 excluded_llm_metadata_keys
+和 excluded_embed_metadata_keys
+参数接受要在生成 RAG 管道内下游过程的输入时忽略的属性列表。这样做的原因是限制在嵌入模型中使用的上下文以获得更相关的检索,并且在 LLM 的情况下,这用于控制与用户查询结合的元数据信息。如果没有配置这两个参数中的任何一个,默认情况下,文档会在其元数据中使用所有内容作为嵌入和 LLM 输入。</p>
+<p>在此步骤结束时,Python 列表包含与预处理数据集中每个数据点相对应的几个文档。</p>
+<pre><code>import json  
+from llama_index.core import Document  
+from llama_index.core.schema import MetadataMode  
+  
+# Convert the DataFrame to a JSON string representation  
+documents_json = dataset_df.to_json(orient='records')  
+# Load the JSON string into a Python list of dictionaries  
+documents_list = json.loads(documents_json)  
+  
+llama_documents = []  
+  
+for document in documents_list:  
+  
+  # Value for metadata must be one of (str, int, float, None)  
+  document[&quot;writers&quot;] = json.dumps(document[&quot;writers&quot;])  
+  document[&quot;languages&quot;] = json.dumps(document[&quot;languages&quot;])  
+  document[&quot;genres&quot;] = json.dumps(document[&quot;genres&quot;])  
+  document[&quot;cast&quot;] = json.dumps(document[&quot;cast&quot;])  
+  document[&quot;directors&quot;] = json.dumps(document[&quot;directors&quot;])  
+  document[&quot;countries&quot;] = json.dumps(document[&quot;countries&quot;])  
+  document[&quot;imdb&quot;] = json.dumps(document[&quot;imdb&quot;])  
+  document[&quot;awards&quot;] = json.dumps(document[&quot;awards&quot;])  
+  
+  
+  # Create a Document object with the text and excluded metadata for llm and embedding models  
+  llama_document = Document(  
+      text=document[&quot;fullplot&quot;],  
+      metadata=document,  
+      excluded_llm_metadata_keys=[&quot;fullplot&quot;, &quot;metacritic&quot;],  
+      excluded_embed_metadata_keys=[&quot;fullplot&quot;, &quot;metacritic&quot;, &quot;poster&quot;, &quot;num_mflix_comments&quot;, &quot;runtime&quot;, &quot;rated&quot;],  
+      metadata_template=&quot;{key}=&gt;{value}&quot;,  
+      text_template=&quot;Metadata: {metadata_str}\n-----\nContent: {content}&quot;,  
+      )  
+  
+  llama_documents.append(llama_document)  
+  
+# Observing an example of what the LLM and Embedding model receive as input  
+print(  
+    &quot;\nThe LLM sees this: \n&quot;,  
+    llama_documents[0].get_content(metadata_mode=MetadataMode.LLM),  
+)  
+print(  
+    &quot;\nThe Embedding model sees this: \n&quot;,  
+    llama_documents[0].get_content(metadata_mode=MetadataMode.EMBED),  
+)  
+</code></pre>
+<p>处理数据之前的最后一步是将 LlamaIndex 文档列表转换为另一个一级公民数据结构,称为节点。一旦我们从文档中生成了节点,下一步就是使用文本和元数据属性中的内容为每个节点生成嵌入数据。</p>
+<pre><code>from llama_index.core.node_parser import SentenceSplitter  
+  
+parser = SentenceSplitter()  
+nodes = parser.get_nodes_from_documents(llama_documents)  
+  
+for node in nodes:  
+    node_embedding = embed_model.get_text_embedding(  
+        node.get_content(metadata_mode=&quot;all&quot;)  
+    )  
+    node.embedding = node_embedding  
+       
+</code></pre>
+<h4 id="步骤-4数据库设置和连接">步骤 4:数据库设置和连接</h4>
+<p>在继续之前,请确保满足以下先决条件:</p>
+<ul>
+<li>
+<p>在 MongoDB Atlas 上设置数据库集群</p>
+</li>
+<li>
+<p>获取集群的 URI</p>
+</li>
+</ul>
+<p>有关数据库集群设置和获取 URI 的帮助，请参阅我们的指南<strong>设置MongoDB集群</strong> [3]，以及我们的指南<strong>获取你的连接字</strong> [4] 成功创建集群后,通过单击&quot;+ 创建数据库&quot;在 MongoDB Atlas 集群中创建数据库和集合。数据库将被命名为 movies
+,集合将被命名为 movies_records
+。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46ew9KicBtINUUFZhM9jLBfg1ANU8Jth3v7FyaINFE4qnWZWpuicCx7wRvQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在设置数据库并获得 Atlas 集群连接 URI 后,在您的开发环境中安全地存储 URI。</p>
+<p>本指南使用 Google Colab,它提供了一个功能,可以安全地存储环境机密。然后可以在开发环境中访问这些机密。具体来说,代码 mongo_uri = userdata.get(&lsquo;MONGO_URI&rsquo;)
+从安全存储中检索 URI。</p>
+<p>下面的代码片段还使用 PyMongo 创建一个 MongoDB 客户端对象,表示与集群的连接并允许访问其数据库和集合。</p>
+<pre><code>import pymongo  
+from google.colab import userdata  
+  
+def get_mongo_client(mongo_uri):  
+  &quot;&quot;&quot;Establish connection to the MongoDB.&quot;&quot;&quot;  
+  try:  
+    client = pymongo.MongoClient(mongo_uri)  
+    print(&quot;Connection to MongoDB successful&quot;)  
+    return client  
+  except pymongo.errors.ConnectionFailure as e:  
+    print(f&quot;Connection failed: {e}&quot;)  
+    return None  
+  
+mongo_uri = userdata.get('MONGO_URI_2')  
+if not mongo_uri:  
+  print(&quot;MONGO_URI not set in environment variables&quot;)  
+  
+mongo_client = get_mongo_client(mongo_uri)  
+  
+DB_NAME=&quot;movies&quot;  
+COLLECTION_NAME=&quot;movies_records&quot;  
+  
+db = mongo_client[DB_NAME]  
+collection = db[COLLECTION_NAME]  
+</code></pre>
+<p>以下代码通过对集合执行 delete_many()
+操作来确保当前数据库集合为空。</p>
+<pre><code># To ensure we are working with a fresh collection   
+# delete any existing records in the collection  
+  
+collection.delete_many({})  
+</code></pre>
+<h4 id="步骤-5向量搜索索引创建">步骤 5:向量搜索索引创建</h4>
+<p>在 movies_records
+集合中创建向量搜索索引对于从 MongoDB 有效地检索文档到我们的开发环境至关重要。要实现这一点,请参考关于创建向量搜索索引的官方指南。</p>
+<p>在使用 MongoDB Atlas 上的 JSON 编辑器创建向量搜索索引时,请确保您的向量搜索索引名为 vector_index
+,并且向量搜索索引定义如下:</p>
+<pre><code>{  
+ &quot;fields&quot;: [  
+   {  
+     &quot;numDimensions&quot;: 256,  
+     &quot;path&quot;: &quot;embedding&quot;,  
+     &quot;similarity&quot;: &quot;cosine&quot;,  
+     &quot;type&quot;: &quot;vector&quot;  
+   }  
+ ]  
+}  
+</code></pre>
+<p>设置好向量搜索索引后,就可以高效地摄取和检索数据了。利用 LlamaIndex,数据摄取是一个简单的过程,只需不到三行代码即可实现。</p>
+<h4 id="步骤-6将数据摄取到向量数据库">步骤 6:将数据摄取到向量数据库</h4>
+<p>到目前为止,我们已经成功完成了以下工作:</p>
+<ul>
+<li>
+<p>加载了来自 Hugging Face 的数据源</p>
+</li>
+<li>
+<p>使用 OpenAI 嵌入模型为每个数据点提供了嵌入</p>
+</li>
+<li>
+<p>设置了一个旨在存储向量嵌入的 MongoDB 数据库</p>
+</li>
+<li>
+<p>从我们的开发环境建立了与该数据库的连接</p>
+</li>
+<li>
+<p>定义了一个向量搜索索引,用于高效查询向量嵌入</p>
+</li>
+</ul>
+<p>下面的代码片段还通过 LlamaIndex 构造函数 MongoDBAtlasVectorSearch
+初始化了一个 MongoDB Atlas 向量存储对象。需要注意的是,在此步骤中,我们引用了之前通过 MongoDB Cloud Atlas 界面创建的向量搜索索引的名称。对于这个特定的用例,索引名称是 vector_index
+。</p>
+<p>将节点摄取到指定向量存储的关键方法是 LlamaIndex MongoDB 实例的 .add() 方法。</p>
+<pre><code>from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch  
+  
+vector_store = MongoDBAtlasVectorSearch(mongo_client, db_name=DB_NAME, collection_name=COLLECTION_NAME, index_name=&quot;vector_index&quot;)  
+vector_store.add(nodes)  
+</code></pre>
+<p>上面代码片段中的最后一行创建了一个 LlamaIndex 索引。在 LlamaIndex 中,当文档被加载到任何索引抽象类(SummaryIndex
+、TreeIndex
+、KnowledgeGraphIndex
+,尤其是 VectorStoreIndex
+)时,会在内存向量存储中构建一个存储原始文档表示的索引,该向量存储还存储嵌入。</p>
+<p>但是由于本 RAG 系统中使用了 MongoDB Atlas 向量数据库来存储嵌入和我们文档的索引,因此 LlamaIndex 通过 VectorStoreIndex 类的 from_vector_store 方法实现了从 Atlas 中检索索引。</p>
+<pre><code>from llama_index.core import VectorStoreIndex, StorageContext  
+index = VectorStoreIndex.from_vector_store(vector_store)  
+</code></pre>
+<h4 id="步骤-7处理用户查询">步骤 7:处理用户查询</h4>
+<p>下一步是创建一个 LlamaIndex 查询引擎。查询引擎实现了使用自然语言从数据索引中检索相关、上下文适当信息的功能。LlamaIndex 提供的 as_query_engine
+方法抽象了 AI 工程师和开发人员编写实现代码以适当处理查询以从数据源提取信息的复杂性。</p>
+<p>对于我们的用例,查询引擎满足了构建问答应用程序的要求。但是,LlamaIndex 确实提供了使用<strong>聊天引擎功能</strong> [5]构建类似聊天的应用程序的能力。</p>
+<pre><code>import pprint  
+from llama_index.core.response.notebook_utils import display_response  
+  
+query_engine = index.as_query_engine(similarity_top_k=3)  
+query = &quot;Recommend a romantic movie suitable for the christmas season and justify your selecton&quot;  
+response = query_engine.query(query)  
+display_response(response)  
+pprint.pprint(response.source_nodes)  
+</code></pre>
+<h4 id="结论">结论</h4>
+<p>在现代生成式 AI 应用程序中,结合 RAG 架构设计模式可以提高 LLM 的性能,并引入一种在构建强大 AI 基础设施时考虑成本的方法。如本文所示,使用 MongoDB 作为向量数据库和 LlamaIndex 作为 LLM 编排器等组件,构建一个具有最少代码实现的强大 RAG 系统是一个简单的过程。</p>
+<p>特别是,本教程介绍了利用 Python、OpenAI、LlamaIndex 和 MongoDB 向量数据库(也称为 POLM AI 技术栈)的组合功能实现 RAG 系统。</p>
+<p>需要提到的是,微调仍然是提高 LLM 能力和更新其参数化知识的可行策略。但是,对于考虑构建和维护 GenAI 应用程序的经济性的 AI 工程师来说,探索提高 LLM 能力的更具成本效益的方法值得考虑,即使它是实验性的。</p>
+<p>数据采集、硬件加速器的获取以及微调 LLM 和基础模型所需的领域专业知识相关的成本通常需要大量投资,这使得探索更具成本效益的方法(如 RAG 系统)成为一个有吸引力的替代方案。</p>
+<p>值得注意的是,微调和模型训练的成本影响凸显了 AI 工程师和开发人员从 AI 项目的早期阶段就采用节省成本的思维方式的必要性。今天的大多数应用程序已经或将具有某种形式的生成式 AI 能力,由 AI 基础设施支持。因此,在开发 AI 基础设施时,向利益相关者和关键决策者传达和表达探索具有成本效益的解决方案的价值成为 AI 工程师角色的一个关键方面。</p>
+<h4 id="常见问题">常见问题:</h4>
+<p><strong>问:什么是检索增强生成(RAG)系统?</strong> 检索增强生成(RAG)是一种设计模式,通过使用检索模型从数据库中获取语义相关信息来提高 LLM 的能力。这些额外的上下文与用户的查询相结合,以从 LLM 生成更准确和相关的响应。</p>
+<p><strong>问:RAG 系统中 AI 技术栈的关键组件是什么?</strong> 基本组件包括模型(如 GPT-3.5、GPT-4 或 Llama)、用于管理 LLM 和数据源之间交互的编排器或集成器,以及用于高效存储和检索数据的操作型和向量数据库。</p>
+<h4 id="相关链接">相关链接</h4>
+<p>[1]https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/naive_rag_implemenation_llamaindex.ipynb</p>
+<p>[2]https://huggingface.co/datasets/MongoDB/embedded_movies</p>
+<p>[3]https://www.mongodb.com/docs/guides/atlas/cluster/</p>
+<p>[4]https://www.mongodb.com/docs/guides/atlas/connection-string/</p>
+<p>[5]https://docs.llamaindex.ai/en/latest/module_guides/deploying/chat_engines/root.html</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

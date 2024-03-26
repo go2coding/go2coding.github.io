@@ -1,0 +1,799 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>【LLM-RAG】用于内容生成的检索增强生成综述 作者： AI帝国 来源： AI帝国 ####一、结论写在前面 论文对与AIGC相关的场景中的RAG进行了全面和彻底的调查，特别关注增强的基础、增强和实际应用。论文首先系统地组织和总结了RAG的基础范式，深入探讨了检索器和生成器之间的交互。基于构建的R  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">【LLM-RAG】用于内容生成的检索增强生成综述</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 25, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/KQq0TwTibbBBwqx7avcoKibsib8TNGXtog0k7uSB1jWWv8a5crcmmsHHO1yXRhXicGrLtWZnMcicAiahNARLWNzT4YWg/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AI帝国  来源： <a href="https://mp.weixin.qq.com/s/2b5_uuuKwAQIjRWi5x9FXQ">AI帝国</a></p>
+<h4 id="heading"></h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/KQq0TwTibbBBwqx7avcoKibsib8TNGXtog04CN0zlVnvZnSNEws95Ud2DG34EgkDkK5K3vVARQFtZCtlPvX6O299A/640?wx_fmt=png" alt=""></p>
+<p>####<strong>一、结论写在前面</strong></p>
+<p>论文对与AIGC相关的场景中的RAG进行了全面和彻底的调查，特别关注增强的基础、增强和实际应用。论文首先系统地组织和总结了RAG的基础范式，深入探讨了检索器和生成器之间的交互。基于构建的RAG系统，论文回顾了进一步提高RAG有效性的增强措施，包括对输入、检索器、生成器和结果的增强。为了促进各个领域的研究人员，论文展示了RAG在各种模态和任务中的实际应用。</p>
+<p>####<strong>二、论文的简单介绍</strong></p>
+<p>####<strong>2.1 论文背景</strong></p>
+<p>近年来，围绕人工智能生成内容(AIGC)出现了浓厚的兴趣。各种内容生成工具被精心设计，用于生成不同模态下的多种对象，例如用于生成文本和代码的大型语言模型(LLM)，包括GPT系列和LLAMA系列；用于生成图像的DALL-E系列和稳定扩散；以及用于生成视频的Sora。&ldquo;AIGC&quot;一词强调这些内容是由先进的生成模型生成的，而非由人工或基于规则的方法生成。由于利用了新型模型算法、庞大的基础模型架构和大规模高质量数据集，这些生成模型取得了卓越的性能。</p>
+<p>信息检索是计算机科学领域另一个至关重要的应用。与生成不同，检索旨在从大量资源中定位相关的现有对象。检索的最常见应用是网络搜索引擎，主要关注文档检索任务。在当今时代，高效的信息检索系统可以处理数十亿级别的文档集合。除了文档，检索还应用于其他模态。</p>
+<p>尽管先进的生成模型取得了长足进步，但AIGC仍然面临着一些众所周知的挑战，包括难以维护最新知识、无法整合长尾知识，以及存在泄露私人训练数据的风险。检索增强生成(RAG)通过其可适应的数据存储库被提出来缓解(如果不能完全解决)上述挑战。存储用于检索的知识可被概念化为非参数式内存。这种形式的内存很容易修改，能够容纳广泛的长尾知识，并能编码机密数据。此外，检索还可用于降低生成成本。例如，RAG可以减小大型生成模型的尺寸、为长上下文提供支持，以及消除某些生成步骤。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/KQq0TwTibbBBwqx7avcoKibsib8TNGXtog0iaYO6x73MWI0e7JIeIhfMtsviaHKKqQgCkLczkPtWCOiaDNRDksz9JXug/640?wx_fmt=png" alt=""></p>
+<p>一个典型的RAG过程如图1所示：给定一个输入查询，检索器定位并查找相关的数据源，然后检索到的结果与生成器交互以增强整个生成过程。检索结果可以通过不同的方式与生成过程交互：它们可以作为生成器的增强输入；它们可以在生成的中间阶段以潜在表示的形式加入；它们可以以logits的形式贡献于最终的生成结果；它们甚至可以影响或省略某些生成步骤。此外，在典型的基础RAG过程之上，还提出了许多增强措施来提高整体质量。这些增强措施包括用于特定组件的方法以及针对整个管道的优化。</p>
+<p>####<strong>2.2 RAG已有的方法</strong></p>
+<p>这里首先在AIGC的背景下介绍RAG基础。随后概述了进一步提高RAG效果的增强方法。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/KQq0TwTibbBBwqx7avcoKibsib8TNGXtog0k7uSB1jWWv8a5crcmmsHHO1yXRhXicGrLtWZnMcicAiahNARLWNzT4YWg/640?wx_fmt=png" alt=""></p>
+<p>####<strong>2.2.1. RAG基础</strong></p>
+<p>根据检索器如何增强生成器，论文将RAG基础范式分为4个不同类别，如图6所示。</p>
+<p>1)基于查询的RAG：基于查询的RAG也称为提示增强。它将用户查询与检索过程中获取的文档中的见解直接整合到语言模型输入的初始阶段。这一范式是RAG应用中被广泛采用的方法。一旦检索到文档，它们的内容就会与原始用户查询合并，创建一个复合输入序列。这个增强的序列随后被输入到预训练的语言模型中以生成响应。</p>
+<p>•REALM采用双BERT框架来简化知识检索和集成，将预训练模型与知识提取器结合。初始BERT模块处理输入问题和文档以促进检索，利用MIPS选择概率最高的前k个文档，并周期性地更新索引。获得的文档片段随后与查询相集成，送入第二个BERT模块以产生多个输出，这些输出被聚合成一个综合响应。</p>
+<p>•RAG将预训练语言模型与知识检索机制结合，利用DPR和BART结构来完成检索增强生成任务。DPR充当检索组件，从大量文档数据库中获取相关信息，而BART使用这些信息进行文本生成。RAG-Token和RAG-Sequence在检索时机上有所不同，前者在每次标记生成时都检索信息，后者则对整个序列进行一次检索。</p>
+<p>•KILT着重于确保信息的准确性和可靠性，通过将维基百科页面与特定快照对齐，并利用BLEU评分来确定最相关的文本范围。它过滤掉较低质量的数据，保持较高的信息映射标准，并提供多种检索系统选择，如Tf-idf、DPR、RAG和BLINK+flair，以支持基于证据的预测或引用，具体取决于任务要求。</p>
+<p>•SELF-RAG通过集成检索和评论策略来提高响应的准确性和相关性。最初，该模型使用检索器搜索与输入问题密切相关的信息段落。随后，评论模型评估这些段落的相关性和对检索文本的支持程度，评估它们对响应生成的影响。最后，生成器模型根据这些信息构建响应，并通过评论标记评估这些响应的质量。</p>
+<p>•最近，一些方法提出在不修改语言模型架构的情况下实现RAG，这特别适用于通过API访问语言模型的场景：REPLUG[127]阐述了这种方法，将语言模型视为&quot;黑盒&rdquo;，利用Contriever无缝地将相关外部文档并入查询。具有语言模型监督检索(LMSupervised Retrieval)的REPLUG LSR变体进一步改进了这一过程，通过语言模型监督见解优化检索，旨在降低困惑度分数并通过增强上下文理解来提高模型性能。</p>
+<p>•RALM使用BM25算法进行文档检索和预测重新排序，以选择相关文档进行输入整合。</p>
+<p>在当代多模态应用研究中，将检索到的内容整合到输入中被证明可以有效提高各种任务的性能。这一策略可应用于多个关键领域，包括代码生成、音频生成和知识库问答(KBQA)。</p>
+<p>2）基于潜在表示的RAG: 在基于潜在表示的RAG框架中，生成模型与检索对象的潜在表示交互，从而增强了模型的理解能力和生成内容的质量。</p>
+<p>•FiD技术同时利用BM25和DPR来获取支持性段落。它将每个检索到的段落及其标题与查询级联，通过编码器分别处理它们。FiD通过在解码器中融合来自多个检索段落的信息来生成答案，而不是在编码器中处理每个段落，从而降低了计算复杂度并有效利用了相关信息。Fusion-in-Decoder方法的应用不仅局限于文本内容处理，还显示了在处理代码、结构化知识和各种多模态数据集方面的巨大潜力和适应性。具体在与代码相关的领域内，EDITSUM、BASHEXPLAINER和RetrieveNEdit等技术采用了FiD方法，通过编码器处理的融合实现了集成。</p>
+<p>•Re2Com和RACE等方法还设计了多个用于不同输入类型的编码器。在知识库问答(KBQA)领域，FiD方法得到了广泛采用，显示出显著的有效性</p>
+<p>•UniK-QA、DECAF、SKP、KD-CoT和ReSKGC通过应用Fusion-in-Decoder技术有效增强了QA系统的性能。这说明通过在KBQA中集成RAG，可以显著提高QA系统的效率和准确性</p>
+<p>•在科学领域，RetMolRetMol和DeepICL采用了Fusion-in-Decoder策略，在解码器阶段集成信息，以增强生成的分子结构的相关性和质量。</p>
+<p>•在这种范式中，Retro率先通过&quot;分块交叉注意力&quot;这一新机制集成检索文本，将输入序列分割成离散的块。每个块独立执行交叉注意力操作，从而减轻了计算负担。这使模型能够选择性地检索和汲取不同文档用于不同序列段，在整个生成过程中实现动态检索。这增强了模型的适应性，并丰富了生成内容的上下文背景。</p>
+<p>•在图像生成领域，交叉注意力机制已在RAG框架中得到广泛采用。Re-imagen、KNN-Diffusion、RDM和LAION-RDM&amp;ImageNet-RDM等方法利用交叉注意力机制集成多个检索结果，有效提高了模型的整体性能。另一方面，Li引入了ACM(文本-图像仿射组合模块)，值得注意的是它没有使用任何形式的注意力机制。</p>
+<p>•与此不同，TOME将重点转移到全面的mention编码上，优先考虑mention的粒度而不是简单的实体表示。它为维基百科上的每个实体mention精心生成编码，在存储库中积累了约1.5亿个条目。该存储库包含键值编码和实体ID，使得可以检索到更细粒度的信息。TOME集成了一个初始的transformer块来处理输入文本，后面是具有记忆注意力层的TOME块，有助于综合多方面的信息源并增强推理推理能力，甚至可以处理未见过的实体。</p>
+<p>•Memorizing Transformers通过在Transformer层中集成kNN增强注意力机制，革新了长文档处理。这一创新在输入序列处理过程中触发kNN搜索，根据序列与存储的键值对之间的相似性获取数据，从而提高性能而无需完全重新训练。这种方法不仅提高了处理效率，还扩展了模型的记忆跨度，使其能够自主检索自身生成的输出，并针对庞大的知识库或代码库进行微调。</p>
+<p>•Unlimiformer在预训练的编码器-解码器transformer框架中嵌入k-近邻(kNN)索引，开创了处理无限长输入的先河。将输入标记的隐藏状态存储在kNN索引中，可在解码过程中高效检索高度相关的标记。这一创新扩展了模型管理长序列的能力。</p>
+<p>•EaE 与以往的知识方法有所不同，它赋予了语言模型内化显式实体知识的能力。EaE引入了一种实体特定的参数化，通过在Transformer架构中嵌入一个实体内存层来优化推理效果。这一层直接从文本数据中获取实体表示，利用稀疏检索策略根据它们的嵌入获取最近的实体，从而通过计算实体特定信息的聚合来完善模型的理解能力。</p>
+<p>•在3D生成领域，ReMoDiffuse 引入了一种语义调制的注意力机制。该技术提高了基于文本描述生成相应3D动作的准确性。AMD 通过将原始扩散过程与参考扩散过程融合，实现了从文本到3D动作的高效转换。</p>
+<p>•在音频领域，Koizumi 利用一个预训练的大规模语言模型，将由VGGish和嵌入网络生成的密集特征融入注意力模块，以指导音频字幕的生成。ReAudioLDM 使用T5和AudioMAE从文本和音频中提取深层特征，并将这些特征整合到其潜在扩散模型（LDM）的注意力机制中。</p>
+<p>•在视频字幕领域，R-ConvED 采用卷积编码器-解码器网络架构，借助注意力机制处理检索到的视频-句子对以生成隐藏状态，随后生成字幕。CARE 将概念检测器引入解码器，并将概念表示嵌入到混合注意力机制中。EgoInstructor 采用门控交叉注意力将这些文本输入与编码的视频特征整合，增强了自心视角视频内容生成的字幕的相关性和连贯性。</p>
+<p>3）基于Logit的RAG：在基于Logit的RAG中，生成模型在解码过程中通过logits结合检索信息。通常，logits通过模型进行求和或组合，以产生逐步生成的概率。</p>
+<p>•kNN-LM 模型将预训练的神经语言模型与 k 最近邻搜索集成在一起。它利用预训练模型生成候选词列表及其概率分布，同时从数据存储库中检索，根据当前上下文找到 k 个最相关的邻居，从而增强了原始语言模型的输出。该模型的核心创新在于其能够从广泛的文本语料库动态检索信息，极大提高了其预测的准确性和相关性，特别是在处理罕见模式并适应各种领域方面。</p>
+<p>•He [36] 提出了一个新的框架，该框架基于只在必要时执行检索操作，旨在通过自适应检索增强 kNN-LM 模型的推理效率。该框架通过训练检索适配器来加速模型的推理速度，该适配器自动识别并消除在某些场景下不必要的检索操作。该方法允许模型根据当前上下文动态决定检索的必要性，从而在性能和效率之间取得平衡，并在保持模型性能的同时大幅增加推理速度。</p>
+<p>•与先前仅在测试时合并记忆的方法不同，TRIME [159] 在训练和测试阶段都实现了记忆合并，将批内示例视为可访问的记忆。TRIME 利用新的数据批处理和记忆构建技术有效利用外部记忆。TRIME 利用 BM25 分数将词汇重叠度高的段落打包到同一批中，构建训练记忆以进一步优化模型性能。NPM [160] 是一个非参数掩码语言模型，由编码器和参考语料库组成。与传统模型不同，NPM 对语料库建模为一个非参数分布。编码器的作用是将语料库中的短语映射到固定大小的向量，通过检索与掩码位置最相似的短语来填充[MASK]。</p>
+<p>除了文本领域之外，其他模态如代码和图像也利用将检索内容与语言模型在最终输出阶段集成的方法。</p>
+<p>•对于代码到文本转换任务，Rencos [119] 从检索到的代码中并行生成多个摘要候选项。然后，它使用编辑距离对这些候选项进行归一化，并计算最终概率以选择最符合原始代码的摘要输出。在代码摘要任务中，EDITSUM [138] 通过在概率级别集成原型摘要来增强摘要生成的质量。对于文本到代码任务，kNN-TRANX [161] 模型采用置信网络和元知识的组合来合并检索到的代码片段。它利用 seq2tree 结构生成与输入查询紧密匹配的目标代码，从而提高了代码生成的准确性和相关性。</p>
+<p>•在图像字幕任务中，MA [162] 结合了基于注意力的编码器-解码器，利用图像编码器提取视觉特征来构建语义部分，并逐字解码它与检索到的信息。MA 在字幕解码器和增强记忆模块生成的两个分布之间进行插值，以确定下一个单词的分布。</p>
+<p>4）推测性 RAG：推测性 RAG 寻找使用检索而不是生成来节省资源并加快响应速度的机会。REST [30] 用检索替换了推测解码 [163] 中的小模型，以生成草稿。GPTCache [37] 试图通过构建语言模型 API 的语义缓存来解决在使用 LLM 时高延迟的问题。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/KQq0TwTibbBBwqx7avcoKibsib8TNGXtog0XeA6OU0wKDOfyJuNriaoxZ4k0HbicMuKk9fiacEXia7k5YXXKbjCHgZlJA/640?wx_fmt=png" alt=""></p>
+<p>####<strong>2.2.2. RAG 增强</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/KQq0TwTibbBBwqx7avcoKibsib8TNGXtog07o489fT2CPCHyJ9sWFtqV7Wib2Zk0YuTRdl4Nz6yurqJHXLEt7HXkzA/640?wx_fmt=png" alt=""></p>
+<p>这里将介绍增强 RAG 性能的方法。论文根据它们的增强目标将现有方法分为 5 个不同的组别：输入、检索器、生成器、结果和整个流水线。</p>
+<p>1）输入增强：输入指用户的查询，最初输入到检索器中。输入的质量显著影响检索阶段的最终结果。因此，增强输入变得至关重要。在本节中，论文介绍两种方法：查询转换和数据增强。</p>
+<p>a）查询转换：查询转换可以通过修改输入查询来增强检索结果。Query2doc [164] 和 HyDE [165] 首先使用查询生成伪文档，然后将该文档用作检索的关键。这样做的优点是伪文档将包含更丰富的相关信息，有助于检索更准确的结果。</p>
+<p>b) 数据增强：数据增强指的是在检索之前提前改进数据，例如删除不相关的信息、消除歧义、更新过时的文档、合成新数据等，这些操作可以有效地提高最终RAG系统的性能。MakeAnAudio [42] 使用字幕和音频文本检索来为无语言的音频生成字幕，以减轻数据稀疏性，并添加随机概念音频以改善原始音频。</p>
+<p>2)检索器增强：在RAG系统中，检索过程至关重要。通常来说，内容质量越好，LLMs的上下文学习能力以及其他生成器和范式的刺激就越容易。内容质量越差，模型产生幻觉的可能性就越大。因此，在本节中，论文将讨论如何有效提高检索过程的效率。</p>
+<p>a) 递归检索：递归检索是在检索之前将查询分解，并执行多次搜索以检索更多和更高质量的内容的过程。Jagerman等人 [166] 使用“思维链”（Chain-of-Thought，COT） [167] 使模型逐渐分解查询并提供更丰富的相关知识。LLMCS [168] 将这一技术应用于对话系统，并通过重写对话记录获得了更好的检索结果。</p>
+<p>b) 分块优化：分块优化技术是指调整块的大小以实现更好的检索结果。句子窗口检索[169]是一种有效的方法，通过获取文本的小块并返回围绕检索段的相关句子窗口来增强检索。该方法确保了目标句子前后的上下文被包含在内，从而提供了对检索信息的更全面理解。自动合并检索是LlamaIndex [169]的另一种先进的RAG方法，它将文档组织成树形结构，父节点包含所有子节点的内容。例如，文章和段落，以及段落和句子，都遵循父子关系。在检索过程中，对子节点进行精细搜索最终返回父节点，有效地提供了更丰富的信息。</p>
+<p>c) 微调检索器：作为RAG系统中的核心组件，检索器在整个系统操作过程中起着至关重要的作用。一个良好的嵌入模型可以将语义上相似的内容在向量空间中靠近。检索器的能力越强，就可以为后续的生成器提供更多有用的信息，从而提高RAG系统的有效性。因此，嵌入模型[170]–[173]的能力对于整个RAG系统的效果至关重要。</p>
+<p>d) 混合检索：混合检索是指同时使用多种类型的检索方法。RAPGen [174]和ReACC [132]同时使用密集检索器和稀疏检索器来提高检索质量。Rencos [119]使用稀疏检索器检索句法级别上相似的代码片段，并使用密集检索器检索语义级别上相似的代码片段。BASHEXPLAINER [139]首先使用密集检索器捕获语义信息，然后使用稀疏检索器获取词汇信息。RetDream [48]首先使用文本进行检索，然后使用图像嵌入进行检索。</p>
+<p>e) 重新排序：重新排序技术是重新排列检索到的内容以实现更大的多样性和更好的结果。Re2G [175]在传统检索器之后应用重新排序[176]模型。重新排序模型的作用是对检索到的文档进行重新排序，其目的是减少由将文本压缩成向量引起的信息丢失对检索质量的影响。AceCoder [177]使用选择器对检索到的程序进行重新排序。引入选择器的目的是减少冗余程序并获得多样化的检索到的程序。XRICL [178]在检索后使用基于蒸馏的示例重新排序。</p>
+<p>f) 元数据过滤：元数据过滤[179]是另一种帮助处理检索到的文档的方法，它使用元数据（如时间、目的等）来过滤检索到的文档，以获得更好的结果。</p>
+<p>3）生成器增强：在RAG系统中，生成器的质量通常决定了最终输出结果的质量。因此，生成器的能力决定了整个RAG系统有效性的上限。</p>
+<p>a) 提示工程：提示工程技术 [180] 旨在改善LLMs输出质量，例如提示压缩、回溯提示 [181]、主动提示 [182]、思维链提示 [167] 等，这些技术都适用于RAG系统中的LLM生成器。LLMLingua [183] 使用小型模型压缩整体查询长度以加速模型推理，缓解无关信息对模型的负面影响，减轻“中间迷失”现象 [184]。ReMoDiffuse [49] 通过使用ChatGPT将复杂描述分解为解剖文本脚本。ASAP [185] 为提示添加示例元组以获得更好的结果。示例元组由输入代码、函数定义、分析该定义及其相关评论的结果组成。CEDAR [130] 使用设计的提示模板将代码演示、查询和自然语言说明组织成提示。XRICL [178] 利用思维链技术将翻译对添加为跨语言语义分析和推理的中间步骤。MakeAnAudio [42] 能够使用其他模态作为输入，这可以为后续处理提供更丰富的信息。</p>
+<p>b) 解码调整：解码调整指在生成器处理期间添加额外的控制，可以通过调整超参数以实现更大的多样性，以某种形式限制输出词汇等方式实现。InferFix [131] 通过调整解码器中的温度来平衡结果的多样性和质量。SYNCHROMESH [120] 通过实现完成引擎限制解码器的输出词汇，以消除实现错误。DeepICL [147] 根据额外的温度因子控制生成的随机性。</p>
+<p>c) 微调生成器：微调生成器可以增强模型具有更精确的领域知识或更好地与检索器匹配的能力。RETRO [34] 固定检索器的参数，并使用生成器中的分块交叉注意力机制来组合查询和检索器的内容。APICoder [129] 使用新的文件与API信息和代码块相结合对CODEGEN-MONO 350M [186] 进行微调。CARE [158] 首先使用图像数据、音频数据和视频文本对编码器进行训练，然后用目标降低字幕损失和概念检测损失的解码器（生成器）进行微调，期间固定编码器和检索器。Animate-A-Story [187] 使用图像数据优化视频生成器，然后微调LoRA [188] 适配器以捕获给定角色的外观细节。RetDream [48] 使用渲染图像微调LoRA适配器 [188]。</p>
+<p>4）结果增强：在许多场景中，RAG的最终结果可能无法达到预期效果，一些结果增强技术可以帮助缓解这个问题。</p>
+<p>a) 重写输出：SARGAM [189] 通过Levenshtein Transformer对与代码相关的任务中生成的结果进行修改，通过分类删除分类器、占位符分类器和插入分类器以更好地适应实际代码上下文。Ring [190] 通过根据生成器生成的每个标记对数概率的平均值对候选项进行重新排序来获得多样性结果。CBR-KBQA [52] 通过将生成的关系与知识图谱中查询实体的本地邻域中呈现的关系对齐来修正结果。</p>
+<p>5）RAG流程增强：</p>
+<p>a) 自适应检索：一些对RAG的研究和实践表明，检索并不总是有利于最终生成的结果。当模型自身的参数化知识足以回答相关问题时，过度的检索会导致资源浪费，并可能增加模型的混淆。因此，在本章中，论文将讨论两种确定是否检索的方法，即基于规则和基于模型的方法。</p>
+<p>基于规则：FLARE [191] 通过在生成过程中的概率上主动决定是否以及何时进行搜索。Efficient-KNNLM [36] 将KNN-LM [35] 和NPM [160] 的生成概率与超参数λ相结合，以确定生成和检索的比例。Mallen等人 [192] 在生成答案之前对问题进行统计分析，使模型能够直接回答高频问题，并引入RAG处理低频问题。姜等人 [193] 研究模型不确定性、输入不确定性和输入统计数据，综合评估模型的置信水平。最终，根据模型的置信水平决定是否进行检索。Kandpal等人 [194] 通过研究训练数据集中相关文档数量与模型掌握相关知识程度之间的关系，协助确定是否需要检索。</p>
+<p>基于模型：Self-RAG [126] 使用训练有素的生成器根据不同指令下的检索标记确定是否执行检索，并通过自我反思标记评估检索文本的相关性和支持水平。最后，根据评论标记评估最终输出结果的质量。Ren等人 [195] 使用“判断提示”确定LLMs是否能够回答相关问题以及它们的答案是否正确，从而协助确定是否需要检索。SKR [196] 利用LLMs本身的判断能力事先判断它们是否能够回答问题，如果能够回答，则不执行检索。</p>
+<p>b) 迭代式RAG：RepoCoder [197] 在代码补全任务中应用迭代式检索-生成流程，以更好地利用散布在不同文件中的有用信息。在第i次迭代期间，它通过先前生成的代码增强检索查询，并获得更好的结果。ITER-RETGEN [198] 以迭代方式协同检索和生成。生成器的当前输出在一定程度上反映了它仍然缺乏的知识，而检索可以检索缺失的信息作为下一轮的上下文信息，有助于提高下一轮生成内容的质量。</p>
+<p>####<strong>2.3. RAG应用</strong></p>
+<p>这里将介绍不同领域中流行的RAG应用。</p>
+<p>####<strong>2.3.1. 文本的RAG</strong></p>
+<p>这里介绍一些使用RAG方法进行文本生成的热门工作。</p>
+<p>1)问答：问答涉及从广泛而全面的文本来源中提供对提出的问题的回答的过程。</p>
+<p>•FID [33] 和 REALM [31] 根据查询识别出前 k 个最相关的文章片段，并将每个片段连同问题转发给大型语言模型（LLM）以生成 k 个响应。然后将这些响应综合成最终答案。</p>
+<p>•Toutanova等人 [199] 将 REALM 中的文本语料库替换为知识图中的子图，取得了令人印象深刻的结果。Atlas [28] 演示了利用检索增强生成（RAG）来协助LLM进行开放域问答任务，显著增强了少样本学习能力。</p>
+<p>•RETRO [34] 利用注意机制将问题与模型内的相关检索文档整合，生成最终答案。SKR [196] 观察到使用RAG并不总是有利于问答，因此探索了引导模型评估其对相关知识的理解，并随后调整其对外部资源的使用以增强检索的方法。</p>
+<p>•KAPING [200] 通过构建提示，将来自知识图的结构化知识纳入输入，提升了LLM响应的质量。</p>
+<p>•TOG [201] 引入了一种创新的知识图增强LLM框架，通过促进LLM与知识图之间的交互，并通过波束搜索扩展推理路径空间而表现出色。解决长尾问题。</p>
+<p>•NPM [160] 开创性地使用非参数数据分布代替softmax层，使参数更少的模型能够有效地执行。</p>
+<p>•Self-RAG [126] 通过学习分辨何时进行检索、评估检索内容的相关性以及使用四种类型的反思令牌评估最终生成的结果，提高了答案质量。</p>
+<p>•CL-ReLKT [202] 使用一种语言通用的编码器来弥合跨语言的问题-文档对之间的差距，从而更好地利用多语言数据。</p>
+<p>•CORE [203] 通过引入一种新颖的密集段落检索算法和多语言自回归生成模型，缓解了语言资源的差异。</p>
+<p>•EAE [155] 通过检索查询实体的实体嵌入并将其与隐藏状态整合以进行进一步处理，提高了答案质量。</p>
+<p>•UR-QA [204] 发现，在遇到未见过的问题时，检索问答对具有更好的最终效果；当遇到以前未见过的问题时，检索文本块的表现更好。因此，建议同时检索问答对和文本块，并通过比较校准的置信度选择最终答案。</p>
+<p>2)事实验证：事实验证涉及评估信息的真实性，这是自然语言处理（NLP）、信息检索和数据挖掘等学科中的关键功能。在当今数字化时代，随着数据的指数增长，特别是在社交媒体和在线新闻平台上，未经核实的信息迅速蔓延。事实验证在抵制假新闻、欺骗性内容和谣言传播方面起着至关重要的作用，从而维护信息景观的完整性，确保公众获得准确的知识。因此，自动化事实验证系统具有极其重要的意义，具有广泛的应用和显著的实际价值。</p>
+<p>CONCRETE [205] 利用跨语言检索机制，利用丰富的多语言证据，有效地弥合了事实核查数据集中资源不足的语言之间的差距。</p>
+<p>3）常识推理：常识推理涉及机器依据其所获取的外部知识及其应用方式以人类方式推断或决策问题或任务的能力。然而，广阔的常识知识范围和推理过程的复杂性使得常识推理一直是自然语言处理（NLP）领域内的一个长期具有挑战性和显著的研究领域。</p>
+<p>KG-BART [206] 通过将知识图谱中不同概念之间的复杂相互关系纳入，扩展了概念景观。它利用图注意机制协助大型语言模型（LLMs）塑造更加细致和逻辑一致的句子。这种方法不仅提高了模型的泛化能力，还显著增强了其常识推理能力。</p>
+<p>4）人机对话：人机对话包括机器理解自然语言并灵活运用这种技能与人类进行无缝交流的能力。这一能力在人工智能和自然语言处理领域是一个重要挑战，并提供了广泛的实际应用领域。因此，人机对话仍然是许多学者研究的焦点。</p>
+<p>•ConceptFlow [207] 利用常识知识图谱来构建对话，根据注意力分数指导对话的流程，并推动对话向前发展。即使在模型参数大幅减少的情况下，该方法也取得了令人称赞的结果。</p>
+<p>•Cai等人 [208] 将文本生成任务重新构想为填空测试，通过检索和精炼过去对话历史的精髓，取得了显著成果。</p>
+<p>•Komeili等人 [209] 利用先进的搜索引擎技术从互联网中获取相关内容，提高了对话生成的质量。</p>
+<p>•BlenderBot3 [210] 扩展了搜索范围，不仅挖掘相关的互联网内容，还分析本地对话历史，并利用实体提取等技术来提升对话质量。</p>
+<p>•Kim等人 [211] 通过引入跨语言知识改善了非英语对话的质量，有效解决了非英语数据集的稀缺问题，并提高了生成对话的质量。</p>
+<p>5）神经机器翻译：神经机器翻译（NMT）是将文本从源语言翻译到目标语言的自动化过程。它是自然语言处理（NLP）领域的一个关键任务，也是人工智能（AI）追求的一个重要目标，具有相当大的科学和实际意义。</p>
+<p>•Cai等人 [212] 提出了一种创新方法，利用单语语料库和多语言学习技术，挑战了在神经机器翻译中传统依赖双语语料库的做法。这种方法确保检索系统提供充足的信息，同时优化检索机制和翻译模型，最终达到了令人印象深刻的性能。</p>
+<p>•KNN-MT [213] 通过计算向量空间距离在标记级别执行翻译任务。</p>
+<p>•TRIME [159] 通过联合训练检索系统和生成模型有效地减少了训练和推理阶段之间的差距，从而提高了翻译的准确性。</p>
+<p>6）事件提取：事件提取是自然语言处理（NLP）领域的一项专业任务，其重点是从非结构化文本数据中准确定位和提取特定事件类型的实例。一个事件通常由中心动作或谓词以及相关实体组成，这些实体可以包括参与者、时间指示器、位置和其他相关属性。事件提取的目标是将文本中嵌入的细微细节转换为结构化格式，从而促进高级分析、高效信息检索和实际的下游应用。</p>
+<p>R-GQA [214] 采用检索式方法来增强给定问题的背景，通过识别和利用存储库中最相关的问答对，从而丰富当前查询的处理信息。</p>
+<p>7）摘要：在自然语言处理（NLP）领域，摘要是一个旨在从冗长的文本中提炼出关键信息，并生成简明、连贯的摘要，概括了主要主题的任务。摘要使用户能够快速把握文本的要点，从而节省了阅读大量资料所需的时间。摘要有两种主要方法：抽取式和生成式。抽取式摘要涉及从源文本直接自动选择和编译关键短语。关键短语简洁地捕捉了文本的主要主题、内容或观点，并通常由一个或多个词组成。关键短语的生成对于理解、分类、检索和组织文本信息是至关重要的，并在搜索引擎优化、学术研究、文本摘要等领域得到了广泛应用。这种技术避免了创建新句子，而是重新利用原始文本中的片段。</p>
+<p>RAMKG [215] 有效地利用全面的英文语料库来增强非英文语境下关键短语生成的性能。它通过提高从不同语言文本中提取的具有相似主题的关键词的对齐性来实现这一目标。Unlimiformer [154] 解决了基于Transformer模型的输入长度限制问题，通过检索和利用前k个最相关的隐藏状态，从而扩展了模型处理更长输入的能力。</p>
+<p>####<strong>2.3.2. 代码相关的 RAG</strong></p>
+<p>代码相关的任务，包括代码生成、代码摘要、代码自动完成、自动程序修复等，一直是软件工程领域的焦点。以前，检索和生成是解决这些任务的两种分离的方式。对于检索，可以通过相似的抽象语法树或文本编辑距离找到类似的代码片段，而自然语言可以通过稀疏检索或密集检索找到。对于生成，考虑到代码具有序列数据形式，许多序列到序列模型被应用，从 LSTM、Transformer 到当前的仅解码器的LLM。最近的研究利用了这两种技术来实现更好的性能，通过检索结果来增强生成过程。</p>
+<p>1）代码生成：代码生成的目标是将自然语言（NL）描述转换为代码实现，可以将其视为文本到代码的过程。因此，LSTM 和 Transformer 模型广泛用于生成器。是否使用代码特定的检索还是基于文本的检索取决于要搜索的内容。</p>
+<p>在代码生成中，基于检索的提示工程在少样本学习中是最常见的 RAG 场景之一。少样本学习，或者说上下文学习，包括将提示中的训练样本作为输入用于序列到序列生成模型。采用检索技术来找到与测试输入相似的训练样本，从而使提示更具信息量和相关性。</p>
+<p>•REDCODER [38] 使用密集检索器 CodeBert [24] 检索相似的 NL 描述，然后将 NL 文本与其配对的代码串联起来，用于下游生成器 PLBART [39]。</p>
+<p>•APICoder [129] 首先训练基于 Bert 的深度检索器，以对齐 NL 描述和 API 文档的嵌入；然后，它检索相关的 API 信息以构建生成器 CODEGEN-MONO [216] 的提示。</p>
+<p>•COCOGEN [217] 旨在进行常识推理，给定 NL 输入，它使用 Codex [2] 生成基于代码的推理图；它添加了动态提示选择的评估设置，实际上是为提示检索相关的示例。</p>
+<p>•在 DocPrompting [40] 中，给定一个 NL 意图，检索器检索相关的文档，然后生成器基于 NL 和检索的文档生成代码。它在实验中评估了稀疏检索器和密集检索器，还尝试了不同的生成器。</p>
+<p>•CodeT5+ [218] 采用 CodeT5 [105] 模型作为检索器和生成器，仅在检索过程中使用编码器部分。</p>
+<p>•AceCoder [177] 将检索器固定为 BM25 [18]，并测试了几种用于代码生成的LLM 生成器。</p>
+<p>检索结果也可以在生成过程中应用：</p>
+<p>•RECODE [118] 使用编辑距离检索相似的 NL 描述，然后从检索句子的相应目标代码的抽象语法树中提取 n-gram 动作子树。在基于 LSTM 的生成过程中，利用已处理子树的模式来增加每个解码步骤的相应单词的概率。</p>
+<p>•kNN-TRANX [161] 使用 seq2tree 模型 BertranX [219] 将 NL 转换为代码 AST。它为每个代码前缀和 NL 对构建一个数据存储；即对于每个 NL-代码对，通过 seq2tree 模型对 NL 和代码的 AST 的第 i 个前缀进行编码以获取上下文表示。在生成过程中，每个解码步骤中的隐藏表示在数据存储中进行搜索，形成新的概率，然后使用置信网络将其与 seq2tree 模型的输出结合起来。</p>
+<p>2）代码摘要：代码摘要的目标是将代码转换为自然语言（NL）描述，这是一个代码到文本的过程，与代码生成相同，许多序列到序列模型被应用为生成器。</p>
+<p>在许多研究工作中，检索结果通常会通过额外的编码器进行处理：</p>
+<p>•Rencos [119] 利用两种不同的方法检索相似的代码片段，即抽象语法树（AST）之间的句法相似性和密集表示之间的余弦相似性。对于生成器，它采用基于注意力的 LSTM。对于代码输入和两个检索结果分别采用了三个编码器，解码器将三个概率结合起来进行最终生成。</p>
+<p>•Re2Com [220] 和 EditSum [138] 都使用稀疏检索 BM25 检索相似的代码，并使用 LSTM 生成摘要。它们分别对输入、检索的代码和相应的摘要进行编码，然后在解码器中组合中间表示或概率。</p>
+<p>•HGNN [221] 使用代码编辑距离进行检索，并用混合 GNN 替换代码的编码器，用于其代码属性图（CPG）[222]。</p>
+<p>•RACE [141] 旨在为代码差异生成提交消息。它利用密集检索寻找类似的示例，并使用 transformer 模型进行生成。它还为输入、检索的代码差异和相应的提交消息使用了三个编码器，然后在将结果馈送到解码器之前将它们组合起来。</p>
+<p>•BASHEXPLAINER [139] 采用了类似的思路。它的密集检索模块基于 CodeBert [24]，对于生成，输入和 CodeBert 中相似代码的输出表示直接融合用于基于 transformer 的解码器。</p>
+<p>3）代码完成(Code Completion)：代码完成可以被看作是“下一个句子预测”任务的编码等价物。ReACC [132] 遵循少样本学习范式，检索相似的代码来构建生成的提示。对于检索，它使用混合检索器，将稀疏检索和密集检索结合在一起；对于生成，它使用了适用于 CodeGPT 的代码。RepoCoder [197] 更进一步进行迭代检索和生成，以弥合检索上下文和预期完成目标之间的差距。在每次迭代中，对于检索，代码查询会与先前生成的代码进行增强；对于生成，提示是通过将最新检索到的代码与代码查询组合而形成的。除了在提示中组合检索结果之外，检索和编辑框架 [140] 首先使用密集检索检索类似的训练示例，然后分别对输入和检索结果进行编码，最后通过注意力将它们组合起来供后续的 LSTM 解码器处理。CoCoMic [224] 为整个代码项目构建了一个项目上下文图，并检索了输入源代码的前 k 个邻居。它生成源代码和检索到的上下文的表示，然后共同处理这些嵌入以完成代码。</p>
+<p>4)自动程序修复：有错误的代码可能需要花费大量精力来修复。自动程序修复利用生成模型输出正确版本。在自动程序修复中，RAG 技术被广泛应用于少样本学习。</p>
+<p>•RING [190] 基于稀疏和密集向量检索相似的错误消息，然后为生成器 Codex [2] 构建提示。</p>
+<p>•CEDAR [130] 用于断言生成和程序修复任务；它使用稀疏和密集检索来搜索相似的代码，然后为 Codex 形成提示以生成结果。</p>
+<p>•InferFix [131] 通过密集检索制作一个带有错误类型、位置、相关语法层次结构和相似修复的提示。然后它也使用 Codex 进行生成。</p>
+<p>•RAP-Gen [174] 还通过混合检索器（包括稀疏和密集检索器）检索相似的有错误的代码和相应的修复。它使用这种 RAG 范式来微调 CodeT5 [105]。SARGAM [189] 使用密集检索搜索相似的有错误的代码，使用增强输入生成补丁，然后应用另一个模型修改最终结果。这些研究工作还涉及错误定位，但不是论文关注的重点。</p>
+<p>5)Text-to-SQL 和基于代码的语义解析：语义解析是将自然语言表达转换为明确的结构化含义表示的任务，代码语言通常用于增强此过程。SQL 不仅是一种编程语言，还可以被视为一种结构化表示，因此论文将文本到 SQL（代码生成的一种特殊情况）放在此子部分中。相关研究工作都应用了检索增强的少样本学习。</p>
+<p>•XRICL [178] 关注将非英语表达转换为 SQL 查询的问题。它使用密集检索搜索和重新排列英语表达，然后为 Codex 生成 SQL 查询的提示。S</p>
+<p>•YNCHROMESH [120] 提出了受约束的语义解码，以在生成 SQL 或其他语言期间强制执行丰富的句法和语义约束。它利用抽象语法树（AST）之间的相似性微调密集检索器 S-Bert。在推理过程中，检索类似的 NL 和 SQL 以形成 GPT-3 的提示。</p>
+<p>•CodeICL [225] 使用 Python 进行语义解析，并通过结构化领域描述为 GPT 生成提示。在少样本学习设置中，它利用 BM25 稀疏检索找到相似的训练示例。</p>
+<p>6)其他任务：还有几个其他与代码相关的任务采用了 RAG 范式。</p>
+<p>•在 [226] 中用于数值推理任务，Chain-of-Thought 被程序替换为中间推理步骤，通过密集检索找到的类似示例被增加到下游 LLM 的提示中。</p>
+<p>•E&amp;V [227] 利用基于 LLM 的代理进行程序静态分析。代理使用源代码检索、伪代码执行、执行规范验证和其他工具来形成中间结果。检索是通过 AST 模式匹配实现的。</p>
+<p>•StackSpotAI [228] 构建了一个 AI 编码助手，其中包含许多与代码相关的任务。它实现了一个 RAG 组件，识别最相关的信息，作为 GPT 生成的上下文。</p>
+<p>####<strong>2.3.3. 针对音频的 RAG</strong></p>
+<p>1)音频生成：音频生成的目标是使用自然语言输入生成音频。ReAudioLDM [157] 采用密集检索器 CLAP [25] 来检索给定输入提示的类似字幕-音频对。生成器，潜在扩散模型和基于 VAE 的解码器，将输入文本和检索到的对的表示作为输入，并生成输出音频。Make-An-Audio [42] 使用密集检索器 CLAP [25] 来增强数据，给定自然语言文本检索相关音频。然后，它为基于扩散的文本到音频模型训练构建伪提示。</p>
+<p>2)音频字幕：音频字幕的目标是生成与音频数据相对应的自然语言数据，基本上是一个序列到序列的任务。RECAP [229] 利用 CLAP [25] 来检索给定音频数据的相关字幕。然后，检索到的字幕包含在 GPT-2 模型的提示输入中，通过交叉注意力与音频嵌入进行交互。在 [41] 中，采用了密集检索器 VGGish [106] 来生成音频数据的密集嵌入，并采用 GPT-2 来生成与检索到的字幕相配对的表示，这些字幕与相似的音频配对。在获取到音频和字幕的表示之后，一个额外的多头注意力块和线性层融合了所有信息并生成输出。一些研究将音频模态转换为文本，以利用 LLM 的进展 [230]–[232]。它们利用深度检索模型，将模态对齐到相同的潜在空间，用于下游文本生成。</p>
+<p>####<strong>2.3.4. 针对图像的 RAG</strong></p>
+<p>1)图像生成：RAG 通过整合信息检索系统来增强生成模型。对于图像生成 ，这意味着利用检索到的数据生成高保真度和忠实度的图像，甚至对于罕见或未见过的实体。同时，这种方法还可以减少生成模型的参数数量和计算成本。</p>
+<p>•RetrieveGAN [43] 使用可微分的检索过程从其他图像中选择兼容的补丁作为生成的参考。它采用 Gumbel-softmax 技巧使检索过程可微分，从而实现端到端的训练和嵌入函数的优化。它还通过额外的目标函数鼓励选择互相兼容的补丁。RetrieveGAN 可以从场景描述中生成合理和连贯的真实和多样化的图像，其中检索到的补丁是合理和连贯的。</p>
+<p>•IC-GAN [137] 将数据分布建模为围绕每个训练实例的条件分布的混合物。它在生成器和鉴别器上都对实例特征进行条件设置，这些特征是从预训练特征提取器中获得的。它还使用条件实例的最近邻作为鉴别器的真实样本。IC-GAN 可以为标记和未标记的数据集生成真实和多样化的图像，并可以通过更改条件实例来转移到未见的数据集。IC-GAN 还可以通过交换类标签或实例特征来控制生成图像的语义和风格。然而，使用训练数据本身进行检索可能限制了泛化能力。</p>
+<p>•KNN-Diffusion [149] 使用大规模检索方法来训练一个基于扩散的模型，而不需要任何文本数据。该模型以两个输入为条件：由 CLIP 提取的文本或图像嵌入，以及来自大型图像数据库的 k 个最近邻嵌入。kNN 嵌入有助于弥合文本和图像分布之间的差距，并通过简单地交换数据库来从不同领域生成图像。该模型还能够实现基于文本的局部语义操作，无需使用蒙版，通过微调模型以从操纵版本预测原始图像。</p>
+<p>•RDM [150] 将一个小型扩散或自回归模型与一个大型外部图像数据库结合成一个半参数模型。在训练过程中，模型为每个训练图像从数据库中检索一组最近邻，并在其 CLIP 嵌入的条件下对生成模型进行建模。通过这种方式，模型学会了根据检索到的视觉内容组合新的场景。在推断阶段，通过改变数据库或检索策略，模型可以推广到新的领域、任务和条件。</p>
+<p>•Re-imagen [148] 从外部多模态知识库中检索信息，以生成逼真且忠实的图像，特别是对于罕见或未见过的实体。它基于一个级联扩散模型，将生成条件设置为文本提示和检索到的图像-文本对。它还提出了一种交替的无分类器指导进程，以平衡文本和检索条件之间的对齐。Re-imagen 在 COCO 和 WikiImages 数据集上实现了最先进的性能，并显著提高了在名为 EntityDrawBench 的新基准上生成图像的保真度。</p>
+<p>•X&amp;Fuse [233] 是一种在从文本生成图像时对视觉信息进行条件设置的通用方法。它通过将受控图像和噪声图像在 U-Net 结构的每个注意力块之前进行连接，并通过自注意力实现它们之间的交互。Retrieve&amp;Fuse 是 X&amp;Fuse 的特殊情况，其中受控图像是使用文本或图像索引从大量图像库中检索得到的。X&amp;Fuse 相对于替代方法具有几个优点，如对空间差异的稳健性、无信息丢失。</p>
+<p>•RPG [77] 检索代表性图像来构建信息丰富的上下文示例（即图像-区域对），并利用多模态思维链 [234] 来规划补充子区域，以进行构成式文本到图像扩散。</p>
+<p>2)图像字幕生成：检索增强的图像字幕生成是一种受检索增强语言生成启发的创新方法。与仅依赖输入图像的传统图像字幕生成方法不同，这种新颖技术通常通过利用从数据存储中检索到的一组字幕来生成描述性句子。</p>
+<p>•Memory-augmented (MA) [162] 利用内存库中的显式知识来改进字幕生成。内存库通过对训练数据中每个图像-文本对的历史上下文和目标词进行编码构建，即图像特征和过去句子（键）和目标词（值）。在推断过程中，模型使用当前上下文向量查询内存库并检索最相似的条目。然后，它基于检索到的条目计算出词汇表上的分布，并将其与原始模型的预测进行插值。MA 的主要亮点在于它是非参数的，与任何字幕生成模型兼容，并且可以在不进行额外训练的情况下适应更大的数据集。</p>
+<p>•RAMP [235] 通过对抗训练将最佳检索到的候选字幕合并到图像段落字幕生成中。在鉴别器训练期间，它将这些字幕用作参考，促使生成器将检索到的字幕中的信息包含到生成的字幕中。此外，RAMP 使用动态记忆增强注意力网络跟踪覆盖信息和注意力历史，有助于避免重复或不完整的描述。还集成了一个复制机制，允许从检索到的字幕中选择单词以提高生成字幕的流畅性和信息性。</p>
+<p>•RA-Transformer [44] 采用 kNN 存储器从外部语料库中检索相关的字幕，并增强生成过程。它由一个带有 kNN 增强注意力层的 Transformer 解码器架构组成，该层在输入令牌上执行遮蔽自注意力，并在检索到的字幕上执行交叉注意力。学习门用于平衡局部上下文和外部内存的贡献。对于检索，它使用基于 CLIP 的视觉编码器在视觉-语义空间中执行近似 kNN 搜索。RA-Transformer 在 COCO 数据集上取得了竞争性的性能，并展示了检索能力对图像字幕生成的有效性。</p>
+<p>•EXTRA [236] 通过包含从相似图像检索到的字幕来增强图像字幕生成。它使用预训练的视觉和语言（V&amp;L）BERT 编码器共同处理图像和检索到的字幕，创建丰富的跨模态表示。然后，解码器同时关注视觉和语言表示，从额外的文本内容中受益。EXTRA 表明检索到足够数量的字幕（例如，k=5）确实提高了字幕质量。</p>
+<p>•REVEAL [237] 是一种检索增强的视觉语言模型，它学习从大规模内存中编码和检索世界知识，使用统一的编码器和多样的多模态来源。它包括四个组件：内存、编码器、检索器和生成器。对于图像字幕生成，REVEAL 接受图像作为输入，从内存中检索相关的知识条目，并通过引入注意力融合层将它们与图像特征融合在一起，将检索分数注入到注意力计算过程中。REVEAL 在一个包含四种知识来源的大规模图像-文本语料库上进行了预训练：维基百科段落和图像、带有 alt 文本字幕的网页图像、知识图谱三元组和视觉问答对。</p>
+<p>•SMALLCAP [45] 通过包含从文本数据存储中检索到的字幕生成一个与输入图像相关的字幕。它使用预训练的 CLIP 视觉编码器和 GPT-2 语言解码器，通过可训练的交叉注意力层连接。检索到的字幕被用作解码器的提示，为输入图像提供了定制的任务演示。SMALLCAP 与以前的工作在两个主要方面不同，即 SMALLCAP 采用了一种直接基于提示的条件方法，其中检索到的字幕用作语言模型的提示。此外，SMALLCAP 是第一个利用检索增强进行无训练域转移和泛化的图像字幕生成任务。</p>
+<p>•交叉模态检索和语义细化 (CRSR) 方法 [238] 通过引入一种新颖的方法，将交叉模态检索与语义细化相结合，提升了遥感图像字幕生成。它首先使用交叉模态检索模型为每个图像获取相关句子，将这些句子作为主要的语义信息来支持字幕生成过程。为了改进这些信息，引入了语义细化模块，过滤掉误导性细节，强调视觉显著的语义内容。</p>
+<p>•此外，引入了 Transformer Mapper 网络来扩展图像特征的表示，通过可学习的查询捕获图像中更复杂的细节。将经过精炼的语义令牌和丰富的视觉特征整合到交叉模态解码器中，生成准确且具有丰富上下文的字幕。</p>
+<p>####<strong>2.3.5. 视频检索增强技术</strong></p>
+<p>1)视频字幕生成：视频字幕生成旨在用描述性话语描述视觉内容。</p>
+<p>•R-ConvED [46] 引入了检索增强机制以促进单词预测。它使用 Dual Encoding [108] 进行视频-文本检索，并提出了一个卷积编码器-解码器网络用于生成。对于给定的输入视频，R-ConvED 首先从训练集中检索出前 k 个相关句子及其对应的视频，然后将这些句子-视频对和输入视频分别输入生成器。通过类似注意力的读操作将获取的解码器隐藏状态组合起来，以便使用最终表示预测目标词。</p>
+<p>•CARE [158] 利用视觉编码器、音频编码器和文本编码器分别对帧、音频和检索到的文本进行编码。它使用 CLIP 作为检索器，transformer 解码器作为生成器。三种模态的嵌入被结合起来增强解码器，产生全局语义指导，它关注输入嵌入，以及局部语义指导，它关注注意力层。</p>
+<p>•EgoInstructor [47] 为第一人称视角视频生成字幕。它通过密集检索检索相关的外心视频和相应的文本，然后通过基于 CLIP 的视觉编码器和基于 transformer-解码器的瓶颈模块对输入的自心视频和检索到的外心视频进行编码。然后，通过以检索到的文本作为输入并在门控交叉注意力层中与编码视频进行交互的基于解码器的 LLM 生成字幕。</p>
+<p>2)视频生成：文本到视频生成旨在根据自然语言描述生成视频。Animate-AStory [187] 开发了一个框架，可以基于文本生成高质量的叙述性视频。它首先将文本分解为单个情节，并使用 LLM 装饰描述。然后，通过密集检索器 [109] 为每个情节检索相关视频。它通过一个潜在扩散模型生成视频，该模型由两个分支组成：一个文本编码器 CLIP 和一个将检索到的视频的估计深度作为结构控制的结构编码器。</p>
+<p>####<strong>2.3.6. 用于3D的检索增强技术</strong></p>
+<p>1)文本到3D：检索可以应用于增强3D内容的生成。</p>
+<p>•ReMoDiffuse [49] 的目标是使用扩散模型生成动作。它首先通过 CLIP 给出的文本输入检索相关的运动实体，然后通过语义调制注意力层利用文本和检索到的实体的信息。</p>
+<p>•AMD [156] 设计了两个运动扩散的分支，用于保真度和多样性。第一个分支将原始提示文本输入扩散；第二个分支将输入文本分解为解剖脚本，并检索类似的参考动作进行扩散。进一步采用了基于变压器的融合模块来自适应地平衡两个分支的结果。</p>
+<p>•RetDream [48] 旨在生成通用的3D内容，使用检索到的3D资产来增强从2D扩散模型到变分分数蒸馏的过程。给定一个输入查询，它通过 CLIP 检索相关的3D资产，然后利用检索到的资产提供几何先验和适应的2D先验。具体而言，检索到的资产不仅对粒子的分布初始化施加额外的速度，还通过低秩适应帮助优化2D扩散模型。</p>
+<p>####<strong>2.3.7. 知识检索增强技术</strong></p>
+<p>结构化知识，包括知识库和知识图谱，在语言任务中被广泛使用。通常它作为检索源，用于增强生成。</p>
+<p>1)知识库问答：知识库问答涉及利用知识库来确定问题的正确答案。许多语义解析方法被提出，给定一个问题生成逻辑形式（例如 SPARQL）。</p>
+<p>•ReTraCk [239] 使用提及检测链接实体，并使用密集检索器 Bert 检索模式项。然后通过 LSTM 生成逻辑形式，通过知识特定规则合并检索到的项目。</p>
+<p>•对于给定的查询，Unseen Entity Handling [51] 通过 FreeBase [240] 检索主题实体，并将查询与实体连接以便编码器-解码器生成 SPARQL 输出。</p>
+<p>•CBRKBQA [52] 使用基于 roberta 的深度检索检索相关问题和相应的逻辑形式答案，然后将问题和检索到的对连接到编码器-解码器变压器模型。它还修订了最终的生成结果，以使生成的关系与知识图谱中查询实体的局部邻域中存在的关系相一致。</p>
+<p>•GMT-KBQA [50] 首先通过基于 bert 的深度检索检索相关实体和关系，然后将信息连接到 T5 生成中。为了改善检索结果，它利用交叉编码器重新排列候选项，并使用相同的 T5 结构进行关系分类和实体消歧。</p>
+<p>•RNG-KBQA [121] 枚举知识图谱中的候选逻辑形式，然后对候选进行排名，并将其与查询连接以形成通过 T5 模型生成最终逻辑形式的提示输入。</p>
+<p>•根据这个思路，TIARA [122] 除了逻辑形式外还检索实体和模式，而后续工作 [241] 使用 BM25 检索前 k 个问题。</p>
+<p>•Uni-Parser [133] 使用提及检测、交叉编码器排名器和 2-hop 路径提取从知识图谱中检索相关实体。它还考虑从数据库中枚举表和列。在获取相关信息后，它将前 k 个基元与查询连接，并通过 T5 生成逻辑形式。</p>
+<p>•UniKQA [142] 将三元组中的组件的文本形式连接起来，并构建用于检索的文档池。对于给定的问题，它利用密集检索器检索相关文档，然后执行融合-解码器技术来合并信息以进行答案生成。</p>
+<p>•SKP [144] 在推理中执行类似于 UniK-QA 的操作，但在三元组和与检索到的项相关的知识对上添加了具有知识感知 MLM 损失的预训练阶段和知识对比损失。</p>
+<p>•BLLM增强[135]使用TIARA作为检索相关知识库元素的工具，然后通过黑盒LLM（例如GPT-4）执行上下文学习，以生成逻辑形式。</p>
+<p>•ECBRF [134]遵循基于案例推理的范例，使用密集检索器检索类似的三元组，并构建BART或GPT-2的上下文学习的提示输入。</p>
+<p>•DECAF [143]将资源描述格式知识库三元组转换为句子，然后将具有相同头实体的句子连接成文档。它使用BM25稀疏检索或Bert密集检索检索相关文档，然后利用融合-解码器技术来生成逻辑形式和直接答案，给定每个（查询、文档）对作为输入。它将输出组合以获得最终答案。</p>
+<p>•KD-CoT [145]使用与DECAF相同的密集检索器和融合-解码器生成器。它遵循一种思维链范式，迭代执行检索、生成和验证，直到思维链完成。</p>
+<p>•FC-KBQA [243]提取给定问题的相关类、关系和实体。对于类和关系，它使用BM25作为检索器和Bert基于交叉编码器作为重新排列器。对于实体，它遵循提及检测范式。为了组合所有组件候选项，它应用T5模型生成逻辑表达式。</p>
+<p>•Keqing [244]首先通过经过微调的LLM将复杂问题分解为简单的子问题，然后通过密集检索器RoBERTa检索类似的子问题模板，以从知识图谱中提取候选实体，并最终通过ChatGPT生成答案，以相关实体作为上下文输入。</p>
+<p>•为了探究LLM对自然语言的深刻理解以及形式语言的能力，一项研究工作[245]探索形式语言理解和形式语言生成的能力。它利用检索到的配对执行上下文学习。对于理解，它使用树编辑距离检索类似的逻辑形式，而对于生成，它使用BM25检索类似的自然语言查询。</p>
+<p>2)知识图谱完成：知识图谱由三元组组成，包括头实体、关系和尾实体。知识图谱完成的任务是预测不完整三元组中缺失的实体。</p>
+<p>ReSKGC [146]通过串联将所有训练三元组线性化为文本，然后使用BM25检索相关三元组，并使用T5结合融合-解码器生成完整的三元组。</p>
+<p>####<strong>2.3.8. 科学领域的检索增强生成（RAG）</strong></p>
+<p>RAG已经成为许多跨学科应用的有前景的研究方向，例如加强分子生成和指导医学任务。</p>
+<p>1)药物发现：药物发现的目标是生成同时满足多种特性的分子。</p>
+<p>•RetMol [53]将轻量级检索机制整合到预训练的编码器-解码器生成模型中。该方法采用了分子的SMILES字符串表示法[246]以及ChemFormer模型[247]，涉及使用示例分子与输入分子的检索和融合。它还利用迭代细化过程动态更新生成的分子和检索数据库。</p>
+<p>•针对基于结构的药物设计（SBDD）[248]，[249]，PromptDiff [250]提出了一种创新的基于交互的检索增强3D分子扩散模型，以促进针对目标的分子生成。PromptDiff检索了一组经过筛选的配体参考物，即具有高结合亲和力等所需特性的参考物，以引导扩散模型朝着满足设计标准的配体合成。</p>
+<p>•DeepICL [147]构成了一个侧重于建模蛋白质-配体相互作用的交互式3D分子生成框架，旨在促进通用的受袋限制的配体设计。</p>
+<p>•利用VAE架构[251]，编码器模块将蛋白质-配体复合物处理为潜在向量，然后与来自相互作用条件的检索先验知识相结合。这些结合信息通过解码器模块引导配体结构的顺序、逐原子生成，确保配体原子被适当地放置以促进与目标的所需相互作用。</p>
+<p>2)医学应用：近期的几项研究通过从生物医学领域特定数据库中检索信息，提高了LLM的表现能力，从而增强了模型在医学领域任务中提供有价值指导的能力。</p>
+<p>•GeneGPT [54]是一种新颖的方法，通过训练LLM有效利用国家生物技术信息中心（NCBI）提供的Web API来处理基因组查询。它通过集成领域特定工具增强了LLM，从而通过通过API调用从NCBI检索此类数据，从而提高了其访问生物医学信息的能力。</p>
+<p>•在执行GeneTuring测试时，GeneGPT指示Codex [2]通过上下文学习和能够检测和执行API调用的增强解码算法利用NCBI Web API。</p>
+<p>•Chat-Orthopedist [136]建立了一个包含关于青少年特发性脊柱侧凸（AIS）疾病和治疗选择的外部知识库，并开发了一个检索增强的ChatGPT，向LLMs提供AIS领域知识，以提供对患者查询的准确和易于理解的响应。利用外部AIS知识库和密集检索器，Chat-Orthopedist增强了与脊柱侧凸相关的领域特定知识的LLMs，避免了“分子幻觉”的问题。</p>
+<p>####<strong>2.4 评估RAG的基准</strong></p>
+<p>陈等人[252]提出了一个RAG基准，从四个方面评估RAG：噪声鲁棒性、负反应、信息整合和反事实鲁棒性。噪声鲁棒性评估LLMs是否能够从包含噪声信息的文档中提取必要信息。噪声信息与输入查询相关，但对回答查询无用。负反应衡量LLMs是否会在检索到的内容不足时拒绝回答查询。信息整合评估LLMs是否能够通过整合多个检索到的内容获取知识并做出响应。反事实鲁棒性指的是LLMs是否能够识别检索到的内容中的反事实错误。</p>
+<p>另外还有三个基准，分别是RAGAS [253]、ARES [254]和TruLens [255]，分别考虑了三个不同的方面：忠实度、答案相关性和语境相关性。忠实度关注的是当正确答案可以从检索到的内容中推断出时结果中的事实错误。答案相关性衡量生成的结果是否确实解决了问题（即查询）或者没有。语境相关性判断检索到的内容是否包含尽可能多的知识来回答查询，以及尽可能少的无关信息。</p>
+<p>CRUD-RAG [256]将所有RAG任务分为四个类别，分别是创建、读取、更新和删除，并且还使用文本延续、问答（单文档和多文档问题）、幻觉修改和开放域多文档摘要来评估每个类别。</p>
+<p>论文标题：Retrieval-Augmented Generation for AI-Generated Content: A Survey</p>
+<p>论文链接：https://arxiv.org/pdf/2402.19473v1.pdf</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

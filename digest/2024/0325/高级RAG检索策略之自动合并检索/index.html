@@ -1,0 +1,864 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>高级RAG检索策略之自动合并检索 作者： 极客与黑客之路 来源： 极客与黑客之路 之前介绍了高级 RAG 检索的句子窗口检索策略，今天我们再来介绍另外一种高级检索策略——自动合并检索，它比句子窗口要复杂一些，但请不用担心，下面的介绍会让你理解其中原理，同时会介绍如何使用 LlamaIndex 来构建一个自动合并  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">高级RAG检索策略之自动合并检索</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              March 25, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3z6yBA329AibgAfxvH3icL5cHNYGkjM94xQeOQ9eQOLx9Q1N4icNJzFA8E6QpeOBgiaByHkV25ruxK2g/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 极客与黑客之路  来源： <a href="https://mp.weixin.qq.com/s/DWNMqchuaL04Ufl1ZGv1uw">极客与黑客之路</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/adswRFDIWz3z6yBA329AibgAfxvH3icL5cLicaIk3hPrqDwUP4bwRJDRBicpBb2SGvte9hHMhMKfAUMCuY7Vf6DEibA/640?wx_fmt=jpeg" alt=""></p>
+<p>之前介绍了高级 RAG 检索的句子窗口检索策略，今天我们再来介绍另外一种高级检索策略——自动合并检索，它比句子窗口要复杂一些，但请不用担心，下面的介绍会让你理解其中原理，同时会介绍如何使用 LlamaIndex 来构建一个自动合并检索，最后使用 Trulens 来对检索效果进行评估，并与之前的检索策略进行对比。</p>
+<h4 id="自动合并检索介绍">自动合并检索介绍</h4>
+<p>自动合并检索主要是将文档按照块大小拆分成不同层级的节点，这些节点包括父节点和子节点，然后在检索过程中找到相似度高的叶子节点，如果一个父节点中有多个子节点被检索到，那么这个父节点就会被自动合并，最终将父节点的所有文档都作为上下文发送给 LLM（大语言模型），下面是自动合并检索的示意图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3z6yBA329AibgAfxvH3icL5c9kZibJFucYlE3JRLwic00IVric0IfFTe2rY6Iv0wLtazeYUgf3dmXInfg/640?wx_fmt=png" alt=""></p>
+<p>自动合并检索是 LlamaIndex 中的一种高级检索功能，主要有文档拆分和文档合并两个过程，下面我们将通过代码来讲解其中的原理。</p>
+<h4 id="文档拆分">文档拆分</h4>
+<p>在构建一个自动合并检索时，我们首先要创建一个 HierarchicalNodeParser 文档解析器：</p>
+<pre><code>from llama_index.core import SimpleDirectoryReader  
+from llama_index.core.node_parser import HierarchicalNodeParser  
+  
+documents = SimpleDirectoryReader(&quot;./data&quot;).load_data()  
+node_parser = HierarchicalNodeParser.from_defaults(chunk_sizes=[2048, 512, 128])  
+nodes = node_parser.get_nodes_from_documents(documents)  
+</code></pre>
+<ul>
+<li>
+<p>首先我们从data
+目录中加载文档</p>
+</li>
+<li>
+<p>然后我们创建一个HierarchicalNodeParser
+文档解析器，并设置chunk_sizes
+为[2048, 512, 128]</p>
+</li>
+<li>
+<p>再使用文档解析器将文档解析成节点</p>
+</li>
+</ul>
+<p>HierarchicalNodeParser 解析器中的参数chunk_sizes
+默认值是[2048, 512, 128]
+，这表示将文档拆分成 3 个层级，第一个层级的文档大小为 2048，第二个层级的文档大小为 512，第三个层级的文档大小为 128。当然你也可以将层级设置为更少或者更多，比如设置成 2 级，那么chunk_sizes
+可以是[1024, 128]
+，或者 4 级[2048, 1024, 512, 128]
+。文档拆分的越小，检索的准确度就会越高，但同时也会造成合并的概率降低，需要根据评估结果来进行调整。</p>
+<h4 id="获取根节点和叶子节点">获取根节点和叶子节点</h4>
+<p>LlamaIndex 提供了几个工具函数来帮助我们获取节点中不同层级的节点，首先我们看下如何获取根节点和叶子节点：</p>
+<pre><code>from llama_index.core.node_parser import get_leaf_nodes, get_root_nodes  
+  
+print(f&quot;total len: {len(nodes)}&quot;)  
+  
+root_nodes = get_root_nodes(nodes)  
+print(f&quot;root len: {len(root_nodes)}&quot;)  
+  
+leaf_nodes = get_leaf_nodes(nodes)  
+print(f&quot;leaf len: {len(leaf_nodes)}&quot;)  
+  
+# 显示结果  
+total len: 66  
+root len: 4  
+leaf len: 52  
+</code></pre>
+<ul>
+<li>
+<p>get_leaf_nodes
+和get_root_nodes
+这 2 个方法都是传入一个节点列表</p>
+</li>
+<li>
+<p>可以看到总的节点数是 66，根节点是 4，叶子节点是 52</p>
+</li>
+<li>
+<p>根节点加上叶子节点的总数是 56（4+52），和总节点数 66 并不匹配，所以剩下的节点是中间层级的节点，我们可以推算出中间节点数是 10（66-56）</p>
+</li>
+<li>
+<p>如果你的文档层级是 2 级，那么根节点和叶子节点数加起来的总数就等于总节点数</p>
+</li>
+</ul>
+<h4 id="获取不同层级节点">获取不同层级节点</h4>
+<p>我们再用其他工具函数来验证我们的推理是否正确，这里我们需要使用到 get_deeper_nodes 函数：</p>
+<pre><code>from llama_index.core.node_parser import get_deeper_nodes  
+  
+deep0_nodes = get_deeper_nodes(nodes, depth=0)  
+deep1_nodes = get_deeper_nodes(nodes, depth=1)  
+deep2_nodes = get_deeper_nodes(nodes, depth=2)  
+print(f&quot;deep0 len: {len(deep0_nodes)}&quot;)  
+print(f&quot;deep1 len: {len(deep1_nodes)}&quot;)  
+print(f&quot;deep2 len: {len(deep2_nodes)}&quot;)  
+  
+# 显示结果  
+deep0 len: 4  
+deep1 len: 10  
+deep2 len: 52  
+</code></pre>
+<ul>
+<li>get_deeper_nodes 方法第一个参数是节点列表，第二参数是要查询的层级，0 表示第 1 层级，也就是根节点</li>
+</ul>
+<p>可以看到deep0
+节点数是 4，相当是根节点，deep2
+的节点数是 52，相当是叶子节点，而deep1
+就是中间层级的节点，共有 10 个，和我们推理的结果是一致的。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3z6yBA329AibgAfxvH3icL5cHSoY61xKGj2xBvFdQy3p9sjVnmsguo5JVDk6ib14pYfeBtVqTdbNs3w/640?wx_fmt=png" alt=""></p>
+<h4 id="获取子节点">获取子节点</h4>
+<p>LlamaIndex 还提供了 get_child_nodes 函数来获取节点的子节点：</p>
+<pre><code>from llama_index.core.node_parser import get_child_nodes  
+  
+middle_nodes = get_child_nodes(root_nodes, all_nodes=nodes)  
+leaf_nodes = get_child_nodes(middle_nodes, all_nodes=nodes)  
+print(f&quot;middle len: {len(middle_nodes)}&quot;)  
+print(f&quot;leaf len: {len(leaf_nodes)}&quot;)  
+  
+# 显示结果  
+middle len: 10  
+leaf len: 52  
+</code></pre>
+<ul>
+<li>
+<p>get_child_nodes 方法第一个参数是要获取子节点的节点列表，第二个参数是所有节点</p>
+</li>
+<li>
+<p>这里我们先获取根节点下的所有子节点，得到 10 个子节点，这些节点也就是中间层级节点</p>
+</li>
+<li>
+<p>然后我们再获取这些中间节点下的所有子节点，得到 52 个子节点，这些节点也就是叶子节点</p>
+</li>
+</ul>
+<p>当然我们也可以获取某个节点下的子节点，比如获取第一个根节点的子节点：</p>
+<pre><code>root0_child_nodes = get_child_nodes(root_nodes[0], all_nodes=nodes)  
+print(f&quot;root0 child len: {len(root0_child_nodes)}&quot;)  
+  
+# 显示结果  
+root0 child len: 2  
+</code></pre>
+<p>这表示第一个根节点下有两个子节点，这 2 个子节点也是中间层级节点。</p>
+<h4 id="节点文档内容">节点文档内容</h4>
+<p>每个父节点的文档内容包含了它所有子节点的文档内容：</p>
+<pre><code>print(f&quot;deep1[0] node: {deep1_nodes[0].text}&quot;)  
+child = get_child_nodes([deep1_nodes[0]], all_nodes=nodes)  
+print(f&quot;child[0] node of deep1[0]: {child[0].text}&quot;)  
+  
+# 显示结果  
+deep1[0] node: 自从宇宙魔方于1942年被人类发现后针对其展开过无数次探索，栖息于宇宙中的强大外星势力也从此开始盯住地球，被它们营救的洛基负责率领齐塔瑞军团。在地球，由神盾局建立的一所科研基地[注 14]中进行着神盾局与美国国家航空航天局和美国空军合作的“天马项目”[注 15]，试图提炼出魔方的能量并加以利用，但却造成魔方的能量数值持续攀升。神盾局探员菲尔·考森和玛丽亚·希尔受尼克·弗瑞局长的命令疏散基地，而魔方却于地下实验室自行开启传送门将洛基传送过来。洛基杀光所有护卫后，用他手上的一把能灌输能量的权杖洗脑并操纵弗瑞的亲信克林特·巴顿和协助神盾局着手魔方项目的科学家埃里克·塞尔维格格，在他们的陪同下带着魔方坐车逃离基地。没过多久，流出的能量爆发造成基地完全坍塌，弗瑞为了应对外来威胁而命令所有人备战。  
+child[0] node of deep1[0]: 自从宇宙魔方于1942年被人类发现后针对其展开过无数次探索，栖息于宇宙中的强大外星势力也从此开始盯住地球，被它们营救的洛基负责率领齐塔  
+</code></pre>
+<ul>
+<li>
+<p>我们首先打印中间层级第一个节点的文档内容</p>
+</li>
+<li>
+<p>然后再获取这个中间节点第一个子节点，并打印其文档内容</p>
+</li>
+<li>
+<p>可以看到父节点的文档内容包含了子节点的文档内容</p>
+</li>
+</ul>
+<h4 id="文档合并">文档合并</h4>
+<p>文档合并是自动合并检索的重要组成部分，文档合并的效果决定了提交给 LLM 的上下文内容，从而影响了最终的生成结果。</p>
+<p>首先自动合并检索会根据问题对所有叶子节点进行检索，这使得检索的准确率比较高，在自动合并检索中有一个参数叫simple_ratio_thresh
+，它的默认值是 0.5，表示自动合并文档的阀值，如果在一个父节点中，子节点被检索到的比例小于这个阀值，那么自动合并功能将不会生效，这样提交给 LLM 的上下文就只会包含检索到的叶子节点。反之如果大于这个阀值，文档就会自动合并，最终提交给 LLM 的上下文就会包含这个父节点的内容。</p>
+<p>比如父节点有 4 个子节点，检索时发现只有 1 个子节点，那么子节点被检索到的比例就是 0.25（1/4），小于阀值 0.5，所以自动合并功能不会生效，最终提交给 LLM 的上下文就只会包含那个检索到的子节点。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3z6yBA329AibgAfxvH3icL5cHNYGkjM94xQeOQ9eQOLx9Q1N4icNJzFA8E6QpeOBgiaByHkV25ruxK2g/640?wx_fmt=png" alt=""></p>
+<p>如果父节点有 4 个子节点，检索时发现有 3 个子节点，那么子节点被检索到的比例就是 0.75（3/4），大于阀值 0.5，所以自动合并功能会生效，最终提交给 LLM 的上下文就是父节点的内容。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3z6yBA329AibgAfxvH3icL5ctlD5293HRKmB36ibLCmR9sGtoacajp8QXic1Ke1pezPicVZIc3zrGeUTA/640?wx_fmt=png" alt=""></p>
+<p>而且自动合并的功能是一个不断重复的过程，这表示自动合并会从最底层的节点开始合并，然后一直合并到最顶层的节点，最终得到所有合并后的文档，重复的次数取决于文档解析器拆分文档的层级，比如chunk_sizes
+是[2048, 512, 128]
+，那么文档拆分后的层级是 3，如果每一层的自动合并都被触发的话，就会自动合并 2 次。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3z6yBA329AibgAfxvH3icL5cjpWnveAVabyrByuX6VkO8Pibo8EXOqBhMdP1QUvhrXpAYM8R5edNjmw/640?wx_fmt=png" alt=""></p>
+<h4 id="自动合并使用">自动合并使用</h4>
+<p>下面我们再来看看自动合并检索在实际 RAG 项目中的使用，文档数据我们还是使用之前维基百科上的复仇者联盟[1]电影剧情来进行测试。</p>
+<h4 id="自动合并检索示例">自动合并检索示例</h4>
+<p>我们来看下如何使用 LlamaIndex 构建自动合并检索：</p>
+<pre><code>from llama_index.core.node_parser import (  
+    HierarchicalNodeParser,  
+    get_leaf_nodes,  
+)  
+from llama_index.embeddings.openai import OpenAIEmbedding  
+from llama_index.core import SimpleDirectoryReader  
+from llama_index.llms.openai import OpenAI  
+from llama_index.core import VectorStoreIndex, StorageContext  
+from llama_index.core.settings import Settings  
+from llama_index.core.storage.docstore import SimpleDocumentStore  
+from llama_index.core.retrievers import AutoMergingRetriever  
+from llama_index.core.query_engine import RetrieverQueryEngine  
+  
+node_parser = HierarchicalNodeParser.from_defaults(chunk_sizes=[2048, 512, 128])  
+documents = SimpleDirectoryReader(&quot;./data&quot;).load_data()  
+nodes = node_parser.get_nodes_from_documents(documents)  
+leaf_nodes = get_leaf_nodes(nodes)  
+  
+llm = OpenAI(model=&quot;gpt-3.5-turbo&quot;, temperature=0.1)  
+embed_model = OpenAIEmbedding()  
+Settings.llm = llm  
+Settings.embed_model = embed_model  
+Settings.node_parser = node_parser  
+  
+docstore = SimpleDocumentStore()  
+docstore.add_documents(nodes)  
+storage_context = StorageContext.from_defaults(docstore=docstore)  
+  
+base_index = VectorStoreIndex(leaf_nodes, storage_context=storage_context)  
+base_retriever = base_index.as_retriever(similarity_top_k=12)  
+retriever = AutoMergingRetriever(  
+    base_retriever,  
+    storage_context,  
+    simple_ratio_thresh=0.3,  
+    verbose=True,  
+)  
+  
+auto_merging_engine = RetrieverQueryEngine.from_args(retriever)  
+</code></pre>
+<ul>
+<li>
+<p>首先我们定义了HierarchicalNodeParser
+文档解析器来解析文档，这在前面已经介绍过了，这里不再赘述</p>
+</li>
+<li>
+<p>然后我们使用 OpenAI 的 LLM 和 Embedding 模型进行答案生成和向量生成</p>
+</li>
+<li>
+<p>再创建storage_context
+来保存所有节点nodes
+，后面的自动合并检索会根据叶子节点来找其相关的父节点，所以这里需要保存所有节点</p>
+</li>
+<li>
+<p>接下来我们先构建一个基础检索base_index
+，这个检索会根据问题对所有叶子节点leaf_nodes
+进行检索，找到匹配度最高的similarity_top_k
+个节点，这里我们将获取 12 个匹配度最高的叶子节点</p>
+</li>
+<li>
+<p>我们再构建一个自动合并检索AutoMergingRetriever
+，这个检索会根据基础检索的结果来进行合并操作，这里我们设置了simple_ratio_thresh
+为 0.3，即当检索子节点比例大于这个阀值的节点就会进行自动合并。verbose
+参数设置为 True，表示输出合并的过程</p>
+</li>
+<li>
+<p>最后我们使用RetrieverQueryEngine
+来创建一个检索引擎</p>
+</li>
+</ul>
+<p>接下来我们就可以使用这个检索引擎来回答问题了：</p>
+<pre><code>question = &quot;奥创是由哪两位复仇者联盟成员创造的？&quot;  
+response = auto_merging_engine.query(question)  
+print(f&quot;response: {str(response)}&quot;)  
+print(f&quot;nodes len: {len(response.source_nodes)}&quot;)  
+  
+# 显示结果  
+&gt; Merging 5 nodes into parent node.  
+&gt; Parent node id: 80d1eeed-3447-4987-b05d-49fd4b6aabd4.  
+&gt; Parent node text: 神盾局解散后，由托尼·斯塔克、史蒂芬·罗杰斯、雷神、娜塔莎·罗曼诺夫、布鲁斯·班纳以及克林特·巴顿组成的复仇者联盟负责全力搜查九头蛇的下落，这次透过“盟友”提供的情报而进攻位于东欧的国家“索科维...  
+  
+&gt; Merging 4 nodes into parent node.  
+&gt; Parent node id: 2e719ad1-89fe-4d00-add4-e0296b19eab3.  
+&gt; Parent node text: 复仇者们到达后跟他们正面交锋，但大多数人被旺达用幻象术迷惑，看到各自心中最深层的“阴影”；唯独托尔看见在家乡阿萨神域发生的不明景象。旺达同时迷惑班纳的大脑，使其丧失理智而变成绿巨人跑到约翰内斯堡...  
+  
+&gt; Merging 2 nodes into parent node.  
+&gt; Parent node id: c1e7e8a1-d50b-4a35-9b0d-beec29993d1a.  
+&gt; Parent node text: 奥创发布机械大军，在位于城市正中央的教堂里启动靠振金造的陆地合成器，使整座城市陆地上升，企图透过陨石撞击方式灭绝人类后由机器人取代。班纳潜入基地救出娜塔莎，娜塔莎将他从高处推落释放出绿巨人支持战...  
+  
+response: 奥创是由托尼·斯塔克和布鲁斯·班纳这两位复仇者联盟成员创造的。  
+nodes len: 4  
+</code></pre>
+<p>在没有经过自动合并之前，我们让基础检索获取了 12 个匹配度最高的叶子节点，在输出结果中可以看到，这 12 个节点经过了 3 次合并操作，最终我们得到了 4 个节点，这些节点中既包含叶子节点，也包含合并过后的父节点。</p>
+<h4 id="检索效果对比">检索效果对比</h4>
+<p>我们再使用Trulens[2]来评估自动合并检索的效果：</p>
+<pre><code>tru.reset_database()  
+rag_evaluate(base_engine, &quot;base_evaluation&quot;)  
+rag_evaluate(sentence_window_engine, &quot;sentence_window_evaluation&quot;)  
+rag_evaluate(sentence_window_engine, &quot;auto_merging_evaluation&quot;)  
+Tru().run_dashboard()  
+</code></pre>
+<p>rag_evaluate
+的具体代码可以看我的<a href="http://mp.weixin.qq.com/s?__biz=Mzg5NDkxMzQwMA==&amp;mid=2247484078&amp;idx=1&amp;sn=d2cc9d1170ddcc5dd3310480a9628aa7&amp;chksm=c0191cb9f76e95af339d4d48f00e3b8daa91159d8c91d801e2d82c64bd537b586c272222757f&amp;scene=21#wechat_redirect">上一篇文章</a>，主要是使用 Trulens 的groundedness
+，qa_relevance
+和qs_relevance
+对 RAG 检索结果进行评估，我们保留了之前的普通检索和句子窗口检索的评估，并添加了自动合并检索的评估。执行代码后，我们可以在浏览器中看到 Trulens 的评估结果：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3z6yBA329AibgAfxvH3icL5caRUtticLTYZH3ibqOveVOlBfrd3iapozyVGbNUDbmxh8KB92JWIh1ialhQ/640?wx_fmt=png" alt=""></p>
+<p>在评估结果中，我们可以看到自动合并检索相比其他两种检索的效果要好，但这不表示自动合并检索会一直比其他检索好，具体的评估效果还要看原始的输入文档，以及检索的参数设置等，总之，具体的评估效果要根据实际情况来评估。</p>
+<h4 id="总结">总结</h4>
+<p>自动合并检索是高级 RAG 检索的一种方法，文档拆分和文档合并的思想是该方法的主要特点，本文介绍了自动合并检索的原理和实现方法，并使用 Trulens 来评估了自动合并检索的效果，希望可以帮助大家更好地理解和使用自动合并检索。</p>
+<p>关注我，一起学习各种人工智能和 AIGC 新技术，欢迎交流，如果你有什么想问想说的，欢迎在评论区留言。</p>
+<h4 id="参考">参考:</h4>
+<p>[1] 复仇者联盟: <em><a href="https://en.wikipedia.org/wiki/Avenger">https://en.wikipedia.org/wiki/Avenger</a></em></p>
+<p>[2] Trulens: <em><a href="https://www.trulens.org/">https://www.trulens.org/</a></em></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
