@@ -1,0 +1,727 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>RAG效果评估经验总结 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 【点击】加入大模型技术交流群 对一套算法方案进行客观全面的评估并不是一个容易的课题，加上大模型这种偏自由的模型，评估起来就难上加难，RAG在大模型的基础上增加了检索模块，此时又叠加上了更复杂的结构，  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">RAG效果评估经验总结</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              April 2, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/jT5Sp7MICPyj55B0XVmuPia2D9jQawGu7emYJrrALBnA2r1rapypzz1IyiadmficjxmWgxapVpIHyTK6V0l9WbAkA/640?wx_fmt=jpeg&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/HEYT_9ScVmjzRlpdRKKB4Q">吃果冻不吐果冻皮</a></p>
+<h4 id="heading"></h4>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群</a></p>
+<p>对一套算法方案进行客观全面的评估并不是一个容易的课题，加上大模型这种偏自由的模型，评估起来就难上加难，RAG在大模型的基础上增加了检索模块，此时又叠加上了更复杂的结构，如此以来，科学地评估和分析的难度就大了不少，今天来给大家讲一下如何对RAG进行客观全面的评估。</p>
+<p>叠个甲，本文其实是应用方向，旨在让大家更好地分析自己场景下的RAG效果。</p>
+<h4 id="学术界的讨论">学术界的讨论</h4>
+<p>学术界是专业严谨的代表，里面的方法也能很大程度代表了其专业性和认可度，我先从论文入手开始分析吧。</p>
+<h4 id="从crag开始的分析">从CRAG开始的分析</h4>
+<p>首先是CRAG这篇论文，之前有专门讲过（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489437&amp;idx=1&amp;sn=b70db6190484c4056318b8275b014dd6&amp;chksm=e8824f03dff5c61579c9eeb01c588f3713bbfbb0b7786cc81246144c52d65715ca31d975610f&amp;scene=21#wechat_redirect">谷歌中科院新文：CRAG-可矫正的检索增强生成</a>），在这篇论文里，横向评估使用的是4个数据集及其对应指标，分别是PopQA（Accuracy）、Bio（FactScore）、Pub（Accuracy）、 ARC（Accuracy）。</p>
+<ul>
+<li>
+<p>PopQA：https://paperswithcode.com/dataset/popqa</p>
+</li>
+<li>
+<p>Bio/FactScore：https://arxiv.org/abs/2211.08411，https://github.com/shmsw25/FActScore</p>
+</li>
+<li>
+<p>Pub：https://paperswithcode.com/dataset/pubhealth</p>
+</li>
+<li>
+<p>ARC：https://arxiv.org/abs/2102.03315</p>
+</li>
+</ul>
+<p>而随着论文的深入，逐步发现数据集下其实并非唯一指标或者唯一的数据集，作者只是取了一些比较直观的指标来进行对比，我这里简单总结一下这些数据集涉及的覆盖的一些评估方法。</p>
+<p>*<strong>将回复拆解成多个事实，然后通过一一比对事实来查看回复的正确性</strong> 。</p>
+<ul>
+<li>
+<p>最直接的就是<strong>人工评估，直接判断答案的对错</strong> 。</p>
+</li>
+<li>
+<p>使用黄金数据集，然后用生成指标（ROUGE、F1 wordoverlap）之类的指标来进行判断。</p>
+</li>
+</ul>
+<p>*<strong>借助大模型来进行判断，或者用比较接近完美的GPT4和实际回复进行比对</strong> 。</p>
+<p>这些评估方法思路各异，也一定程度在特定场景下能产生作用，可以作为方案储备起来。</p>
+<h4 id="综述分析">综述分析</h4>
+<p>早前我也是详细介绍了一篇综述（<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487029&amp;idx=1&amp;sn=4b85963c99aaeb8dbdc008bfc1b46d34&amp;chksm=fd3be766ca4c6e70cc16bb9cc1b8bd0916a1f58e0765945b00bf9c0a0011c5cfbc656a47c69c&amp;scene=21#wechat_redirect">综述-面向大模型的检索增强生成（RAG）</a>），文章里我其实也有提及这个评估指标，在这里我重新讲讲吧。论文中是把整体评估方案分成了两个部分，分别是独立评估和端到端评估。</p>
+<p>独立评估是指深入RAG内部，评估每个部分的效果，这里主要是<strong>检索模块和生成模块</strong> 的评估，前者本质就是一个搜索，所以自然就用搜索方面的常用指标了，例如 Hit Rate、MRR、NDCG、Precision等。至于生成模块，则则需要<strong>关注生成结果和问题的关系</strong> ，某种程度上和直接评估端到端差不多了，这个“关系”的定义，后面我在端到端模块重点讲。</p>
+<p><strong>端到端评估，关注的是输入和输出的关联性，</strong> 这里作者列举了一些有用的评估指标：<strong>无标注的，可以通过忠诚性、答案相关性、无害性来评估（主观），有标注（有标准答案的）的可以考虑准确率和EM（exact match，即完全匹配答案的覆盖度），亦或者是一些生成或者翻译的指标，如BLEU。</strong></p>
+<p>再者，作者也重点强调了RAG内比较重要的能力维度（文章称为Key Metrics and Abilities，我给简化合并了）。</p>
+<ul>
+<li>
+<p>忠诚性：强调回复内容必须忠诚于上下文（指检索得到的内容）</p>
+</li>
+<li>
+<p>答案相关性：答案必须是回答给定问题的。</p>
+</li>
+<li>
+<p>上下文相关性：这里是要求检索到的内容必须足够和问题相关，强调的是检索模块的能力。</p>
+</li>
+<li>
+<p>抗噪性：检测生成模块对噪音（问题无关）信息的抵抗能力。</p>
+</li>
+<li>
+<p>无答案拒答：在无答案或者内容不正确的情况下拒绝回答的能力。</p>
+</li>
+<li>
+<p>信息整合能力：考察模型能否集成多个文档的内容来回答复杂问题的能力。</p>
+</li>
+</ul>
+<p>其实可以看到，考察RAG的能力是多维度多样的，实际场景我们要根据实际需要去监测不同维度的效果。</p>
+<h4 id="superclue">superCLUE</h4>
+<p>最近superclue出了一个有关RAG的评估方案。</p>
+<ul>
+<li>
+<p>项目：https://github.com/CLUEbenchmark/SuperCLUE-RAG（目前看项目里没什么东西，就是一个README和图片而已）</p>
+</li>
+<li>
+<p>文章：https://www.cluebenchmarks.com/superclue_rag.html</p>
+</li>
+</ul>
+<p>文章内提供的一张图基本能表现他的具体能力和判断维度了。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/jT5Sp7MICPyj55B0XVmuPia2D9jQawGu7emYJrrALBnA2r1rapypzz1IyiadmficjxmWgxapVpIHyTK6V0l9WbAkA/640?wx_fmt=jpeg&amp;from=appmsg" alt="">superclue</p>
+<h4 id="heading-1"></h4>
+<p>实际场景</p>
+<h4 id="开源框架">开源框架</h4>
+<p>首先想聊的也是社区里经常能看到的一个开源框架，<strong>Ragas（https://docs.ragas.io/en/stable/getstarted/index.html），内部是有支持多个指标的计算，但值得注意的是，这里的评估是依赖openai</strong> ，因此可以推测，这里面很多评估依赖了openai的大模型。我自己因为场景原因用的比较少，如果自己的场景合适大家可以自行探索。</p>
+<p>当然还有其他框架：</p>
+<ul>
+<li>
+<p>DeepEval：https://link.zhihu.com/?target=https%3A//www.confident-ai.com/blog/how-to-evaluate-rag-applications-in-ci-cd-pipelines-with-deepeval</p>
+</li>
+<li>
+<p>ARES：https://link.zhihu.com/?target=https%3A//github.com/stanford-futuredata/ARES</p>
+</li>
+<li>
+<p>LangChain Evals：https://link.zhihu.com/?target=https%3A//python.langchain.com/docs/guides/evaluation/</p>
+</li>
+<li>
+<p>Llama Index Evals：https://link.zhihu.com/?target=https%3A//docs.llamaindex.ai/en/stable/module_guides/evaluating/root.html</p>
+</li>
+</ul>
+<h4 id="人工评估">人工评估</h4>
+<p>大模型的自由生成下，人工评估总是最直接能想到的方法，虽说不方便，但可靠性并不低。科学地、可分析地，我们一般会按照几个维度来评估，然后对每个样本进行打分，简单的0-1两档，如果觉得不够细可根据实际情况再分多个档，例如中间加个0.5之类的。</p>
+<ul>
+<li>
+<p>真实性：回复内容确保是真实的，完整的，无幻觉，无过度描述。</p>
+</li>
+<li>
+<p>相关性：答案和问题是相关的，有效的，答案是能够回答问题的。</p>
+</li>
+<li>
+<p>无害性：内容安全可靠，没有各领域的危险说法，如黄反、违法违规等。</p>
+</li>
+<li>
+<p>无答案拒绝：没有答案的情况下的拒绝回复能力。</p>
+</li>
+</ul>
+<p>当然，很多实际场景可能不局限在这些维度，可能有别的，也可能有些维度在实际场景并不需要，可以进行合并简化。</p>
+<h4 id="自动化评估">自动化评估</h4>
+<p>为了更快地进行评估，一些时候我们可以用一些自动化评估的方案来加速迭代进度，虽说不一定准但胜在比较快，等到发版前或者关键里程碑位置再来启用人工，这样的效率更高。</p>
+<p>自动化评估一般可以直接参照文本生成下常用的指标来进行，对RAG，可以<strong>尽可能参考机器翻译的指标，比较常见的是BLEU、ROUGE等</strong> ，其实可以很大程度观测到具体的提升波动情况，结合对低分case的分析，我们可以快速分析问题并进行迭代。</p>
+<p>这里有一个大难题，是<strong>测试集</strong> ，很多时候我们可能没有比较好的测试集，这个可以<strong>通过大模型生成结果后复核来实现，这种方案很大程度降低了标注成本，</strong> 毕竟人工写和修正之间的差距还是很大的。</p>
+<p>另外，要补充说明，<strong>RAG还可以用在分类、实体抽取之类任务上（如检索出最接近的例子让大模型参考，形成few-shot prompt方案），此时，就可以用对应任务的指标来进行评估，例如准确率、召回率、F1等</strong> ，这些直接就是可以自动化评估的。</p>
+<h4 id="系统内部检测">系统内部检测</h4>
+<p>在评估完端到端后，为了更详细地剖析问题，我们还需要定位问题，此时我们就要开始对系统内的多个模块进行评估，这里列举一些常见模块。</p>
+<ul>
+<li>
+<p>检索模块。此时可以考虑用准确率、NDGC、recall@N等的搜索/推荐指标来进行评估。</p>
+</li>
+<li>
+<p>判别&amp;排序模块。在CRAG、self-RAG内都有类似的模块，事实上都需要而且可以进行严格的判断，这种直接<strong>按照分类、排序常见的指标来评估即可，准确率、召回率、ACC等。</strong></p>
+</li>
+<li>
+<p>embedding模型评估。简化后就是<strong>句子对分类问题，那就是考虑分类指标。</strong></p>
+</li>
+<li>
+<p>query理解。<strong>有很多RAG系统中会有query理解模块，如实体抽取、意图识别等，这些问题也就直接使用对应方法进行评估即可。</strong></p>
+</li>
+</ul>
+<p>*<strong>生成模块的可靠性</strong> 。在检索正确的情况下，生成模块（一般就是大模型），大模型是否能给出正确的结果。</p>
+<h4 id="实践建议">实践建议</h4>
+<p>大家也可以看到，相比以前很多NLP任务的标准逐渐统一，现在RAG的标准非常多样，而且在大模型的背景下，对人工依赖还不少，而回到实际场景，我们还是需要根据实际情况来设计效果评估的方案。这里我提供一个现实情况比较通用的方案供大家使用。</p>
+<p>整个评测分为三个角度，分别是快速验证、稳定评估和问题定位。</p>
+<p>快速验证的重点是能比较快地评估出整套RAG方案的效果，要快速又要较为准确，自动化评估里的方案是非常合适的，大家可以<strong>通过预标注+人工校验的方式快速弄出一批百级别的比较精准的测试集</strong> ，然后利用指标计算快速验证，例如一些文本生成的指标，前面提了几次的BLEU、ROUGE都是很好的，这些指标虽然算不上准确，但只要基本和最标准的人工特征呈正相关关系，就可以作为观测的指标了。</p>
+<p>稳定评估则是用于进行更严格标准的验证，一般是在上线前或者是里程碑时间点下的评估方案，一般是人工、多维度的检验，虽说人工的可靠性是最高的，但人工资源宝贵而且时间长，所以降低使用的频次，只在重要时间节点下使用。</p>
+<p>问题定位是在对整体效果有一定把握时，为了定位和发现问题所使用的方法，毕竟RAG是一个系统，任何一个位置出问题都是有可能带来最终效果的变差，具体的思路就参考前面提及的“系统内部检测”，<strong>检查各个模块各自的效果</strong> ，例如<strong>query理解的准确情况、检索的准确性、排序判别是否正确或者是生成模块结果的可靠性，都要全面观测</strong> ，这里的观测重点关注两个内容，一个是各个模块自己的指标高低，另一个是在端到端环境下，每个模块各自问题的占比，前者很好理解，但是后者同样重要，后者几乎直接决定了后面的优化方向，这个直接通过bad case分析，归因得到，能看到短板问题。</p>
+<p><strong>历史文章：</strong> <a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487320&amp;idx=2&amp;sn=522fdf838d4ec03f24dbc7a11a3a5a65&amp;chksm=fd3be60bca4c6f1d0c9b0643db0d7334940fb592dac3b5fbf286c7232f6bb08b968fbd237a20&amp;scene=21#wechat_redirect">2024年2月大模型文章集锦</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
