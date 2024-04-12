@@ -1,0 +1,1059 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>高级RAG检索策略之递归检索 作者： 极客与黑客之路 来源： 极客与黑客之路 随着 LLM（大语言模型）技术的发展，RAG（Retrieval-Augmented Generation）技术在问答、对话等任务中的应用越来越广泛。RAG 技术的一个重要组成部分是文档检索器，它负责从大量  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">高级RAG检索策略之递归检索</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              April 12, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz0nZqpISfHibtYvvd4DFicEyPzPgSRcudkia6cOfpcYRKMibpMp0hNwYJxxhFGfy8DLmTaeW8ZmYH2qMw/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 极客与黑客之路  来源： <a href="https://mp.weixin.qq.com/s/yjoaelSxMTAsWo3-5s6PQA">极客与黑客之路</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/adswRFDIWz0nZqpISfHibtYvvd4DFicEyPPAzRPIW6TJCNP9Mw8SgfofcnVIfQ9PzP68TyjVlvG2nwjAvPA4MbQA/640?wx_fmt=jpeg" alt=""></p>
+<p>随着 LLM（大语言模型）技术的发展，RAG（Retrieval-Augmented Generation）技术在问答、对话等任务中的应用越来越广泛。RAG 技术的一个重要组成部分是文档检索器，它负责从大量的文档中检索出与问题相关的文档，以供 LLM 生成答案。RAG 检索器的效果直接影响到 LLM 生成答案的效果，因此如何设计高效的 RAG 检索器是一个重要的研究课题。目前，有多种 RAG 的检索策略，本文将介绍一种高级的 RAG 检索策略——递归检索，它通过递归的方式检索相关文档，可以提高检索的效果。</p>
+<h4 id="递归检索介绍">递归检索介绍</h4>
+<p>递归检索相较于普通 RAG 检索，可以解决后者因文档切片过大而导致检索信息不准确的问题，下面是递归检索的流程图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz0nZqpISfHibtYvvd4DFicEyPMzsOJr3kicQy8XG4FcAGU9ZKWLAiar5taFKUxS5cIAWrWiaoAYGPicR2RQ/640?wx_fmt=png" alt=""></p>
+<ul>
+<li>
+<p>递归检索在原始文档节点基础上，扩展了更多粒度更小的文档节点</p>
+</li>
+<li>
+<p>检索文档时如果检索到扩展节点，会递归检索到其原始节点，然后再将原始节点做为检索结果提交给 LLM</p>
+</li>
+</ul>
+<p>在LlamaIndex[1]的实现中，递归检索主要有两种方式：块引用的递归检索和元数据引用的递归检索。</p>
+<h4 id="普通-rag-检索">普通 RAG 检索</h4>
+<p>在介绍递归检索之前，我们先来看下使用 LlamaIndex 进行普通 RAG 检索的代码示例：</p>
+<pre><code>from llama_index.core import SimpleDirectoryReader  
+from llama_index.core.node_parser import SentenceSplitter  
+from llama_index.core import VectorStoreIndex  
+  
+question = &quot;奥创是由哪两位复仇者联盟成员创造的？&quot;  
+  
+documents = SimpleDirectoryReader(&quot;./data&quot;).load_data()  
+node_parser = SentenceSplitter(chunk_size=1024)  
+base_nodes = node_parser.get_nodes_from_documents(documents)  
+print(f&quot;base_nodes len: {len(base_nodes)}&quot;)  
+for idx, node in enumerate(base_nodes):  
+    node.id_ = f&quot;node-{idx}&quot;  
+base_index = VectorStoreIndex(nodes=base_nodes)  
+base_retriever = base_index.as_retriever(similarity_top_k=2)  
+retrievals = base_retriever.retrieve(question)  
+for n in retrievals:  
+    print(  
+        f&quot;Node ID: {n.node_id}\nSimilarity: {n.score}\nText: {n.text[:100]}...\n&quot;  
+    )  
+response = base_retriever.query(question)  
+print(f&quot;response: {response}&quot;)  
+print(f&quot;len: {len(response.source_nodes)}&quot;)  
+</code></pre>
+<ul>
+<li>
+<p>我们在data
+目录中放置维基百科上的复仇者联盟[2]电影剧情来作为我们的文档测试数据</p>
+</li>
+<li>
+<p>再使用SentenceSplitter
+文档解析器对文档进行解析，SentenceSplitter
+可以尽量保持句子和段落的完整性，默认的chunk_size
+是 1024</p>
+</li>
+<li>
+<p>文档解析器解析后的原始节点 id 默认是一个随机字符串，我们将其格式化为node-{idx}
+的形式，方便我们后面验证检索结果</p>
+</li>
+<li>
+<p>然后创建VectorStoreIndex
+索引，将原始节点传入，再创建一个检索器base_retriever
+，设置similarity_top_k=2
+，表示检索时返回相似度最高的 2 个节点，然后打印出检索到的节点信息</p>
+</li>
+<li>
+<p>最后使用检索器对问题生成答案，并打印出答案</p>
+</li>
+</ul>
+<p>我们来看下程序运行的结果：</p>
+<pre><code>base_nodes len: 15  
+Node ID: node-0  
+Similarity: 0.8425314373498192  
+Text: 神盾局解散后，由托尼·斯塔克、史蒂芬·罗杰斯、雷神、娜塔莎·罗曼诺夫、布鲁斯·班纳以及克林特·巴顿组成的复仇者联盟负责全力搜查九头蛇的下落，这次透过“盟友”提供的情报而进攻位于东欧的国家“索科维亚”的...  
+  
+Node ID: node-1  
+Similarity: 0.8135015554872678  
+Text: 奥创来到克劳位于南非的武器船厂获取所有振金，并砍断克劳的左手。复仇者们到达后跟他们正面交锋，但大多数人被旺达用幻象术迷惑，看到各自心中最深层的“阴影”；唯独托尔看见在家乡阿萨神域发生的不明景象。旺达同...  
+  
+response: 奥创是由托尼·斯塔克和布鲁斯·班纳这两位复仇者联盟成员创造的。  
+nodes len: 2  
+</code></pre>
+<p>可以看到通过文档解析器解析后的原始节点有 15 个，检索到的节点有 2 个，这两个节点都是原始节点。</p>
+<h4 id="块引用的递归检索">块引用的递归检索</h4>
+<p>块引用的递归检索是在普通 RAG 检索的基础上，将每个原始文档节点拆分成更小的文档节点，这些节点跟原始节点是父子关系，当检索到子节点时，会递归检索到其父节点，然后再将父节点为检索结果提交给 LLM。</p>
+<p>下面我们通过代码示例来理解块引用的递归检索，首先我们创建几个 chunk_size 更小的文档解析器：</p>
+<pre><code>sub_chunk_sizes = [128, 256, 512]  
+sub_node_parsers = [  
+    SentenceSplitter(chunk_size=c, chunk_overlap=20) for c in sub_chunk_sizes  
+]  
+</code></pre>
+<p>再通过文档解析器将原始节点解析成子节点：</p>
+<pre><code>from llama_index.core.schema import IndexNode  
+  
+all_nodes = []  
+for base_node in base_nodes:  
+    for n in sub_node_parsers:  
+        sub_nodes = n.get_nodes_from_documents([base_node])  
+        sub_inodes = [  
+            IndexNode.from_text_node(sn, base_node.node_id) for sn in sub_nodes  
+        ]  
+        all_nodes.extend(sub_inodes)  
+  
+    original_node = IndexNode.from_text_node(base_node, base_node.node_id)  
+    all_nodes.append(original_node)  
+print(f&quot;all_nodes len: {len(all_nodes)}&quot;)  
+  
+# 显示结果  
+all_nodes len: 331  
+</code></pre>
+<ul>
+<li>
+<p>我们使用每个小 chunk 的文档解析器对原始节点进行解析，然后将解析后的子节点和原始节点放入all_nodes
+列表中</p>
+</li>
+<li>
+<p>每个原始节点的 chunk_size 是 1024，如果按照 chunk_size 为 512 大小进行拆分，大概会产生 2 个左右的子节点，如果按照 chunk_size 为 256 大小进行拆分，大概会产生 4 个左右的子节点，如果按照 chunk_size 为 128 大小进行拆分，大概会产生 8 个左右的子节点</p>
+</li>
+<li>
+<p>每个子节点node_id
+属性的值是原始节点的id_
+，也就是我们之前格式化的node-{idx}
+，但是子节点的id_
+属性值还是由 LlamaIndex 生成的随机字符串</p>
+</li>
+<li>
+<p>原始节点是一个TextNode
+类型的节点，我们将其转换成IndexNode
+类型的节点，并添加到all_nodes
+列表中，最终产生了 331 个节点</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz0nZqpISfHibtYvvd4DFicEyPzPgSRcudkia6cOfpcYRKMibpMp0hNwYJxxhFGfy8DLmTaeW8ZmYH2qMw/640?wx_fmt=png" alt=""></p>
+<p>然后我们再创建检索索引，将所有节点传入，先对问题进行一次普通检索，观察普通检索的结果：</p>
+<pre><code>vector_index_chunk = VectorStoreIndex(all_nodes)  
+vector_retriever_chunk = vector_index_chunk.as_retriever(similarity_top_k=2)  
+nodes = vector_retriever_chunk .retrieve(question)  
+for node in nodes:  
+    print(  
+        f&quot;Node ID: {node.node_id}\nSimilarity: {node.score}\nText: {node.text[:100]}...\n&quot;  
+    )  
+  
+# 显示结果  
+Node ID: 0e3409e5-6c84-4bbf-886a-40e8553eb463  
+Similarity: 0.8476561735049716  
+Text: 神盾局解散后，由托尼·斯塔克、史蒂芬·罗杰斯、雷神、娜塔莎·罗曼诺夫、布鲁斯·班纳以及克林特·巴顿组成的复仇者联盟负责全力搜查九头蛇的下落，这次透过“盟友”提供的情报而进攻位于东欧的国家“索科维亚”的...  
+  
+Node ID: 0ed2ca24-f262-40fe-855b-0eb84c1a1567  
+Similarity: 0.8435371049710689  
+Text: 奥创来到克劳位于南非的武器船厂获取所有振金，并砍断克劳的左手。复仇者们到达后跟他们正面交锋，但大多数人被旺达用幻象术迷惑，看到各自心中最深层的“阴影”；唯独托尔看见在家乡阿萨神域发生的不明景象。旺达同...  
+</code></pre>
+<ul>
+<li>
+<p>创建VectorStoreIndex
+索引，将所有节点传入，再创建一个检索器vector_retriever_chunk
+，设置similarity_top_k=2
+，表示检索时返回相似度最高的 2 个节点</p>
+</li>
+<li>
+<p>在普通检索的结果中，可以看到检索出来 2 个子节点，因为其 Node ID 是随机字符串，而不是我们之前格式化的node-{idx}</p>
+</li>
+</ul>
+<p>我们再来看看使用递归检索的检索结果：</p>
+<pre><code>from llama_index.core.retrievers import RecursiveRetriever  
+  
+all_nodes_dict = {n.node_id: n for n in all_nodes}  
+retriever_chunk = RecursiveRetriever(  
+    &quot;vector&quot;,  
+    retriever_dict={&quot;vector&quot;: vector_retriever_chunk},  
+    node_dict=all_nodes_dict,  
+    verbose=True,  
+)  
+nodes = retriever_chunk.retrieve(question)  
+for node in nodes:  
+    print(  
+        f&quot;Node ID: {node.node_id}\nSimilarity: {node.score}\nText: {node.text[:1000]}...\n&quot;  
+    )  
+  
+# 显示结果  
+Retrieving with query id None: 奥创是由哪两位复仇者联盟成员创造的？  
+Retrieved node with id, entering: node-0  
+Retrieving with query id node-0: 奥创是由哪两位复仇者联盟成员创造的？  
+Node ID: node-0  
+Similarity: 0.8476561735049716  
+Text: 神盾局解散后，由托尼·斯塔克、史蒂芬·罗杰斯、雷神、娜塔莎·罗曼诺夫、布鲁斯·班纳以及克林特·巴顿组成的复仇者联盟负责全力搜查九头蛇的下落，这次透过“盟友”提供的情报而进攻位于东欧的国家“索科维亚”的...  
+</code></pre>
+<ul>
+<li>
+<p>首先构造一个all_nodes_dict
+字典，将所有节点的node_id
+作为 key，节点对象作为 value，这是为了递归检索时能够通过node_id
+找到对应的节点对象</p>
+</li>
+<li>
+<p>再创建一个RecursiveRetriever
+检索器，将vector_retriever_chunk
+检索器和all_nodes_dict
+字典传入，设置verbose=True
+，表示打印检索过程</p>
+</li>
+<li>
+<p>最后对问题进行递归检索，可以看到检索结果是 1 个原始节点，这是因为在之前的普通检索结果中，<strong>2 个子节点的父节点都是同一个原始节点</strong> ，所以递归检索时只返回了这个原始节点，而且这个节点的相似度分数跟普通检索结果的第一个节点是一样的：0.8476561735049716</p>
+</li>
+</ul>
+<p>最后使用 LLM 对问题生成答案：</p>
+<pre><code>from llama_index.core.query_engine import RetrieverQueryEngine  
+  
+llm = OpenAI(model=&quot;gpt-3.5-turbo&quot;, temperature=0.1)  
+query_engine_chunk = RetrieverQueryEngine.from_args(retriever_chunk, llm=llm)  
+response = query_engine_chunk.query(question)  
+print(f&quot;response: {str(response)}&quot;)  
+print(f&quot;nodes len: {len(response.source_nodes)}&quot;)  
+  
+# 显示结果  
+response: 奥创是由托尼·斯塔克和布鲁斯·班纳这两位复仇者联盟成员创造的。  
+nodes len: 1  
+</code></pre>
+<p>可以看到递归检索生成的答案跟普通 RAG 检索生成的答案是一样的。</p>
+<h4 id="元数据引用的递归检索">元数据引用的递归检索</h4>
+<p>基于元数据引用的递归检索和块引用的递归检索类似，只是在解析原始节点时，不是将原始节点进行拆分，而是根据原始节点来生成元数据子节点，然后再将元数据子节点和原始节点一起传入检索索引。</p>
+<p>下面我们通过代码示例来理解元数据引用的递归检索，首先我们创建几个元数据的提取器：</p>
+<pre><code>from llama_index.core.extractors import (  
+    SummaryExtractor,  
+    QuestionsAnsweredExtractor,  
+)  
+  
+extractors = [  
+    SummaryExtractor(summaries=[&quot;self&quot;], show_progress=True),  
+    QuestionsAnsweredExtractor(questions=5, show_progress=True),  
+]  
+</code></pre>
+<ul>
+<li>
+<p>我们创建了 2 个元数据提取器，一个是SummaryExtractor
+，用于生成文档的摘要，另一个是QuestionsAnsweredExtractor
+，用于生成文档中可以回答的问题</p>
+</li>
+<li>
+<p>QuestionsAnsweredExtractor 的参数questions=5
+表示生成 5 个问题</p>
+</li>
+<li>
+<p>show_progress=True
+表示显示提取过程</p>
+</li>
+<li>
+<p>这 2 个提取器使用 LLM 进行元数据生成，默认使用的是 OpenAI 的 GPT-3.5-turbo 模型</p>
+</li>
+</ul>
+<p>然后我们通过元数据提取器将原始节点解析成元数据子节点：</p>
+<pre><code>node_to_metadata = {}  
+for extractor in extractors:  
+    metadata_dicts = extractor.extract(base_nodes)  
+    for node, metadata in zip(base_nodes, metadata_dicts):  
+        if node.node_id not in node_to_metadata:  
+            node_to_metadata[node.node_id] = metadata  
+        else:  
+            node_to_metadata[node.node_id].update(metadata)  
+</code></pre>
+<ul>
+<li>
+<p>我们分别使用 2 种提取器对原始节点进行元数据生成，并将结果保存在 node_to_metadata 字典中</p>
+</li>
+<li>
+<p>node_to_metadata 字典的 key 是原始文档的 node_id，value 是原始节点的元数据，包括摘要和问题</p>
+</li>
+</ul>
+<p>代码执行后 node_to_metadata 的数据结构如下所示：</p>
+<pre><code>{  
+  &quot;node-0&quot;: {  
+    &quot;section_summary&quot;: &quot;...&quot;,  
+    &quot;questions_this_excerpt_can_answer&quot;: &quot;1. ...?\n2. ...?\n3. ...?\n4. ...?\n5. ...?&quot;  
+  },  
+  &quot;node-1&quot;: {  
+    &quot;section_summary&quot;: &quot;...&quot;,  
+    &quot;questions_this_excerpt_can_answer&quot;: &quot;1. ...?\n2. ...?\n3. ...?\n4. ...?\n5. ...?&quot;  
+  },  
+  ......  
+}  
+</code></pre>
+<p>我们可以将 node_to_metadata 的数据保存到文件中，方便后续使用，这样就不用每次都调用 LLM 来生成元数据了。</p>
+<pre><code>import json  
+  
+def save_metadata_dicts(path, data):  
+    with open(path, &quot;w&quot;) as fp:  
+        json.dump(data, fp)  
+  
+  
+def load_metadata_dicts(path):  
+    with open(path, &quot;r&quot;) as fp:  
+        data = json.load(fp)  
+    return data  
+  
+save_metadata_dicts(&quot;output/avengers_metadata_dicts.json&quot;, node_to_metadata)  
+node_to_metadata = load_metadata_dicts(&quot;output/avengers_metadata_dicts.json&quot;)  
+</code></pre>
+<ul>
+<li>
+<p>我们定义了 2 个方法，一个是save_metadata_dicts
+，用于将元数据字典保存到文件中，另一个是load_metadata_dicts
+，用于从文件中加载元数据字典</p>
+</li>
+<li>
+<p>我们将元数据字典保存到output/avengers_metadata_dicts.json
+文件中</p>
+</li>
+<li>
+<p>以后重新需要使用元数据字典时，可以使用 load_metadata_dicts 方法直接从文件中加载</p>
+</li>
+</ul>
+<p>我们再将原始节点和元数据子节点组合成一个新的节点列表：</p>
+<pre><code>import copy  
+  
+all_nodes = copy.deepcopy(base_nodes)  
+for node_id, metadata in node_to_metadata.items():  
+    for val in metadata.values():  
+        all_nodes.append(IndexNode(text=val, index_id=node_id))  
+print(f&quot;all_nodes len: {len(all_nodes)}&quot;)  
+  
+# 显示结果  
+all_nodes len: 45  
+</code></pre>
+<ul>
+<li>
+<p>我们首先将原始节点拷贝到新的节点列表中</p>
+</li>
+<li>
+<p>然后将元数据字典中的摘要和问题作为新的节点，添加到新的节点列表中，并与原始节点进行关联，与其形成父子关系</p>
+</li>
+<li>
+<p>最终产生了 45 个节点，其中包括 15 个原始节点和 30 个元数据子节点</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz0nZqpISfHibtYvvd4DFicEyPb9CWb5PERKnySxkRNOXbhVSZCEucn0yicw8OhICMT0ib7uf5yib7BUVKw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>我们可以看下新节点列表中node-0
+原始节点和其子节点的内容：</p>
+<pre><code>node0_nodes = list(  
+    filter(  
+        lambda x: x.id_ == &quot;node-0&quot;  
+        or (hasattr(x, &quot;index_id&quot;) and x.index_id == &quot;node-0&quot;),  
+        all_nodes,  
+    )  
+)  
+print(f&quot;node0_nodes len: {len(node0_nodes)}&quot;)  
+for node in node0_nodes:  
+    index_id_str = node.index_id if hasattr(node, 'index_id') else 'N/A'  
+    print(  
+        f&quot;Node ID: {node.node_id}\nIndex ID: {index_id_str}\nText: {node.text[:100]}...\n&quot;  
+    )  
+  
+# 显示结果  
+node0_nodes len: 3  
+Node ID: node-0  
+Index ID: N/A  
+Text: 神盾局解散后，由托尼·斯塔克、史蒂芬·罗杰斯、雷神、娜塔莎·罗曼诺夫、布鲁斯·班纳以及克林特·巴顿组成的复仇者联盟负责全力搜查九头蛇的下落，这次透过“盟友”提供的情报而进攻位于东欧的国家“索科维亚”的...  
+  
+Node ID: 45d41128-a8e6-4cdc-8ef3-7a71f01ddd96  
+Index ID: node-0  
+Text: The key topics of the section include the creation of Ultron by Tony Stark and Bruce Banner, the int...  
+  
+Node ID: a06f3bb9-8a57-455f-b0c6-c9602b107158  
+Index ID: node-0  
+Text: 1. What are the names of the Avengers who raid the Hydra facility in Sokovia at the beginning of the...  
+</code></pre>
+<ul>
+<li>
+<p>我们使用filter
+函数过滤出node-0
+的原始节点和其相关联的元数据子节点，共有 3 个节点</p>
+</li>
+<li>
+<p>其中第一个是原始节点，第二个是元数据摘要子节点，第三个是元数据问题子节点</p>
+</li>
+<li>
+<p>因为元数据提取器使用的是英文模板的提示词，所以生成的元数据子节点的文档是英文的</p>
+</li>
+</ul>
+<p>然后我们再创建检索索引，将所有节点传入，先对问题进行一次普通检索，观察普通检索的结果：</p>
+<pre><code>vector_index_metadata = VectorStoreIndex(all_nodes)  
+vector_retriever_metadata = vector_index_metadata.as_retriever(similarity_top_k=2)  
+  
+enginer = vector_index_metadata.as_query_engine(similarity_top_k=2)  
+nodes = enginer.retrieve(question)  
+for node in nodes:  
+    print(  
+        f&quot;Node ID: {node.node_id}\nSimilarity: {node.score}\nText: {node.text[:100]}...\n&quot;  
+    )  
+  
+# 显示结果  
+Node ID: d2cc032a-b258-4715-b335-ebd1cf80494d  
+Similarity: 0.857976008616706  
+Text: The key topics of the section include the creation of Ultron by Tony Stark and Bruce Banner, the int...  
+  
+Node ID: node-0  
+Similarity: 0.8425314373498192  
+Text: 神盾局解散后，由托尼·斯塔克、史蒂芬·罗杰斯、雷神、娜塔莎·罗曼诺夫、布鲁斯·班纳以及克林特·巴顿组成的复仇者联盟负责全力搜查九头蛇的下落，这次透过“盟友”提供的情报而进攻位于东欧的国家“索科维亚”的...  
+</code></pre>
+<ul>
+<li>
+<p>创建VectorStoreIndex
+索引，将所有节点传入，再创建一个检索器vector_retriever_metadata
+，设置similarity_top_k=2
+，表示检索时返回相似度最高的 2 个节点</p>
+</li>
+<li>
+<p>在普通检索的结果中，可以看到检索出来的结果是 2 个节点，第一个是元数据摘要子节点，第二个是原始节点，通过其Node ID
+可以对是否原始节点进行识别</p>
+</li>
+</ul>
+<p>上面是普通检索的结果，我们再来看使用递归检索的检索结果：</p>
+<pre><code>all_nodes_dict = {n.node_id: n for n in all_nodes}  
+retriever_metadata = RecursiveRetriever(  
+    &quot;vector&quot;,  
+    retriever_dict={&quot;vector&quot;: vector_retriever_metadata},  
+    node_dict=all_nodes_dict,  
+    verbose=False,  
+)  
+nodes = retriever_metadata.retrieve(question)  
+for node in nodes:  
+    print(  
+        f&quot;Node ID: {node.node_id}\nSimilarity: {node.score}\nText: {node.text[:100]}...\n\n&quot;  
+    )  
+  
+# 显示结果  
+Node ID: node-0  
+Similarity: 0.857976008616706  
+Text: 神盾局解散后，由托尼·斯塔克、史蒂芬·罗杰斯、雷神、娜塔莎·罗曼诺夫、布鲁斯·班纳以及克林特·巴顿组成的复仇者联盟负责全力搜查九头蛇的下落，这次透过“盟友”提供的情报而进攻位于东欧的国家“索科维亚”的...  
+</code></pre>
+<ul>
+<li>
+<p>这里的代码和之前的块引用的递归检索类似，只是将vector_retriever_chunk
+替换成了vector_retriever_metadata
+，然后对问题进行递归检索</p>
+</li>
+<li>
+<p>可以看到最终检索出来的结果只有 1 个原始节点，这是因为在之前的普通检索结果中，返回 1 个元数据子节点和 1 个原始节点，而<strong>这个子节点的父节点又是这个原始节点</strong> ，所以递归检索时只返回了这个原始节点，并且这个原始节点的相似度分数跟普通检索结果的第一个节点相同：0.857976008616706</p>
+</li>
+</ul>
+<p>最后使用 LLM 对问题生成答案：</p>
+<pre><code>query_engine_metadata = RetrieverQueryEngine.from_args(retriever_metadata, llm=llm)  
+response = query_engine_metadata.query(question)  
+print(f&quot;response: {str(response)}&quot;)  
+print(f&quot;nodes len: {len(response.source_nodes)}&quot;)  
+  
+# 显示结果  
+response: 奥创是由托尼·斯塔克和布鲁斯·班纳这两位复仇者联盟成员创造的。  
+nodes len: 1  
+</code></pre>
+<p>可以看到递归检索生成的答案跟普通 RAG 检索生成的答案是一样的。</p>
+<h4 id="检索效果对比">检索效果对比</h4>
+<p>我们接下来使用Trulens[3]来评估普通 RAG 检索、块引用的递归检索和元数据引用的递归检索的效果。</p>
+<pre><code>tru.reset_database()  
+rag_evaluate(base_engine, &quot;base_evaluation&quot;)  
+rag_evaluate(engine, &quot;recursive_retriever_chunk_evaluation&quot;)  
+rag_evaluate(engine, &quot;recursive_retriever_metadata_evaluation&quot;)  
+Tru().run_dashboard()  
+</code></pre>
+<p>rag_evaluate
+的具体代码可以看我<a href="http://mp.weixin.qq.com/s?__biz=Mzg5NDkxMzQwMA==&amp;mid=2247484078&amp;idx=1&amp;sn=d2cc9d1170ddcc5dd3310480a9628aa7&amp;chksm=c0191cb9f76e95af339d4d48f00e3b8daa91159d8c91d801e2d82c64bd537b586c272222757f&amp;scene=21#wechat_redirect">之前的文章</a>，主要是使用 Trulens 的groundedness
+，qa_relevance
+和qs_relevance
+对 RAG 检索结果进行评估。执行代码后，我们可以在浏览器中看到 Trulens 的评估结果：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz0nZqpISfHibtYvvd4DFicEyPiaznDZ78ZGgsRINPb0dkCrdlQ7MUrJdhyDpObO1LracoC6EicElHliaYw/640?wx_fmt=png" alt=""></p>
+<p>在评估结果中，我们可以看到两种递归检索都比普通 RAG 检索效果要好，元数据引用的递归检索比块引用的递归检索效果更好一些，但评估结果并不是绝对的，具体的评估效果还要根据实际情况来评估。</p>
+<h4 id="总结">总结</h4>
+<p>递归检索是一种高级的 RAG 检索策略，开始通过原始文档节点扩展出更多粒度更小的文档节点，这样在检索过程中可以更加准确地检索到相关的文档，然后再通过递归检索找出与之相匹配的原始文档节点。递归检索可以提高 RAG 检索的效果，但是也会增加检索的时间和计算资源，因此在实际应用中需要根据实际情况来选择合适的检索策略。</p>
+<p>关注我，一起学习各种人工智能和 AIGC 新技术，欢迎交流，如果你有什么想问想说的，欢迎在评论区留言。</p>
+<h4 id="参考">参考:</h4>
+<p>[1]</p>
+<p>LlamaIndex: <em><a href="https://www.llamaindex.ai/">https://www.llamaindex.ai/</a></em></p>
+<p>[2]</p>
+<p>复仇者联盟: <em><a href="https://en.wikipedia.org/wiki/Avenger">https://en.wikipedia.org/wiki/Avenger</a></em></p>
+<p>[3]</p>
+<p>Trulens: <em><a href="https://www.trulens.org/">https://www.trulens.org/</a></em></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
