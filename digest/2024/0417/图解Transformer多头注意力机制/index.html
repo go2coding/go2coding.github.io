@@ -1,0 +1,730 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>图解Transformer多头注意力机制 作者： AI大模型实验室 来源： AI大模型实验室 这是关于 Transformer 的系列文章第三篇，在本系列中，我们由浅入深地介绍了 Transformer 的功能。在前面的文章里，我们已经了解了 Transformer 是什么，它的架构以及其工作原理。 在这篇文章中，我们将深入探讨 Transformer 的核心部分 —— 多头注意力（Mul  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">图解Transformer多头注意力机制</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              April 17, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5ydzcUDI6tQnssqAztlnZj5qE4QAPDUNFsGwldc9Yj7g6qn4V5wm7UPQ/640?wx_fmt=webp&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AI大模型实验室  来源： <a href="https://mp.weixin.qq.com/s/Aefek7zCftt4oXLWoKN57A">AI大模型实验室</a></p>
+<p>这是关于 Transformer 的系列文章第三篇，在本系列中，我们由浅入深地介绍了 Transformer 的功能。在前面的文章里，我们已经了解了 <a href="http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247569440&amp;idx=1&amp;sn=c43d997e267168b5e7b838fe470e9c78&amp;chksm=c03a9a33f74d1325ed906e795d04e9ee8b4c51f40f7e3d4346d41c8f96a98d84b6115778fc8b&amp;scene=21#wechat_redirect">Transformer 是什么，它的架构</a>以及<a href="http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247569596&amp;idx=1&amp;sn=5e53a8a0e1b41e354e65581806487274&amp;chksm=c03a9aaff74d13b905a93eacef1157891b6c39fd2b38ae95331b7fe779ad060422ab79d0f48f&amp;scene=21#wechat_redirect">其工作原理</a>。</p>
+<p>在这篇文章中，我们将深入探讨 Transformer 的核心部分 —— 多头注意力（Multi-head Attention）。这个机制能让 Transformer 同时从多个角度理解数据，提高处理信息的能力和效率。</p>
+<p><strong>#01</strong></p>
+<p><strong>Transformer 中如何使用注意力机制</strong></p>
+<p>如<a href="http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247569596&amp;idx=1&amp;sn=5e53a8a0e1b41e354e65581806487274&amp;chksm=c03a9aaff74d13b905a93eacef1157891b6c39fd2b38ae95331b7fe779ad060422ab79d0f48f&amp;scene=21#wechat_redirect">第二篇文章</a>所述，Transformer 在三个关键部分运用了注意力机制：</p>
+<ul>
+<li>
+<p>编码器的自注意力：输入序列对自己进行聚焦。</p>
+</li>
+<li>
+<p>解码器的自注意力：目标序列对自己进行聚焦。</p>
+</li>
+<li>
+<p>解码器的编码器 - 解码器注意力：目标序列关注输入序列。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yq2O8MCIWbk3rIGoOPickI2DHymlf6KSZ9U5u2p1d21BichTUibf0E0FpQ/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p><strong>注意力机制的输入参数 —— 查询（Query），键（Key）和值（Value）</strong></p>
+<p>注意力层通过三个参数接收输入：查询（Query），键（Key）和值（Value）。这三个参数结构类似，序列中的每个词条都通过一个向量来表示。</p>
+<p><strong>编码器自注意力</strong></p>
+<p>输入序列首先经过输入嵌入（Input Embedding）和位置编码（Position Encoding）处理，为序列中的每个词条生成了包含意义和位置信息的编码表示。这些表示分别作为查询（Query），键（Key）和值（Value）的输入，送入第一个编码器中的自注意力模块。</p>
+<p>自注意力模块基于这些输入，为输入序列中的每个词条生成一个新的编码表示，其中融合了相应的注意力得分。随着序列通过编码器堆栈，每个编码器中的自注意力模块都会对词条表示进一步加入自己的注意力得分。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yxxDd6oxwvZicTsiaGjLbs0ACeKnQ1JGBjQUW2XM4ksDoWZIibmODSfuAw/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p><strong>解码器自注意力</strong></p>
+<p>在解码器部分，目标序列通过输出嵌入（Output Embedding）和位置编码（Position Encoding）处理后，为每个词生成了既包含意义又包含位置信息的编码表示。这些表示作为查询（Query），键（Key），和值（Value）的输入，送入第一个解码器的自注意力模块中。此模块针对目标序列中的每个词产生一个新的编码表示，其中也融入了相应的注意力得分。</p>
+<p>通过层标准化（Layer Norm）处理后，这些表示被用作第一个解码器中的编码器 - 解码器注意力的查询（Query）参数。</p>
+<p><strong>编码器 - 解码器注意力</strong></p>
+<p>同时，堆栈中最后一个编码器的输出被送入编码器 - 解码器注意力的值（Value）和键（Key）参数中。</p>
+<p>因此，编码器 - 解码器注意力同时获得了来自解码器自注意力的目标序列表示和来自编码器堆栈的输入序列表示。它进而产生了一种新的表示，这种表示不仅包含了目标序列每个词的注意力得分，也融合了来自输入序列的注意力得分。</p>
+<p>随着序列通过解码器堆栈，每个自注意力和编码器 - 解码器注意力模块也会为每个词的表示增加自己的注意力得分。</p>
+<p><strong>#02</strong></p>
+<p><strong>多头注意力</strong></p>
+<p>在 Transformer 中，注意力模块会并行地重复进行多次计算，每一次计算都被称为一个 “注意力头”。注意力模块将查询（Query），键（Key）和值（Value）参数分成 N 个部分，每部分独立通过一个注意力头进行处理。所有这些相似的注意力计算后来被合并，形成最终的注意力得分。这种多头注意力机制赋予了 Transformer 强大的能力，能够对每个词条编码多种关系和细微的差别。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yD60iaNe2NeanfLUALv5AYKttvDAibATzlYFX0T4s0XQ7MFhDeb3t80Fw/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>为了深入了解数据在 Transformer 内部是如何处理的，我们不妨具体看一看在训练 Transformer 进行翻译时，注意力模块是如何工作的。以我们的训练数据中的一个样本为例，这个样本包括一个输入序列（英文的 “You are welcome”）和一个目标序列（西班牙语的 “De nada”）。</p>
+<p><strong>#03</strong></p>
+<p><strong>注意力机制的关键超参数</strong></p>
+<p>影响数据维度的有三个主要的超参数：</p>
+<ul>
+<li>
+<p>嵌入尺寸（Embedding Size）：这是嵌入向量的宽度，在我们的示例中为 6。这个维度在整个 Transformer 模型中保持一致，有时也被称为 “模型尺寸”。</p>
+</li>
+<li>
+<p>查询尺寸（Query Size，与键（Key）和值（Value）的尺寸相同）：这是用于生成查询、键和值矩阵的三个线性层的权重尺寸，在我们的示例中为 3。</p>
+</li>
+<li>
+<p>注意力头的数量：在我们的示例中，我们使用了 2 个注意力头。</p>
+</li>
+</ul>
+<p>除此之外，还有一个批量大小（Batch size）参数，它表示样本的数量。</p>
+<p><strong>#04</strong></p>
+<p><strong>输入层</strong></p>
+<p>输入嵌入（Input Embedding）和位置编码（Position Encoding）层会生成一个形状为（样本数量，序列长度，嵌入尺寸）的矩阵。这个矩阵随后被送入堆栈中第一个编码器的查询（Query），键（Key）和值（Value）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yN0oxpSZasuvu0fefiaU2g37v9ld2Utezp1gE6FpAB7icdThuFiaTm6ARg/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>为了简化展示，我们在图示中将忽略批量尺寸，专注于其它维度。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yib0xicselicucrvvNF2kSbMlNMoJZKpfyosfe8kkNHbKluHhCtcfNcyzw/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p><strong>#05</strong></p>
+<p><strong>线性层</strong></p>
+<p>对于查询（Query），键（Key）和值（Value），有三个独立的线性层，每个层都有自己的权重。输入数据通过这些线性层，生成 Q（查询），K（键）和 V（值）矩阵。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yiaqNTN4y2lmjyGfg1aSHpvFFCBrtF79vZwcBjrTRbjmol0CMOjZeG8Q/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p><strong>#06</strong></p>
+<p><strong>将数据分配到各个注意力头</strong></p>
+<p>现在，数据被分配到多个注意力头中，使每个头可以独立处理数据。</p>
+<p>但需要理解的关键点是，这种分配只是在逻辑上进行的。查询、键和值并不会物理上分割成为每个注意力头一个的独立矩阵。对于查询、键和值，分别使用单一的数据矩阵，其中每个注意力头逻辑上分配有矩阵的不同部分。同样，也不存在为每个注意力头单独设置的线性层。所有的注意力头共享相同的线性层，但只操作于数据矩阵的 “各自” 的逻辑部分。</p>
+<p><strong>按注意力头逻辑划分线性层的权重</strong></p>
+<p>通过在注意力头之间均匀分配输入数据和线性层权重，可以完成这种逻辑分割。我们可以通过选择适当的查询尺寸来实现这一点：</p>
+<p>查询尺寸 = 嵌入尺寸 / 注意力头的数量。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yMCtf1Lib5BUakpGYMSujPHYX6v2VicXE1FDkTvUiaH16aOrf4QXJH7Tkw/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>在我们的例子里，这就是为什么查询尺寸是 6 除以 2，即 3 的原因。尽管层的权重（和输入数据）是一个整体的矩阵，但我们可以想象它是每个注意力头的独立层权重 “组合在一起”。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yccAQnbHJPENBiaUw6ibTCicyqtpPKq4EFtm6LvCGDHHAQdR3yIrJm5ckg/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>因此，所有注意力头的计算可以通过一个矩阵运算来完成，而无需多个独立的运算。这不仅使计算更高效，还保持了模型的简洁性，因为它减少了需要的线性层的数量，同时依然实现了独立注意力头的强大功能。</p>
+<p><strong>重塑 Q、K 和 V 矩阵</strong></p>
+<p>线性层输出的 Q、K 和 V 矩阵被重新整形，以包括一个明确的注意力头维度。现在，每一块 “切片” 都对应着每个头的一个矩阵。</p>
+<p>接着，这个矩阵通过交换头维度和序列维度再次进行重塑。虽然在图示中没有表示批量维度，但 Q 的维度现在变成了（Batch、Head、Sequence、Query size）即（批量、头、序列、查询尺寸）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yLwWugKwouHaK7XFqjvGibLibBYME1HQKcbOWGE1ZLWISaZPgK7BbL0wg/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>在下面的图示中，我们可以看到我们示例中的 Q 矩阵在经过线性层处理后分割的整个过程。</p>
+<p>最后一个阶段主要用于可视化 —— 虽然 Q 矩阵是一个单一的矩阵，但我们可以将它理解为每个注意力头逻辑上分开的 Q 矩阵。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yHtmtnudxx8gGNtw3PDDH0Do6GXWqS0bhJibK5tVaoH2hFJto4VkdIeA/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>Q 矩阵划分为注意力头</p>
+<p>现在我们可以开始计算注意力得分了。</p>
+<p><strong>#07</strong></p>
+<p><strong>为每个头计算注意力得分</strong></p>
+<p>目前我们有了三个矩阵：Q，K 和 V，它们分布在不同的注意力头上。这些矩阵将被用于计算注意力得分。</p>
+<p>我们将展示单个注意力头的计算过程，这里只涉及最后两个维度（序列和查询尺寸），而忽略前两个维度（批量和头）。从本质上讲，我们可以想象我们正在观察的计算过程在每个头和批量中的每个样本上都在进行（尽管实际上，它们是作为一个整体的矩阵操作进行的，而不是循环）。</p>
+<p>第一步是进行 Q 和 K 矩阵之间的矩阵乘法。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5ydzcUDI6tQnssqAztlnZj5qE4QAPDUNFsGwldc9Yj7g6qn4V5wm7UPQ/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>接着，向结果中加入一个掩码值。在编码器的自注意力机制中，这个掩码用于隐藏填充值，确保它们不参与注意力得分的计算。</p>
+<p>在解码器的自注意力和编码器 - 解码器注意力中使用的掩码会有所不同，我们稍后将在过程中讨论这一点。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yQRqw5XqYTlY9NrjAUyhucic8sr9zEVwaGlFUnVjovGBPLhwE84vZUPA/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>现在的结果通过除以查询尺寸的平方根来缩放，然后应用 Softmax 函数。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yZs5U5duGaCcWyYBic8weCBT1FO9CGzaSpITwOk48uia8Y0evianRrZM6g/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>随后，进行 Softmax 输出和 V 矩阵之间的另一次矩阵乘法。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yH0AqVic59YNBUWcsSdexWgOhM926dyPgdBtb8TiaBdflTJoBRzwfKyjQ/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>在编码器自注意力中，完整的注意力得分计算过程如下所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yeWfz3Sg5lJ869wNzR5T5g4EbCddhX2XvfCefibAsstaNQCNRSLC0F7A/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p><strong>#08</strong></p>
+<p><strong>将每个头的注意力得分合并</strong></p>
+<p>现在我们得到了每个注意力头的独立注意力得分，接下来需要将它们合并成一个统一的得分。这个合并操作实际上是分割操作的逆过程。</p>
+<p>这个过程通过重新调整结果矩阵的形状来消除头维度。具体步骤如下：</p>
+<ul>
+<li>
+<p>通过交换头维度和序列维度来重新调整注意力得分矩阵的形状。也就是说，矩阵的形状从（批量、头、序列、查询尺寸）转变为（批量、序列、头、查询尺寸）。</p>
+</li>
+<li>
+<p>通过重塑为（批量、序列、头 * 查询尺寸）来折叠头维度，从而有效地将每个头的注意力得分向量串联成一个整体的注意力得分。</p>
+</li>
+</ul>
+<p>由于嵌入尺寸 = 头 * 查询尺寸，因此合并后的得分维度为（批量、序列、嵌入尺寸）。在下图中，我们可以看到示例得分矩阵的合并过程。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5y1BPqIOt8PkiaLeBN7I9PznQjzQP5OTtRrwzibWuDlJfn8BzPTic5iciaoWg/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p><strong>#09</strong></p>
+<p><strong>端到端的多头注意力</strong></p>
+<p>综合这些步骤，我们得到了多头注意力机制的端到端流程。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yw0LsHtYG9d8jbVY9viaybudlTMmOxgo1qFj0Uoe8eKYzcndHjc0Pnow/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p><strong>#10</strong></p>
+<p><strong>多头分割促进更深层次的理解</strong></p>
+<p>嵌入向量用于捕捉单词的含义。在多头注意力机制中，我们看到输入（和目标）序列的嵌入向量在逻辑上分布在多个头中。这意味着什么呢？</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yuQgvmLSwOfITeWiaXkTx2qFQpbqqyRLDdbD2j9H3utRCdceJdiaflszg/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>这意味着嵌入向量的不同部分可以学习每个单词的不同意义方面，尤其是它与序列中其他单词的关联。这使得 Transformer 能够更丰富、更深入地解读序列。</p>
+<p>虽然这可能不是一个现实的例子，但它有助于我们建立一种直觉。比如说，嵌入向量的一个部分可能专注于捕捉名词的 “性别属性”（如男性、女性、中性），而另一个部分则可能关注名词的 “数目属性”（如单数与复数）。这在翻译过程中是重要的，因为在很多语言中，动词的使用取决于这些因素。</p>
+<p><strong>#11</strong></p>
+<p><strong>解码器自注意力和掩蔽</strong></p>
+<p>解码器自注意力的工作原理与编码器自注意力类似，区别在于它作用于目标序列的每个单词上。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yYRjcKMiaZhp5AicEeGhI7IOIO0xS8TjX7u9vOeaCYRpQwc3yGeRE6khg/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>同样，掩蔽机制用于屏蔽目标序列中的填充词。</p>
+<p><strong>#12</strong></p>
+<p><strong>编码器 - 解码器注意力和掩蔽</strong></p>
+<p>编码器 - 解码器注意力从两个不同的来源接收输入。因此，不同于编码器自注意力仅计算输入词汇间的相互作用，以及解码器自注意力计算目标词汇间的相互作用，编码器 - 解码器注意力是计算每个目标词汇与每个输入词汇之间的相互作用。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzCn89LegWKu0BUxT09vpQ5yBUiaOJRoBkcpQibDNukzReaYdcaHJ2TfPNBKdyRLDxPibEtMdKrGQq1Gg/640?wx_fmt=webp&amp;from=appmsg" alt=""></p>
+<p>因此，在注意力得分结果中的每个单元都对应于一个 Q（即目标序列中的单词）与所有 K（即输入序列中的单词）和所有 V（即输入序列中的单词）之间的交互。</p>
+<p>同样，掩蔽机制在目标输出中遮蔽了后续的单词，这一点在本系列的第二篇文章中已经有了详细的解释。</p>
+<p><strong>#13</strong></p>
+<p><strong>结论</strong></p>
+<p>希望这篇文章能帮助你对 Transformer 中注意力模块的作用有一个清晰的认识。当我们将其与<a href="http://mp.weixin.qq.com/s?__biz=Mzg5Mjc3MjIyMA==&amp;mid=2247569596&amp;idx=1&amp;sn=5e53a8a0e1b41e354e65581806487274&amp;chksm=c03a9aaff74d13b905a93eacef1157891b6c39fd2b38ae95331b7fe779ad060422ab79d0f48f&amp;scene=21#wechat_redirect">第二篇文章中介绍的 Transformer 的整体端到端流程</a>结合起来时，我们就完整地理解了 Transformer 架构的详细操作。</p>
+<p>我们现在已经明白理解了 Transformer 的功能。但我们还没有完全回答为什么 Transformer 的注意力机制会执行它所进行的计算。为什么它要使用查询（Query），键（Key）和值（Value）这些概念，为什么它要进行我们刚才看到的矩阵乘法？</p>
+<p>我们大致可以理解为 “它捕捉了每个单词与序列中其他单词之间的关系”，但这究竟意味着什么？它是如何使 Transformer 的注意力机制能够理解序列中每个单词的微妙之处的？</p>
+<p>这是一个有趣的问题，也是本系列的最后一篇文章的主题。一旦我们弄清楚了这个问题，我们就能真正理解 Transformer 架构的精妙之处了。</p>
+<p>原文链接：https://towardsdatascience.com/transformers-explained-visually-part-3-multi-head-attention-deep-dive-1c1ff1024853</p>
+<h4 id="heading"></h4>
+<p>现在大模型都是基于 Transformer 构建的，要了解大模型必须要了解 Transformer，欢迎进入 AI 大模型实验室微信群一起学习 Transformer。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/vHicVZXtcAzDVAT8GUjG7bcB3WjV552MYTNxDSwExocZKoLJLCJzKFL2Iic1jSibkoRKzO0Xgx2tUUVib35pgR3YXg/640?wx_fmt=other&amp;from=appmsg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1&amp;tp=webp" alt=""></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
