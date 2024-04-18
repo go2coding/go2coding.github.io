@@ -1,0 +1,957 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>Hands-onLLM谷歌Gemma模型分布式微调和推理 作者： Mist君的风控与数据成长路 来源： Mist君的风控与数据成长路 在上一篇推文中，介绍了如何在Kaggle平台使用并微调 Gemma 模型，本文将介绍在Colab平台如何对Gemma模型进行分布式微调，由Google技术文档及Build with AI in Shanghai Coding Time 使  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">Hands-onLLM谷歌Gemma模型分布式微调和推理</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              April 18, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/yicUvJPxY5rrtMAlwJ4BqcHEThVcY4MtSmFsYz2IxlaA4oibq8YgjIT8dBhn2lkQ6AUZXpWhKGuvn5roCNzLNyMw/640?wx_fmt=jpeg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： Mist君的风控与数据成长路  来源： <a href="https://mp.weixin.qq.com/s/y_PK9r-3u9YVWJFmvcodvg">Mist君的风控与数据成长路</a></p>
+<p>在上一篇推文中，介绍了如何在Kaggle平台使用并微调 Gemma 模型，本文将介绍在Colab平台如何对Gemma模型进行分布式微调，由Google技术文档及Build with AI in Shanghai Coding Time 使用的Notebook代码（colabtools/notebooks/Gemma_Distributed_Fine_tuning_on_TPU.ipynb at main · googlecolab/colabtools · GitHub，可点击阅读原文查看或下载或导入您的Colab中）整理而成。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/7QRTvkK2qC6KuYg7GdjHmJvggbicJmdtVQib23cyWgEwTMiapHjsbHDjsuBMXTmTZobrfqAbzswwxNwbTnJ7hzdLQ/640?wx_fmt=gif&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1" alt=""></p>
+<p>使用 Keras 对 Gemma 进行分布式调优</p>
+<p>*<strong>概述</strong></p>
+<p>Gemma 是一个轻量级、最先进的开放模型系列，由用于创建 Google Gemini 模型的研究和技术构建而成。Gemma 可以进一步微调以满足特定需求。但是大型语言模型LLM（如 Gemma）的尺寸可能非常大，其中一些可能不适合在单个加速器上进行微调。在这种情况下，有两种通用方法可以对它们进行微调：</p>
+<ul>
+<li>
+<p>参数高效微调 （PEFT），旨在通过牺牲一些保真度来缩小有效模型大小。LoRA 属于这一类，使用 LoRA 在 Keras 中微调 Gemma 模型教程演示了如何在单个 GPU 上使用 KerasNLP 微调 Gemma 7B 模型gemma_instruct_7b_en与 LoRA。</p>
+</li>
+<li>
+<p>通过模型并行性进行全参数微调。模型并行性将单个模型的权重分布在多个设备上，并实现水平缩放。您可以在此 Keras 指南中找到有关分布式训练的更多信息。</p>
+</li>
+</ul>
+<p>本教程将指导您使用 Keras 和 JAX 后端来微调 Gemma 7B 模型，并在 Google 的张量处理单元 （TPU） 上进行 LoRA 和模型视变分布式训练。请注意，在本教程中可以关闭 LoRA，以实现更慢但更准确的全参数优化。</p>
+<p>*<strong>使用加速器</strong></p>
+<p>从技术上讲，您可以在本教程中使用 TPU 或 GPU。</p>
+<ul>
+<li>关于 TPU 环境的注意事项</li>
+</ul>
+<p>Google 有 3 种提供 TPU 的产品：</p>
+<ul>
+<li>
+<p>Colab 免费提供 TPU v2，适用于本教程。</p>
+</li>
+<li>
+<p>Kaggle 免费提供 TPU v3，这也适用于本教程。</p>
+</li>
+<li>
+<p>Cloud TPU 提供 TPU v3 和更新版本。一种设置方法是：</p>
+</li>
+</ul>
+<ol>
+<li>
+<p>创建新的 TPU VMCreate a new TPU VM</p>
+</li>
+<li>
+<p>为预期的 Jupyter 服务器端口设置 SSH 端口转发</p>
+</li>
+<li>
+<p>安装 Jupyter 并在 TPU VM 上启动它，然后通过“连接到本地运行时”连接到 Colab。请参见：https://research.google.com/colaboratory/local-runtimes.html</p>
+</li>
+</ol>
+<p>多 GPU 设置注意事项</p>
+<p>虽然本教程重点介绍 TPU 用例，但如果您拥有多 GPU 计算机，则可以轻松地根据自己的需求对其进行调整。</p>
+<p>如果您更喜欢使用 Colab，也可以直接通过 Colab Connect 菜单中的“连接到自定义 GCE VM”为 Colab 预配多 GPU VM。</p>
+<p>*<strong>准备工作</strong></p>
+<ul>
+<li>Kaggle 凭据</li>
+</ul>
+<p>Gemma 模特由 Kaggle 托管。要使用 Gemma，请在 Kaggle 上请求访问权限：</p>
+<ul>
+<li>
+<p>登录或注册 kaggle.com</p>
+</li>
+<li>
+<p>打开 Gemma 模型卡并选择“请求访问”</p>
+</li>
+<li>
+<p>填写同意书并接受条款和条件</p>
+</li>
+</ul>
+<p>然后，要使用 Kaggle API，请创建一个 API 令牌：</p>
+<ul>
+<li>
+<p>打开 Kaggle 设置</p>
+</li>
+<li>
+<p>选择“创建新令牌”</p>
+</li>
+<li>
+<p>将下载kaggle.json文件。它包含您的 Kaggle 凭据</p>
+</li>
+</ul>
+<hr>
+<pre><code>import os
+from google.colab import userdata
+os.environ[&quot;KAGGLE_USERNAME&quot;] = userdata.get('KAGGLE_USERNAME')
+os.environ[&quot;KAGGLE_KEY&quot;] = userdata.get('KAGGLE_KEY')
+</code></pre>
+<p>*<strong>安装</strong></p>
+<p>使用 Gemma 模型安装 Keras 和 KerasNLP。</p>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code># Install Keras 3 last. See https://keras.io/getting_started/ for more details.
+!pip install tensorflow-cpu~=2.16.0 keras-nlp==0.8.2 tensorflow-hub==0.16.1 keras==3.0.5 tensorflow-text==2.16.1
+</code></pre>
+<p>*<strong>设置 Keras JAX 后端</strong></p>
+<p>导入 JAX 并对 TPU 运行健全性检查。Colab 提供 TPUv2-8 设备，这些设备具有 8 个 TPU 内核和 8GB 高带宽内存。</p>
+<hr>
+<pre><code>import jax
+  
+
+jax.devices()
+
+
+
+
+
+
+[TpuDevice(id=0, process_index=0, coords=(0,0,0), core_on_chip=0),  
+ TpuDevice(id=1, process_index=0, coords=(0,0,0), core_on_chip=1),  
+ TpuDevice(id=2, process_index=0, coords=(1,0,0), core_on_chip=0),  
+ TpuDevice(id=3, process_index=0, coords=(1,0,0), core_on_chip=1),  
+ TpuDevice(id=4, process_index=0, coords=(0,1,0), core_on_chip=0),  
+ TpuDevice(id=5, process_index=0, coords=(0,1,0), core_on_chip=1),  
+ TpuDevice(id=6, process_index=0, coords=(1,1,0), core_on_chip=0),  
+ TpuDevice(id=7, process_index=0, coords=(1,1,0), core_on_chip=1)]
+</code></pre>
+<hr>
+<pre><code>import os
+  
+
+# The Keras 3 distribution API is only implemented for the JAX backend for now
+os.environ[&quot;KERAS_BACKEND&quot;] = &quot;jax&quot;
+os.environ[&quot;XLA_PYTHON_CLIENT_PREALLOCATE&quot;] = &quot;false&quot;
+</code></pre>
+<p>*<strong>导入模型</strong></p>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code>import keras
+import keras_nlp
+</code></pre>
+<ul>
+<li>
+<p>关于在 NVIDIA GPU 上进行混合精度训练的说明</p>
+</li>
+<li>
+<p>在NVIDIA GPU 上训练时，可以使用混合精度 （keras.mixed_precision.set_global_policy（&lsquo;mixed_bfloat16&rsquo;）） 来加快训练速度，同时对训练质量的影响最小。在大多数情况下，建议打开混合精度，因为它可以节省内存和时间。但是，请注意，在小批量中，它可能会将内存使用量增加 1.5 倍（权重将加载两次，半精度和全精度）。</p>
+</li>
+<li>
+<p>对于推理，半精度 （keras.config.set_floatx（“bfloat16”）） 将起作用并节省内存，而混合精度不适用。</p>
+</li>
+<li></li>
+</ul>
+<pre><code>keras.config.set_floatx(&quot;bfloat16&quot;)
+</code></pre>
+<p>要使用分布在 TPU 上的权重和张量加载模型，请首先创建一个新的 DeviceMesh。DeviceMesh 表示为分布式计算配置的硬件设备集合，并在 Keras 3 中作为统一分布式 API 的一部分引入。</p>
+<p>分布式 API 支持数据和模型并行性，允许在多个加速器和主机上高效扩展深度学习模型。它利用底层框架（例如 JAX）通过称为单程序、多数据 （SPMD） 扩展的过程根据分片指令分发程序和张量。在新的 Keras 3 发行版 API 指南中查看更多详细信息。</p>
+<hr>
+<pre><code># Create a device mesh with (1, 8) shape so that the weights are sharded across
+# all 8 TPUs.
+device_mesh = keras.distribution.DeviceMesh(
+    (1, 8),
+    [&quot;batch&quot;, &quot;model&quot;],
+    devices=keras.distribution.list_devices())
+</code></pre>
+<p>分布式 API 中的<strong>LayoutMap</strong>  指定应如何使用字符串键（例如下面的 token_embedding/embeddings）对权重和张量进行分片或复制，这些键被视为正则表达式以匹配张量路径。匹配的张量使用模型维度（8 TPU）进行分片;其他的将被完全复制。</p>
+<hr>
+<pre><code>model_dim = &quot;model&quot;
+  
+
+  
+
+layout_map = keras.distribution.LayoutMap(device_mesh)
+  
+
+  
+
+# Weights that match 'token_embedding/embeddings' will be sharded on 8 TPUs
+layout_map[&quot;token_embedding/embeddings&quot;] = (None, model_dim)
+  
+
+  
+
+# Regex to match against the query, key and value matrices in the decoder
+# attention layers
+layout_map[&quot;decoder_block.*attention.*(query|key|value).*kernel&quot;] = (
+    None, model_dim, None)
+layout_map[&quot;decoder_block.*attention_output.*kernel&quot;] = (
+    None, None, model_dim)
+layout_map[&quot;decoder_block.*ffw_gating.*kernel&quot;] = (model_dim, None)
+layout_map[&quot;decoder_block.*ffw_linear.*kernel&quot;] = (None, model_dim)
+</code></pre>
+<p>****<strong>ModelParallel</strong>  允许您在 DeviceMesh 上的所有开发中对模型权重或激活张量进行分片。在这种情况下，根据上述定义的layout_map，一些 Gemma 7B 模型权重被分片到 8 个 TPU 内核。现在以分布式方式加载模型。</p>
+<hr>
+<pre><code>model_parallel = keras.distribution.ModelParallel(
+    device_mesh, layout_map, batch_dim_name=&quot;batch&quot;)
+  
+
+  
+
+keras.distribution.set_distribution(model_parallel)
+  
+
+  
+
+# Download the Gemma 7B model.
+gemma_lm = keras_nlp.models.GemmaCausalLM.from_preset(&quot;gemma_instruct_7b_en&quot;)
+</code></pre>
+<p>Downloading from <a href="https://www.kaggle.com/api/v1/models/keras/gemma/keras/gemma_instruct_7b_en/2/download/config.json">https://www.kaggle.com/api/v1/models/keras/gemma/keras/gemma_instruct_7b_en/2/download/config.json</a>&hellip; 100%|██████████| 552/552 [00:00&lt;00:00, 529kB/s] Downloading from <a href="https://www.kaggle.com/api/v1/models/keras/gemma/keras/gemma_instruct_7b_en/2/download/model.weights.h5">https://www.kaggle.com/api/v1/models/keras/gemma/keras/gemma_instruct_7b_en/2/download/model.weights.h5</a>&hellip; 100%|██████████| 15.9G/15.9G [03:24&lt;00:00, 83.6MB/s] Downloading from <a href="https://www.kaggle.com/api/v1/models/keras/gemma/keras/gemma_instruct_7b_en/2/download/tokenizer.json">https://www.kaggle.com/api/v1/models/keras/gemma/keras/gemma_instruct_7b_en/2/download/tokenizer.json</a>&hellip; 100%|██████████| 401/401 [00:00&lt;00:00, 519kB/s] Downloading from <a href="https://www.kaggle.com/api/v1/models/keras/gemma/keras/gemma_instruct_7b_en/2/download/assets/tokenizer/vocabulary.spm...100%25">https://www.kaggle.com/api/v1/models/keras/gemma/keras/gemma_instruct_7b_en/2/download/assets/tokenizer/vocabulary.spm...100%</a>|██████████| 4.04M/4.04M [00:00&lt;00:00, 17.0MB/s]</p>
+<p>现在验证模型是否已正确分区。我们以decoder_block_1为例。</p>
+<hr>
+<pre><code>decoder_block_1 = gemma_lm.backbone.get_layer('decoder_block_1')
+print(type(decoder_block_1))
+for variable in decoder_block_1.weights:
+  print(f'{variable.path:&lt;58}  {str(variable.shape):&lt;16}  {str(variable.value.sharding.spec)}')
+</code></pre>
+<p>&lt;class &lsquo;keras_nlp.src.models.gemma.gemma_decoder_block.GemmaDecoderBlock&rsquo;&gt; decoder_block_1/pre_attention_norm/scale (3072,) PartitionSpec(None,) decoder_block_1/attention/query/kernel (16, 3072, 256) PartitionSpec(None, &lsquo;model&rsquo;, None) decoder_block_1/attention/key/kernel (16, 3072, 256) PartitionSpec(None, &lsquo;model&rsquo;, None) decoder_block_1/attention/value/kernel (16, 3072, 256) PartitionSpec(None, &lsquo;model&rsquo;, None) decoder_block_1/attention/attention_output/kernel (16, 256, 3072) PartitionSpec(None, None, &lsquo;model&rsquo;) decoder_block_1/pre_ffw_norm/scale (3072,) PartitionSpec(None,) decoder_block_1/ffw_gating/kernel (3072, 24576) PartitionSpec(&lsquo;model&rsquo;, None) decoder_block_1/ffw_gating_2/kernel (3072, 24576) PartitionSpec(&lsquo;model&rsquo;, None) decoder_block_1/ffw_linear/kernel (24576, 3072) PartitionSpec(None, &lsquo;model&rsquo;)</p>
+<p>*<strong>微调前的推理</strong></p>
+<ul>
+<li></li>
+</ul>
+<pre><code>gemma_lm.generate(&quot;Best comedy movies: &quot;, max_length=64)
+</code></pre>
+<p>&lsquo;Best comedy movies: \n\n1.<strong>The Hangover (2009)</strong>\n2.<strong>Bridesmaids (2011)</strong>\n3.<strong>Anchorman (2007)</strong>\n4.<strong>Superbad (2007)</strong>\n5.**The Room (2&rsquo;</p>
+<p>该模型生成了 90 年代要观看的精彩喜剧电影列表。现在，我们对 Gemma 模型进行微调以更改输出样式。</p>
+<p>*<strong>使用IMDB进行微调</strong></p>
+<hr>
+<pre><code>import tensorflow_datasets as tfds
+  
+
+  
+
+imdb_train = tfds.load(
+    &quot;imdb_reviews&quot;,
+    split=&quot;train&quot;,
+    as_supervised=True,
+    batch_size=2,
+)
+# Drop labels.
+imdb_train = imdb_train.map(lambda x, y: x)
+  
+
+  
+
+imdb_train.unbatch().take(1).get_single_element().numpy()
+</code></pre>
+<p>Downloading and preparing dataset 80.23 MiB (download: 80.23 MiB, generated: Unknown size, total: 80.23 MiB) to /root/tensorflow_datasets/imdb_reviews/plain_text/1.0.0&hellip;</p>
+<p>Dl Completed&hellip;: 100%</p>
+<p>1/1 [00:08&lt;00:00, 8.37s/ url]</p>
+<p>Dl Size&hellip;: 100%</p>
+<p>80/80 [00:08&lt;00:00, 11.08 MiB/s]</p>
+<pre><code>Dataset imdb_reviews downloaded and prepared to /root/tensorflow_datasets/imdb_reviews/plain_text/1.0.0. Subsequent calls will reuse this data.  
+
+
+
+
+
+
+b&quot;This was an absolutely terrible movie. Don't be lured in by Christopher Walken or Michael Ironside. Both are great actors, but this must simply be their worst role in history. Even their great acting could not redeem this movie's ridiculous storyline. This movie is an early nineties US propaganda piece. The most pathetic scenes were those when the Columbian rebels were making their cases for revolutions. Maria Conchita Alonso appeared phony, and her pseudo-love affair with Walken was nothing but a pathetic emotional plug in a movie that was devoid of any real meaning. I am disappointed that there are movies like this, ruining actor's like Christopher Walken's good name. I could barely sit through it.&quot;
+</code></pre>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code># Use a subset of the dataset for faster training.
+imdb_train = imdb_train.take(2000)
+</code></pre>
+<p>使用低秩自适应 （LoRA） 执行微调。</p>
+<p>LoRA 是一种微调技术，它通过冻结模型的全部权重并在模型中插入少量新的可训练权重，大大减少了下游任务的可训练参数数量。基本上，LoRA 通过 2 个较小的低秩矩阵 AxB 重新参数化较大的全权重矩阵进行训练，这种技术使训练速度更快、记忆效率更高。</p>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code># Enable LoRA for the model and set the LoRA rank to 4.
+gemma_lm.backbone.enable_lora(rank=4)
+</code></pre>
+<hr>
+<pre><code># Fine-tune on the IMDb movie reviews dataset.
+  
+
+  
+
+# Limit the input sequence length to 128 to control memory usage.
+gemma_lm.preprocessor.sequence_length = 128
+# Use AdamW (a common optimizer for transformer models).
+optimizer = keras.optimizers.AdamW(
+    learning_rate=5e-5,
+    weight_decay=0.01,
+)
+# Exclude layernorm and bias terms from decay.
+optimizer.exclude_from_weight_decay(var_names=[&quot;bias&quot;, &quot;scale&quot;])
+  
+
+  
+
+gemma_lm.compile(
+    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    optimizer=optimizer,
+    weighted_metrics=[keras.metrics.SparseCategoricalAccuracy()],
+)
+gemma_lm.summary()
+gemma_lm.fit(imdb_train, epochs=1)
+
+
+
+
+
+
+Preprocessor: &quot;gemma_causal_lm_preprocessor&quot;  
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  
+┃ Tokenizer (type)                                   ┃                                             Vocab # ┃  
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩  
+│ gemma_tokenizer (GemmaTokenizer)                   │                                             256,000 │  
+└────────────────────────────────────────────────────┴─────────────────────────────────────────────────────┘  
+
+
+Model: &quot;gemma_causal_lm&quot;  
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  
+┃ Layer (type)                  ┃ Output Shape              ┃         Param # ┃ Connected to               ┃  
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩  
+│ padding_mask (InputLayer)     │ (None, None)              │               0 │ -                          │  
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤  
+│ token_ids (InputLayer)        │ (None, None)              │               0 │ -                          │  
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤  
+│ gemma_backbone                │ (None, None, 3072)        │   8,548,748,288 │ padding_mask[0][0],        │  
+│ (GemmaBackbone)               │                           │                 │ token_ids[0][0]            │  
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤  
+│ token_embedding               │ (None, None, 256000)      │     786,432,000 │ gemma_backbone[0][0]       │  
+│ (ReversibleEmbedding)         │                           │                 │                            │  
+└───────────────────────────────┴───────────────────────────┴─────────────────┴────────────────────────────┘  
+
+
+ Total params: 8,548,748,288 (15.92 GB)  
+
+
+ Trainable params: 11,067,392 (21.11 MB)  
+
+
+ Non-trainable params: 8,537,680,896 (15.90 GB)  
+
+
+2000/2000 ━━━━━━━━━━━━━━━━━━━━ 324s 141ms/step - loss: 14.7736 - sparse_categorical_accuracy: 0.4807  
+
+
+&lt;keras.src.callbacks.history.History at 0x7e7e3c589cc0&gt;
+</code></pre>
+<p>注意到，启用 LoRA 会显著减少可训练参数的数量，从 70 亿个减少到仅 1100 万个。</p>
+<p>*<strong>微调后的推理</strong></p>
+<ul>
+<li></li>
+</ul>
+<pre><code>gemma_lm.generate(&quot;Best comedy movies: &quot;, max_length=256)
+</code></pre>
+<p>&lsquo;Best comedy movies: \n\n1.<strong>The Hangover (2009)</strong>\n2.<strong>Bridesmaids (2011)</strong>\n3.<strong>Anchorman (2007)</strong>\n4.<strong>Superbad (2007)</strong>\n5.<strong>Tallahassee (2009)</strong>\n\nWhat is the common thread between the movies on this list?\n\nThey are all American comedy films.&rsquo;</p>
+<p>经过微调，该模型已经学会了电影评论的风格，现在正在 90 年代喜剧电影的背景下以这种风格生成输出。</p>
+<p>*<strong>后续步骤</strong></p>
+<p>在本教程中，您学习了如何使用 KerasNLP JAX 后端在强大的 TPU 上以分布式方式微调 IMDb 数据集上的 Gemma 模型。以下是一些关于其他学习内容的建议：</p>
+<ul>
+<li>
+<p>了解如何开始使用 Keras Gemma。</p>
+</li>
+<li>
+<p>了解如何在 GPU 上微调 Gemma 模型。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/yicUvJPxY5rrtMAlwJ4BqcHEThVcY4MtSmFsYz2IxlaA4oibq8YgjIT8dBhn2lkQ6AUZXpWhKGuvn5roCNzLNyMw/640?wx_fmt=jpeg" alt=""></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

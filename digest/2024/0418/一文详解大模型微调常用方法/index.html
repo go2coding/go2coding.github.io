@@ -1,0 +1,811 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>一文详解大模型微调常用方法 作者： AI生成未来 来源： AI生成未来 点击下方卡片，关注“AI生成未来” &raquo;关注【AI生成未来】公众号，回复“GAI”，免费获取AI行业报告和资料 欢迎加群交流AIGC技术 作者：绝密伏击（已授权转载） 编辑：AI生成未来 链接：https  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">一文详解大模型微调常用方法</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              April 18, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJzfdw9gOEHDuUfvfVC5VVIu7MvsyUN0GE5RFiaQBmWgbicaUIibKoBOibNQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AI生成未来  来源： <a href="https://mp.weixin.qq.com/s/yaCOY9-PMovvGuPq05yR_w">AI生成未来</a></p>
+<p><strong>点击下方<strong><strong>卡片</strong></strong>，关注“<strong><strong>AI生成未来</strong></strong>”</strong></p>
+<p><strong>&raquo;关注【AI生成未来】公众号，回复“GAI”，免费获取AI行业报告和资料</strong></p>
+<p><strong>欢迎加群交流AIGC技术</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoj16MaqjFK71jwpfSScjj0c8G8vVcKFaUCh9qhYcj8vy3PZWMaB6145ia3L1LyicTG580wWP3HWXE4g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<blockquote>
+<p>作者：绝密伏击（已授权转载） 编辑：AI生成未来</p>
+<p>链接：https://zhuanlan.zhihu.com/p/627642632</p>
+</blockquote>
+<p>最近，深度学习的研究中出现了许多大型预训练模型，例如 GPT-3、ChatGPT、GPT4、ChatGLM-130B 等，这些模型可以在多种自然语言处理任务中取得优异的性能表现。而其中，ChatGPT 模型因为在对话生成方面的表现而备受瞩目，成为了自然语言处理领域的热门研究方向。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJ6fT9kV9pN4dAjCzv1WP8O5tcvcYjxakdmfT6b0XvQ6YgeoakibbicJRw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>然而，这些大型预训练模型的训练成本非常高昂，需要庞大的计算资源和大量的数据，一般人难以承受。这也导致了一些研究人员难以重复和验证先前的研究成果。为了解决这个问题，研究人员开始研究 Parameter-Efficient Fine-Tuning (PEFT) 技术。PEFT 技术旨在通过最小化微调参数的数量和计算复杂度，来提高预训练模型在新任务上的性能，从而缓解大型预训练模型的训练成本。这样一来，即使计算资源受限，也可以利用预训练模型的知识来迅速适应新任务，实现高效的迁移学习。因此，PEFT 技术可以在提高模型效果的同时，大大缩短模型训练时间和计算成本，让更多人能够参与到深度学习研究中来。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJ7lPQvKxt2pYwpjMO7OlTO7AribHlGAJRgpUHIibXsmy0zwe3emPwc2sA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在上一篇文章中，介绍了 PEFT 技术中的常用方法 LoRA，使得百亿（10B）参数的大模型可以在单卡上训练（显存大小&gt;=40G）。</p>
+<blockquote>
+<p>LoRA：大模型轻量级微调(<a href="https://zhuanlan.zhihu.com/p/623543497">https://zhuanlan.zhihu.com/p/623543497</a>)</p>
+</blockquote>
+<p>今天介绍下另外几种常用的方法，包括 Adapter Tuning、Prompt Tuning、Prefix Tuning、P-Tuning、P-Tuning v2 和 AdaLoRA。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJ4X1vDzdEjlibvkJxOZVFpcEF3ky2K4UZDkJTTnfRjW5YF8R2k75FwSg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="1-adapter-tuning">1. Adapter Tuning</h4>
+<p>2019年谷歌的研究人员首次在论文《Parameter-Efficient Transfer Learning for NLP》(<a href="https://arxiv.org/pdf/1902.00751.pdf">https://arxiv.org/pdf/1902.00751.pdf</a>)提出针对 BERT 的 PEFT微调方式，拉开了 PEFT 研究的序幕。他们指出，在面对特定的下游任务时，如果进行 Full-Fintuning（即预训练模型中的所有参数都进行微调），太过低效；而如果采用固定预训练模型的某些层，只微调接近下游任务的那几层参数，又难以达到较好的效果。</p>
+<p>于是他们设计了如下图所示的 Adapter 结构，将其嵌入 Transformer 的结构里面，在训练时，固定住原来预训练模型的参数不变，只对新增的 Adapter 结构进行微调。同时为了保证训练的高效性（也就是尽可能少的引入更多参数），他们将 Adapter 设计为这样的结构：</p>
+<ul>
+<li>
+<p>首先是一个 down-project 层将高维度特征映射到低维特征</p>
+</li>
+<li>
+<p>然后过一个非线形层之后，再用一个 up-project 结构将低维特征映射回原来的高维特征</p>
+</li>
+<li>
+<p>同时也设计了 skip-connection 结构，确保了在最差的情况下能够退化为identity（类似残差结构）。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJhZeovvGbvNWEzeLwicFRfPLqaib9icgIzmia2YfElcxydgyzicXIicOQN56w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>从实验结果来看，该方法能够在只额外对增加的 3.6% 参数规模（相比原来预训练模型的参数量）的情况下取得和Full-Finetuning 接近的效果（GLUE指标在0.4%以内）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJERMy66KiaA7IMOWbGNUBRYe6ehjO3M9ib4RdDibfP8k8sEYoW6CdU50bQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="2-prefix-tuning">2. Prefix Tuning</h4>
+<p>2021年斯坦福的研究人员在论文《Prefix-Tuning: Optimizing Continuous Prompts for Generation》(<a href="https://aclanthology.org/2021.acl-long.353.pdf">https://aclanthology.org/2021.acl-long.353.pdf</a>)中提出了 Prefix Tuning 方法。与Full-finetuning 更新所有参数的方式不同，该方法是在输入 token 之前构造一段任务相关的 virtual tokens 作为 Prefix，然后训练的时候只更新 Prefix 部分的参数，而 Transformer 中的其他部分参数固定。该方法其实和构造 Prompt 类似，只是 Prompt 是人为构造的“显式”的提示，并且无法更新参数，而Prefix 则是可以学习的“隐式”的提示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJKuc5gtmqbzr8MpLbTU7tYzcjySh8gTTuvSkSJyhogNTfgU8bT5JZdQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>同时，为了防止直接更新 Prefix 的参数导致训练不稳定的情况，他们在 Prefix 层前面加了 MLP 结构(相当于将Prefix 分解为更小维度的 Input 与 MLP 的组合后输出的结果)，训练完成后，只保留 Prefix 的参数。</p>
+<hr>
+<pre><code>embedding = torch.nn.Embedding(num_virtual_tokens, token_dim)
+transform = torch.nn.Sequential(
+    torch.nn.Linear(token_dim, encoder_hidden_size),
+    torch.nn.Tanh(),
+    torch.nn.Linear(encoder_hidden_size, num_layers * 2 * token_dim),
+)
+</code></pre>
+<h4 id="3-prompt-tuning">3. Prompt Tuning</h4>
+<p>Prompt Tuning 是2021年谷歌在论文《The Power of Scale for Parameter-Efficient Prompt Tuning》(<a href="https://arxiv.org/pdf/2104.08691.pdf">https://arxiv.org/pdf/2104.08691.pdf</a>)中提出的微调方法。</p>
+<p>该方法可以看作是 Prefix Tuning 的简化版本，只在输入层加入 prompt tokens，并不需要加入 MLP 进行调整来解决难训练的问题，主要在 T5 预训练模型上做实验。似乎只要预训练模型足够强大，其他的一切都不是问题。作者也做实验说明随着预训练模型参数量的增加，Prompt Tuning的方法会逼近 Fine-tune 的结果。</p>
+<p>固定预训练参数，为每一个任务额外添加一个或多个 embedding，之后拼接 query 正常输入 LLM，并只训练这些 embedding。左图为单任务全参数微调，右图为 Prompt tuning。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJa2hrnhia9mibHwSZSC78InBa3BVyGaQQMP8jhpRWr1T7qAUbYDrZUOxA/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJzfdw9gOEHDuUfvfVC5VVIu7MvsyUN0GE5RFiaQBmWgbicaUIibKoBOibNQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>作者做了一系列对比实验，都在说明：随着预训练模型参数的增加，一切的问题都不是问题，最简单的设置也能达到极好的效果。</p>
+<ul>
+<li>
+<p>Prompt 长度影响：模型参数达到一定量级时，Prompt 长度为1也能达到不错的效果，Prompt 长度为20就能达到极好效果。</p>
+</li>
+<li>
+<p>Prompt初始化方式影响：Random Uniform 方式明显弱于其他两种，但是当模型参数达到一定量级，这种差异也不复存在。</p>
+</li>
+<li>
+<p>预训练的方式：LM Adaptation 的方式效果好，但是当模型达到一定规模，差异又几乎没有了。</p>
+</li>
+<li>
+<p>微调步数影响：模型参数较小时，步数越多，效果越好。同样随着模型参数达到一定规模，zero shot 也能取得不错效果。</p>
+</li>
+<li>
+<p>当参数达到100亿规模与全参数微调方式效果无异。</p>
+</li>
+</ul>
+<hr>
+<pre><code>from peft import PromptTuningConfig, get_peft_model
+peft_config = PromptTuningConfig(task_type=&quot;SEQ_CLS&quot;, num_virtual_tokens=10)
+model = AutoModelForCausalLM.from_pretrained(model_name_or_path, return_dict=True)
+model = get_peft_model(model, peft_config)
+</code></pre>
+<h4 id="4-p-tuning-v1">4. P-Tuning v1</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJ352KKkz8PpJYEG5BbnKILWRGCicXTczGicibzqFrmwp5ffAQIRPcQuREg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>P-Tuning 方法的提出主要是为了解决这样一个问题：大模型的 Prompt 构造方式严重影响下游任务的效果。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJuE1u9BC18zVnw4ibW7HxC8Biak8rtslNOGSsibaapQOAxI544NLnDN1Ng/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>P-Tuning 提出将 Prompt 转换为可以学习的 Embedding 层，只是考虑到直接对 Embedding 参数进行优化会存在这样两个挑战：</p>
+<ul>
+<li>
+<p>Discretenes：对输入正常语料的 Embedding 层已经经过预训练，而如果直接对输入的 prompt embedding进行随机初始化训练，容易陷入局部最优。</p>
+</li>
+<li>
+<p>Association：没法捕捉到 prompt embedding 之间的相关关系。作者在这里提出用 MLP + LSTM 的方式来对 prompt embedding 进行一层处理：</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJE7HGc63LAKJ7ceaH0Dojf3dTYfLeaGDamMGAnvNRVMA4xSbviaWu2NQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>P-tuning 依然是固定 LLM 参数，利用多层感知机和 LSTM 对 Prompt 进行编码，编码之后与其他向量进行拼接之后正常输入 LLM。注意，训练之后只保留 Prompt 编码之后的向量即可，无需保留编码器。</p>
+<hr>
+<pre><code>self.lstm_head = torch.nn.LSTM(
+                    input_size=self.input_size,
+                    hidden_size=self.hidden_size,
+                    num_layers=num_layers,
+                    dropout=lstm_dropout,
+                    bidirectional=True,
+                    batch_first=True,
+  )
+  
+
+self.mlp_head = torch.nn.Sequential(
+    torch.nn.Linear(self.hidden_size * 2, self.hidden_size * 2),
+    torch.nn.ReLU(),
+    torch.nn.Linear(self.hidden_size * 2, self.output_size),
+)
+self.mlp_head(self.lstm_head(input_embeds)[0])
+</code></pre>
+<h4 id="41-与prefix-tuning的区别">4.1 与Prefix-Tuning的区别</h4>
+<p>P-Tuning 和 Prefix-Tuning 差不多同时提出，做法其实也有一些相似之处，主要区别在：</p>
+<ul>
+<li>
+<p>Prefix Tuning 是将额外的 embedding 加在开头，看起来更像是模仿 Instruction 指令；而 P-Tuning 的位置则不固定。</p>
+</li>
+<li>
+<p>Prefix Tuning 通过在每个 Attention 层都加入 Prefix Embedding 来增加额外的参数，通过 MLP 来初始化；而 P-Tuning 只是在输入的时候加入 Embedding，并通过 LSTM+MLP 来初始化。</p>
+</li>
+</ul>
+<h4 id="5-p-tuning-v2">5. P-Tuning v2</h4>
+<p>P-Tuning 的问题是在小参数量模型上表现差（如上图所示）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJnD7icsFciatJiaEypumJy49MqsCuUeyW8llkPXtfibg8yUDSlibBMxzd7sg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>于是就有了v2版本：《P-Tuning v2: Prompt Tuning Can Be Comparable to Fine-tuning Universally Across Scales and Tasks》(<a href="https://arxiv.org/pdf/2110.07602.pdf">https://arxiv.org/pdf/2110.07602.pdf</a>)。</p>
+<p>从标题就可以看出，P-Tuning v2 的目标就是要让 Prompt Tuning 能够在不同参数规模的预训练模型、针对不同下游任务的结果上都达到匹敌 Fine-tuning 的结果。</p>
+<p>那也就是说当前 Prompt Tuning 方法在这两个方面都存在局限性。</p>
+<ul>
+<li>
+<p>不同模型规模：Prompt Tuning 和 P-tuning 这两种方法都是在预训练模型参数规模够足够大时，才能达到和Fine-tuning 类似的效果，而参数规模较小时效果则很差。</p>
+</li>
+<li>
+<p>不同任务类型：Prompt Tuning 和 P-tuning 这两种方法在 sequence tagging 任务上表现都很差。</p>
+</li>
+</ul>
+<h4 id="51-主要结构">5.1 主要结构</h4>
+<p>相比 Prompt Tuning 和 P-tuning 的方法， P-tuning v2 方法在多层加入了 Prompts tokens 作为输入，带来两个方面的好处：</p>
+<ol>
+<li>
+<p>带来更多可学习的参数（从 P-tuning 和 Prompt Tuning 的0.1%增加到0.1%-3%），同时也足够 parameter-efficient。</p>
+</li>
+<li>
+<p>加入到更深层结构中的 Prompt 能给模型预测带来更直接的影响。</p>
+</li>
+</ol>
+<p>v1 到 v2 的可视化：蓝色部分为参数冻结，橙色部分为可训练部分。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJjIu1W3KiaYFo54qicF2pIkLBDGq9nsL4ePtQr5gxgiabvicB3JEwDFCHWg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="52-几个关键设计因素">5.2 几个关键设计因素</h4>
+<p>*<strong>Reparameterization</strong> ：Prefix Tuning 和 P-tuning 中都有 MLP 来构造可训练的 embedding。本文发现在自然语言理解领域，面对不同的任务以及不同的数据集，这种方法可能带来完全相反的结论。</p>
+<p>*<strong>Prompt Length</strong> ：不同的任务对应的最合适的 Prompt Length 不一样，比如简单分类任务下 length=20 最好，而复杂的任务需要更长的 Prompt Length。</p>
+<p>*<strong>Multi-task Learning</strong>  多任务对于 P-Tuning v2 是可选的，但可以利用它提供更好的初始化来进一步提高性能。</p>
+<p>*<strong>Classification Head</strong>  使用 LM head 来预测动词是 Prompt Tuning 的核心，但我们发现在完整的数据设置中没有必要这样做，并且这样做与序列标记不兼容。P-tuning v2 采用和 BERT 一样的方式，在第一个 token 处应用随机初始化的分类头。</p>
+<h4 id="53-实验结果">5.3 实验结果</h4>
+<ul>
+<li>
+<p>不同预训练模型大小下的表现，在小模型下取得与 Full-finetuning 相近的结果，并远远优于 P-Tuning。</p>
+</li>
+<li>
+<p>不同任务下的 P-Tuning v2 效果都很好，而 P-Tuning 和 Prompt Learning 效果不好；同时，采用多任务学习的方式能在多数任务上取得最好的结果。</p>
+</li>
+</ul>
+<h4 id="6-adalora">6. AdaLoRA</h4>
+<p>预训练语言模型中的不同权重参数对下游任务的贡献是不同的。因此需要更加智能地分配参数预算，以便在微调过程中更加高效地更新那些对模型性能贡献较大的参数。</p>
+<p>具体来说，通过奇异值分解将权重矩阵分解为增量矩阵，并根据新的重要性度量动态地调整每个增量矩阵中奇异值的大小。这样可以使得在微调过程中只更新那些对模型性能贡献较大或必要的参数，从而提高了模型性能和参数效率。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJIwk0FHmNo0hWlSXxyeUjl7jAB7VmME5icBJoQubWlI3OQ3r02vQfU0w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="7-towards-a-unified-view-of-petl">7. Towards a Unified View of PETL</h4>
+<p>这篇 ICLR2022 的文章研究了典型的 PEFT 方法，试图将 PEFT 统一到一个框架下，找出它们起作用的具体原因，并进行改进。主要研究了三个问题：</p>
+<ul>
+<li>
+<p>典型的 PEFT 方法有什么联系？</p>
+</li>
+<li>
+<p>典型的 PEFT 方法中是哪些关键模块在起作用？</p>
+</li>
+<li>
+<p>能否对这些关键模块进行排列组合，找出更有用的 PEFT 方法？</p>
+</li>
+</ul>
+<h4 id="71-通用形式">7.1 通用形式</h4>
+<p>通过对 Prefix Tuning 的推导，得出了和 Adapter Tuning 以及 LoRA 形式一致的形式。</p>
+<p>通过对Prefix Tuning的推导，得出了和Adapter Tuning以及LoRA形式一致的形式。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJibw5vwkOib46DdHKzXjLVpn3c7EVcTnqIrWic9w3QvzALFSQtTIibId7VA/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/mkhictoa3icoia9qgTYfSDHRt0ibJzJibN0CJEibRS5xJZAfBj31Os3QBEz6mwmqNAs7v2guWMKibWeaN7ClCQVjf6SrA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>包括这几大要素：</p>
+<ul>
+<li>
+<p>的形式</p>
+</li>
+<li>
+<p>嵌入 Transformer 结构的方式（分为 Parrell 和 Sequential 两种。Parallel 指的是在输入层嵌入，这样与原有结构可以并行计算；Sequential 指的是在输出层嵌入，相当于增加了网路的深度，与原有结构存在依赖关系）</p>
+</li>
+<li>
+<p>修改表示层（主要指对 attention 层的修改还是对 ffn 层的修改）</p>
+</li>
+<li>
+<p>组合方式。怎么与原有的参数组合，包括简单相加（Adapter）、门控式（Prefix Tuning）、缩放式（LoRA）三种）</p>
+</li>
+</ul>
+<p>根据这个统一的框架，还另外设计了三种变体 Parallel Adapter、Multi-head Parallel Adapter、Scaled Parallel Adapter。</p>
+<h4 id="参考">参考</h4>
+<p>1.Parameter-Efficient Transfer Learning for NLP(<a href="https://arxiv.org/pdf/1902.00751.pdf">https://arxiv.org/pdf/1902.00751.pdf</a>)<br>
+2.Prefix-Tuning: Optimizing Continuous Prompts for Generation(<a href="https://arxiv.org/pdf/2101.00190.pdf">https://arxiv.org/pdf/2101.00190.pdf</a>)<br>
+3.The Power of Scale for Parameter-Efficient Prompt Tuning(<a href="https://arxiv.org/pdf/2104.08691.pdf">https://arxiv.org/pdf/2104.08691.pdf</a>)<br>
+4.BitFit: Simple Parameter-efficient Fine-tuning for Transformer-based Masked Language-models(<a href="https://arxiv.org/pdf/2106.10199.pdf">https://arxiv.org/pdf/2106.10199.pdf</a>)<br>
+5.GPT Understands, Too(<a href="https://arxiv.org/pdf/2103.10385.pdf">https://arxiv.org/pdf/2103.10385.pdf</a>)<br>
+6.TOWARDS A UNIFIED VIEW OF PARAMETER-EFFICIENT TRANSFER LEARNING(<a href="https://arxiv.org/pdf/2110.04366.pdf">https://arxiv.org/pdf/2110.04366.pdf</a>)<br>
+7.UNIPELT: A Unified Framework for Parameter-Efficient Language Model Tuning(<a href="https://arxiv.org/pdf/2110.07577.pdf">https://arxiv.org/pdf/2110.07577.pdf</a>)<br>
+8.Ladder Side-Tuning：预训练模型的“过墙梯”(<a href="https://kexue.fm/archives/9138">https://kexue.fm/archives/9138</a>)<br>
+9.INTRINSIC DIMENSIONALITY EXPLAINS THE EFFECTIVENESS OF LANGUAGE MODEL FINE-TUNING (<a href="https://arxiv.org/pdf/2012.13255.pdf">https://arxiv.org/pdf/2012.13255.pdf</a>)<br>
+10.Prompt-Tuning——深度解读一种新的微调范式(<a href="https://blog.csdn.net/qq_36426650/article/details/120607050">https://blog.csdn.net/qq_36426650/article/details/120607050</a>)<br>
+11.P-tuning：自动构建模版，释放语言模型潜能 (<a href="https://kexue.fm/archives/8295">https://kexue.fm/archives/8295</a>)<br>
+12.P-Tuning v2: Prompt Tuning Can Be Comparable to Fine-tuning Universally Across Scales and Tasks (<a href="https://arxiv.org/pdf/2110.07602.pdf">https://arxiv.org/pdf/2110.07602.pdf</a>)<br>
+13.https://aclanthology.org/2022.acl-short.8.pdf<br>
+14.https://arxiv.org/pdf/2110.07602.pdf<br>
+15.https://www.yuque.com/meta95/hmc3l4/ozgy13dx4akv7v17?singleDoc#<br>
+16.无数据不智能：大模型训练之微调篇 (<a href="https://zhuanlan.zhihu.com/p/625896377">https://zhuanlan.zhihu.com/p/625896377</a>)<br>
+17.https://arxiv.org/pdf/2303.10512.pdf<br>
+18.GitHub - huggingface/peft: PEFT: State-of-the-art Parameter-Efficient Fine-Tuning.<br>
+19.https://arxiv.org/pdf/2110.0436</p>
+<p>** 往期推荐**</p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=Mzg3Njk3NDkyNQ==&amp;mid=2247489270&amp;idx=1&amp;sn=dd93aad88434ee083e2653b32d6c5cef&amp;chksm=cf2b50d4f85cd9c234a9dd65bc91a4ce67aa49ba54cca9b4759d26aaa38b65ca276763c681e5&amp;scene=21#wechat_redirect">比SAM快30倍的SAM-Lightening来了！推理一张图仅需7毫秒（北航）</a></p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=Mzg3Njk3NDkyNQ==&amp;mid=2247489222&amp;idx=1&amp;sn=c9fac2ba3dd28df564858e32709d8f31&amp;chksm=cf2b50e4f85cd9f2be55a7aa1679439d5164b9c4a00a191c85601e4339e65fe3d7a2a0ad1b1a&amp;scene=21#wechat_redirect">清华&amp;VAST提出CharacterGen：单张图生成高质量3D角色</a></p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=Mzg3Njk3NDkyNQ==&amp;mid=2247489222&amp;idx=2&amp;sn=0c112941e8bcf40ac7a9b49a9b51466f&amp;chksm=cf2b50e4f85cd9f28e3dd00071875f63c2099e4196bba29b65b668784a9918b4405cb7814cea&amp;scene=21#wechat_redirect">从对抗训练到扩散网络：Diffusion时代图像修复该何去何从？</a></p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=Mzg3Njk3NDkyNQ==&amp;mid=2247489135&amp;idx=1&amp;sn=a2a8e04ebbfa43a6d9c50d6d15fe30d2&amp;chksm=cf2b504df85cd95bb46db2d6afb79a8e39e9667dd04295e6e32e5d7bc46aceecd8d14cd6ee87&amp;scene=21#wechat_redirect">LLM和自动驾驶强强联合 | DriveDreamer-2：自动驾驶定制视频生成世界模型!</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

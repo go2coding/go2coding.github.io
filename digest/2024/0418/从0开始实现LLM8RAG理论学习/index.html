@@ -1,0 +1,1242 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>从0开始实现LLM：8、RAG（理论学习） 作者： AI科技解析 来源： AI科技解析 RAG 首先提出问题👇 1、为什么要使用RAG？ 2、RAG是什么？ 3、怎么使用RAG？ 下面进行解答 1、为什么要使用RAG？ LLM固然好，但有以下缺点： 知识的局限性：模型自身的知识完全源于它的训练数据，当LLM训练  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">从0开始实现LLM：8、RAG（理论学习）</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              April 18, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUwX1xXL4fSJvGKRqzm8EeJGeTf5KyWa4w95iaDupZYtSYxicfbNnsiajRQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AI科技解析  来源： <a href="https://mp.weixin.qq.com/s/Ldv4rMlpGckm-4YWNMHF0w">AI科技解析</a></p>
+<h4 id="heading"></h4>
+<p>RAG</p>
+<p>首先提出问题👇</p>
+<ul>
+<li>
+<p>1、为什么要使用RAG？</p>
+</li>
+<li>
+<p>2、RAG是什么？</p>
+</li>
+<li>
+<p>3、怎么使用RAG？</p>
+</li>
+</ul>
+<p>下面进行解答</p>
+<ul>
+<li>1、为什么要使用RAG？</li>
+</ul>
+<p>LLM固然好，但有以下缺点：</p>
+<ul>
+<li>
+<p>知识的局限性：模型自身的知识完全源于它的训练数据，当LLM训练完成后，本身数据已经固化，无法更新，对于一些实时性的、非公开的或离线的数据是无法获取的，周期性的微调耗时耗力。</p>
+</li>
+<li>
+<p>幻觉问题：LLM模型在回答问题时，当遇到训练数据中不存在或存在较少的对话场景，会根据已有知识拼凑出答案，而这种答案很可能是不存在的、不正确的，称之为幻觉。无论训练数据有多大，随着使用使用场景的增加，幻觉问题不可避免。</p>
+</li>
+<li>
+<p>数据安全性：对于企业来说，将自身数据完全训练至LLM模型中，一旦模型泄露会产生重大影响。</p>
+</li>
+</ul>
+<p>因此希望有一种方式，能够将私域数据独立于LLM外，但又能在问答过程中被LLM参考，提高LLM的知识储备和实时更新能力，这样也可以降低LLM幻觉问题。</p>
+<ul>
+<li>2、RAG是什么？</li>
+</ul>
+<p>检索增强生成（Retrieval Augmented Generation），简称 RAG，已经成为当前最火热的LLM应用方案。</p>
+<p>一句话总结：RAG（检索增强生成） = 检索技术 + LLM 提示。例如，我们向 LLM 提问一个问题（answer），RAG 从各种数据源检索相关的信息，并将检索到的信息和问题（answer）注入到 LLM 提示中，LLM 最后给出答案。</p>
+<ul>
+<li>3、怎么使用RAG？</li>
+</ul>
+<p>下面就通过这篇论文详细了解RAG原理：</p>
+<p>Retrieval-Augmented Generation for Large Language Models: A Survey</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUBwppHIB7x3CCIYiboz8GDYdMxKEL80o3PojETSzA3ObG6RkibsgoJ5Lg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>RAG</p>
+<p>RAG的研究从2020年开始，在chatgpt出现后快速发展。</p>
+<h4 id="heading-1"></h4>
+<p>2、RAG和FT的优劣</p>
+<p>RAG的具体定义是指该模型在回答问题或生成文本时，首先从大量的文档语料库中检索相关信息。随后，它利用这些检索到的信息来生成响应或文本，从而提高预测的质量。RAG方法避免为每个特定任务重新训练整个大型模型。相反，他们可以附加一个知识库，为模型提供额外的信息输入，并提高其响应的准确性。</p>
+<p>综上所述，RAG系统包括三个关键阶段:</p>
+<ul>
+<li>
+<p>1：将目标文档整理成知识库。</p>
+</li>
+<li>
+<p>2：利用编码模型基于问题在知识库中检索相关文档（R）。</p>
+</li>
+<li>
+<p>3：使用检索到的上下文作为条件，系统生成文本（G）。</p>
+</li>
+<li></li>
+<li>
+<p>RAG vs Fine-tuning</p>
+</li>
+</ul>
+<p>RAG适用于特定领域的实时知识检索，它并不能理解广泛的领域或学习新的语言、格式或风格。</p>
+<p>而LLM微调类似于让学生通过广泛的学习来内化知识。当模型需要复制特定的结构、样式或格式时，这种方法非常有用。微调可以增强非微调模型的性能，适合于强调基本模型中的现有知识，修改或定制模型的输出，以及向模型提供复杂的指令。然而，微调不适合于将新知识合并到模型中（耗时耗力），也不适合于需要对新用例进行快速迭代的情况。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUtUKOQo3tA8udNJ8zdtTjnkKT7pvQ7PFEKqfNoTnkgKHlpEP486cbtw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>RAG vs FT</p>
+<p>RAG和微调并不相互排斥，而是可以相互补充，在不同层次上增强模型的能力。</p>
+<ul>
+<li>
+<p>RAG与外部知识相关联，减少LLM幻觉问题，提高准确性，响应更加准确和可靠。</p>
+</li>
+<li>
+<p>检索技术可以识别最新的信息，保持了响应的及时性和准确性。</p>
+</li>
+<li>
+<p>通过标明引用的外部知识库来源，用户可以验证答案的准确性，从而增加对模型输出的信任。</p>
+</li>
+<li>
+<p>RAG外挂知识库可定制、更换不同的领域定制模型，为特定领域提供知识支持。</p>
+</li>
+<li>
+<p>RAG在数据库中内置角色和安全控制，可以更好地控制数据的使用，隐私性更好。</p>
+</li>
+<li>
+<p>RAG更具可扩展性。不需要更新所有参数和创建训练集，使其更经济高效。</p>
+</li>
+</ul>
+<h4 id="heading-2"></h4>
+<p>3、RAG框架</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUI5ymAz40OaCybm5MFsg5wqTZFjLibzOicGd0OjJSKu365EGtPUDn29zA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="heading-3"></h4>
+<p>3.1、朴素RAG（Naive RAG）</p>
+<p>朴素的RAG涉及传统的过程：创建索引、检索和生成。</p>
+<ul>
+<li>🐶创建知识库索引</li>
+</ul>
+<p>将知识库创建为数据索引包括以下几个步骤:</p>
+<ol>
+<li>
+<p>数据整理。这包括清理和提取原始数据，将不同的文件格式(如PDF、HTML、Word等)转换为纯文本。</p>
+</li>
+<li>
+<p>数据分块。由于LLM处理上下文能力有限，因此将长文本分成小段。</p>
+</li>
+<li>
+<p>数据编码。将所有的小段文本通过编码模型编码成向量形式，便于在检索过程中快速直接的计算向量与问题向量之间的相似性，减少检索耗时。编码结果不宜过大。</p>
+</li>
+</ol>
+<ul>
+<li>🐶检索</li>
+</ul>
+<p>使用与第一阶段相同的编码模型将用户输入转换为向量。计算问题嵌入与语料库中文档块嵌入之间的相似度。根据相似度选择前K个文档块作为当前问题的增强上下文信息。</p>
+<ul>
+<li>🐶生成</li>
+</ul>
+<p>将用户输入和相关文档组合成一个新的prompt，输入到LLM中进行回答。如果有历史对话信息，也可以合并到多轮对话提示中。</p>
+<p>代码示例：ChatPDF</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kU6R6iaS5T1jJ6BRPys6GTnxLSWcRXtjFJaEGgoIjnc8xGITAJrWsMhog/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>RAG代码示意</p>
+<p>TinyRAG</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUOVdlJS9MGfnebpOgbU7L08ouMtLRyZyzsFLG3HRn7X8TiaFjAaJ2pkw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>TinyRAG</p>
+<p>缺点：</p>
+<p>Naive RAG主要面临三个方面的挑战：检索质量、响应生成质量和增强过程。</p>
+<ul>
+<li>
+<p>检索质量。主要问题是精度低，即不是检索集中的所有块都与查询相关，从而导致潜在的幻觉和空投问题。</p>
+</li>
+<li>
+<p>召回率低。当没有检索到所有相关块时，就会出现召回率低的问题，从而阻止LLM获得足够的上下文来合成答案。此外数据冗余或过时数据可能导致不准确的检索结果。模型可能编造虚假答案，出现幻觉。不相关性是模型生成的答案无法处理查询的另一个问题。此外，模型也可能产生有害或攻击性反应的毒性或偏见。</p>
+</li>
+<li>
+<p>增强过程。对检索到的多个相关段落内容如何有效整合很重要。处理不当会造成输出不连贯或输出冗余/重复，特别是当多个检索段落包含相似信息时，可能导致生成内容重复。此外，多个检索段落对生成任务的重要性或相关性也有区别。检索到的内容也可能来自不同的写作风格或语调（语种），增强过程需要处理这些差异，确保输出一致性。</p>
+</li>
+</ul>
+<p>总结就是：1、检索不到相关内容；2、检索到了，但检索的内容质量低；3、如何处理多个相关段落之间的一致性来保证输出质量。</p>
+<h4 id="heading-4"></h4>
+<p>3.2、高级RAG（Advanced RAG）</p>
+<p>在检索生成质量方面，Advanced RAG增加了检索前处理和检索后处理过程。为了解决Naive RAG遇到的索引问题，Advanced RAG通过滑动窗口、细粒度分段和元数据等方法优化了索引。同时，提出了优化检索过程的各种方法。就具体实现而言，Advanced RAG可以通过pipe或端到端方式进行调整。</p>
+<ul>
+<li>🐶Pre-Retrieval Process（检索前处理）</li>
+</ul>
+<p>Optimizing Data Indexing</p>
+<p>优化数据索引的目的是为了提高索引内容质量。目前，为此目的采用了五种主要策略：增加索引数据的粒度、优化索引结构、添加元数据、对齐优化和混合检索。</p>
+<ol>
+<li>
+<p>增强数据粒度（Enhancing Data Granularity）：索引前处理提高文本标准化、一致性、准确性、时效性等</p>
+</li>
+<li>
+<p>文本标准化包括去除不相关信息和特殊字符，以提高检索效率。</p>
+</li>
+<li>
+<p>消除文本歧义,提高一致性。消除重复或冗余信息。</p>
+</li>
+<li>
+<p>上下文保留，以适应系统在现实世界中的交互上下文，可以通过添加另一层具有领域特定注释的上下文来实现，并通过用户反馈循环进行持续更新。</p>
+</li>
+<li>
+<p>设计机制来更新过时的文件。</p>
+</li>
+<li>
+<p>优化索引结构（Optimizing Index Structures）：通过调整块的大小、改变索引路径和合并图结构信息来实现。</p>
+</li>
+<li>
+<p>LlamaIndex2使用GPT4来评估保真度和相关性，而LLaMA[Touvron等，2023]指数具有针对不同分块方法的自动评估特征。</p>
+</li>
+<li>
+<p>跨多个索引路径查询的方法与以前的元数据过滤和分块方法密切相关，并且可能涉及同时跨不同索引进行查询。标准索引可用于查询特定查询，而独立索引可用于基于元数据关键字(如特定的“日期”索引)进行搜索或过滤。</p>
+</li>
+<li>
+<p>引入图结构包括将实体转换为节点，将它们的关系转换为关系。这可以通过利用节点之间的关系来提高准确性，特别是对于多跳问题。使用图数据索引可以增加检索的相关性。</p>
+</li>
+<li>
+<p>添加元数据信息（Adding Metadata Information）：将引用的元数据嵌入到块中，例如用于过滤的日期和目的，可以提高效率和相关性。</p>
+</li>
+<li>
+<p>对齐优化（Alignment Optimization）：主要解决文档之间的对齐问题和差异。对齐概念包括引入假设问题，创建适合每个文档的问题，并用文档嵌入(或替换)这些问题。这有助于解决文档之间的对齐问题和差异。</p>
+</li>
+<li>
+<p>混合检索（Mixed Retrieval）：这种策略的优点在于利用不同检索技术的优势。智能地结合各种技术，包括基于关键字的搜索、语义搜索和向量搜索，适应不同的查询类型和信息需求，确保一致地检索最相关和上下文丰富的信息。混合检索可以作为检索策略的健壮补充，增强RAG管道的整体性能。</p>
+</li>
+</ol>
+<p>总结：1、优化文档准确性；提高索引效率、提高索引质量、多种检测方式混合。</p>
+<ul>
+<li>🐶Embedding</li>
+</ul>
+<ol>
+<li>
+<p>微调嵌入（Fine-turning Embedding）：微调嵌入模型直接影响RAG结果。微调的目的是增强检索内容和查询之间的相关性，优化检索内容对生成输出的影响。一般来说，微调嵌入的方法分为在特定领域上下文中调整嵌入和优化检索步骤两大类。特别是在处理演化词或稀有词的专业领域，这些自定义嵌入方法可以提高检索的相关性。BGE嵌入模型是一种微调和高性能的嵌入模型，如BGE-large- en。要创建用于微调BGE模型的训练数据，首先使用gpt-3.5-turbo等llm基于文档块制定问题，其中问题和答案(文档块)形成微调对，用于微调过程。</p>
+</li>
+<li>
+<p>动态嵌入（Dynamic Embedding）：动态嵌入根据单词出现的上下文进行调整，在像BERT这样的模型中，相同的单词可以根据周围的单词具有不同的嵌入。实验表明，在OpenAI的text-embeddingada-002模型中，出现了意想不到的高余弦相似度结果，特别是当文本长度小于5个token时。理想情况下，嵌入应该包含尽可能多的上下文，以确保“健康”的结果。OpenAI的embedding -ada-02基于GPT等大型语言模型的原理，比静态嵌入模型更复杂，可以捕获一定程度的上下文。虽然它在上下文理解方面表现出色，但它可能不像GPT4等最新的全尺寸语言模型那样对上下文表现出同样的敏感性。</p>
+</li>
+</ol>
+<p>总结：使用专门用于RAG的embedding模型，embeeding结果可变？。</p>
+<ul>
+<li>🐶Post-Retrieval Process</li>
+</ul>
+<p>在从数据库中检索到上下文，同时向LLM提交所有相关内容可能会超过上下文窗口限制。将大量文档也可能会有信息冗余，它会阻碍LLM对关键信息的关注。因此需要对检索到的内容进行额外处理。</p>
+<ol>
+<li>
+<p>重新排序（ReRank）：Diversity Ranker根据文档多样性进行优先级排序，而lostinthemiddleanker则交替将最佳文档放在上下文窗口的开头和结尾。同时，为了解决解释基于向量的模拟搜索语义相似度的挑战，cohereAI rerank、bgererank5或LongLLMLingua等方法重新计算相关文本和查询之间的语义相似度。</p>
+</li>
+<li>
+<p>提示压缩（Prompt Compression）：研究表明，检索文档中的噪声会对RAG性能产生不利影响。在后处理中，重点在于压缩不相关的上下文，减少整体上下文长度。</p>
+</li>
+<li>
+<p>Selective Context方法利用小语言模型来计算提示互信息或困惑，估计元素的重要性进行筛选。然而，在RAG或长上下文场景中，这些方法可能会丢失关键信息。</p>
+</li>
+<li>
+<p>Recomp 通过在不同粒度上训练压缩器来解决这个问题。</p>
+</li>
+<li>
+<p>Long Context在处理广泛上下文时采用分解和压缩，</p>
+</li>
+<li>
+<p>&ldquo;Walking in the Memory Maze&rdquo; 设计了一种分层总结树来增强LLM的关键信息感知。</p>
+</li>
+</ol>
+<p>总结：解决长度过长以及文档重复等问题，进行重要度重排、筛选、压缩处理。</p>
+<ul>
+<li>🐶RAG Pipeline Optimization</li>
+</ul>
+<p>检索过程优化旨在提高检索系统效率和质量，目前主要集中在智能结合各种检索技术、优化检索步骤、引入认知回溯概念、灵活应用多种查询策略、利用嵌入相似度等方面。在RAG检索效率和上下文信息丰富性之间取得平衡。</p>
+<ol>
+<li>
+<p>探索混合搜索（Exploring Hybrid Search）：通过智能混合各种技术，如基于关键字的搜索、语义搜索和矢量搜索，使RAG系统能够适应不同的查询类型和信息需求，确保一致地检索最相关和上下文丰富的信息，增强了RAG管道的整体性能。</p>
+</li>
+<li>
+<p>递归检索和查询引擎（StepBack-prompt）：实现递归检索和复杂的查询引擎。递归检索需要在初始检索阶段获取较小的文档块，以捕获关键语义。在此过程的后期阶段，将向语言模型(LM)提供具有更多上下文信息的更大块。这种两步检索方法有助于在效率和上下文丰富的响应之间取得平衡。</p>
+</li>
+<li>
+<p>子查询（Subqueries）：多种查询策略，包括使用LlamaIndex等框架提供的查询引擎、使用树查询、使用向量查询或使用最基本的块顺序查询。</p>
+</li>
+<li>
+<p>HyDE：这种方法基于一个假设，即生成的答案可能比直接查询更接近嵌入空间（需要查询的文档应该和LLM直接生成结果很接近，先基于LLM生成结果，根据结果计算查询文档相似性）。HyDE利用LLM为响应查询生成一个假设文档(答案)，嵌入该文档，并使用该嵌入来检索与假设文档相似的真实文档。与基于查询寻找嵌入相似度相比，该方法强调答案之间的嵌入相似度。然而，它可能不会始终产生有利的结果，特别是在语言模型不熟悉所讨论主题的情况下，这可能会导致容易出错的实例的生成增加。</p>
+</li>
+</ol>
+<p>总结：多种RAG搜索方式混合、多种查询策略，拓展搜索场景。递归检索，提升检索效率。</p>
+<p>3.3、模块化RAG（Modular RAG）</p>
+<p>模块化的RAG结构打破了传统的Naive RAG的索引、检索和生成框架，它集成了多种方法来扩展功能模块，例如在相似检索中加入搜索模块，在检索器中应用微调方法。此外，具体问题导致重构RAG模块的出现[Yu et al.， 2022]和[Shao et al.， 2023]等迭代方法。模块化的RAG范例正在成为RAG领域的主流，它允许序列化的管道或跨多个模块的端到端训练方法。</p>
+<p>🐶New Modules</p>
+<ol>
+<li>
+<p>搜索模块（Search Module）：与Naive/Advanced RAG中的查询和语料库之间的相似性检索不同，搜索模块针对特定场景进行了定制，在使用llm生成的代码、查询语言或其他自定义工具的过程中集成了对(额外)语料库的直接搜索。搜索的数据源可以包括搜索引擎、文本数据、表格数据或知识图谱[Wang et al.， 2023c]。</p>
+</li>
+<li>
+<p>内存模块（Memory Module）：利用LLM本身的内存功能来指导检索，其原理包括查找与当前输入最相似的内存。Self-mem迭代地使用检索增强生成器创建无界内存池，将“原始问题”和“双重问题”结合在一起。检索增强生成模型可以使用自己的输出来增强自己，使文本更接近推理过程中的数据分布，使用模型自己的输出而不是训练数据。</p>
+</li>
+<li>
+<p>额外的生成模块（Extra Generation Module）：在检索内容中，冗余和噪声是常见的问题。额外生成模块不是直接从数据源中检索，而是利用LLM生成所需的上下文。与直接检索相比，LLM生成的内容更有可能包含相关信息。</p>
+</li>
+<li>
+<p>任务适应模块（Task Adaptable Module）：UPRISE专注于将RAG转换为适应各种下游任务，自动从预构建的数据池中检索给定zero-shot任务输入的提示，增强任务和模型之间的通用性。PROMPTAGATOR利用LLM作为少量查询生成器，并基于生成的数据创建特定于任务的检索器。利用LLM的泛化功能，PROMPTAGATOR仅通过几个示例就可以创建特定于任务的端到端检索器。</p>
+</li>
+<li>
+<p>对齐模块（Alignment Module）：查询和文本之间的对齐一直是影响RAG有效性的关键问题。研究人员发现，为retriever添加一个可训练的适配器模块可以有效地缓解对齐问题。PRCA利用强化学习来训练由LLM奖励驱动的上下文适配器，该适配器位于检索者和生成器之间。它通过在标记自回归策略内的强化学习阶段最大化奖励来优化检索信息。AAR提出了一种通用插件，该插件可以从已知来源的llm学习LM偏好，以帮助未知或非共调优的llm。RRR设计了一个基于强化学习重写查询的模块，以使查询与语料库中的文档保持一致。</p>
+</li>
+<li>
+<p>验证模块（Validation Module:）：在实际场景中，不能总是保证检索到的信息是可靠的。在LLM中，检索不相关的数据可能导致错觉的发生。因此，可以在检索文档之后引入一个额外的验证模块，以评估检索文档与查询之间的相关性。</p>
+</li>
+</ol>
+<p>🐶New Pattern</p>
+<p>模块化RAG的组织方法是灵活的，允许在基于特定问题上下文的RAG过程中替换或重新配置模块。目前的研究主要探讨了两种组织范式，包括模块的增加或替换，以及模块之间组织流程的调整。</p>
+<ul>
+<li>
+<p>添加或替换模块（Adding or Replacing Modules）：添加或替换模块的策略需要在引入额外模块以增强特定功能的同时，维护retrieve - read的结构。RRR提出了RewriteRetrieve-Read过程，利用LLM性能作为rewriter module强化学习的奖励。这允许重写器调整检索查询，提高阅读器的下游任务性能。类似地，在Generate-Read等方法中，模块可以被选择性地替换，其中LLM生成模块取代了检索模块。recit - read将外部检索转换为从模型权重中检索，最初由LLM记忆任务相关信息并生成输出以处理知识密集型自然语言处理任务。</p>
+</li>
+<li>
+<p>调整模块流程（Adjusting the Flow between Modules）：在模块间流程的调整领域，重点是加强语言模型和检索模型之间的交互。DSP引入了演示-搜索-预测框架，将上下文学习系统视为一个明确的程序，而不是解决知识密集型任务的终端任务提示。ITER-RETGEN 利用生成的内容指导检索，在检索-读取-检索-读取流程中迭代执行“检索增强生成”和“生成增强检索”。Self-RAG遵循决定-检索-反射-读取过程，引入主动判断模块。这种自适应和多样化的方法允许在模块化RAG框架内动态组织模块。</p>
+</li>
+</ul>
+<p>后面三张分别讲述</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUVj1MeUUsfmhCQU15Ue5oEp7QiaJPUpfqjHkx0VDzzTyodyhUpHUSKibw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="heading-5"></h4>
+<p>4、Retriever关键知识</p>
+<p>本章围绕三个关键问题讨论：</p>
+<ul>
+<li>
+<p>1）如何获得准确的语义表征？</p>
+</li>
+<li>
+<p>2）如何匹配查询和文档的语义空间？</p>
+</li>
+<li>
+<p>3）如何将检索器的输出与大型语言模型的首选项对齐？</p>
+</li>
+</ul>
+<h4 id="heading-6"></h4>
+<p>4.1、如何获得准确的语义表征？</p>
+<p>在RAG中，语义空间是查询和文档映射的多维空间。如果语义表达不准确，结果也会有问题。</p>
+<ul>
+<li>🐶Chunk optimization（块优化）</li>
+</ul>
+<p>当处理外部文档时，第一步是分块以获得细粒度的特征。然后将块嵌入。那么要分多大的块？？？</p>
+<p>在选择分块策略时，重要的考虑因素包括：</p>
+<ol>
+<li>
+<p>被索引的内容的特征。较长或较短的内容需要不同的分块模型</p>
+</li>
+<li>
+<p>使用的嵌入模型及其最佳块大小。不同的嵌入模型在不同的块大小下表现不同：例如，sentence-transformer更适合单个句子，而text-embedding-ada-002对于包含256或512个标记的块更好。</p>
+</li>
+<li>
+<p>用户查询的预期长度和复杂性。</p>
+</li>
+<li>
+<p>以及如何在特定应用中使用检索结果。</p>
+</li>
+</ol>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kU7hesbAgTicCwDEH6yFL0CgAq3xSibicuy4YIpLnPPliaqwv76sGNMZEG3A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>chunk size</p>
+<p>多种混合优化增强RAG性能</p>
+<ul>
+<li>
+<p>采用不同的块优化方法，以提高检索效率和准确性。</p>
+</li>
+<li>
+<p>滑动窗口技术通过多次检索聚合全局相关信息实现分层检索。</p>
+</li>
+<li>
+<p>Small2big技术在搜索过程中使用小文本块，并将较大的附属文本块提供给语言模型进行处理。</p>
+</li>
+<li>
+<p>摘要嵌入技术在文档摘要上执行Top K检索，提供完整的文档上下文。</p>
+</li>
+<li>
+<p>元数据过滤技术利用文档元数据进行过滤。</p>
+</li>
+<li>
+<p>图索引技术将实体和关系转换为节点和连接，显著增强了多跳问题的相关性。</p>
+</li>
+<li></li>
+<li>
+<p>Fine-tuning Embedding Models</p>
+</li>
+</ul>
+<p>在得到合适的组块大小后，需要通过一个嵌入模型将组块和查询词嵌入到语义空间中。</p>
+<p>UAE，Voyage，BGE等已经在大规模语料库上进行了预训练，但是当应用于特定领域时，它们可能不能准确地表示特定领域的语料库信息。此外，嵌入模型的特定于任务的微调对于确保模型理解与内容相关性有关的用户查询至关重要，而未微调的模型可能无法满足特定任务的需求🤔。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kU49p6njnxpGIQn8Hbg8uaXoqt0g6QeImg88r38JgX3CMIzV8JYJNmpA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>embedding 模型</p>
+<p>Domain Knowledge Fine-tuning。为了使嵌入模型正确理解特定领域的信息，需要构建特定领域的数据集来微调嵌入模型。微调嵌入模型与普模型不同使用的数据集不同：由三部分组成，包括Queries库、Corpus库和相关doc库。嵌入模型基于Queries在Corpus库中查找相关doc，然后将查询的相关度是否命中作为模型的度量。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUshSE1C9xTiazRftHpZL7VovTkJfhRKgq8dBGsmuSLyP54SndWSOOfYg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>LlamaIndex</p>
+<p>Fine-tuning of downstream tasks。嵌入模型适应下游任务。当在下游任务中使用RAG时，一些作品已经通过使用LLM的能力来微调嵌入模型。利用大语言模型（LLM）作为少量查询生成器，并基于生成的数据创建特定于任务的检索器，并解决了监督微调的问题，由于数据稀缺，使用大语言模型来输出来自多个下游任务的数据的奖励值，通过数据集的硬标记和从LLM导出的软奖励来用两个不同的监督信号微调检索器。这通过领域知识注入和下游任务微调在一定程度上改善了语义表示。然而，通过这种方法训练的检索器对大型语言模型没有直观的帮助😂，因此已经做了一些工作来直接通过LLM的反馈信号来监督嵌入模型的微调。</p>
+<h4 id="heading-7"></h4>
+<p>4.2、如何匹配查询和文档的语义空间？</p>
+<p>在RAG应用程序中，一些检索器使用相同的嵌入模型来编码查询和文档，而另一些检索器使用两个模型来分别编码查询和文档。此外，用户的原始查询可能存在表达不佳和缺乏语义信息的问题。因此，对齐用户查询和文档的语义空间是非常必要的。</p>
+<ul>
+<li>🐶Query Rewrite</li>
+</ul>
+<p>👽查询不准确或者和文档语义不对应？利用LLM重生成查询！！！👽</p>
+<p>Query2Doc和ITERRETGEN利用大型语言模型固有能力，引导生成伪文档，然后将原始查询与伪文档合并，形成新查询。</p>
+<p>在HyDE中，查询向量是通过使用文本指示符来建立的，使用这些指示符来生成相关的“假设”文档，但可能并不真正存在，它只需要捕获相关模式。</p>
+<p>RR引入了一个新的框架，颠倒了检索和阅读的顺序，专注于查询重写。该方法首先使用大语言模型生成查询，然后使用Web搜索引擎检索上下文，最后使用小语言模型作为训练重写器，为冻结的大语言模型服务。</p>
+<p>STEP-BACKPROMPTING可以使大型语言模型进行抽象推理，提取高级概念和原理，并在此基础上进行检索。</p>
+<p>最后，多查询检索的方法是使用大型语言模型生成多个查询，这些查询可以并行执行，检索结果一起输入，这对于依赖于多个子问题的单个问题非常有用。</p>
+<ul>
+<li>🐶Embedding Transformation</li>
+</ul>
+<p>👽查询和文档语义不对应？优化Embedding（接一个adapter） ！！！👽</p>
+<p>在LlamaIndex中，可以在查询编码器之后连接adapter，并微调适配器以优化查询嵌入的表示，将其映射到更适合特定任务的潜在空间。当查询和外部文档的数据结构不同时，例如非结构化查询和结构化外部文档，使查询能够与文档对齐是非常重要的。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUoLia5bcvos8rpXJS1ZDGpDSREsHjAFBxKrS0oz7EjWFLlBuLXWhdyZw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>SANTA提出了两种预训练方法，使检索器意识到结构化信息：</p>
+<ul>
+<li>
+<p>1）使用结构化数据和非结构化数据之间的自然对齐关系进行对比学习，用于结构化感知的预训练。</p>
+</li>
+<li>
+<p>2）Masked Entity Prediction，设计面向实体的掩码策略，要求语言模型填充被掩码的实体。</p>
+</li>
+</ul>
+<h4 id="heading-8"></h4>
+<p>4.3、如何将检索器的输出与大型语言模型的首选项对齐？</p>
+<p>当正确的查询获取到了正确的相关文档，LLM也可能会输出错误的结果，因为LLM本身不够完美😭。</p>
+<ul>
+<li>🐶LLM supervised training（微调嵌入模型）</li>
+</ul>
+<p>AAR通过编码器解码器架构LM为预训练的检索器提供监督信号。通过FiD交叉注意分数确定LM的首选文档，然后用硬负采样和标准交叉熵损失对检索器进行微调。最终，微调的检索器可以直接用于增强看不见的目标LM，从而在目标任务中表现得更好。Retriever的训练损失为：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUklSsXe7eCbMJ5bZ7djHNWDFEoovSia7QBDWOQzCs42iabkfQPjfu7tkw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>其中Da+是检索集合中LLM首选的文档，Da-是不首选的。l是标准交叉熵损失。最后，鼓励LLM可能倾向于关注可读而不是信息丰富的文档。</p>
+<p>REPLUG使用检索器和LLM来计算检索到的文档的概率分布，然后通过计算KL散度来执行监督训练。这种简单有效的训练方法通过使用LM作为监督信号来增强检索模型的性能，从而消除了对任何特定交叉注意机制的需要。Retriever的训练损失如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUwX1xXL4fSJvGKRqzm8EeJGeTf5KyWa4w95iaDupZYtSYxicfbNnsiajRQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>其中D是一组输入上下文，PR是检索可能性，QLM是每个文档的LM可能性。</p>
+<p>UPRISE还采用冻结的大型语言模型来微调Prompt Retriever。</p>
+<p>Atlas提出了四种微调监督嵌入模型的方法，其中，注意力蒸馏使用语言模型在输出过程中生成的交叉注意力分数进行蒸馏。</p>
+<p>EMDR 2采用期望最大化算法来训练检索到的文档作为潜在变量。</p>
+<p>Perplexity Distillation直接使用模型生成的令牌的复杂度作为指标进行训练。</p>
+<p>LOOP引入了一个新的损失函数，该函数基于文档删除对LM预测的影响，为更好地使模型适应特定任务提供了有效的训练策略。</p>
+<ul>
+<li>🐶Plug in an adapter</li>
+</ul>
+<p>微调嵌入模型比较困难。一些工作选择外部附接adapter用于对准。.PRCA通过上下文提取阶段和奖励驱动阶段训练适配器，并基于基于令牌的自回归策略优化检索器的输出。TokenFiltering计算交叉注意力得分，选择得分最高的输入标记以有效地过滤标记。RECOMP提出了提取和生成压缩器，其通过选择相关句子或合成文档信息来生成摘要，以实现多文档查询焦点摘要。PKG通过指令微调将知识注入到白盒模型中，并直接替换检索器模块，用于根据查询直接输出相关文档。</p>
+<h4 id="heading-9"></h4>
+<p>5、Generator关键知识</p>
+<p>RAG的生成器通过利用检索到的信息来提高准确性和相关性。在RAG中，生成器的输入不仅包括传统的上下文信息，而且还包括通过检索器获得的相关文本片段。</p>
+<h4 id="heading-10"></h4>
+<p>5.1、如何通过检索后处理提高检索结果？</p>
+<p>大型模型的固有问题，如上下文长度限制和冗余信息的脆弱性，仍然存在。🦔检索后处理🦔是指检索者从大型文档数据库中检索到的相关信息进行进一步处理、过滤或优化的过程。目的是提高检索结果质量，以更好地满足用户需求或后续任务。它可以被理解为对检索阶段获得的文件进行再处理的过程。检索后处理的操作通常包括信息压缩和结果重排。</p>
+<ul>
+<li>🐶Information Compression</li>
+</ul>
+<p>针对长上下文，信息压缩是必要的：减少噪音，应对上下文长度限制，增强生成效果。</p>
+<p>PRCA通过训练信息提取器解决这个问题。在上下文提取阶段，给定输入文本Sinput，它可以生成压缩后的输出序列Cextracted。训练过程的目标是尽可能地最小化Cextracted和实际上下文Ctruth之间的差异。损失函数如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUMUic2JYXfCnibWNxXZiamcEfKNxh2MhLjvTs9LaGsf5rhBoIn5mEAk1Kg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>其中f。是信息提取器，θ是提取器的参数。</p>
+<p>RECOMP类似地通过利用对比学习来训练信息冷凝器。对于每个训练数据点，存在一个正样本和五个负样本。使用对比损失训练编码器。在此过程中，具体优化目标如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUSM3YP4hqolU9tw4ZVznsxecjZnNans4VXNb6Sb6fcle4ibZ6erA0NKw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>其中Xi是训练数据，pi是正样本，nj是负样本，sim（x，y）用于计算x和y之间的相似度。</p>
+<p>另一项研究选择进一步精简文档数量，旨在通过减少检索到的文档数量来提高模型的答案准确性。Filter-Ranker综合了大语言模型（LLM）和小语言模型（SLM）的优点。SLM充当过滤器，LLM充当重新排序代理。通过促使LLM重新排列由SLM识别的困难样本的部分，研究结果表明各种信息提取（IE）任务都有显着改进。</p>
+<ul>
+<li>🐶Rerank</li>
+</ul>
+<p>重排序模型是重新排列文档记录，将最相关的项目放在顶部，从而将文档总数减少到固定数量。避免文本过长问题，而且有助于提高检索效率和响应性。</p>
+<p>引入上下文压缩作为重新排序的一部分，减少单个文档的内容，集中显示检索结果中最相关的信息。</p>
+<p>重新排序模型在整个信息检索过程中发挥着优化和细化的作用，为后续的LLM处理提供更有效和准确的输入。</p>
+<h4 id="heading-11"></h4>
+<p>5.2、如何优化生成器以适应输入数据？</p>
+<p>在RAG模型中，generator的优化是架构的关键组成部分。</p>
+<p>在RAG中，主要区别在于输入不仅包括查询，还包括检索器检索的各种文档（结构化/非结构化）。额外信息的引入可能会对模型的理解产生重大影响，特别是对于较小的模型。对模型进行微调以适应查询+检索文档的输入变得特别重要。</p>
+<p>在RAG中微调生成器的方法基本上类似于LLM的一般微调方法。</p>
+<ul>
+<li>🐶General Optimization Process</li>
+</ul>
+<p>对包含（input，output）对的训练数据进行训练，旨在训练模型在给定输入x的情况下生成输出y的能力。SelfMemory采用相对经典的训练过程。给定输入x，检索相关文档z（在论文中选择Top-1），在对（x，z）进行积分后，模型生成输出y。该论文利用两种常见的范例进行微调，即Joint-Encoder和Dual-Encoder。</p>
+<p>对于Joint-Encoder，使用基于编码器-解码器的标准模型，其中编码器最初对输入进行编码，并且解码器通过注意力机制将编码结果组合以自回归方式生成令牌：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUFy5bztbmuOsYO62w65tc718OBeaRxjADUVjyibrNoSEXPwKG0KFzcpA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>对于Dual-Encoder，系统建立两个独立的编码器，每个编码器分别负责对输入（查询、上下文）和文档进行编码。然后，解码器按顺序对输出进行双向交叉注意处理。作者选择使用Transformer作为两种架构的构建块，并优化G负对数似然（NLL）损失。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kULHlbqDg4ibeAIiaXiaVKpJ9J1cicf4p3pjJEoBr5VqLuMgnaRRSSIYJXUQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kU4mVHvOJMX7AgicasV5EoblYkAPsDJfreofc73eLs1149xP7EF044z1w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>SelfMemory DualEncoderTransformerModel</p>
+<ul>
+<li>🐶Utilizing Contrastive Learning</li>
+</ul>
+<p>训练数据通常是成对得到。当指定输出来微调LLM，可能会导致“暴露偏差”问题，因为它可能过度适应训练数据中的特定结果，而不能有效地推广到其他场景。</p>
+<p>因此，SURGE提出了一种图文对比学习方法，目标定义如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUlFERyZYgCr019rAPERK07uaYbR0cXcJAr5e12SzV9m3at8TX75pceA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>通过引入对比学习目标，可以更好地学习生成多样化和合理的回复。有助于减轻过拟合的风险，并提高泛化能力。</p>
+<p>当处理涉及结构化数据的检索任务时，SANTA利用三阶段训练过程来充分理解结构和语义信息。具体而言，在检索器的训练阶段，采用对比学习，主要目标是优化查询和文档的嵌入表示。具体优化目标如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUo5MPNUsja9icUe2g0xeh4YTjrluuF0BP3JO5yq0NBddm7Ils8cbNmiaA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在生成器的初始训练阶段，我们利用对比学习来对齐结构化数据和非结构化数据的相应文档描述。优化目标如上所述。此外，在生成器的后期训练阶段中，实体语义在学习检索中的文本数据表示方面的显着有效性。因此首先在结构化数据中执行实体识别，随后将掩码应用于生成器训练数据的输入部分中的实体，使生成器能够预测这些掩码。以下优化目标为：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kU7Goyic8jnT0jqD2aYy0E7GfJOkbPKTl4Oxza6mv33UNvRSqbYVJdxhw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在整个训练过程中，我们通过从上下文中获取必要的信息来恢复被掩蔽的实体，理解文本数据的结构语义，并对齐结构化数据中的相关实体。我们优化语言模型以填充隐藏的跨度并更好地理解实体语义。</p>
+<p>6、RAG的增强部分（A）</p>
+<p>本章主要从增强阶段、增强数据源和增强过程三个维度来阐述RAG开发过程中的关键技术，RAG核心组件的分类如图4所示。</p>
+<p>6.1、RAG in Augmentation Stages</p>
+<ul>
+<li>🐶Pre-training Stage</li>
+</ul>
+<p>REALM引入了一种更加模块化和可解释的知识嵌入方法。遵循掩蔽语言模型（MLM）范例，REALM将预训练和微调建模为检索-然后-预测过程，其中语言模型通过基于掩蔽句子x预测掩蔽标记y来进行预训练，对P（x）建模|y）。</p>
+<p>RETRO利用检索增强来预训练自回归语言模型，通过从大量标记数据中检索并显着减少模型参数，从头开始进行大规模预训练。RETRO与GPT模型共享主干结构，并引入了一个额外的RETRO编码器来编码从外部知识库检索到的相邻实体的特征。此外，RETRO在其解码器Transformer结构中结合了逐块交叉注意层，以有效地集成来自RETRO编码器的检索信息。RETRO实现了比标准GPT模型更低的困惑。此外，它提供了通过更新检索数据库来更新存储在语言模型中的知识的灵活性，而不需要重新训练语言模型。</p>
+<p>Atla采用类似的方法，结合使用T5架构的检索机制在预训练和微调阶段。在预训练之前，它使用预训练的T5对编码器-解码器LM骨干进行训练，并使用预训练的Contriever对密集检索器进行训练。在预训练过程中，它每1000步刷新一次异步索引。</p>
+<p>COG是一种文本生成模型，它通过从现有的文本集合中逐渐复制文本片段（如单词或短语）来形式化其生成过程。与传统的文本生成模型，依次选择单词，COG利用高效的矢量搜索工具来计算有意义的文本片段的上下文表示和索引。因此，文本生成任务被分解成一系列的复制和粘贴操作，其中在每个时间步，相关的文本片段是从文本集合中寻找，而不是从一个独立的词汇表中选择。COG在各个方面都表现出了优于RETRO的上级性能，包括问答、领域自适应和扩展短语索引。</p>
+<p>RETRO++增加了模型的参数规模。研究发现，文本生成质量、事实准确性、低毒性和下游任务准确性得到了持续改善，特别是在知识密集型任务（如开放域问题回答）中。</p>
+<p>总之，增强预训练的优点和局限性是显而易见的。在困惑，文本生成质量和下游任务性能方面优于标准GPT模型。此外，与纯粹的预训练模型相比，它通过使用更少的参数来实现更高的效率。它特别擅长处理知识密集型任务，允许通过特定领域语料库的培训创建特定领域的模型。缺点是需要大量的预训练数据和更大的训练资源，以及更新速度较慢的问题。特别是随着模型大小的增加，检索增强训练的成本变得相对更高。</p>
+<p>🐶Fine-tuning Stage</p>
+<p>REPLUG将语言模型（LM）视为黑盒，并通过可调整的检索模型对其进行增强。通过监督信号从黑盒语言模型中获取反馈，REPLUG改进了初始检索模型。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUicmkXVlpY7fyoBzkqYicoDtTUUicZ08KSmWV8ibqD0TicTHJLQFibbCTycLg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>其他比如Self-Mem、RADIT、SUGRE、RePlug、RA-DIT、UPRISE方法。</p>
+<p>需要专门为RAG微调准备的数据集，以及与推理阶段期间的RAG相比需要大量计算资源，但与预训练阶段相比减少了资源消耗，同时保留了调整模型输出风格的能力。</p>
+<p>🐶Inference Stage</p>
+<p>DSP框架依赖于一个复杂的管道，涉及在冻结语言模型（LM）和检索模型（RM）之间传递自然语言文本，为模型提供更多信息上下文以提高生成质量。</p>
+<p>PKG为LLM配备了一个知识引导模块，允许在不改变LLM参数的情况下访问相关知识，使模型能够执行更复杂的任务。</p>
+<p>CREA-ICL利用跨语言知识的同步检索来帮助获取额外的信息。</p>
+<p>RECITE通过从LLM中采样一个或多个段落来形成上下文。</p>
+<p>ITRG通过迭代地检索和搜索正确的推理路径，增强了对需要多步推理的任务的适应性。</p>
+<p>ITER-RETGEN采用迭代的方法来合并检索和生成，实现“检索增强生成”和“生成增强检索”的交替过程。</p>
+<p>IRCOT合并了RAG和CoT的概念，采用替代CoT引导检索并使用检索结果来改进CoT。这种方法显著提高了GPT-3在各种QA任务中的性能，突出了集成检索和生成的潜在优势。</p>
+<p>推理阶段增强方法提供了轻量级、成本效益高、不需要额外训练和利用强大的预训练模型的优点。主要优势在于在微调期间冻结LLM的参数，专注于提供更好地满足需求的上下文，具有快速和低成本的特点。通常，这种方法通常与过程优化技术相结合，例如逐步推理，迭代推理和自适应检索，以更好地满足不同任务的要求。</p>
+<p>6.2、Augmentation Data Source</p>
+<p>数据源是RAG有效性的关键因素。不同的数据源提供不同的知识粒度和维度，需要不同的处理方法。它们主要分为三类：非结构化数据、结构化数据和LLM生成的内容。</p>
+<p>🐶Augmented with Unstructured Data</p>
+<p>非结构化数据主要包括文本数据，通常来自纯文本语料库。在文本粒度方面，除了公共块（包括句子）之外，检索单元可以是令牌、短语、COG和文件。更细粒度的检索单元通常可以更好地处理罕见模式和域外场景，但检索成本会增加。</p>
+<p>在词级，FLARE采用主动检索策略，仅在LM生成低概率词时进行检索。在块级，RETRO使用前一个块来检索最近的相邻块，并将该信息与前一个块的上下文信息集成以指导下一个块的生成。RETRO通过从检索数据库中检索最近的相邻块N（Ci-1），然后融合先前块（C1，&hellip;，Ci-1）和N（Ci-1）的检索信息通过交叉关注来指导下一个块Ci的生成。为了保持因果关系，第i个块Ci的自回归生成只能使用前一个块N（Ci-1）的最近邻，而不能使用N（Ci）。</p>
+<p>🐶Augmented with Structured Data</p>
+<p>知识图（KG）🎃。经过验证的KG可以提供更高质量的背景，减少模型幻觉的可能性。</p>
+<p>相关方法：RET-LLM、SUGRE、KnowledgeGPT。</p>
+<p>🐶LLM Generated Content RAG</p>
+<p>利用LLM本身生成的内容进行检索，旨在提高下游任务的性能。</p>
+<p>相关方法：SKR、GenRead、Self-administration。</p>
+<p>6.3、Augmentation Process</p>
+<p>大多数RAG研究通常只执行一个单一的检索和生成过程。然而，单次检索可能包含冗余信息，导致“中间丢失”现象。这种冗余信息可能会模糊关键信息或包含与真实的答案相反的信息。目前优化检索过程的方法主要有迭代检索和自适应检索。这使得模型可以在检索过程中多次搜索，或者自适应地调整检索过程，以更好地适应不同的任务和场景。</p>
+<p>7、RAG效果评估</p>
+<h4 id="heading-12"></h4>
+<p>7.1、Evaluation Methods</p>
+<p>主要有两种方法来评估RAG的有效性：独立评估和端到端评估。</p>
+<p>🐶Independent Evaluation</p>
+<p>独立评估包括评估检索模块和生成（读取/合成）模块。</p>
+<ol>
+<li>
+<p>Retrieval Module。一套衡量系统（如搜索引擎，推荐系统或信息检索系统）根据查询或任务对项目进行排名的有效性的指标通常用于评估RAG检索模块的性能。示例包括命中率、MRR、NDCG、精度等。</p>
+</li>
+<li>
+<p>Generation Module。这里的生成模块是指通过将检索到的文档补充到查询中而形成的增强或合成输入，与通常端到端评估的最终答案/响应生成不同。生成模块的评价指标主要集中在上下文相关性上，衡量检索到的文档与查询问题的相关性。</p>
+</li>
+</ol>
+<p>🐶End-to-End Evaluation</p>
+<p>端到端评估评估RAG模型为给定输入生成的最终响应，包括模型生成的答案与输入查询的相关性和一致性。从内容生成目标来看，评价可以分为无标签内容和有标签内容。未标注内容评价指标包括答案保真度、答案相关性、无害性等，而标记的内容评估度量包括准确性和EM。</p>
+<p>此外，从评估方法的角度来看，端到端评估可以分为人工评估和使用LLM的自动评估。</p>
+<p>此外，基于RAG在特定领域中的应用，采用特定的评估指标，例如用于问答任务的EM，用于摘要任务的UniEval和E-F1，以及用于机器翻译的BLEU。</p>
+<p>7.2、Key Metrics and Abilities</p>
+<p>现有的研究往往缺乏严格的评估检索增强生成不同的LLM的影响。</p>
+<p>🐶Key Metrics</p>
+<p>三个核心指标主要集中在：答案的忠实性，答案相关性和上下文相关性。</p>
+<ol>
+<li>
+<p>Faithfulness。模型生成的答案必须与给定的上下文保持一致，不偏离或矛盾。</p>
+</li>
+<li>
+<p>Answer Relevance。生成的答案需要与提出的问题直接相关。</p>
+</li>
+<li>
+<p>Context Relevance。检索的上下文信息尽可能准确和有针对性。</p>
+</li>
+</ol>
+<p>🐶Key abilities</p>
+<p>从RAG所需的噪声鲁棒性、否定拒绝、信息整合和反事实鲁棒性，建立了检索增强生成的基准：</p>
+<ol>
+<li>
+<p>Noise Robustness。衡量模型处理噪声文档的效率，噪声文档是指与问题相关但不包含有用信息的文档。</p>
+</li>
+<li>
+<p>Negative Rejection。当模型检索的文档缺乏回答问题所需的知识时，模型应该正确地拒绝响应。在否定拒绝的测试设置中，外部文档仅包含噪声。理想情况下，LLM应发出“缺乏信息”或类似的拒绝信号。</p>
+</li>
+<li>
+<p>Information Integration。此功能评估模型是否可以集成来自多个文档的信息以回答更复杂的问题。</p>
+</li>
+<li>
+<p>Counterfactual Robustness。该测试旨在评估模型在收到有关检索信息中潜在风险的指示时，是否能够识别和处理文档中的已知错误信息。反事实稳健性测试包括LLM可以直接回答的问题，但相关的外部文档包含事实错误。</p>
+</li>
+</ol>
+<p>7.3、Evaluation Frameworks</p>
+<p>许多人利用强大的LLM来评估输出。在RAG评价框架领域，RAGAS和ARES是相对较新的。开源库TruLens也提供了与RAGAS相似的评估模式。</p>
+<ul>
+<li>🐶RAGAS</li>
+</ul>
+<p>该框架考虑了检索系统识别相关和关键上下文段落的能力。RAGAS是一个基于简单手写提示的评估框架，使用这些提示以完全自动化的方式衡量质量。使用gpt3.5-turbo-16 k模型来评估所有提示。</p>
+<p>原理：</p>
+<ol>
+<li>
+<p>评估答案的真实性：使用LLM将答案分解为单个语句，并验证每个语句是否与上下文一致。最后，通过将支持的陈述数量与陈述总数进行比较来计算“忠诚度分数”。</p>
+</li>
+<li>
+<p>评估答案相关性：使用LLM生成潜在问题，并计算这些问题与原始问题之间的相似性。答案相关性分数是通过计算所有生成的问题与原始问题的平均相似度得出的。</p>
+</li>
+<li>
+<p>评估上下文相关性：使用LLM提取与问题直接相关的句子，并使用这些句子与上下文中句子总数的比率作为上下文相关性得分。</p>
+</li>
+</ol>
+<ul>
+<li>🐶ARES</li>
+</ul>
+<p>RAGAS作为一种基于简单手写提示的较新的评估框架，对新的RAG评估设置的适应性有限，ARES系统的性能大大低于RAGAS系统。ARES通过使用少量手动注释数据和合成数据降低了评估成本，并利用预测驱动推理（PDR）提供统计置信区间，提高了评估的准确性。</p>
+<p>原理：</p>
+<ol>
+<li>
+<p>生成合成数据集：ARES最初使用语言模型从目标语料库中的文档生成合成问题和答案，以创建正样本和负样本。</p>
+</li>
+<li>
+<p>准备LLM：接下来，ARES使用合成数据集对轻量级语言模型进行微调，以训练它们来评估上下文相关性、答案忠实性和答案相关性。</p>
+</li>
+<li>
+<p>使用置信区间对RAG系统进行排名：最后，ARES将这些判断模型应用于对RAG系统进行评分，并将其与使用PPI方法的手动注释验证集相结合，以生成置信区间，从而可靠地估计RAG系统的性能。</p>
+</li>
+</ol>
+<h4 id="heading-13"></h4>
+<p>8、未来展望</p>
+<h4 id="heading-14"></h4>
+<p>8.1、Vertical Optimization of RAG</p>
+<p>首先，扩大LLM的上下文窗口，甚至到无限的上下文的程度，是LLM发展的一个重要方向。</p>
+<p>其次，RAG的鲁棒性是另一个重要的研究热点。如果在检索过程中出现不相关的噪音，或者检索到的内容与事实相矛盾，则会严重影响RAG的有效性。</p>
+<p>第三，RAG与微调的协同问题也是本文的研究重点。例如RADIT。</p>
+<p>最后，在工程实践中，如何提高大规模知识库场景下的检索效率和文档召回率，如何确保企业数据安全，如防止LLM被诱导泄露文档的来源、元数据或其他信息等，都是需要解决的关键问题。</p>
+<p>总结</p>
+<p>1、RAG优势在于实时检索特定领域知识，可拓展能力强，可以通过更换知识库的方式快速应用于不同领域。而微调则重在提升LLM的基础理解能力和对话风格等信息。</p>
+<p>2、RAG需要增加额外的知识库查询过程，耗时更长。需要优化快速检索、内容整理的工程能力。</p>
+<p>3、RAG过程简单概括为：文档整理知识库、知识库查询和回答三个过程。那么就会有：</p>
+<ul>
+<li>
+<p>文档整理不规范、不准确的问题；</p>
+</li>
+<li>
+<p>知识库查询不到、知识库查询结果不准确、查询结果过多导致重复内容多、查询速度慢等问题；</p>
+</li>
+<li>
+<p>回答不准确问题；</p>
+</li>
+</ul>
+<p>4、高级RAG相比于朴素RAG包含前处理优化、查询优化、质量改进三大部分。</p>
+<ul>
+<li>
+<p>前处理优化：1、优化文档准确性；提高索引效率、提高索引质量、多种检测方式混合。</p>
+</li>
+<li>
+<p>使用专门用于RAG的embedding模型（embeeding结果可变）。</p>
+</li>
+<li>
+<p>搜索优化：多种RAG搜索方式混合、多种查询策略混合，拓展搜索场景和内容。递归检索，提升检索效率。</p>
+</li>
+<li>
+<p>生成优化：解决长度过长以及文档重复等问题，增加重要度重排、筛选、压缩处理过程，微调LLM模型。</p>
+</li>
+</ul>
+<p>5、第4/5/6章分别从Retrieval、Generator和Augmentation Method三部分讲解了每个点的优化方式。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/h0vLdztmiam0XIiarhOhGMNZHW4TZAe6kUVj1MeUUsfmhCQU15Ue5oEp7QiaJPUpfqjHkx0VDzzTyodyhUpHUSKibw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>6、最后介绍了一些RAG评估方式和评估框架，主要为RAGAS和ARES。</p>
+<p>LLM系列文章：</p>
+<ol>
+<li>
+<p>akaihaoshuai：从0开始实现LLM：1、大模型训练踩坑</p>
+</li>
+<li>
+<p>akaihaoshuai：从0开始实现LLM：2、大模型技术报告总结（GPT/PaLM/GLM/LLaMA/Skywork）</p>
+</li>
+<li>
+<p>akaihaoshuai：从0开始实现LLM：3、大模型训练之数据扩展+deepspeed优化</p>
+</li>
+<li>
+<p>akaihaoshuai：从0开始实现LLM：4、长上下文优化（理论篇）</p>
+</li>
+<li>
+<p>akaihaoshuai：从0开始实现LLM：5、长上下文优化（代码篇）YaRN/CLEX/LongLoRA/LM-Infinite/StreamingLLM</p>
+</li>
+<li>
+<p>akaihaoshuai：从0开始实现LLM：6、模型量化理论+代码实战（LLM-QAT/GPTQ/BitNet 1.58Bits/OneBit）</p>
+</li>
+<li>
+<p>akaihaoshuai：从0开始实现LLM：7、RLHF/PPO/DPO原理和代码简读</p>
+</li>
+<li>
+<p>git项目：https://github.com/akaihaoshuai/baby-llama2-chinese_fixgithub.com/akaihaoshuai/baby-llama2-chinese_fix</p>
+</li>
+</ol>
+<h4 id="heading-15"></h4>
+<p>参考文章</p>
+<p>产品经理大群：一文读懂：大模型RAG（检索增强生成）</p>
+<p>大模型检索增强生成（RAG）有哪些好用的技巧？</p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489437&amp;idx=1&amp;sn=b70db6190484c4056318b8275b014dd6&amp;scene=21#wechat_redirect">前沿重器[43] | 谷歌中科院新文：CRAG-可矫正的检索增强生成</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489448&amp;idx=1&amp;sn=93570688b6898b24b18bd07fce3f0689&amp;scene=21#wechat_redirect">心法利器[108] | 微调与RAG的优缺点分析</a></p>
+<p>Retrieval-Augmented Generation for Large Language Models: A Survey</p>
+<p>GitHub - KMnO4-zx/TinyRAG: TinyRAG</p>
+<p>不要葱姜蒜：动手实现一个最小RAG——TinyRAG</p>
+<p>产品经理大群：一文读懂：大模型RAG（检索增强生成）</p>
+<p>大模型检索增强生成（RAG）有哪些好用的技巧？</p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489372&amp;idx=1&amp;sn=8fc154edac26943a447d596a4e697ede&amp;chksm=e8824fc2dff5c6d44d8e7a1be4cc1b472e8cdd8e8484bf02d00f78ab708e6340f6f90243cb0c&amp;scene=21#wechat_redirect">前沿重器[41] | 综述-面向大模型的检索增强生成（RAG）</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489357&amp;idx=1&amp;sn=4193a9e92c7749e4ecdacbce7cf6b9db&amp;chksm=e8824fd3dff5c6c5b6c04be81624bf075c96fef23fc40f8cd165a600ecaa02d434a5fd21da41&amp;scene=21#wechat_redirect">前沿重器[40] | 高级RAG技术——博客阅读</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489330&amp;idx=1&amp;sn=23cf88a96441f93f78461ff92be6a03c&amp;chksm=e8824facdff5c6ba95ea2e5822e1ac40037c0312b774b028fb545117911dfbfe38e1deef11f2&amp;scene=21#wechat_redirect">心法利器[104] | 基础RAG-向量检索模块（含代码）</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489349&amp;idx=1&amp;sn=e68ad131621a0cf94d5532f5da2d0199&amp;chksm=e8824fdbdff5c6cdcb8e683b67b07d996af3cf51107099529e4c12b859e8192be7d05d07f479&amp;scene=21#wechat_redirect">心法利器[106] 基础RAG-调优方案</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzkxOTQwNzU0Ng==&amp;mid=2247486410&amp;idx=1&amp;sn=beaa356e5086f17aa88db6ea807844d9&amp;scene=21#wechat_redirect">HQANN：结构化和非结构化混合查询的高效鲁棒相似度搜索 | 必读论文</a></p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzkxOTQwNzU0Ng==&amp;mid=2247486398&amp;idx=1&amp;sn=40ceccd6c9ddc31b0460e9d1ba75bf35&amp;scene=21#wechat_redirect">Embedding是什么？为什么重要？</a></p>
+<p><a href="https://github.com/Hannibal046/SelfMemory">https://github.com/Hannibal046/SelfMemory</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
