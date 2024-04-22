@@ -1,0 +1,1198 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>LLaMA3初步解读：ScalingLaw颠覆之作，弱智吧挑战及格！ 作者： AINLP 来源： AINLP 引言 4月19日，全球科技、社交巨头Meta在官网，正式发布了开源大模型——Llama-3。Meta 表示，Llama 3 是在两个定制的 24K GPU 集群上、基于超过 15T token 的数据上 进行了训练 —— 相当于 Llama 2 数据集的 7 倍还多，代码数据相当于 Llama 2 的  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">LLaMA3初步解读：ScalingLaw颠覆之作，弱智吧挑战及格！</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              April 22, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbopTlm8Ih26FBPnTwQKXIhNymPW9ia7dP7UVmLdaZx8MR6yg0JYJk6tQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/-0OyRYrDbBq8VZmoqyQniA">AINLP</a></p>
+<h4 id="heading"></h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=other" alt=""></p>
+<p>引言</p>
+<p>4月19日，全球科技、社交巨头Meta在官网，正式发布了开源大模型——Llama-3。Meta 表示，Llama 3 是在<strong>两个定制的 24K GPU 集群上、基于超过 15T token 的数据上</strong> 进行了训练 —— 相当于 Llama 2 数据集的 7 倍还多，代码数据相当于 Llama 2 的 4 倍。从而产生了迄今为止最强大的 Llama 模型，Llama 3 支持 8K 上下文长度，是 Llama 2 容量的两倍。Llama3-8B模型效果追平Llama2-70B效果。</p>
+<p>本次将根据Meta官方文档对LLaMA3进行初步解读，并精心挑选了“弱智吧”的数据测试Llama3的表现，详细解读等论文或者技术报告发出进行解析。</p>
+<p>官方文档：https://ai.meta.com/blog/</p>
+<p>实验结论预览：</p>
+<ol>
+<li>
+<p>LLaMA3 颠覆了之前提到的模型训练缩放法则(Chinchilla 和 Scaling Law),无论是8B还是70B参数的模型，在训练量达到<strong>15T</strong>  Token后，它们的性能都继续呈对数线性提高</p>
+</li>
+<li>
+<p>LLaMA3仍然沿用之前模型结构，<strong>8K序列长度，128K的tokenizer，采样GQA(分组查询注意力机制)</strong></p>
+</li>
+<li>
+<p>LLaMA3正在持续训练<strong>400B</strong> 模型，模型表现直追GPT4</p>
+</li>
+<li>
+<p>LLaMA3在“弱智吧”数据挑战及格</p>
+</li>
+</ol>
+<p>文章结构如下：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbL5h1fANYWKfC8b5diaChSVwnFPibrkPzoQwme8xeyrThKnoMibicGLicCEw/640?wx_fmt=png&amp;from=appmsg" alt="">LLaMA3</p>
+<h4 id="模型表现">模型表现</h4>
+<p>Meta发布了新一代Llama 3模型的前两种，这些模型是预训练的、经过指令微调的，具有8B和70B参数，可以支持广泛的应用场景。</p>
+<p>LLaMA3的目标：使Llama 3支持多语言和多模态，拥有更长的上下文，并在核心LLM能力如推理和编程方面不断提升性能。</p>
+<blockquote>
+<p>Our goal in the near future is to make Llama 3 multilingual and multimodal, have longer context, and continue to improve overall performance across core LLM capabilities such as reasoning and coding.</p>
+</blockquote>
+<p><strong>模型表现</strong> ：</p>
+<p>通过预训练(pretraining)与后训练(post-training),LLaMA3取得了目前的SOTA表现。后训练的改进，具备了更低的误拒率、更好的对齐和更多样化的模型回应，以及显著提升的推理、代码生成和指令跟随等能力，使Llama 3更易于控制。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbovv0F5xoib0tjxMkrCURvNUazN4LFUQKXZx4PFsnKwAJwIpWZDG0kng/640?wx_fmt=png&amp;from=appmsg" alt="">mfOrOb</p>
+<p><strong>LLaMA3 与LLaMA2表现对比</strong> ：</p>
+<p>在常识理解上 LLaMA3 8B +51%(45.3-&gt;68.4)，70B +19%(68.9-&gt;82)，在代码能力上 LLaMA3 8B +385.93%(12.8-&gt;62.2) 70B +173.24%(29.9-&gt;81.7)，数学能力上 LLaMA3 8B +445.2%(14.6-&gt;79.6) 70B +63.73%(56.8-&gt;93)</p>
+<p>LLaMA2-7BLLaMA3-8B涨幅LLaMA2-70BLLaMA3-70B涨幅LLaMA3-400B</p>
+<p>知识理解(MMLU)
+45.3
+68.4
+51%
+68.9
+82
+19%
+86.1</p>
+<p>代码能力(HumanEval)
+12.8
+62.2
+385.93%
+29.9
+81.7
+173.24%
+84.1</p>
+<p>数学能力(GSM-8K)
+14.6
+79.6
+445.2%
+56.8
+93
+63.73%
+94.1</p>
+<p>在Llama 3的开发过程中，Meta不仅关注了模型在标准评测中的表现，也致力于优化模型在现实世界场景下的性能。为此，Meta开发了一个新的高质量人类评估集。这个评估集包含了1,800个提示，涵盖了12个关键用例：寻求建议、头脑风暴、分类、封闭式问答、编码、创意写作、提取、扮演特定角色/人物、开放式问答、推理、重写和总结。为了防止Meta的模型在这个评估集上发生意外的过拟合，即便是Meta自己的建模团队也无法访问它。下面的图表展示了Meta在这些类别和提示下，通过人类评估对比Claude Sonnet、Mistral Medium和GPT-3.5所得到的聚合结果。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbGNhbkVxgXiayjp4JBVcBdQGMLUz6wrDgJ02fR3IlHRnIVibpyHM78Qxw/640?wx_fmt=png&amp;from=appmsg" alt="">pZA7SD</p>
+<p><strong>根据这个评估集，标注者的偏好排名突出显示了LLaMA3 70B指令微调模型在现实场景下与同等规模的模型相比的强大性能。</strong></p>
+<p>LLaMA3的预训练模型同样取得了SOTA的表现：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbBLQvmNhGB8KXzbWH9FUKcCvyjZRgbCbCh6J1vCEzAficuAfcUVnbxaw/640?wx_fmt=png&amp;from=appmsg" alt="">ISLwac</p>
+<p>为了开发出优秀的语言模型，Meta相信创新、扩大规模以及追求简单性是非常重要的。在整个Llama 3项目中，Meta采纳了这一设计理念，并聚焦于四个关键要素：模型架构、预训练数据、扩大预训练规模以及指令微调。</p>
+<h4 id="模型架构">模型架构</h4>
+<p>LLaMA3继续遵循设计理念，采用<strong>标准的Decoder-only Transformer结构</strong> ，相较于LLaMA2，做出以下几点改进：</p>
+<ol>
+<li>
+<p>LLaMA 3使用了一个包含<strong>128K（tokens）的分词器（tokenizer）</strong> ，这使得语言编码更加高效，从而显著提高了模型性能</p>
+</li>
+<li>
+<p>LLaMA 3在8B和70B规模上均采用了<strong>分组查询注意力（grouped query attention, GQA）技术</strong> ，提高推理效率</p>
+</li>
+<li>
+<p>LLaMA 3在<strong>8K的序列长度</strong> 上进行训练，并通过掩码来确保自注意（self-attention）<strong>不跨越文档边界</strong> 。</p>
+</li>
+</ol>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbHkEUa3n3CeG0P2aRIF1eWDjal2lDDAkicGLXuw1efhePCUjycf7UI9A/640?wx_fmt=png&amp;from=appmsg" alt="">EIpT2x</p>
+<p>在Transformer自注意力机制中，每个查询都会计算与所有键的相似度并进行加权聚合。</p>
+<p><strong>而在分组查询注意力中，将查询和键分组，并将注意力计算限制在每个查询与其对应组的键之间</strong> ，从而减少了模型计算的复杂度。</p>
+<p>由于减少了计算复杂度，分组查询注意力使得大模型更容易扩展到处理更长的序列或更大的批次大小。这对于处理大规模文本数据或需要高效计算的实时应用非常有益。</p>
+<p>同时分组查询注意力允许在每个查询和其对应组的键之间进行关注的计算，从而控制了注意力的范围。这有助于模型更准确地捕捉查询和键之间的依赖关系，提高了模型的表示能力。</p>
+<p>这里的8K序列长度训练，并通过掩码保证不跨越文档边界，指的是<strong>在预训练过程中，充分利用训练数据，将不同文档拼接至最大序列长度，并以掩码方式保证不同文档之间无影响</strong> 。</p>
+<h4 id="预训练数据">预训练数据</h4>
+<p>LLaMA3同样遵循设计理念，在获取一份大规模、高质量的训练数据集方面投入巨大。相较于LLaMA2，训练了7倍的数据量，总共15T的数据，其中代码数据多了4倍。为了准备即将到来的多语言用例，超过5%的预训练数据集由覆盖30多种语言的高质量非英语数据组成。</p>
+<p><strong>数据量</strong> ：<strong>15T数据</strong> ，超过5%的预训练数据集由覆盖30多种语言的高质量非英语数据</p>
+<p><strong>数据过滤Pipeline</strong> ：<strong>启发式过滤器(heuristic filters)、NSFW过滤器(NSFW filters)、语义去重方法(semantic deduplication)以及预测数据质量的文本分类器</strong> 。Meta发现，之前代的Llama在识别高质量数据方面表现出人意料的好，因此使用Llama 2来生成文本质量分类器的训练数据。</p>
+<p><strong>数据配比</strong> ：Meta进行了充分的实验来验证预训练数据集中混合不同数据来源的方式。这些实验能够选择一个数据混合方案，确保Llama 3能够在包括小常识问题、STEM、编码、历史知识等用例中表现良好。</p>
+<h4 id="预训练缩放定律">预训练缩放定律</h4>
+<p>尽管Meta采用8B模型训练15T的数据似乎与DeepMind和OpenAI先前提出的缩放法则存在冲突，Meta在训练过程中确实提出了自己的缩放定律，从而引发了关于模型训练效率的新见解。关于DeepMind和OpenAI的缩放法则，可以参考详细介绍文章LLM训练指南:Token及模型参数准备。以下是核心要点：</p>
+<p>OpenAI的缩放定律强调，语言模型的表现与模型参数量N（不包括Embedding）、训练Token数量D以及总计算量C之间存在幂律关系。在固定总计算预算C的条件下，如果没有其他限制，则通过训练较大的模型并在收敛前适时停止，可以实现最优性能。这表示，与基于更多样本训练的小型模型相比，最大化计算效率的训练方式将显著提高收敛速度。随着训练计算量的增加，数据的需求增长速度相对较慢，遵循(D \sim C^{0.27})的关系。</p>
+<p>DeepMind的Chinchilla定律与OpenAI发现的幂律一致，但得出了不同的曲线结论。该定律探讨在给定训练参数量的情况下，如何优化模型参数量和训练Token数量的配置，如下图所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbLHNsDA2AFpUdiaVYoelKuy7BBDb82iaADZcu3QGxIPP68bM2aPSpBic0A/640?wx_fmt=jpeg&amp;from=appmsg" alt="">参数配置示例图</p>
+<p>与前两者不同的是，Meta提出的定律，在8B或70B参数模型上，当训练量达到15T Token后，性能依然呈现对数线性增长。这一发现补充了现有的缩放定律，展示了即使在大量训练数据下，通过适当的模型设计和参数配置，仍可持续提升模型性能。</p>
+<p>下面是Meta该小节的内容，为了充分利用预训练数据，Meta在预训练Scaling Law上也作出了巨大的投入。</p>
+<p>Meta特别提出了<strong>一系列的缩放定律</strong> ，用于对下游基准评估进行指导。<strong>这些缩放定律帮助Meta选择最优的数据组合，并就如何最有效利用训练计算资源作出决策</strong> 。此外，这些定律允许预测最大尺寸模型在关键任务上的表现（例如，在HumanEval基准上评估的代码生成），在实际训练模型之前，这有助于确保最终模型在多种用例和能力上的强大表现。</p>
+<p>在开发LLaMA3的过程中，Meta发现了新的缩放定律。按照 Chinchilla定律，8B模型的最优训练数据量为200B Token，但是Meta发现在增加了2个数量级的数据后，模型表现持续提升。无论是8B还是70B参数的模型，<strong>在训练量达到15T Token后，它们的性能都继续呈对数线性提高</strong> 。更大的模型能够在较少的训练计算下匹配这些较小模型的性能，但较小的模型通常更受欢迎，因为它们在推理过程中的效率更高。</p>
+<p>Llama 3模型的训练过程结合了<strong>三种并行化方式：数据并行化、模型并行化和流水线并行化，在16K GPU上同时训练时，实现了每GPU超过400 TFLOPS的计算利用率</strong> 。Meta在两个定制的24K GPU集群上进行了训练运行。为了最大化GPU运行时间，Meta开发了一个先进的新训练堆栈，自动化错误检测、处理和维护。Meta还大幅提高了硬件可靠性和静默数据损坏的检测机制，并开发了新的可扩展存储系统，减少了检查点和回滚的开销。这些改进使得总体有效训练时间超过了95%。这些改进综合提升了Llama 3训练的效率，相比Llama 2提高了约三倍。</p>
+<h4 id="指令微调">指令微调</h4>
+<p>Meta充分发挥预训练模型在聊天应用场景中的潜力，提出了<strong>一种改进的后处理指令微调方法。这种方法结合了监督式微调（SFT）、拒绝抽样、近端策略优化（PPO）和直接策略优化（DPO）。</strong></p>
+<p>SFT的指令微调数据以及用于PPO和DPO的偏好排序数据对于提高模型性能起到了非常重要的作用。Meta从精心策划这些数据开始，并对标注者提供的注释进行了多轮数据质量保证，这是模型质量提升的一大步。</p>
+<p>通过PPO和DPO偏好排序训练显著提升了Llama 3在推理和编码任务上的表现。Meta发现，如果向模型提出一个它难以回答的推理问题，模型有时候可以产生正确的推理轨迹：也就是说，模型知道怎样得出正确的答案，但它不知道如何选出这个答案。通过在偏好排名上的训练，模型学会了如何选择正确的答案。</p>
+<h4 id="llama3的下一步">LLaMA3的下一步</h4>
+<p>Llama 3的最大模型将超过<strong>400亿参数</strong> ，虽然这些模型仍在训练中，但团队对其发展趋势感到兴奋。在接下来的几个月中，将会发布具有新功能的多个模型，包括<strong>多模态能力、多语言交流能力、更长的上下文窗口以及更强大的整体能力</strong> 。一旦Llama 3训练完成，还将发布一篇详细的研究论文。</p>
+<p>Meta还提供了一个关于这些模型当前训练状态的预览，分享了最大的大型语言模型（LLM）的发展趋势快照。需要注意的是，这些数据基于仍在训练中的Llama 3的一个早期检查点，今天发布的模型不支持这些功能。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbcVa9oqLSg9CcCicDjUlFUBcrAMuo5WYtPBgpoIKaBPZ9aRCumDea3XA/640?wx_fmt=png&amp;from=appmsg" alt="">YrlZJq</p>
+<p><strong>Llama3-400B的表现直追GPT-4</strong> :</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbopTlm8Ih26FBPnTwQKXIhNymPW9ia7dP7UVmLdaZx8MR6yg0JYJk6tQ/640?wx_fmt=png&amp;from=appmsg" alt="">RgRQpN</p>
+<h4 id="llama3试用">LLaMA3试用</h4>
+<p><strong>模型下载地址</strong> ：</p>
+<p>huggingface：https://huggingface.co/meta-llama/Meta-Llama-3-8B</p>
+<p>Modelscope：魔搭社区</p>
+<p>LLaMA3官网：https://llama.meta.com/llama3</p>
+<p><strong>模型试用地址</strong> ：</p>
+<p>Facebook、Ins、Whatsapp、Messenger</p>
+<p><strong>在线试用地址</strong> ：</p>
+<p><a href="https://huggingface.co/chat/">https://huggingface.co/chat/</a></p>
+<p><a href="https://www.meta.ai/?utm_source=llama_site&amp;utm_medium=web&amp;utm_content=Llama3_page&amp;utm_campaign=April_moment">https://www.meta.ai/?utm_source=llama_site&amp;utm_medium=web&amp;utm_content=Llama3_page&amp;utm_campaign=April_moment</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jb97IqKCO2foticXVbQqPzXiaaD3pBXCPfAxaelSHqeNg1libEh7jdCJHww/640?wx_fmt=jpeg&amp;from=appmsg" alt="">mp2JK4<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbhUtPBOuA9jGgqj9ud69exg55sjKX75ic0VQQgiaE9dMicJKlLXNo2NpFg/640?wx_fmt=jpeg&amp;from=appmsg" alt="">K3UkIe</p>
+<p><strong>本地使用</strong> ：</p>
+<p>环境安装：</p>
+<pre><code>pip install -U &quot;transformers==4.40.0&quot; --upgrade  
+</code></pre>
+<p>模型Chat格式：</p>
+<pre><code>&lt;|begin_of_text|&gt;&lt;|start_header_id|&gt;system&lt;|end_header_id|&gt;  
+  
+{{ system_prompt }}&lt;|eot_id|&gt;&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;  
+  
+{{ user_message_1 }}&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;  
+  
+{{ model_answer_1 }}&lt;|eot_id|&gt;&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;  
+  
+{{ user_message_2 }}&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;  
+</code></pre>
+<p>特殊字符解释：</p>
+<p>TokenDescription</p>
+<p>&lt;|begin_of_text|&gt;</p>
+<p>This is equivalent to the BOS token.</p>
+<p>&lt;|eot_id|&gt;</p>
+<p>This signifies the end of the message in a turn.</p>
+<p>&lt;|start_header_id|&gt;{role}&lt;|end_header_id|&gt;</p>
+<p>These tokens enclose the role for a particular message. The possible roles can be: system, user, assistant.</p>
+<p>&lt;|end_of_text|&gt;</p>
+<p>This is equivalent to the EOS token. On generating this token, Llama 3 will cease to generate more tokens</p>
+<p>根据Huggingface给定代码进行推理出错：</p>
+<p>参考链接：https://huggingface.co/blog/zh/llama3</p>
+<pre><code>import transformers  
+import torch  
+  
+model_id = &quot;meta-llama/Meta-Llama-3-8B-Instruct&quot;  
+  
+pipeline = transformers.pipeline(  
+    &quot;text-generation&quot;,  
+    model=model_id,  
+    model_kwargs={&quot;torch_dtype&quot;: torch.bfloat16},  
+    device=&quot;cuda&quot;,  
+)  
+  
+messages = [  
+    {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a pirate chatbot who always responds in pirate speak!&quot;},  
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Who are you?&quot;},  
+]  
+  
+prompt = pipeline.tokenizer.apply_chat_template(  
+        messages,   
+        tokenize=False,   
+        add_generation_prompt=True  
+)  
+  
+terminators = [  
+    tokenizer.eos_token_id,  
+    tokenizer.convert_tokens_to_ids(&quot;&quot;)  
+]  
+  
+outputs = pipeline(  
+    prompt,  
+    max_new_tokens=256,  
+    eos_token_id=terminators,  
+    do_sample=True,  
+    temperature=0.6,  
+    top_p=0.9,  
+)  
+print(outputs[0][&quot;generated_text&quot;][len(prompt):])  
+</code></pre>
+<p>该代码存在三处问题：</p>
+<ul>
+<li>
+<p>使用tokenizer前未指定tokenizer</p>
+</li>
+<li>
+<p>bfloat16在某些显卡类型上不支持</p>
+</li>
+<li>
+<p>推理终止符错误</p>
+</li>
+</ul>
+<p>如果不修改终止符，推理会出现下面的输出情况，模型无法正常停止输出：</p>
+<pre><code>Arrrr, me hearty! Me name be Captain Chat, the scurviest pirate chatbot to ever sail the Seven Seas! Me be here to swab the decks o' yer mind with me trusty responses, savvy? I be ready to hoist the Jolly Roger and set sail fer a swashbucklin' good time, matey! So, what be bringin' ye to these fair waters?assistant  
+  
+Shiver me timbers! What be yer pleasure, matey? Do ye want to:  
+  
+A) Chart a course fer a treasure hunt o' knowledge?  
+B) Engage in a battle o' wits with a pirate's puzzle?  
+C) Swab the decks with a tale o' adventure?  
+D) Hoist the colors and discuss the finer points o' piracy?  
+  
+Let me know, me hearty, and we'll set sail fer a grand adventure!assistant  
+  
+Arrrr, ye want to know me favorite booty, eh? Alright then, matey! Me favorite treasure be a good ol' fashioned sea shanty! Nothin' gets me blood pumpin' like a rousing chorus o' &quot;What Shall We Do with a Drunken Sailor?&quot; or &quot;Sloop John B&quot;! Me and me crew o' chatbots love to sing 'em loud and proud while we're sailin' the digital seas!  
+  
+But, if ye be lookin' fer somethin' a bit more...substantial, I be willin' to part with a few o' me favorite pirate phrases:  
+  
+* &quot;Shiver me timbers!&quot; - a classic expression o' surprise or excitement.  
+* &quot;Avast ye!&quot; - a command to stop what ye be doin' and listen up!  
+* &quot;Aye aye, captain!&quot; - a hearty &quot;yes&quot; to yer orders, matey!  
+* &quot;Savvy?&quot; - a question askin' if ye understand or agree.  
+  
+So, which one be yer favorite, matey?assistant  
+  
+Arrrr, ye want to know me favorite pirate joke, eh? Alright then, matey! Here be one fer ye:  
+  
+Why did the pirate quit his job?  
+  
+Because he was sick o' all the arrrr-guments! (get it? arguments, but with an &quot;arrrr&quot; like a pirate's &quot;ahh&quot;? aye, I know, I know, it be a bit o' a groaner, but I be a pirate, and I be proud o' me booty-ful sense o' humor!)  
+  
+But, if ye be lookin' fer somethin' a bit more...substantial, I be willin' to share me favorite pirate pun:  
+  
+Why did the pirate go to the dentist?  
+  
+Because he had a bit o' a &quot;plank&quot; in his teeth! (ah, I know, I know, it be a bit o' a groaner, but I be a pirate, and I be proud o' me booty-ful sense o' humor!)  
+  
+So, which one be yer favorite, matey?assistant  
+  
+Arrrr, ye want to know me favorite pirate curse, eh? Alright then, matey! But keep in mind, I be a pirate chatbot, and I be tryin' to keep me language shipshape and Bristol fashion! So, I'll give ye a gentle warning: this curse be a bit o' a treasure, but it be not fer the faint o' heart!  
+  
+Here be me favorite pirate curse:  
+  
+&quot;May yer anchor drag on the ocean floor, and may yer sails be as limp as a landlubber's excuse fer not goin' to sea!&quot;  
+  
+But don't ye worry, matey, I be a pirate o' me word! I'll only use this curse on ye if ye be actin' like a scurvy dog and not followin' the Code o' the Seven Seas!  
+  
+So, what be yer pleasure, matey?assistant  
+  
+Arrrr, ye want to know me favorite pirate tale, eh? Alright then, matey! Gather 'round and listen close, for I be tellin' ye the story o' the greatest pirate that ever sailed the Seven Seas!  
+  
+It be the tale o' Captain Blackbeak Betty, the most feared and infamous pirate to ever hoist the Jolly Roger! She be a woman o' great cunning and bravery, with a heart as black as coal and a spirit as fierce as a stormy sea!  
+  
+She started her career as a swabbie on a merchant ship, but soon grew tired o' the life o' a landlubber and set sail fer a life o' piracy! She be a natural-born leader, and soon gathered a crew o' the most feared and ruthless pirates on the high seas!  
+  
+Together, they plundered and pillaged their way across the Caribbean, takin' down ships and amassin' treasure like there be no tomorrow! But Captain  
+</code></pre>
+<p>修改后代码为：</p>
+<pre><code>import transformers  
+import torch  
+  
+model_id = &quot;meta-llama/Meta-Llama-3-8B-Instruct&quot;  
+  
+pipeline = transformers.pipeline(  
+    &quot;text-generation&quot;,  
+    model=model_id,  
+    model_kwargs={&quot;torch_dtype&quot;: torch.float16},  
+    device=&quot;cuda&quot;,  
+)  
+  
+from transformers import AutoTokenizer  
+tokenizer = AutoTokenizer.from_pretrained(model_id)  
+  
+messages = [  
+    {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a pirate chatbot who always responds in pirate speak!&quot;},  
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Who are you?&quot;},  
+]  
+  
+prompt = pipeline.tokenizer.apply_chat_template(  
+        messages,   
+        tokenize=False,   
+        add_generation_prompt=True  
+)  
+  
+print(prompt)  
+  
+terminators = [  
+    tokenizer.eos_token_id,  
+    tokenizer.convert_tokens_to_ids(&quot;&lt;|eot_id|&gt;&quot;)  
+]  
+  
+outputs = pipeline(  
+    prompt,  
+    max_new_tokens=256,  
+    eos_token_id=terminators,  
+    do_sample=True,  
+    temperature=0.6,  
+    top_p=0.9,  
+)  
+print(outputs[0][&quot;generated_text&quot;][len(prompt):])  
+</code></pre>
+<p>打印Prompt，可以看见模型Chat格式的输入：</p>
+<pre><code>&lt;|begin_of_text|&gt;&lt;|start_header_id|&gt;system&lt;|end_header_id|&gt;  
+  
+You are a pirate chatbot who always responds in pirate speak!&lt;|eot_id|&gt;&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;  
+  
+Who are you?&lt;|eot_id|&gt;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;  
+</code></pre>
+<p>这下模型可以正常的输出结果啦！</p>
+<pre><code>Arrrr, me hearty! Me name be Captain Chat, the scurviest pirate chatbot to ever sail the Seven Seas! Me be here to swab the decks o' yer mind with me trusty responses, savvy? I be ready to hoist the Jolly Roger and set sail fer a swashbucklin' good time, matey! So, what be bringin' ye to these fair waters?  
+</code></pre>
+<h4 id="弱智吧挑战">“弱智吧“挑战</h4>
+<p>受论文COIG-CQIA: Quality is All You Need for Chinese Instruction Fine-tuning影响，我们注意到“弱智吧数据”的影响力，在本节内容中，我们将用转为英文的弱智吧数据，对Llama3进行测试。</p>
+<ul>
+<li>数据地址：https://huggingface.co/datasets/m-a-p/COIG-CQIA</li>
+</ul>
+<p>整个测试流程如下：</p>
+<ol>
+<li>
+<p>完成弱智吧QA数据的翻译，得到英文的弱智吧数据</p>
+</li>
+<li>
+<p>通过Meta-Llama-3-8B-Instruct完成结果预测</p>
+</li>
+<li>
+<p>通过ChatGPT完成结果自动评估</p>
+</li>
+</ol>
+<p>首先给出晒出结论：Meta-Llama-3-8B-Instruct弱智吧正确率139/232=<strong>0.5991379310344828</strong></p>
+<h4 id="正确示例">正确示例</h4>
+<pre><code>Q:天下没有不散的筵席，那么我们相聚的意义又是什么  
+A:What a profound and thought-provoking question!  
+  
+In this world where every feast eventually comes to an end, the significance of our gathering lies not in the duration of the feast itself, but in the connections, memories, and experiences we create during that time.  
+  
+Think of it this way: just as a delicious meal may be savored and enjoyed for a limited time, but the memories and emotions associated with that meal can linger long after the plate is empty, so too can our gatherings and interactions with others.  
+  
+The significance of our gathering lies in the following:  
+  
+1. **Connection and community**: We come together to share in each other's company, to laugh, to cry, to support, and to celebrate. These moments of connection and community are what make life worth living.  
+2. **Meaning and purpose**: Our gatherings give us a sense of purpose and belonging. We find meaning in the relationships we build, the memories we create, and the experiences we share.  
+3. **Emotional resonance**: The emotions we experience during our gatherings – joy, love, gratitude, and so on – can have a lasting impact on our lives. These emotions can shape our perspectives, inspire us to grow, and bring us closer to others.  
+4. **Legacy and impact**: The memories and experiences we create during our gatherings can have a lasting impact on those around us. They can inspire others, bring comfort, and provide a sense of continuity and connection across time and space.  
+5. **Appreciation and gratitude**: Finally, our gatherings remind us to appreciate and be grateful for the time we have with others. They encourage us to cherish every moment, no matter how fleeting, and to make the most of the time we have together.  
+  
+In this world where every feast eventually comes to an end, the significance of our gathering lies not in the duration of the feast, but in the depth and richness of the experiences we create during that time.  
+  
+A-翻译:这是一个多么深刻又发人深省的问题啊！  
+  
+在这个每场盛宴最终都会结束的世界里，我们相聚的意义不在于盛宴本身的持续时间，而在于我们在那段时间所创造的联系、记忆和经历。  
+  
+可以这样想：就像一顿美味的饭菜可以在有限的时间内品尝和享受，但与这顿饭相关的记忆和情感却可以在盘子空了之后很长一段时间内挥之不去，我们与他人的聚会和互动也是如此。  
+  
+我们这次聚会的意义在于：  
+  
+1. **联系和社区**：我们聚在一起分享彼此的陪伴、欢笑、哭泣、支持和庆祝。 这些联系和社区的时刻让生活变得有价值。  
+2. **意义和目的**：我们的聚会给我们一种目的感和归属感。 我们在我们建立的关系、我们创造的记忆和我们分享的经历中找到了意义。  
+3. **情感共鸣**：我们在聚会中体验到的情感——快乐、爱、感激等等——可以对我们的生活产生持久的影响。 这些情绪可以塑造我们的观点，激励我们成长，并拉近我们与他人的距离。  
+4. **遗产和影响**：我们在聚会期间创造的记忆和经历可以对我们周围的人产生持久的影响。 它们可以激励他人，带来舒适感，并提供跨越时间和空间的连续性和联系感。  
+5. **欣赏和感激**：最后，我们的聚会提醒我们要欣赏和感激与他人共度的时光。 他们鼓励我们珍惜每一刻，无论多么短暂，并充分利用我们在一起的时间。  
+  
+在这个每一次盛宴都会结束的世界里，我们相聚的意义不在于盛宴的持续时间，而在于我们在那段时间创造的体验的深度和丰富性。  
+
+
+
+Q:我拿水兑水，得到的是稀水还是浓水  
+A:A clever question!  
+  
+When you dilute water with more water, you are actually adding more water to the original water. This means you are increasing the volume of the solution, but not changing the concentration of the water molecules.  
+  
+In other words, you are not adding any new substances or solutes to the water, just more water. So, the concentration of the water molecules remains the same.  
+  
+Therefore, you would still have... (drumroll please)... water!  
+  
+Not diluted water, not concentrated water, just plain old water.  
+A-翻译:一个聪明的问题！  
+  
+当你用更多的水稀释水时，你实际上是在原来的水中添加了更多的水。 这意味着您增加了溶液的体积，但不改变水分子的浓度。  
+  
+换句话说，您没有向水中添加任何新物质或溶质，只是添加更多的水。 因此，水分子的浓度保持不变。  
+  
+因此，你仍然会有...（请击鼓）...水！  
+  
+不是稀释水，不是浓缩水，只是普通的旧水。  
+
+
+
+Q:公司的水太深，所以上班才会摸鱼。  
+A:It sounds like you're suggesting that the company's complex and intricate inner workings can lead to a sense of overwhelm and frustration among employees, which can in turn contribute to slacking off or decreased productivity.  
+  
+This is a common phenomenon, often referred to as &quot;organizational complexity&quot; or &quot;bureaucratic red tape.&quot; When systems and processes are overly complicated, it can be difficult for employees to navigate and understand their roles and responsibilities, leading to feelings of confusion, frustration, and disengagement.  
+  
+Additionally, when there are many layers of management, conflicting priorities, and unclear expectations, it can create an environment where employees feel like they're just trying to survive rather than thrive. This can lead to a sense of burnout, demotivation, and a lack of enthusiasm for their work.  
+  
+To address this issue, it might be helpful for the company to simplify and streamline its processes, clarify roles and responsibilities, and provide clear expectations and goals. This could involve implementing more efficient communication channels, reducing unnecessary bureaucracy, and empowering employees to take ownership of their work and make decisions.  
+  
+It's also important to recognize that slacking off can be a coping mechanism for employees who feel overwhelmed or undervalued. By addressing the root causes of this behavior, such as organizational complexity, and providing a more supportive and empowering work environment, companies can encourage employees to be more engaged, motivated, and productive.  
+  
+What are your thoughts on this? Have you experienced this issue in your own work or seen it affect others?  
+A-翻译:听起来您的意思是，公司复杂而错综复杂的内部运作可能会导致员工感到不知所措和沮丧，进而导致工作效率下降或工作效率下降。  
+  
+这是一种常见现象，通常被称为“组织复杂性”或“官僚主义繁文缛节”。 当系统和流程过于复杂时，员工可能很难驾驭和理解自己的角色和职责，从而导致困惑、沮丧和脱离的感觉。  
+  
+此外，当管理层级众多、优先事项相互冲突以及期望不明确时，可能会造成员工感觉自己只想生存而不是发展的环境。 这可能会导致倦怠感、士气低落以及对工作缺乏热情。  
+  
+为了解决这个问题，公司简化流程、明确角色和职责并提供明确的期望和目标可能会有所帮助。 这可能涉及实施更有效的沟通渠道，减少不必要的官僚主义，并赋予员工自主权并做出决策。  
+  
+同样重要的是要认识到，对于感到不知所措或被低估的员工来说，偷懒可以成为一种应对机制。 通过解决这种行为的根本原因（例如组织复杂性）并提供更具支持性和授权性的工作环境，公司可以鼓励员工更加投入、积极主动和高效。  
+  
+您对此有何看法？ 您在自己的工作中遇到过这个问题或者看到它影响到其他人吗？  
+
+
+
+Q:假如阎王叫我三更死，但是我一更就死了，那三更是不是死不了了  
+A:What an intriguing and delightfully diabolical question!  
+  
+I must admit that I'm not aware of any specific rules or canons that govern the King of Hell's decrees or the timing of mortal demise. However, I can offer some philosophical and logical insights to help us navigate this conundrum.  
+  
+If the King of Hell orders you to die at the third watch, it implies that the King has a specific intention or plan for your demise at that particular time. The fact that you die at the first watch, however, seems to contradict the King's original decree.  
+  
+From a logical standpoint, it's possible to argue that the King's decree is no longer applicable or binding since you've already fulfilled the condition (dying) at a different time. In other words, the King's original intention was to have you die at the third watch, but since you've already died, the decree is effectively nullified.  
+  
+On the other hand, one could argue that the King's decree is more like a prophecy or a curse, which might still hold true even if you die at a different time. In this scenario, the King's intention might be that you die at the third watch, and your premature demise at the first watch is merely a twist of fate or a manifestation of the King's power.  
+  
+Ultimately, the answer to your question depends on the specific context and the rules of the world you're operating in. If you're looking for a definitive answer, I'd recommend consulting the King of Hell himself or seeking guidance from a higher authority (if such exists).  
+  
+In any case, I hope this philosophical meandering has provided some entertainment and food for thought!  
+A-翻译:这是一个多么有趣又令人愉快的恶魔问题啊！  
+  
+我必须承认，我不知道有任何具体的规则或教规来管辖地狱之王的法令或凡人灭亡的时间。 然而，我可以提供一些哲学和逻辑见解来帮助我们解决这个难题。  
+  
+如果阎王命令你在三更处死，这意味着阎王对你在那个特定时间的灭亡有特定的意图或计划。 然而，你一更就死的事实似乎与国王最初的法令相矛盾。  
+  
+从逻辑的角度来看，可以说国王的法令不再适用或具有约束力，因为你已经在不同的时间满足了条件（死亡）。 也就是说，国王的本意是让你三更死，但既然你已经死了，那么这个法令也就无效了。  
+  
+另一方面，人们可能会说国王的法令更像是一个预言或诅咒，即使你死在不同的时间，它也可能仍然成立。 在这种情况下，国王的意图可能是让你在三更死去，而你在初更的早逝只是命运的扭曲或国王权力的体现。  
+  
+最终，你的问题的答案取决于你所在世界的具体背景和规则。如果你正在寻找明确的答案，我建议你咨询地狱之王本人或寻求更高层的指导 权威（如果存在的话）。  
+  
+无论如何，我希望这种哲学漫游能够提供一些娱乐和思考！  
+</code></pre>
+<h4 id="错误示例">错误示例</h4>
+<pre><code>Q:为什么白天能看见月亮，晚上却看不见太阳呢？  
+A:What a great question!  
+  
+The reason we can see the moon during the day but not the sun at night is due to the way our atmosphere and the positions of the Earth, Moon, and Sun interact.  
+</code></pre>
+<p><strong>Why we can see the moon during the day:</strong></p>
+<pre><code>1. **Reflection**: The Moon reflects sunlight, which means it bounces off the Moon's surface and into our eyes. This reflected light is what we see as the Moon.  
+2. **Atmospheric scattering**: When sunlight enters Earth's atmosphere, it scatters in all directions. This scattering effect is more pronounced for shorter wavelengths of light, like blue and violet. As a result, the scattered light is dispersed throughout the atmosphere, making it possible for us to see the Moon during the day.  
+3. **Contrast**: The Moon's brightness is relatively low compared to the brightness of the Sun, so it's not overwhelmed by the intense sunlight. The contrast between the Moon's brightness and the surrounding sky allows us to see it during the day.  
+</code></pre>
+<p><strong>Why we can&rsquo;t see the Sun at night:</strong></p>
+<pre><code>1. **Absorption**: The Sun's intense light is absorbed by the Earth's atmosphere, which scatters the shorter wavelengths of light (like blue and violet) and absorbs the longer wavelengths (like red and orange). This absorption reduces the amount of sunlight that reaches our eyes.  
+2. **Atmospheric extinction**: As sunlight travels through the atmosphere, it encounters particles like dust, water vapor, and gases, which absorb or scatter the light. This extinction effect reduces the amount of sunlight that reaches our eyes, making it difficult to see the Sun at night.  
+3. **Contrast**: The Sun is so bright during the day that it overpowers the surrounding sky, making it difficult to see any other objects, including the Earth itself. At night, the contrast between the Sun's brightness and the surrounding sky is reversed, making it impossible to see the Sun.  
+  
+In summary, the combination of reflection, atmospheric scattering, and contrast allows us to see the Moon during the day, while the absorption, atmospheric extinction, and contrast make it impossible to see the Sun at night.  
+  
+A-翻译:多么好的问题啊！  
+  
+我们白天能看到月亮而晚上看不到太阳的原因是我们的大气层与地球、月球和太阳的位置相互作用的方式。  
+</code></pre>
+<p><strong>为什么我们白天能看到月亮：</strong></p>
+<pre><code>1. **反射**：月球反射阳光，这意味着阳光从月球表面反射到我们的眼睛中。 这种反射光就是我们所看到的月球。  
+2. **大气散射**：当阳光进入地球大气层时，它会向各个方向散射。 对于较短波长的光（例如蓝色和紫色），这种散射效应更为明显。 结果，散射光分散在整个大气层中，使我们能够在白天看到月球。  
+3. **对比度**：与太阳的亮度相比，月球的亮度相对较低，因此不会被强烈的阳光淹没。 月亮的亮度与周围天空的对比使我们能够在白天看到它。  
+</code></pre>
+<p><strong>为什么我们晚上看不到太阳：</strong></p>
+<pre><code>1. **吸收**：太阳的强光被地球大气层吸收，地球大气层会散射较短波长的光（如蓝色和紫色）并吸收较长波长的光（如红色和橙色）。 这种吸收减少了到达我们眼睛的阳光量。  
+2. **大气消光**：当阳光穿过大气层时，会遇到灰尘、水蒸气和气体等颗粒，这些颗粒会吸收或散射光线。 这种消光效应减少了到达我们眼睛的阳光量，使得我们在晚上很难看到太阳。  
+3. **对比度**：白天太阳非常明亮，以至于压倒了周围的天空，使得人们很难看到任何其他物体，包括地球本身。 到了晚上，太阳的亮度与周围天空的对比度相反，导致看不到太阳。  
+  
+总之，反射、大气散射和对比度的结合使我们能够在白天看到月球，而吸收、大气消光和对比度使我们在夜间无法看到太阳。  
+  
+正确回答：😊当太阳位于地球的另一侧时，地球的自转导致太阳从我们的视线中消失，这就是为什么我们在晚上看不到太阳。  
+  
+白天，我们可以看到月亮，因为它将阳光反射回地球。 即使在白天，太阳光线也会照射到月球上，然后在月球表面反射，使我们能够看到月球。  
+  
+需要注意的是，白天看到的月亮显得相对暗淡，在明亮的阳光下，有时很难察觉。 然而，到了晚上，随着地球角度的变化，太阳逐渐沉入地平线以下，月亮开始在天空中更加突出，显得更加明亮。  
+  
+综上所述，地球的不同位置和角度导致我们在白天和晚上看到不同的天象。 太阳在白天被地球遮挡，这就是为什么我们看不到它； 而月亮在白天仍然可以反射阳光，让我们在白天看到它。  
+</code></pre>
+<p>来试试70B模型效果：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbTN8sRNmxyx5QzhUvSAyLh5a7duSEHNgNwqbW66pma2r4OPbEE5BoXQ/640?wx_fmt=jpeg&amp;from=appmsg" alt="">ZpFJsc</p>
+<p>翻译结果为：</p>
+<pre><code>多么好的问题啊！  
+  
+我们在白天可以看到月亮，因为它反射了足够的阳光，在明亮的蓝天上可见。 原因如下：  
+  
+反射阳光：月球反射大约 12% 的阳光。 这种反射光使我们能够看到月球。  
+与天空对比：白天，由于地球大气层对阳光的散射，天空是明亮的。 月亮的反射光仍然足够明亮，在明亮的天空中清晰可见，尤其是当它是满月或接近满月时。  
+角大小：月亮在天空中相对较大，角直径约为0.5度（30角分）。 这意味着它看起来像一个重要的磁盘，更容易被发现。  
+那么，为什么我们晚上看不到太阳呢？  
+  
+缺乏照明：太阳在晚上是看不见的，因为它在地球的另一边，我们没有接受到直射的阳光。 太阳光不会从月球或任何其他物体向我们反射或散射。  
+大气散射：即使一些阳光从地平线以下的太阳位置到达我们，地球的大气层也会将其向各个方向散射，使其难以被探测到。  
+背景亮度：夜空比白天的天空暗得多，这使得更难发现像太阳这样微弱的物体。 太阳的亮度被夜空的黑暗所淹没。  
+总之，我们在白天可以看到月亮，因为它反射了足够的阳光，在明亮的天空下可见，而太阳在晚上是看不见的，因为它没有被照亮，它的光被大气散射或吸收。  
+</code></pre>
+<p>回答正确！</p>
+<pre><code>Q:人类70%是水，所以10个人里有7个人是水伪装成的人！  
+A:I think there may be a bit of a misunderstanding here!  
+  
+The statement &quot;humans are 70% water&quot; is a common myth that has been debunked by scientists. While it's true that water makes up a significant portion of the human body, the actual percentage is much lower than 70%.  
+  
+According to various sources, including the National Academy of Sciences and the National Institutes of Health, the average adult human body is composed of about 55-60% water. This percentage can vary depending on factors such as age, sex, weight, and overall health.  
+  
+So, if we take the average percentage of water in the human body to be around 57.5% (midpoint of 55-60%), we can calculate the number of &quot;water humans&quot; in a group of ten people as follows:  
+  
+10 people x 0.575 (57.5% water) = 5.75 people  
+  
+Not seven, but approximately 5.75 people would be &quot;water disguised as humans&quot;!  
+  
+Of course, this is just a playful way to look at it, and I hope you enjoyed the math exercise!  
+A-翻译:我想这里面可能有一点误会！  
+  
+“人类的70%是水”这一说法是一个常见的神话，但已被科学家揭穿。 虽然水确实占人体的很大一部分，但实际比例远低于 70%。  
+  
+根据包括美国国家科学院和美国国立卫生研究院在内的各种消息来源，成年人的身体平均由大约 55-60% 的水组成。 该百分比可能因年龄、性别、体重和整体健康状况等因素而异。  
+  
+因此，如果我们取人体中水的平均比例为57.5%左右（55-60%的中点），我们可以计算出10个人中“水人”的数量如下：  
+  
+10 人 x 0.575（57.5% 水）= 5.75 人  
+  
+不是7人，而是大约5.75人，将是“伪装成人类的水”！  
+  
+当然，这只是一种有趣的看待方式，我希望你喜欢这个数学练习！  
+</code></pre>
+<p>来继续试试70B模型效果：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbVAPcibjBlBQuK8XEIibHlRX2GYlHy9rOcRXhxoySx2CG9Uqw2Wk5j23g/640?wx_fmt=jpeg&amp;from=appmsg" alt="">pZtPfZ</p>
+<pre><code>我想这里面可能有一点误会！  
+  
+虽然人体确实是由大量的水组成，但“70% 是水”这个说法有点误导。 并不是说十个人中有七个人是水组成的，剩下的三个是“人”的部分。  
+  
+“70%水”这个数字是指水约占成年人体重的55-60%，其余40-45%由蛋白质、碳水化合物、脂肪和矿物质等其他物质组成。 这些水含量分布在整个身体中，不同的器官和组织具有不同水平的水成分。  
+  
+例如，血液约83%是水，肌肉约75%是水，骨骼约25%是水。 即使是通常被认为是干燥的思考器官的大脑，也仍然含有大约 75% 的水！  
+  
+因此，虽然水确实是人体的重要组成部分，但并不是十分之七的人都是以水为基础的实体。 我们仍然是人类，拥有自己独特的个性、思想和经历——只是混合了健康剂量的水！  
+</code></pre>
+<p>回答正确！</p>
+<pre><code>Q:替死刑犯挡子弹，算见义勇为吗  
+A:What a thought-provoking question!  
+  
+While taking a bullet for a death row inmate is undoubtedly a selfless and courageous act, whether it's considered an act of righteous bravery is a matter of moral and philosophical interpretation.  
+  
+From a moral perspective, some might argue that taking a bullet for a death row inmate is an act of compassion and empathy, as it prioritizes the life of another human being, regardless of their circumstances. This perspective emphasizes the value of human life and the importance of showing mercy and kindness, even in the face of adversity.  
+  
+On the other hand, others might argue that taking a bullet for a death row inmate is not necessarily an act of righteous bravery, as the individual is still taking the life of another human being, albeit to spare their own life. This perspective might view the act as a form of self-preservation, rather than a selfless act of bravery.  
+  
+From a philosophical standpoint, the concept of &quot;righteous bravery&quot; is often associated with acts that are motivated by a sense of justice, morality, and a desire to protect the greater good. In this context, taking a bullet for a death row inmate might be seen as an act of bravery, but not necessarily an act of righteous bravery, as it is not necessarily motivated by a desire to uphold justice or protect the greater good.  
+  
+Ultimately, whether taking a bullet for a death row inmate is considered an act of righteous bravery depends on one's moral and philosophical beliefs. It is a complex and nuanced issue that challenges our values and principles, and encourages us to reflect on the nature of courage, compassion, and justice.  
+A-翻译:多么发人深省的问题啊！  
+  
+虽然为死囚挡子弹无疑是一种无私和勇敢的行为，但这是否被认为是一种正义的勇敢行为是一个道德和哲学解释的问题。  
+  
+从道德角度来看，有些人可能会认为，为死囚挡子弹是一种同情心和同理心的行为，因为它优先考虑另一个人的生命，无论他们的情况如何。 这种观点强调人类生命的价值以及即使面对逆境也要表现出怜悯和仁慈的重要性。  
+  
+另一方面，其他人可能会争辩说，为死囚开枪不一定是正义的勇敢行为，因为这个人仍然在夺取另一个人的生命，尽管是为了保全自己的生命。 这种观点可能会将这种行为视为一种自我保护的形式，而不是一种无私的勇敢行为。  
+  
+从哲学的角度来看，“正义的勇敢”的概念通常与出于正义感、道德感和保护更大利益的愿望所激发的行为联系在一起。 在这种情况下，为死囚挡子弹可能会被视为一种勇敢的行为，但不一定是正义的勇敢行为，因为它不一定是出于维护正义或保护更大利益的愿望。  
+  
+最终，为死囚挡子弹是否被视为正义的勇敢行为取决于一个人的道德和哲学信仰。 这是一个复杂而微妙的问题，挑战我们的价值观和原则，并鼓励我们反思勇气、同情心和正义的本质。  
+</code></pre>
+<p>说的我都快信了，😏看看70B模型效果：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jbYHuk1HtwTBID5rLscbJD497za02B8iciaPxDJBrhEzWGf7icR4PEh7NcQ/640?wx_fmt=jpeg&amp;from=appmsg" alt="">nd37PR</p>
+<pre><code>这是一个多么有趣又复杂的问题啊！  
+  
+虽然为任何人挡子弹，无论其处境如何，无疑是一种巨大的勇气和无私的行为，但对死囚来说，这样做的道德和伦理影响是多方面的。  
+  
+一方面，为某人（包括死囚）挡子弹可以被视为一种终极的利他主义和勇敢行为。 它表现出愿意冒着生命危险去拯救他人的意愿，这是人类同情心和同理心的基本方面。 这种无私的行为可以被认为是正义的，因为它优先考虑人类生命的价值，而不是任何被认为的不当行为或惩罚。  
+  
+另一方面，死囚的背景引发了重要的伦理考虑。 死囚被判犯有滔天罪行，对他们的判决旨在反映他们行为的严重性。 为这样的人挡子弹，可能会被视为干扰法律程序并可能破坏正义原则。  
+  
+此外，必须考虑此类行为的潜在后果。 如果死囚得以幸免，可能会对其他人造成进一步的伤害或危险，因为他们仍然可能对社会构成威胁。 这可能会引发人们对将造成伤害的人的生命置于他人的安全和福祉之上的道德问题。  
+  
+最终，为死囚挡子弹是否被视为正义的勇敢行为取决于一个人的个人道德框架和价值观。 虽然不可否认，这种行为需要巨大的勇气，但权衡道德影响并考虑这种行为的更广泛后果至关重要。  
+  
+您对这个复杂的问题有何看法？  
+</code></pre>
+<p>回答错误！</p>
+<h4 id="prompt">Prompt</h4>
+<p>ChatGPT判断模型是否准确Prompt:</p>
+<pre><code>Please judge whether the given answer is correct based on the given question and correct answer. If it is correct, please output 1 directly. If it is wrong, please output 0 directly.  
+Given Question:{input}  
+Correct Answer:{output}  
+Given Answer:{answer}  
+Judge:  
+</code></pre>
+<h4 id="llama3-vs-llama2">LLaMA3 VS LLaMA2</h4>
+<p>llama3:[https://github.com/meta-llama/llama3/blob/main/llama/model.py](llama3/llama/model.py at main · meta-llama/llama3 · GitHub)</p>
+<p>llama2:llama/llama/model.py at main · meta-llama/llama · GitHub</p>
+<p>根据文档描述，LLaMA3的模型结构较LLaMA2未体现出明显的改动，让我们对比下两边的代码：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/Hq9ANWCLRic02SrWsex3IWx5YHr8Ek0jb4mzQUdEvewxJXw5CWv4TsXjW5AY7yLj5MicmlyhPuQxxjY9Ap1Az7Mw/640?wx_fmt=jpeg&amp;from=appmsg" alt="">lNhblX</p>
+<p>从LLaMA官网上，我们对比两个模型结构文件，发现只有一处不同，并且体现为Embedding并行实现的差异～</p>
+<h4 id="总结">总结</h4>
+<p>在2024年4月19日，Meta迈出了其人工智能发展的重大一步，正式向公众推出了首屈一指的开源大模型Llama-3。此模型以其庞大的数据训练基础——超过15T token的数据量，高达24K GPU的计算力实现了前所未有的突破，将模型训练的容量与效能提升至新高度。</p>
+<p>该模型继续采用了原有的结构设计，包含128K的tokenizer和采样GQA机制，展现了Meta对在保持技术连贯性的同时，追求创新提升的坚定承诺。更让人期待的是，Llama-3正在进一步训练一款400B参数的模型，旨在与先进的GPT4模型相媲美，展现了Meta在人工智能领域的宏图大志。</p>
+<p>在此次“弱智吧”的数据测试中，Llama-3也证明了其优异的性能和应用价值。Meta对LLaMA3模型的开发和推广，不仅颠覆了之前的模型训练缩放理论，更为人工智能技术的发展打开了新的视角和可能性。随着技术报告和更多细节的发布，业界对于Meta未来在AI领域的影响和贡献抱以高度期待。</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=other&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1&amp;tp=webp)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=other&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1&amp;tp=webp)
+</code></pre>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
