@@ -1,0 +1,986 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>如何使用LangChain构建带有自查询检索器的RAG系统 作者： 知觉之门 来源： 知觉之门 RAG &#43; 元数据过滤 = 出色的电影推荐 最近，我在浏览 Max 寻找电影时，突然想到：为什么不能用自然语言来查询电影，而不仅仅是通过标题或演员？例如，为什么不能在 Max、Netflix 或 Hulu 的搜索栏中输入以下查询： 查找英语剧情片，时  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">如何使用LangChain构建带有自查询检索器的RAG系统</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              April 28, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fQPXBtoiaSSZXflm80gicUVyFtGBvVrlTNMoMDnqqgG45VI10Sg5uChXxjXNWET9ezpz8llVCclvGUsuGphO9A8w/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 知觉之门  来源： <a href="https://mp.weixin.qq.com/s/u45wM2B5Os4BVLQLgNBECw">知觉之门</a></p>
+<p>RAG + 元数据过滤 = 出色的电影推荐</p>
+<p>最近，我在浏览 Max 寻找电影时，突然想到：为什么不能用自然语言来查询电影，而不仅仅是通过标题或演员？例如，为什么不能在 Max、Netflix 或 Hulu 的搜索栏中输入以下查询：</p>
+<ul>
+<li>
+<p>查找英语剧情片，时长不到2小时，有宠物。</p>
+</li>
+<li>
+<p>推荐一部僵尸电影，但确保它们很有趣。</p>
+</li>
+<li>
+<p>我喜欢“瞬息全宇宙”。给我一个类似的电影，但更黑暗。</p>
+</li>
+</ul>
+<p>这种方法的优点远远超出了自然方式的搜索电影。此方法还保护了用户的隐私。不是挖掘用户的操作、喜欢和不喜欢来喂养推荐系统，这个系统根本不需要用户数据。唯一需要的就是查询。</p>
+<p>所以我构建了电影搜索。这是一个基于 RAG 的系统，它接收用户的查询，对其进行嵌入，并进行相似度搜索以找到类似的电影。但它超越了普通的 RAG。这个系统使用了一种叫做<strong>自查询检索器</strong>  的东西。这允许在进行相似度搜索之前，根据电影的元数据进行过滤。因此，如果用户有一个查询，例如“推荐 1980 年后制作的恐怖电影，其中有很多爆炸场面”，则搜索将首先过滤掉所有不是“1980 年后制作的恐怖电影”的电影，然后再进行相似度搜索以找到“有很多爆炸场面”的电影。</p>
+<p>在本文中，我将提供一个如何构建该系统的高级概述。如果您想深入了解，可以查看上面的链接。</p>
+<p>让我们开始。</p>
+<h4 id="检索数据">检索数据</h4>
+<p>该项目的数据来自电影数据库(TMDB)，获得了所有者的许可。他们的API很容易使用，维护良好且没有严格的速率限制。我从他们的API中提取了以下电影属性：</p>
+<ul>
+<li>
+<p>标题</p>
+</li>
+<li>
+<p>运行时间（分钟）</p>
+</li>
+<li>
+<p>语言</p>
+</li>
+<li>
+<p>概述</p>
+</li>
+<li>
+<p>发布年份</p>
+</li>
+<li>
+<p>类型</p>
+</li>
+<li>
+<p>描述电影的关键字</p>
+</li>
+<li>
+<p>演员</p>
+</li>
+<li>
+<p>导演</p>
+</li>
+<li>
+<p>流式观看地点</p>
+</li>
+<li>
+<p>购买地点</p>
+</li>
+<li>
+<p>租赁地点</p>
+</li>
+<li>
+<p>生产公司列表</p>
+</li>
+</ul>
+<p>以下是使用 TMDB API 和 Python的 requests 库从TMDB中提取数据的一些代码：</p>
+<pre><code>def get_data(API_key, Movie_ID, max_retries=5):    
+    &quot;&quot;&quot;    
+    Function to pull details of your film of interest in JSON format.  
+  
+    parameters:    
+    API_key (str): Your API key for TMBD    
+    Movie_ID (str): TMDB id for film of interest  
+  
+    returns:    
+    dict: JSON formatted dictionary containing all details of your film of    
+    interest    
+    &quot;&quot;&quot;  
+  
+    query = 'https://api.themoviedb.org/3/movie/' + Movie_ID + \    
+        '?api_key='+API_key + '&amp;append_to_response=keywords,' + \    
+            'watch/providers,credits'    
+    response = requests.get(query)    
+    for i in range(max_retries):    
+        if response.status_code == 429:    
+                
+            print(    
+                f&quot;Request limit reached. Waiting and retrying ({i+1}/{    
+                    max_retries})&quot;)    
+            time.sleep(2** i)      
+        else:    
+            dict = response.json()    
+            return dict  
+</code></pre>
+<p>请注意查询需要电影ID（也来自TMDB），以及append_to_response
+，它允许我pull多种数据，例如关键字、观看提供商、电影credit（导演和演员）以及基本电影信息。此外，还有一些基本的 Scaffold 代码，以防止达到速率限制（尽管从未观察到）。</p>
+<p>然后，我们需要解析JSON响应。以下是一个代码片段，展示了如何解析演员和导演列表：</p>
+<pre><code>credits = dict['credits']    
+    actor_list, director_list = [], []  
+  
+    
+cast = credits['cast']    
+NUM_ACTORS = 5    
+for member in cast[:NUM_ACTORS]:    
+    actor_list.append(member[&quot;name&quot;])  
+  
+    
+crew = credits['crew']    
+for member in crew:    
+    if member['job'] == 'Director':    
+        director_list.append(member[&quot;name&quot;])  
+  
+actor_str = ', '.join(list(set(actor_list)))    
+director_str = ', '.join(list(set(director_list)))  
+</code></pre>
+<p>请注意，我将演员数量限制为电影中的前五名。我还必须指定我只对导演感兴趣，因为响应中还包括其他类型的剧组成员，例如剪辑师、服装设计师等。</p>
+<p>所有这些数据随后被编译成 CSV 文件。上面列出的每个属性都成为一列，每一行现在代表一部特定的电影。以下是从2008_movie_collection_data.csv
+文件中截取的电影片段，该文件是通过编程创建的。对于这个项目，我获得了从 1920 年到 2023 年的大约 100 部顶级电影。</p>
+<p>[此处插入电影数据片段]</p>
+<p>难以置信，我仍然没有看过功夫熊猫。也许我需要在这个项目后观看。</p>
+<h4 id="将文档上传到-pinecone">将文档上传到 Pinecone</h4>
+<p>接下来，我需要将 CSV 数据上传到 Pinecone。通常在 RAG 系统中，分块处理非常重要，但是在这里，每个“文档”（CSV 文件的一行）都相当短，因此块处理并不重要。我首先需要将每个 CSV文件转换为 LangChain 文档，然后指定哪些字段应该是主要内容，哪些字段应该是元数据。</p>
+<p>以下是构建这些文档的代码片段：</p>
+<pre><code>loader = DIRECTORYLoader(    
+    path=&quot;./data&quot;,    
+    glob=&quot;*.csv&quot;,    
+    loader_cls=CSVLoader,    
+    show_progress=True)  
+  
+docs = loader.load()  
+  
+metadata_field_info = [    
+    AttributeInfo(    
+        name=&quot;标题&quot;, description=&quot;电影的标题&quot;, type=&quot;string&quot;),    
+    AttributeInfo(name=&quot;运行时间（分钟）&quot;,    
+                  description=&quot;电影的运行时间（分钟）&quot;, type=&quot;integer&quot;),    
+    AttributeInfo(name=&quot;语言&quot;,    
+                  description=&quot;电影的语言&quot;, type=&quot;string&quot;),    
+    ...    
+]  
+  
+for doc in docs:    
+        
+    page_content_dict = dict(line.split(&quot;: &quot;, 1)    
+                             for line in doc.page_content.split(&quot;\n&quot;) if &quot;: &quot; in line)  
+  
+        doc.page_content = '概述：' + page_content_dict.get(    
+        '概述') + '. 关键字：' + page_content_dict.get('关键字')    
+    doc.metadata = {field.name: page_content_dict.get(    
+        field.name) for field in metadata_field_info}  
+  
+        
+    for field in fields_to_convert_list:    
+        convert_to_list(doc, field)        
+  
+        
+    for field in fields_to_convert_int:    
+        convert_to_int(doc, field)  
+</code></pre>
+<p>DirectoryLoader
+来自 LangChain ，负责加载所有 CSV 文件到文档中。然后，<strong>我需要指定什么应该是 page_content
+，什么应该是 metadata
+。这是一个重要的决策。page_content
+将被嵌入并在检索阶段用于相似度搜索。metadata
+将仅用于在进行相似度搜索之前进行过滤。</strong> 我决定将“概述”和“关键字”属性嵌入，并将其余属性作为元数据。进一步调整是否也应该将“标题”包含在 page_content
+中，但我发现这种配置适合大多数用户查询。</p>
+<p>然后，将文档上传到 Pinecone。这个过程相当简单：</p>
+<pre><code>PINECONE_KEY, PINECONE_INDEX_NAME = os.getenv(    
+    'PINECONE_API_KEY'), os.getenv('PINECONE_INDEX_NAME')  
+  
+pc = Pinecone(api_key=PINECONE_KEY)  
+  
+    
+pc.create_index(    
+    name=PINECONE_INDEX_NAME,    
+    dimension=1536,    
+    metric=&quot;cosine&quot;,    
+    spec=PodSpec(    
+        environment=&quot;gcp-starter&quot;    
+    )    
+)  
+  
+    
+pc_index = pc.Index(PINECONE_INDEX_NAME)    
+print(pc_index.describe_index_stats())  
+  
+embeddings = OpenAIEmbeddings(model='text-embedding-ada-002')  
+  
+vectorstore = PineconeVectorStore(    
+    pc_index, embeddings    
+)  
+  
+    
+namespace = f&quot;pinecone/{PINECONE_INDEX_NAME}&quot;    
+record_manager = SQLRecordManager(    
+    namespace, db_url=&quot;sqlite:///record_manager_cache.sql&quot;    
+)  
+  
+record_manager.create_schema()  
+  
+    
+index(docs, record_manager, vectorstore,    
+      cleanup=&quot;full&quot;, source_id_key=&quot;Website&quot;)  
+</code></pre>
+<p>以下是该代码的一些要点：</p>
+<ul>
+<li>
+<p>使用 SQLRecordManager
+确保了在多次运行代码时，不会上传重复的文档到 Pinecone。如果文档被修改，只有该文档将被修改 vector 存储中。</p>
+</li>
+<li>
+<p>我们使用的是 OpenAI 的经典 text-embedding-ada-002
+嵌入模型。</p>
+</li>
+</ul>
+<h4 id="创建自查询检索器">创建自查询检索器</h4>
+<p>自查询检索器将允许我们通过提前定义的元数据来过滤在 RAG 期间检索到的电影。这将大大提高我们的电影推荐器的有用性。</p>
+<p>在选择矢量存储时，一个重要的考虑因素是确保它支持元数据过滤，因为不是所有矢量存储都支持。LangChain 提供了一份支持自查询检索的数据库列表。另一个重要的考虑因素是什么类型的比较器允许每个矢量存储。比较器是我们根据元数据过滤的方法。例如，我们可以使用 eq
+比较器来确保我们的电影属于科幻电影genre：eq(&lsquo;Genre&rsquo;, &lsquo;Science Fiction&rsquo;)
+。不是所有矢量存储都允许所有比较器。例如，查看 Chroma 中的允许比较器 以及 Pinecone 中的比较器如何不同。</p>
+<p>除了告诉模型允许的比较器外，我们还可以为模型提供用户查询和相应过滤器的示例。这被称为<strong>少样本学习</strong> ，它对于指导模型非常有价值。</p>
+<p>看看以下两个用户查询：</p>
+<ul>
+<li>
+<p>《推荐一些由 Yorgos Lanthimos 导演的电影。》</p>
+</li>
+<li>
+<p>《与 Yorgos Lanthimos 电影相似的电影。》</p>
+</li>
+</ul>
+<p>我的元数据过滤模型可以轻松地为这两个示例写出相同的过滤器查询，即使我想将它们处理得不同。第一个应该只产生由 Lanthimos 导演的电影，而第二个应该产生与 Lanthimos 电影相同的电影。我通过提供模型的示例来确保这种行为。语言模型的美丽之处在于它们可以使用其“推理”能力和世界知识来自这些少镜头示例中推断出其他用户查询。</p>
+<pre><code>document_content_description = &quot;电影的简要概述，along with keywords&quot;  
+  
+            
+        allowed_comparators = [    
+            &quot;$eq&quot;,      
+            &quot;$ne&quot;,      
+            &quot;$gt&quot;,      
+            &quot;$gte&quot;,      
+            &quot;$lt&quot;,      
+            &quot;$lte&quot;,      
+            &quot;$in&quot;,      
+            &quot;$nin&quot;,      
+            &quot;$exists&quot;,     
+        ]  
+  
+        examples = [    
+            (    
+                &quot;Recommend some films by Yorgos Lanthimos.&quot;,    
+                {    
+                    &quot;query&quot;: &quot;Yorgos Lanthimos&quot;,    
+                    &quot;filter&quot;: 'in(&quot;Directors&quot;, [&quot;Yorgos Lanthimos&quot;])',    
+                },    
+            ),    
+            (    
+                &quot;Films similar to Yorgos Lanthmios movies.&quot;,    
+                {    
+                    &quot;query&quot;: &quot;Dark comedy, absurd, Greek Weird Wave&quot;,    
+                    &quot;filter&quot;: 'NO_FILTER',    
+                },    
+            ),    
+            ...    
+        ]  
+  
+        metadata_field_info = [    
+            AttributeInfo(    
+                name=&quot;Title&quot;, description=&quot;电影的标题&quot;, type=&quot;string&quot;),    
+            AttributeInfo(name=&quot;Runtime (minutes)&quot;,    
+                          description=&quot;电影的分钟运行时间&quot;, type=&quot;integer&quot;),    
+            AttributeInfo(name=&quot;Language&quot;,    
+                          description=&quot;电影的语言&quot;, type=&quot;string&quot;),    
+            ...    
+        ]  
+  
+        constructor_prompt = get_query_constructor_prompt(    
+            document_content_description,    
+            metadata_field_info,    
+            allowed_comparators=allowed_comparators,    
+            examples=examples,    
+        )  
+  
+        output_parser = StructuredQueryOutputParser.from_components()    
+        query_constructor = constructor_prompt | query_model | output_parser  
+  
+        retriever = SelfQueryRetriever(    
+            query_constructor=query_constructor,    
+            vectorstore=vectorstore,    
+            structured_query_translator=PineconeTranslator(),    
+            search_kwargs={'k': 10}    
+        )  
+</code></pre>
+<p>此外，模型还需要了解每个元数据字段的描述。这有助于它理解哪些元数据过滤是可能的。</p>
+<p>最后，我们构建链条。这里的 query_model
+是使用 OpenAI API 的 GPT-4 Turbo 实例。我建议使用 GPT-4 而不是 3.5 来编写这些元数据过滤器查询，因为这是一个关键步骤，3.5 在这里经常出错。search_kwargs={&lsquo;k&rsquo;:10}
+告诉检索器根据用户查询提取最相似的前 10 部电影。</p>
+<h4 id="创建聊天模型">创建聊天模型</h4>
+<p>终于，在构建自查询检索器之后，我们可以在其基础上构建标准的 RAG 模型。我们首先定义聊天模型。这是我所谓的_summary 模型，因为它接收上下文（检索的电影+系统消息）并生成每个推荐的摘要。如果您想降低成本，这个模型可以使用 GPT-3.5 Turbo，如果您想要最好的结果，可以使用 GPT-4 Turbo。</p>
+<p>在系统消息中，我告诉机器人它的目标，并提供了一系列推荐和限制，其中<strong>最重要的是不要推荐 自查询检索器 没有提供的电影</strong> 。在测试中，当用户的查询没有从数据库中检索到任何电影时，我遇到了问题。例如，《&ldquo;推荐一些恐怖电影，主演马特·达蒙，由韦斯·安德森执导，制作于1980年之前&rdquo;》，这将导致自查询检索器检索不到电影（因为这个电影不存在）。在没有电影数据的情况下，模型将使用自己的（错误的）记忆尝试推荐一些电影。这不是好的行为。我不想 Netflix 推荐一个不在数据库中的电影。以下系统消息能够阻止这种行为。我注意到 GPT-4 比 GPT-3.5 更好地遵循指令，这是预料之中的。</p>
+<pre><code>chat_model = ChatOpenAI(  
+    model=SUMMARY_MODEL_NAME,  
+    temperature=0,  
+    streaming=True,  
+)  
+
+
+
+ 
+
+
+
+prompt = ChatPromptTemplate.from_messages(  
+    [  
+        (  
+            'system',  
+            &quot;&quot;&quot;  
+            您的目标是根据用户的查询和检索的上下文推荐电影。如果检索的电影不相关，忽略它。如果您的上下文为空或没有相关的电影，不要推荐电影，告诉用户您找不到相关的电影。目标是推荐三到五个电影，只要这些电影是相关的。您不能推荐超过五个电影。您的推荐应该是相关的、原创的且至少有二三句话长。  
+  
+                        您不能推荐不在上下文中的电影。  
+  
+                # 输出模板  
+                -**电影标题**：  
+                    - 播放时间：  
+                    - 发布年份：  
+                    - 流媒体：  
+                    - （您推荐这个电影的理由）  
+  
+                            问题：{question}  
+                            上下文：{context}  
+            &quot;&quot;&quot;  
+        ),  
+    ]  
+)  
+
+
+
+ 
+
+
+
+def format_docs(docs):  
+    return &quot;\n\n&quot;.join(f&quot;{doc.page_content}\n\nMeta{doc.metadata}&quot; for doc in docs)  
+
+
+
+ 
+
+
+
+rag_chain_from_docs = (  
+    RunnablePassthrough.assign(  
+        context=(lambda x: format_docs(x[&quot;context&quot;]))  
+    )  
+    | prompt  
+    | chat_model  
+    | StrOutputParser()  
+)  
+  
+rag_chain_with_source = RunnableParallel(  
+    {&quot;context&quot;: retriever, &quot;question&quot;: RunnablePassthrough()}  
+).assign(answer=rag_chain_from_docs)  
+</code></pre>
+<p>format_docs
+用于格式化呈现给模型的信息，以便于理解和解析。我们向模型提供page_content
+（概述和关键字）以及metadata
+（所有其他电影属性）；任何它可能需要更好地向用户推荐电影的内容。</p>
+<p>rag_chain_from_docs
+是一个链，它将检索到的文档格式化，输入格式化后的文档到模型的上下文，然后使用模型回答问题。最后，我们创建 rag_chain_with_source
+，这是一个 RunnableParallel
+，它并行运行两个操作：自查询检索器去检索相似文档，而查询只是通过 RunnablePassthrough()
+传递给模型的。然后，我们将并行组件的结果组合起来，并使用 rag_chain_from_docs
+生成答案。在这里，source
+指的是检索器，它访问所有“源”文档。</p>
+<p>因为我想将答案流式呈现给用户，所以我们使用以下代码：</p>
+<pre><code>for chunk in rag_chain_with_source.stream(query):  
+    for key in chunk:  
+        if key == 'answer':  
+            yield chunk[key]  
+</code></pre>
+<h4 id="演示">演示</h4>
+<p>现在到了有趣的部分：与模型玩耍。如前所述，Streamlit 用于创建前端和托管应用程序。我不会在这里讨论 UI 代码；请查看原始代码以了解实现细节。它非常直接，并且 Streamlit 网站上有许多其他示例。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fQPXBtoiaSSZXflm80gicUVyFtGBvVrlTNV4cKTT3bk7u7D7KibmfMJibHP6fMP3CicRxTeThHIA20ia7hLkY4YhvGYA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>**<em>电影搜索 UI。作者。</em></p>
+<p>有几个可以使用的建议，但让我们尝试自己的查询：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fQPXBtoiaSSZXflm80gicUVyFtGBvVrlTNMoMDnqqgG45VI10Sg5uChXxjXNWET9ezpz8llVCclvGUsuGphO9A8w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><em>示例查询和模型响应。作者。</em></p>
+<p>在幕后，self-querying retriever 确保了.filtering 掉了非法语电影。然后，它执行了“成长故事”的相似搜索，结果是十个电影。最后，summarizer bot 选择了五个电影进行推荐。请注意，建议的电影日期从 1959 年到 2012 年。为方便起见，我确保机器人包括电影的播放时间、发行年份、流媒体提供商和机器人手工制作的推荐。</p>
+<p>（旁注：如果您还没有观看［__The 400 Blows］，请停止您正在做的事情，并观看［__The 400 Blows］。）</p>
+<p>大语言模型中的负面特征，如其响应的非确定性，现在变成了正面特征。请模型同一个问题两次，您可能会获得略有不同的建议。</p>
+<p>请注意当前实现的一些限制：</p>
+<ul>
+<li>
+<p>没有保存推荐。用户可能想要重新访问旧的建议。</p>
+</li>
+<li>
+<p>手动更新电影数据库的原始数据。自动化并每周更新将是一个好主意。</p>
+</li>
+<li>
+<p>self-querying Retrieval 的元数据过滤问题。例如，查询“贝恩·阿弗莱克 фільм”可能会出现问题。这可能意味着贝恩·阿弗莱克明星的电影或贝恩·阿弗莱克执导的电影。这是一个需要查询澄清的问题。</p>
+</li>
+</ul>
+<p>可能的改进项目可能是执行文档的重新排名或创建一个多转换的聊天模型，而不是仅仅是一个 QA 机器人。还可以创建一个agent recommender，它可以在 query 不明确时提示用户。</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
