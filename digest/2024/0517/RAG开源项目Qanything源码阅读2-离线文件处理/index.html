@@ -1,0 +1,1260 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>RAG开源项目Qanything源码阅读2-离线文件处理 作者： AINLP 来源： AINLP 书接上文，最近选了一个开源的RAG项目进行进一步学习：https://github.com/netease-youdao/QAnything，后续一连几篇，会分几篇，从我的角度，给大家介绍这个项目，预计的目录如下： 概述&#43;服务  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">RAG开源项目Qanything源码阅读2-离线文件处理</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              May 17, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=other&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1&amp;tp=webp" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/MU4AwDWNZtoLkTIfvN5JZg">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=other" alt=""></p>
+<p>书接上文，最近选了一个开源的RAG项目进行进一步学习：https://github.com/netease-youdao/QAnything，后续一连几篇，会分几篇，从我的角度，给大家介绍这个项目，预计的目录如下：</p>
+<ul>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MjM5ODkzMzMwMQ==&amp;mid=2650442271&amp;idx=5&amp;sn=06675a7481c755b0af34ebaa31bfb772&amp;chksm=becd0c4589ba85530476a9c562f890ecbb2920e998be4fc755a93652131d56928c8a913c1ca3&amp;scene=21#wechat_redirect">概述+服务：项目设计、模块划分以及部署细节。</a></p>
+</li>
+<li>
+<p>文件解析处理：上传文件和文件处理的方法。（本期）</p>
+</li>
+<li>
+<p>在线推理流程：给定query进入后到给出回复结果的全流程处理。</p>
+</li>
+</ul>
+<p>本期是离线的文件处理，即对多种不同的文件进行详细的阐述，之前我也有写过类似的文章（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489470&amp;idx=1&amp;sn=50f618e87545a1ef12e3480bd44e64f1&amp;chksm=e8824f20dff5c6365532bd45aa1853086014cad3bc31f5bbb73235da791ee45b16738501ba5c&amp;scene=21#wechat_redirect">心法利器[110] | 知识文档处理和使用流程</a>），不过没落到代码层面，这次借着源码阅读的机会，正好介绍一下：</p>
+<ul>
+<li>
+<p>文件上传。</p>
+</li>
+<li>
+<p>文件读取和切片。</p>
+</li>
+<li>
+<p>索引构造。</p>
+</li>
+</ul>
+<p>提前说明，这里忽略了大量的业务代码，聚焦在文件处理和相关算法本身，如新建用户、知识库、文件删除，会有选择的忽略，有需要的可以参考我在文中的思路，在代码里找到对应的位置。</p>
+<h4 id="文件上传">文件上传</h4>
+<p>文件上传是指将文件从前端传到后端的流程，这个流程的工作在docs\API.md
+有提到。首先是接口字段：</p>
+<p>参数名参数值是否必填参数类型描述说明</p>
+<p>files
+文件二进制
+是
+File
+需要上传的文件，可多选，目前仅支持[md,txt,pdf,jpg,png,jpeg,docx,xlsx,pptx,eml,csv]</p>
+<p>user_id
+zzp
+是
+String
+用户 id</p>
+<p>kb_id
+KBb1dd58e8485443ce81166d24f6febda7
+是
+String
+知识库 id</p>
+<p>mode
+soft
+否
+String
+上传模式，soft：知识库内存在同名文件时当前文件不再上传，strong：文件名重复的文件强制上传，默认值为 soft</p>
+<p>至于文件的上传，作者给出了两种模式，分别是同步和异步。</p>
+<h4 id="客户端">客户端</h4>
+<p>客户端只需要请求服务即可，这里穿插一下同步异步请求，以及文件上传的细节，这个直接参考源码就好了，首先是同步的请求源码：</p>
+<pre><code>import os  
+import requests  
+  
+url = &quot;http://{your_host}:8777/api/local_doc_qa/upload_files&quot;  
+folder_path = &quot;./docx_data&quot;  # 文件所在文件夹，注意是文件夹！！  
+data = {  
+    &quot;user_id&quot;: &quot;zzp&quot;,  
+    &quot;kb_id&quot;: &quot;KB6dae785cdd5d47a997e890521acbe1c9&quot;,  
+ &quot;mode&quot;: &quot;soft&quot;  
+}  
+  
+files = []  
+for root, dirs, file_names in os.walk(folder_path):  
+    for file_name in file_names:  
+        if file_name.endswith(&quot;.md&quot;):  # 这里只上传后缀是md的文件，请按需修改，支持类型：  
+            file_path = os.path.join(root, file_name)  
+            files.append((&quot;files&quot;, open(file_path, &quot;rb&quot;)))  
+  
+response = requests.post(url, files=files, data=data)  
+print(response.text)  
+</code></pre>
+<ul>
+<li>
+<p>发请求用的是通用的requests
+包。</p>
+</li>
+<li>
+<p>因为是本地测试，所以使用的就是比较直接的本地文件，直接open就行，文件字段存的是open变量，注意打开方式是rb
+。</p>
+</li>
+</ul>
+<p>至于异步，则会会复杂一些。</p>
+<pre><code>import argparse  
+import os  
+import sys  
+import json  
+import aiohttp  
+import asyncio  
+import time  
+import random  
+import string  
+  
+files = []  
+for root, dirs, file_names in os.walk(&quot;./docx_data&quot;):  # 文件夹  
+    for file_name in file_names:  
+        if file_name.endswith(&quot;.docx&quot;):  # 只上传docx文件  
+            file_path = os.path.join(root, file_name)  
+            files.append(file_path)  
+print(len(files))  
+response_times = []  
+  
+async def send_request(round_, files):  
+    print(len(files))  
+    url = 'http://{your_host}:8777/api/local_doc_qa/upload_files'  
+    data = aiohttp.FormData()  
+    data.add_field('user_id', 'zzp')  
+    data.add_field('kb_id', 'KBf1dafefdb08742f89530acb7e9ed66dd')  
+    data.add_field('mode', 'soft')  
+  
+    total_size = 0  
+    for file_path in files:  
+        file_size = os.path.getsize(file_path)  
+        total_size += file_size  
+        data.add_field('files', open(file_path, 'rb'))  
+    print('size:', total_size / (1024 * 1024))  
+    try:  
+        start_time = time.time()  
+        async with aiohttp.ClientSession() as session:  
+            async with session.post(url, data=data) as response:  
+                end_time = time.time()  
+                response_times.append(end_time - start_time)  
+                print(f&quot;round_:{round_}, 响应状态码: {response.status}, 响应时间: {end_time - start_time}秒&quot;)  
+    except Exception as e:  
+        print(f&quot;请求发送失败: {e}&quot;)  
+  
+async def main():  
+    start_time = time.time()  
+    num = int(sys.argv[1])  // 一次上传数量，http协议限制一次请求data不能大于100M，请自行控制数量  
+    round_ = 0  
+    r_files = files[:num]  
+    tasks = []  
+    task = asyncio.create_task(send_request(round_, r_files))  
+    tasks.append(task)  
+    await asyncio.gather(*tasks)  
+  
+    print(f&quot;请求完成&quot;)  
+    end_time = time.time()  
+    total_requests = len(response_times)  
+    total_time = end_time - start_time  
+    qps = total_requests / total_time  
+    print(f&quot;total_time:{total_time}&quot;)  
+  
+if __name__ == '__main__':  
+    asyncio.run(main())  
+</code></pre>
+<p>请求用的是aiohttp
+，而且使用的是python的协程，即asyncio
+一套的python技术，具体细节可以参考这篇博客：https://blog.csdn.net/m0_68949064/article/details/132805165。协程在高密度的http请求下，能有效提升CPU的使用率，提升综合性能，毕竟在请求等待过程，可以做很多别的事，就避免CPU空跑了。</p>
+<h4 id="服务端">服务端</h4>
+<p>服务端则比较复杂了，文件上传后要经过大量的校验，并且需要返回最终的处理结果。</p>
+<p>文件上传的接口是/api/local_doc_qa/upload_files
+，我们可以在handlers.py
+里面找到，排除掉一些校验代码，handlers里面的核心代码是这段（upload_files
+函数下）：</p>
+<pre><code>for file, file_name in zip(files, file_names):  
+    if file_name in exist_file_names:  
+        continue  
+    file_id, msg = local_doc_qa.milvus_summary.add_file(user_id, kb_id, file_name, timestamp)  
+    debug_logger.info(f&quot;{file_name}, {file_id}, {msg}&quot;)  
+    local_file = LocalFile(user_id, kb_id, file, file_id, file_name, local_doc_qa.embeddings)  
+    local_files.append(local_file)  
+    local_doc_qa.milvus_summary.update_file_size(file_id, len(local_file.file_content))  
+    data.append(  
+        {&quot;file_id&quot;: file_id, &quot;file_name&quot;: file_name, &quot;status&quot;: &quot;gray&quot;, &quot;bytes&quot;: len(local_file.file_content),  
+            &quot;timestamp&quot;: timestamp})  
+asyncio.create_task(local_doc_qa.insert_files_to_milvus(user_id, kb_id, local_files))  
+</code></pre>
+<p>这里面的几个关键的函数：</p>
+<ul>
+<li>
+<p>local_doc_qa.milvus_summary.add_file
+：向指定知识库下面增加文件，这是一个mysql操作，要在mysql数据库内记录在案。</p>
+</li>
+<li>
+<p>local_doc_qa.insert_files_to_milvus
+：将文档加入到milvus中，当然这里也包含了文件切片、推理向量、存入数据库等一系列操作。</p>
+</li>
+</ul>
+<p>回到服务，这里最终还是会收集各种处理的信息，最终以json形式形式返回，这里包括状态码、返回信息以及必要的数据信息（例如文件id、上传后的文件名、更新时间等）</p>
+<pre><code>return sanic_json({&quot;code&quot;: 200, &quot;msg&quot;: msg, &quot;data&quot;: data})  
+</code></pre>
+<h4 id="文件处理核心流程">文件处理核心流程</h4>
+<p>继续往里面看，这个函数的代码不是很长，我直接放了：</p>
+<pre><code>async def insert_files_to_milvus(self, user_id, kb_id, local_files: List[LocalFile]):  
+    debug_logger.info(f'insert_files_to_milvus: {kb_id}')  
+    milvus_kv = self.match_milvus_kb(user_id, [kb_id])  
+    assert milvus_kv is not None  
+    success_list = []  
+    failed_list = []  
+  
+    for local_file in local_files:  
+        start = time.time()  
+        try:  
+            local_file.split_file_to_docs(self.get_ocr_result)  
+            content_length = sum([len(doc.page_content) for doc in local_file.docs])  
+        except Exception as e:  
+            error_info = f'split error: {traceback.format_exc()}'  
+            debug_logger.error(error_info)  
+            self.milvus_summary.update_file_status(local_file.file_id, status='red')  
+            failed_list.append(local_file)  
+            continue  
+        end = time.time()  
+        self.milvus_summary.update_content_length(local_file.file_id, content_length)  
+        debug_logger.info(f'split time: {end - start} {len(local_file.docs)}')  
+        start = time.time()  
+        try:  
+            local_file.create_embedding()  
+        except Exception as e:  
+            error_info = f'embedding error: {traceback.format_exc()}'  
+            debug_logger.error(error_info)  
+            self.milvus_summary.update_file_status(local_file.file_id, status='red')  
+            failed_list.append(local_file)  
+            continue  
+        end = time.time()  
+        debug_logger.info(f'embedding time: {end - start} {len(local_file.embs)}')  
+  
+        self.milvus_summary.update_chunk_size(local_file.file_id, len(local_file.docs))  
+        ret = await milvus_kv.insert_files(local_file.file_id, local_file.file_name, local_file.file_path,  
+                                            local_file.docs, local_file.embs)  
+        insert_time = time.time()  
+        debug_logger.info(f'insert time: {insert_time - end}')  
+        if ret:  
+            self.milvus_summary.update_file_status(local_file.file_id, status='green')  
+            success_list.append(local_file)  
+        else:  
+            self.milvus_summary.update_file_status(local_file.file_id, status='yellow')  
+            failed_list.append(local_file)  
+    debug_logger.info(  
+        f&quot;insert_to_milvus: success num: {len(success_list)}, failed num: {len(failed_list)}&quot;)  
+</code></pre>
+<p>除开各种校验和数据的同步更新，主要经历的是这几个流程：</p>
+<ul>
+<li>
+<p>local_file.split_file_to_docs
+：文件的切片，这里还涉及不同类型的文件处理，例如md、图片等。</p>
+</li>
+<li>
+<p>local_file.create_embedding
+：看名字就知道了，向量化。</p>
+</li>
+<li>
+<p>milvus_kv.insert_files
+：存入milvus。</p>
+</li>
+</ul>
+<p>这就是文件上传后核心要经历的4个流程，即文件读取、文件切片、向量化和入库，接下来我会逐个展开讲。</p>
+<h4 id="文件读取和切片">文件读取和切片</h4>
+<p>文件读取和切片在代码里有不少是混合的，所以我也合在一起说了。在代码里，我们能看到，他们目前支持的是这几种格式：md,txt,pdf,jpg,png,jpeg,docx,xlsx,pptx,eml,csv，另外还有一个基于url的网页，大概就是这几块的内容，代码里对这几个类型都提供了处理代码，我来逐步解析。</p>
+<h4 id="load_and_split">load_and_split</h4>
+<p>在开始之前，必须了解一下文件读取的这基类BaseLoader
+，这里对加载、切分都有详细的预定义。这里向大家关注的点只有一个，就是load_and_split
+，我只把有关的部分放出来，这是一个支持在自定义好加载组件和切片组建后，一条龙使用的函数，注意这个BaseLoader
+是在langchain_core
+里的，不是在Qanything项目里的。</p>
+<pre><code>class BaseLoader(ABC):  
+    def load_and_split(  
+        self, text_splitter: Optional[TextSplitter] = None  
+    ) -&gt; List[Document]:  
+        &quot;&quot;&quot;Load Documents and split into chunks. Chunks are returned as Documents.  
+  
+        Do not override this method. It should be considered to be deprecated!  
+  
+        Args:  
+            text_splitter: TextSplitter instance to use for splitting documents.  
+              Defaults to RecursiveCharacterTextSplitter.  
+  
+        Returns:  
+            List of Documents.  
+        &quot;&quot;&quot;  
+  
+        if text_splitter is None:  
+            try:  
+                from langchain_text_splitters import RecursiveCharacterTextSplitter  
+            except ImportError as e:  
+                raise ImportError(  
+                    &quot;Unable to import from langchain_text_splitters. Please specify &quot;  
+                    &quot;text_splitter or install langchain_text_splitters with &quot;  
+                    &quot;`pip install -U langchain-text-splitters`.&quot;  
+                ) from e  
+  
+            _text_splitter: TextSplitter = RecursiveCharacterTextSplitter()  
+        else:  
+            _text_splitter = text_splitter  
+        docs = self.load()  
+        return _text_splitter.split_documents(docs)  
+</code></pre>
+<p>有这个基类后，只需要继承这个积累就能写自己的加载器了，至于文档切分器，则可以在load_and_split
+使用的时候传进去，例如这样：</p>
+<pre><code>loader = MyRecursiveUrlLoader(url=self.url)  
+textsplitter = ChineseTextSplitter(pdf=False, sentence_size=sentence_size)  
+docs = loader.load_and_split(text_splitter=textsplitter)  
+</code></pre>
+<p>MyRecursiveUrlLoader
+是URL加载器（具体后面会讲），初始化以后，再定义一个中文的切分器ChineseTextSplitter
+（具体后面也会讲），然后直接用loader.load_and_split(text_splitter=textsplitter)
+即可把加载、切片都给搞定了。</p>
+<p>下面就来分开把加载和切片两者的操作讲一遍。</p>
+<h4 id="文件读取">文件读取</h4>
+<p>在这个基类下，根据不同需要，会有各种不一样的加载器，用于应对多种不同的格式，自定义的加载器直接从BaseLoader
+继承即可。</p>
+<ul>
+<li>
+<p>MyRecursiveUrlLoader
+，URL加载器，即网络链接下的内容加载，内部直接用了langchain的WebBaseLoader
+，网页解析则使用的是BeautifulSoup
+，算是爬虫技术里的老朋友了，BeautifulSoup
+主要用于解析代码里暗藏的url，方便进一步查询。</p>
+</li>
+<li>
+<p>UnstructuredFileLoader
+，直接从langchain里面加载的，from langchain.document_loaders import UnstructuredFileLoader
+。这个也就只用在了markdown里面（.md）。</p>
+</li>
+<li>
+<p>TextLoader
+，也是直接从langchain里面加载的from langchain.document_loaders import UnstructuredFileLoader, TextLoader
+。这个也就只用在了txt里面（.txt）。</p>
+</li>
+<li>
+<p>UnstructuredPaddlePDFLoader
+，这个是专门用在pdf文件里的，作者自己写的类，继承自前面提到的UnstructuredFileLoader
+，但不局限在此，主要重写的是_get_elements
+函数，内部写了一个函数pdf_ocr_txt
+，首先用fitz
+读取pdf每页的图片，然后用ocr_engine
+来解析（请求orc接口，本项目里用的是一个triton部署的paddleocr服务），最后用unstructured
+下的一个函数partition_text
+来完成切片（pip install unstructured
+），当然后续还会有针对中文的综合切片，后面会说。</p>
+</li>
+<li>
+<p>UnstructuredPaddleImageLoader
+，用来解析图片的工具，对应jpg、png、jpeg后缀文件。同样继承自UnstructuredFileLoader
+，和PDF不同的是加载部分，图片加载使用的是cv2
+，加载后和PDF的处理一样，都是走一遍ocr_engine
+和partition_text
+。</p>
+</li>
+<li>
+<p>UnstructuredWordDocumentLoader
+用于处理docx文件，来自langchain。</p>
+</li>
+<li>
+<p>xlsx使用的是pandas，值得注意的是engine使用的是openpyxl
+，另外文件读取后，作者会把内容转为csv，然后用CSVLoader
+来处理。</p>
+</li>
+<li>
+<p>CSVLoader
+顾名思义处理的是csv文件，这里用的是csv.DictReader
+来读取的。</p>
+</li>
+<li>
+<p>UnstructuredPowerPointLoader
+用于读取PPT，从langchain里面加载的，from langchain.document_loaders import UnstructuredPowerPointLoader
+。</p>
+</li>
+<li>
+<p>UnstructuredEmailLoader
+用于读取邮件格式的文件.eml
+，也是从langchain中加载的，from langchain.document_loaders import UnstructuredEmailLoader
+。</p>
+</li>
+</ul>
+<p>至此，所有支持的文件加载都在这里了，这些文件加载都挺有借鉴意义的，后续在做自己的RAG系统的过程中，也可以考虑直接使用。</p>
+<h4 id="文件切片">文件切片</h4>
+<p>文件切片作者也是写成了通用的工具，方便调用，而且这个相比各种文件格式，这里的泛用性会更高，毕竟都解析成文本了，这个比较通用ChineseTextSplitter
+，继承自langchain的from langchain.text_splitter import CharacterTextSplitter
+，重写后，更符合中文的使用习惯。直接来看源码吧。</p>
+<pre><code>class ChineseTextSplitter(CharacterTextSplitter):  
+    def __init__(self, pdf: bool = False, sentence_size: int = SENTENCE_SIZE, **kwargs):  
+        super().__init__(**kwargs)  
+        self.pdf = pdf  
+        self.sentence_size = sentence_size  
+  
+    def split_text1(self, text: str) -&gt; List[str]:  
+        if self.pdf:  
+            text = re.sub(r&quot;\n{3,}&quot;, &quot;\n&quot;, text)  
+            text = re.sub('\s', ' ', text)  
+            text = text.replace(&quot;\n\n&quot;, &quot;&quot;)  
+        sent_sep_pattern = re.compile('([﹒﹔﹖﹗．。！？][&quot;’”」』]{0,2}|(?=[&quot;‘“「『]{1,2}|$))')  # del ：；  
+        sent_list = []  
+        for ele in sent_sep_pattern.split(text):  
+            if sent_sep_pattern.match(ele) and sent_list:   
+                sent_list[-1] += ele  
+            elif ele:  
+                sent_list.append(ele)  
+        return sent_list  
+  
+    def split_text(self, text: str) -&gt; List[str]:   ##此处需要进一步优化逻辑  
+        if self.pdf:  
+            text = re.sub(r&quot;\n{3,}&quot;, r&quot;\n&quot;, text)  
+            text = re.sub('\s', &quot; &quot;, text)  
+            text = re.sub(&quot;\n\n&quot;, &quot;&quot;, text)  
+  
+        text = re.sub(r'([;；.!?。！？\?])([^”’])', r&quot;\1\n\2&quot;, text)  # 单字符断句符  
+        text = re.sub(r'(\.{6})([^&quot;’”」』])', r&quot;\1\n\2&quot;, text)  # 英文省略号  
+        text = re.sub(r'(\…{2})([^&quot;’”」』])', r&quot;\1\n\2&quot;, text)  # 中文省略号  
+        text = re.sub(r'([;；!?。！？\?][&quot;’”」』]{0,2})([^;；!?，。！？\?])', r'\1\n\2', text)  
+        # 如果双引号前有终止符，那么双引号才是句子的终点，把分句符\n放到双引号后，注意前面的几句都小心保留了双引号  
+        text = text.rstrip()  # 段尾如果有多余的\n就去掉它  
+        # 很多规则中会考虑分号;，但是这里我把它忽略不计，破折号、英文双引号等同样忽略，需要的再做些简单调整即可。  
+        ls = [i for i in text.split(&quot;\n&quot;) if i]  
+        for ele in ls:  
+            if len(ele) &gt; self.sentence_size:  
+                ele1 = re.sub(r'([,，.][&quot;’”」』]{0,2})([^,，.])', r'\1\n\2', ele)  
+                ele1_ls = ele1.split(&quot;\n&quot;)  
+                for ele_ele1 in ele1_ls:  
+                    if len(ele_ele1) &gt; self.sentence_size:  
+                        ele_ele2 = re.sub(r'([\n]{1,}| {2,}[&quot;’”」』]{0,2})([^\s])', r'\1\n\2', ele_ele1)  
+                        ele2_ls = ele_ele2.split(&quot;\n&quot;)  
+                        for ele_ele2 in ele2_ls:  
+                            if len(ele_ele2) &gt; self.sentence_size:  
+                                ele_ele3 = re.sub('( [&quot;’”」』]{0,2})([^ ])', r'\1\n\2', ele_ele2)  
+                                ele2_id = ele2_ls.index(ele_ele2)  
+                                ele2_ls = ele2_ls[:ele2_id] + [i for i in ele_ele3.split(&quot;\n&quot;) if i] + ele2_ls[  
+                                                                                                       ele2_id + 1:]  
+                        ele_id = ele1_ls.index(ele_ele1)  
+                        ele1_ls = ele1_ls[:ele_id] + [i for i in ele2_ls if i] + ele1_ls[ele_id + 1:]  
+  
+                id = ls.index(ele)  
+                ls = ls[:id] + [i for i in ele1_ls if i] + ls[id + 1:]  
+        return ls  
+</code></pre>
+<p>实际使用的应该是split_text
+，不带1那个，这里涉及了很多逻辑和替换，主要都是为了做句子片段的划分，这里的正则大家也可以多多了解和尝试。</p>
+<p>在此基础上，都会再过第二次切分，这次切分旨在对长度太长（800tokens+）的进行进一步切分，此处使用的是langchain的RecursiveCharacterTextSplitter
+。</p>
+<pre><code>from langchain.text_splitter import RecursiveCharacterTextSplitter  
+text_splitter = RecursiveCharacterTextSplitter(  
+    separators=[&quot;\n&quot;, &quot;.&quot;, &quot;。&quot;, &quot;!&quot;, &quot;！&quot;, &quot;?&quot;, &quot;？&quot;, &quot;；&quot;, &quot;;&quot;, &quot;……&quot;, &quot;…&quot;, &quot;、&quot;, &quot;，&quot;, &quot;,&quot;, &quot; &quot;],  
+    chunk_size=400,  
+    length_function=num_tokens,  
+)  
+</code></pre>
+<p>后面，为了确保信息的存储的可查性（检索这段话后，能找到对应的文章），还把文件id和文件名都给记录到doc内（说白了就是正排）。</p>
+<pre><code># 这里给每个docs片段的metadata里注入file_id  
+for doc in docs:  
+    doc.metadata[&quot;file_id&quot;] = self.file_id  
+    doc.metadata[&quot;file_name&quot;] = self.url if self.url else os.path.split(self.file_path)[-1]  
+</code></pre>
+<h4 id="索引构造">索引构造</h4>
+<p>在对文本进行好切片后，就可以开始跑模型准备向数据库灌数据了。此处我把他叫做索引构造，主要包括数据转化和灌库两个操作。</p>
+<p>核心的代码同样是在local_doc_qa.insert_files_to_milvus
+这个函数下，这里面create_embedding
+就是构造向量的过程，在前面的章节（<a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247489671&amp;idx=1&amp;sn=564a232c3c7919c70a7a1cf5efa77628&amp;chksm=e8824019dff5c90f10016ca0fe41c6ba8298375fb6c936f60d0106efccc47f78b923d303e6c3&amp;scene=21#wechat_redirect">前沿重器[45] RAG开源项目Qanything源码阅读1-概述+服务</a>）有提及，向量化的模型是单独用triton部署的，所以此处是直接请求模型服务获取的。</p>
+<pre><code>CUDA_VISIBLE_DEVICES=$gpu_id1 nohup /opt/tritonserver/bin/tritonserver --model-store=/model_repos/QAEnsemble_embed_rerank --http-port=9000 --grpc-port=9001 --metrics-port=9002 --log-verbose=1 &gt; /workspace/qanything_local/logs/debug_logs/embed_rerank_tritonserver.log 2&gt;&amp;1 &amp;  
+</code></pre>
+<p>而请求方面，先放一个调用的关键入口。</p>
+<pre><code>def create_embedding(self):  
+    self.embs = self.emb_infer._get_len_safe_embeddings([doc.page_content for doc in self.docs])  
+</code></pre>
+<p>这里实际的调用挺深的，首先对于local，有YouDaoLocalEmbeddings
+，这里是包装向量模型的，里面更多是考虑并发的concurrent
+代码，向量是内部的embedding_client
+（一个EmbeddingClient
+实例）负责的（当然EmbeddingClient
+下还有concurrent
+的代码），这个应该才是算法比较关心的部分吧，我直接把EmbeddingClient
+的核心代码放出来。</p>
+<pre><code>import os  
+import math  
+import numpy as np  
+import time  
+  
+from typing import Optional  
+  
+import onnxruntime as ort  
+from tritonclient import utils as client_utils  
+from tritonclient.grpc import InferenceServerClient, InferInput, InferRequestedOutput  
+from transformers import AutoTokenizer  
+  
+WEIGHT2NPDTYPE = {  
+    &quot;fp32&quot;: np.float32,  
+    &quot;fp16&quot;: np.float16,  
+}  
+  
+class EmbeddingClient:  
+    DEFAULT_MAX_RESP_WAIT_S = 120  
+    embed_version = &quot;local_v0.0.1_20230525_6d4019f1559aef84abc2ab8257e1ad4c&quot;  
+  
+    def __init__(  
+        self,  
+        server_url: str,  
+        model_name: str,  
+        model_version: str,  
+        tokenizer_path: str,  
+        resp_wait_s: Optional[float] = None,  
+    ):  
+        self._server_url = server_url  
+        self._model_name = model_name  
+        self._model_version = model_version  
+        self._response_wait_t = self.DEFAULT_MAX_RESP_WAIT_S if resp_wait_s is None else resp_wait_s  
+        self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)  
+  
+    def get_embedding(self, sentences, max_length=512):  
+        # Setting up client  
+      
+        inputs_data = self._tokenizer(sentences, padding=True, truncation=True, max_length=max_length, return_tensors='np')  
+        inputs_data = {k: v for k, v in inputs_data.items()}  
+      
+        client = InferenceServerClient(url=self._server_url)  
+        model_config = client.get_model_config(self._model_name, self._model_version)  
+        model_metadata = client.get_model_metadata(self._model_name, self._model_version)  
+      
+        inputs_info = {tm.name: tm for tm in model_metadata.inputs}  
+        outputs_info = {tm.name: tm for tm in model_metadata.outputs}  
+        output_names = list(outputs_info)  
+        outputs_req = [InferRequestedOutput(name_) for name_ in outputs_info]  
+        infer_inputs = []  
+        for name_ in inputs_info:  
+            data = inputs_data[name_]  
+            infer_input = InferInput(name_, data.shape, inputs_info[name_].datatype)  
+      
+            target_np_dtype = client_utils.triton_to_np_dtype(inputs_info[name_].datatype)  
+            data = data.astype(target_np_dtype)  
+      
+            infer_input.set_data_from_numpy(data)  
+            infer_inputs.append(infer_input)  
+      
+        results = client.infer(  
+            model_name=self._model_name,  
+            model_version=self._model_version,  
+            inputs=infer_inputs,  
+            outputs=outputs_req,  
+            client_timeout=120,  
+        )  
+        y_pred = {name_: results.as_numpy(name_) for name_ in output_names}  
+        embeddings = y_pred[&quot;output&quot;][:,0]  
+        norm_arr = np.linalg.norm(embeddings, axis=1, keepdims=True)  
+        embeddings_normalized = embeddings / norm_arr  
+        return embeddings_normalized.tolist()  
+      
+    def getModelVersion(self):  
+        return self.embed_version  
+</code></pre>
+<ul>
+<li>
+<p>首先可以看到，tokenizer依旧是本服务做的。</p>
+</li>
+<li>
+<p>服务的请求主要是client
+负责，triton是一个grpc接口（GRPC我很早之前写过，可以参考系统学习），输入和输出的数据结构参考InferInput
+和InferRequestedOutput
+。</p>
+</li>
+<li>
+<p>细节，对模型的输出结果，结果作者还做了额外的处理，主要是做了一个归一化，用np.linalg.norm
+求了二范数（默认），然后想了都除以了这个二范数。</p>
+</li>
+<li>
+<p>有留意到，对模型的版本，作者有可以保留，方便进行模型迭代的版本可控性。</p>
+</li>
+</ul>
+<p>GRPC文章：</p>
+<ul>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247485062&amp;idx=1&amp;sn=4c4fed8ba27951fced4e48a3766bd160&amp;chksm=e8825e18dff5d70e1c4d0aa83ec906da8d35c29efaebd819a13b7eb116c9a1be13a7cc574c5e&amp;scene=21#wechat_redirect">ML&amp;DEV[9] | gRPC初体验</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247485069&amp;idx=2&amp;sn=78753bdc03d87bf5d7ef8660a80e9166&amp;chksm=e8825e13dff5d7054b36dd43743233571470cdb7f0a65612de6e64700258be58571c580e7480&amp;scene=21#wechat_redirect">ML&amp;DEV[10] | gRPC的应用</a></p>
+</li>
+<li>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzIzMzYwNzY2NQ==&amp;mid=2247486194&amp;idx=1&amp;sn=5f804bc1db71f8e5db84223abf0c87b2&amp;chksm=e882526cdff5db7a789e4b12f95304c38daab7244a0c9fb654ae898ba624f707a7f434ae1d26&amp;scene=21#wechat_redirect">心法利器[6] | python grpc实践</a></p>
+</li>
+</ul>
+<p>完成后，就可以开始灌库了，milvus_kv.insert_files
+。milvus自己是有开源的库的，即pymilvus
+，作者自己写了一个完整的类MilvusClient
+，至于pymilvus
+具体教程大家可以看：https://zhuanlan.zhihu.com/p/676124465。这里我不展开具体的使用方法了，不过还是可以从灌库的源码里挑出一些重要的细节。</p>
+<pre><code>async def insert_files(self, file_id, file_name, file_path, docs, embs, batch_size=1000):  
+    debug_logger.info(f'now inser_file {file_name}')  
+    now = datetime.now()  
+    timestamp = now.strftime(&quot;%Y%m%d%H%M&quot;)  
+    loop = asyncio.get_running_loop()  
+    contents = [doc.page_content for doc in docs]  
+    num_docs = len(docs)  
+    for batch_start in range(0, num_docs, batch_size):  
+        batch_end = min(batch_start + batch_size, num_docs)  
+        data = [[] for _ in range(len(self.sess.schema))]  
+  
+        for idx in range(batch_start, batch_end):  
+            cont = contents[idx]  
+            emb = embs[idx]  
+            chunk_id = f'{file_id}_{idx}'  
+            data[0].append(chunk_id)  
+            data[1].append(file_id)  
+            data[2].append(file_name)  
+            data[3].append(file_path)  
+            data[4].append(timestamp)  
+            data[5].append(cont)  
+            data[6].append(emb)  
+  
+        # 执行插入操作  
+        try:  
+            debug_logger.info('Inserting into Milvus...')  
+            mr = await loop.run_in_executor(  
+                self.executor, partial(self.partitions[0].insert, data=data))  
+            debug_logger.info(f'{file_name} {mr}')  
+        except Exception as e:  
+            debug_logger.error(f'Milvus insert file_id:{file_id}, file_name:{file_name} failed: {e}')  
+            return False  
+  
+    # 混合检索  
+    if self.hybrid_search:  
+        debug_logger.info(f'now inser_file for es: {file_name}')  
+        for batch_start in range(0, num_docs, batch_size):  
+            batch_end = min(batch_start + batch_size, num_docs)  
+            data_es = []  
+            for idx in range(batch_start, batch_end):  
+                data_es_item = {  
+                    'file_id': file_id,  
+                    'content': contents[idx],  
+                    'metadata': {  
+                        'file_name': file_name,  
+                        'file_path': file_path,  
+                        'chunk_id': f'{file_id}_{idx}',  
+                        'timestamp': timestamp,  
+                    }  
+                }  
+                data_es.append(data_es_item)  
+  
+            try:  
+                debug_logger.info('Inserting into es ...')  
+                mr = await self.client.insert(data=data_es, refresh=batch_end==num_docs)  
+                debug_logger.info(f'{file_name} {mr}')  
+            except Exception as e:  
+                debug_logger.error(f'ES insert file_id: {file_id}\nfile_name: {file_name}\nfailed: {e}')  
+                return False  
+  
+    return True  
+</code></pre>
+<ul>
+<li>
+<p>milvus使用的是pymilvus
+工具来读写，其中self.partitions[0].insert
+就是用存储数据的，此处可以注意到data
+内有很多不同的字段。</p>
+</li>
+<li>
+<p>执行代码使用的是loop.run_in_executor
+，有留意到，在MilvusClient
+内有一个self.executor
+，这个的定义在这个类的__init__
+内，self.executor = ThreadPoolExecutor(max_workers=10)
+，这里新建了一个线程池，新技能get。</p>
+</li>
+<li>
+<p>下方是ES的数据灌入。个人感觉，这个ES数据处理写在这个位置并不是很合适，应该单独出来处理，毕竟混合代码不太好看到。</p>
+</li>
+</ul>
+<h4 id="小结">小结</h4>
+<p>本文离线的文件处理，我看了挺久，而且写的时间也很长。我自己看完的收获还挺大的，原本是对文档处理比较生疏，但这次看完对这块的理解比较深了，而且通过通篇阅读，也能了解到作者的设计思路，希望大家也能在阅读本文的过程中有所收获吧。</p>
+<p>下一篇，在线推理，敬请期待。</p>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=other&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1&amp;tp=webp)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=other&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1&amp;tp=webp)
+</code></pre>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

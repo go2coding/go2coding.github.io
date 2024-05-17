@@ -1,0 +1,968 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>手撕FlashAttention！原理解析及代码实现 作者： AINLP 来源： AINLP 作者丨晚安汤姆布利多 来源丨https://zhuanlan.zhihu.com/p/696850636 前言 自 2022 年 11 月 OpenAI 发布 ChatGPT 以来，这一年多来大语言模型 (Large Language Model, LLM) 的发展十分迅速，国内外众多厂商纷纷加入“百模大战”。但是，由于大语  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">手撕FlashAttention！原理解析及代码实现</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              May 17, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3jQibnWkEPv3QzicJz8mAxobZBXzANYbwBLKC1Z1wjNeqDgbeGy1QUvcRg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/2hSNQk1y99YM4TX0D96POQ">AINLP</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=other" alt=""></p>
+<p>作者丨晚安汤姆布利多</p>
+<p>来源丨https://zhuanlan.zhihu.com/p/696850636</p>
+<h4 id="前言">前言</h4>
+<p>自 2022 年 11 月 OpenAI 发布 ChatGPT 以来，这一年多来大语言模型 (Large Language Model, LLM) 的发展十分迅速，国内外众多厂商纷纷加入“百模大战”。但是，由于大语言模型的参数量非常巨大（通常为十亿、百亿甚至千亿量级），加之训练语料很庞大，模型的训练成本十分高昂。</p>
+<p>当前，Transformer 已经成为了大语言模型的默认网络结构，为了降低大语言模型的训练成本，一些工作尝试对 Transformer 的计算成本进行优化，比如降低注意力运算的时间成本或者显存占用等。</p>
+<p>本文介绍 Flash Attention，一种优化的注意力算法。Flash Attention 论文链接如下：</p>
+<p><a href="https://arxiv.org/pdf/2205.14135">https://arxiv.org/pdf/2205.14135</a></p>
+<p>本文从注意力机制出发，分析原始的注意力机制为什么需要优化，并简要介绍前人在优化注意力机制方面做了哪些工作，再介绍 Flash Attention，并<strong>基于 Numpy 手把手实现 Flash Attention 的主体算法</strong> 。</p>
+<p>本文所有代码已开源：</p>
+<p>https//gist.github.com/xiabingquan/a4a9a743f97aadd531ed6218be20afd2</p>
+<p>如有写得不对或者不清楚的地方还请不吝赐教，在此谢过！</p>
+<p>感谢以下用户的指正：@INTuition</p>
+<blockquote>
+<p>由于博主缺少 MLSys 相关背景，因此本文重心在于介绍 Flash Attention 的算法思想及其实现方式，并对提高 Transformer 运算效率的相关工作做简要介绍，而 IO 复杂度分析等内容则略过。本文末尾附了一些其他博主写的个人觉得比较好的讲解Flash Attention的文章链接，读者阅读完本文之后可以作为补充阅读。</p>
+</blockquote>
+<p>本文共约 1.4w 字，阅读约需要 30 分钟。</p>
+<p>本文的组织结构如下（PC 端点击左侧目录可直接跳转）：</p>
+<ul>
+<li>
+<p>Transformer 简介：简单介绍 Transformer 的基础知识，以介绍 self-attention 为主；</p>
+</li>
+<li>
+<p>Attention 为什么慢：介绍 Transformer 中的 attention 的速度瓶颈；</p>
+</li>
+<li>
+<p>如何提高 Transformer 的计算效率：简单介绍提高 Transformer 计算效率的相关工作；</p>
+</li>
+<li>
+<p>Flash Attention：进入正题，详细介绍 Flash Attention 的算法思想和细节；</p>
+</li>
+<li>
+<p>实验效果：简单介绍 Flash Attention 的实际效果；</p>
+</li>
+<li>
+<p>总结：本文总结。</p>
+</li>
+</ul>
+<h4 id="transformer-简介">Transformer 简介</h4>
+<p>本节介绍 Transformer 的基础知识。由于除注意力机制以外的其他内容和本文内容无关，因此本节主要介绍注意力机制。Transformer的详细解释及其代码实现可参考这篇文章(<a href="https://zhuanlan.zhihu.com/p/648127076">https://zhuanlan.zhihu.com/p/648127076</a>)。</p>
+<p>Transformer 是深度学习领域一种非常流行的模型结构，由 Ashish Vaswani 等人于2017年提出[1]，主要用于序列到序列 (sequence-to-sequence)[2] 相关任务，如机器翻译、语音识别等。Transformer 主要基于注意力机制搭建，不使用循环神经网络 (RNN) 和卷积神经网络 (CNN) 等结构。</p>
+<p>Transformer 包括编码器和解码器两部分，由于当前主流的大语言模型几乎都基于只含解码器而不含编码器的仅解码器 (decoder-only) 模型，因此此处主要介绍仅解码器模型中的 Transformer 解码器，该解码器通过多个解码器层堆叠而成，每层包含自注意力层、前馈神经网络、层归一化、残差连接等组件。</p>
+<p>其中，自注意力层接收一个特征序列作为输入，并将该序列输入作为查询 (Query, 下文简称 Q)、键 (Key, 下文简称 K) 和值 (Value, 下文简称 V)，使用缩放点积 (Scaled-dot Production) 来计算 Q 和 K 之间的注意力权重矩阵，然后再通过注意力权重和 V 来计算自注意力层的输出。</p>
+<p>自注意力层的主体代码如下。简单起见，此处省略自注意力层中的 Q、K、V 各自的线性映射、Dropout、多头注意力、掩码机制等内容。</p>
+<pre><code>import unittest  
+  
+import torch  
+import torch.nn as nn  
+from torch.nn import functional as F  
+  
+class StandardAttention(object):  
+    def __init__(self) -&gt; None:  
+        &quot;&quot;&quot;  
+        Attention module implemented in Numpy.  
+  
+        Formula:  
+            P = QK^T  
+            S = softmax(P / sqrt(d_k))  
+            O = SV  
+  
+        Reference:  
+            &lt;&lt;Attention Is All You Need&gt;&gt;  
+        URL:  
+            https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf  
+  
+        &quot;&quot;&quot;  
+        pass  
+  
+    def _validity_check(self, q: np.ndarray, k: np.ndarray, v: np.ndarray) -&gt; None:  
+        assert q.ndim == 3, &quot;q should be a 3D tensor&quot;      # [batch_size, seq_len, hidden_size]  
+        assert k.ndim == 3, &quot;k should be a 3D tensor&quot;  
+        assert v.ndim == 3, &quot;v should be a 3D tensor&quot;  
+        assert q.shape[0] == k.shape[0], &quot;batch_size of q and k should be the same&quot;  
+        assert q.shape[2] == k.shape[2], &quot;hidden_size of q and k should be the same&quot;  
+        assert q.shape[2] == v.shape[2], &quot;hidden_size of q and v should be the same&quot;  
+  
+    def forward(self, q: np.ndarray, k: np.ndarray, v: np.ndarray) -&gt; np.ndarray:  
+        self._validity_check(q, k, v)  
+        batch_size, q_len, hidden_size = q.shape  
+        denom = np.sqrt(hidden_size)  
+        attn = np.matmul(q, k.transpose(0, 2, 1))       # [batch_size, q_len, k_len]  
+        attn = np.exp((attn - attn.max(axis=-1, keepdims=True)) / denom)  
+        attn = attn / attn.sum(axis=-1, keepdims=True)  
+        out = np.matmul(attn, v)                        # [batch_size, q_len, hidden_size]  
+        return out  
+  
+    def __call__(self, *args, **kwargs):  
+        return self.forward(*args, **kwargs)  
+  
+  
+def self_attention(x):  
+    return StandardAttention()(x, x, x)  
+  
+  
+class TestSelfAttention(unittest.TestCase):  
+    def test_forward(self):  
+        input_dim = 10  
+        batch_size = 32  
+        seq_len = 20  
+  
+        x = torch.randn(batch_size, seq_len, input_dim)  
+        output = self_attention(x)  
+        expected = F.scaled_dot_product_attention(x, x, x)  
+  
+        self.assertTrue(torch.allclose(output, expected, atol=1e-6, rtol=1e-6))  
+  
+if __name__ == '__main__':  
+    unittest.main()  
+</code></pre>
+<p>我们可以通过 PyTorch 库所给的 F.scaled_dot_production
+函数来验证 self_attention
+函数的正确性。单元测试的结果此处略过。</p>
+<h4 id="attention-为什么慢">Attention 为什么慢？</h4>
+<p>上一节提到，Transformer 的主要组成部分为 attention，因此优化 Transformer 重点在于优化 attention 的计算。那么，attention 为什么需要优化呢？或者说，注意力机制为什么慢？</p>
+<blockquote>
+<p>此处的“快慢”是相对而言的。严格意义上来说，相比于传统的 RNN，Transformer 中的 attention 可以并行地处理序列所有位置的信息（RNN 只能串行处理），因此计算效率并不低，但是仍然有可以进一步改进的空间。</p>
+</blockquote>
+<p>众所周知，对于科学计算程序而言，按照算数运算和内存读取各自所花的时间比例，科学计算通常分为计算密集型 (compute-bound) 和内存密集型 (memory-bound) 两类。其中，计算密集型运算的时间瓶颈主要在于算数计算，比如大型矩阵的相乘等，而内存密集型运算的时间瓶颈主要在于内存的读写时间，比如批归一化、层归一化等等</p>
+<p>我们可以从计算和内存两方面来分析“attention为什么慢”这个问题，分别对应于时间复杂度和空间复杂度两个方面。</p>
+<h4 id="时间复杂度为">时间复杂度为</h4>
+<p>时间复杂度方面，attention 需要对矩阵  和矩阵  的转置做乘法来得到注意力权重矩阵。不考虑 batch 维度，假设矩阵  和  的尺寸都为 ( , dim)，一个 ( , dim) 和 (dim, n) 的矩阵相乘的时间复杂度是序列长度  的平方级，即 attention 的时间复杂度为  。当序列较长 (即  较大) 时， attention 的计算非常耗时。</p>
+<h4 id="空间复杂度为">空间复杂度为</h4>
+<p>空间复杂度方面， attention 的计算过程需要存储  和 这两个尺寸均为  的矩阵，因此 attention 运算的空间复杂度也为  。</p>
+<p>为了对 attention 的内存读取时间有更清晰的感知，这里简单介绍 GPU 的内存层级。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3jKeIZ3ZCAUbL3emibsuxL8x35b2oWV8ARnltPxIyhSbShna8K2YFYd5g/640?wx_fmt=png&amp;from=appmsg" alt="">图1. GPU的内存层级。图源：Flash Attention原文</p>
+<p>如图 1 所示，GPU 的内存可以分为 HBM 和 SRAM 两部分。例如，A100 GPU 具有 40-80 GB 的高带宽内存 （上图中的 HBM，即我们平时说的“显存”），带宽为 1.5-2.0 TB/s，并且每个流式多处理器都有 192 KB 的片上 SRAM，带宽约为 19 TB/s。片上 SRAM 比 HBM 快一个数量级，但容量要小很多个数量级。在 GPU 运算之前，数据和模型先从 CPU 的内存（上图中的 DRAM）移动到 GPU 的 HBM，然后再从 HBM 移动到 GPU 的 SRAM，CUDA kernel 在 SRAM 中对这些数据进行运算，运算完毕后将运算结果再从 SRAM 移动到 HBM。</p>
+<p>将 HBM 和 SRAM 之间的数据交换考虑在内，attention 的计算过程可以用如下图所示的算法表示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3jQr1cP1Q38h3F6GfadIqMYpWTYGNpDwfXo5DtqO5fyBclbia03h5C9TA/640?wx_fmt=png&amp;from=appmsg" alt="">图2. 考虑数据交换的Attention算法。图源：Flash Attention原文</p>
+<p>通过前面的空间复杂度分析，attention 运算需要占据的显存空间随着序列长度 nn 的增长呈平方级增长。由于运算需要在 GPU 的 SRAM上 完成，这一过程需要不停地在 HBM 和 SRAM 之间交换数据，因此会导致大量的时间都消耗在 SRAM 和 HBM 之间的数据的换入换出上。</p>
+<p>综合上面的关于 attention 的时间和空间复杂度的分析，为了加速 attention 运算，我们可以从降低时间复杂度和降低空间复杂度两个角度入手，接下来逐一进行介绍部分相关工作。</p>
+<h4 id="如何提高-attention-的计算效率">如何提高 attention 的计算效率</h4>
+<p>本节简单介绍提高 attention 运算效率的一些相关工作。本节内容主要是为了内容的完整性考虑，和 Flash Attention的具体内容无关，不影响后文 Flash Attention 的理解。</p>
+<h4 id="路径1降低-attention-的计算复杂度">路径1：降低 attention 的计算复杂度</h4>
+<p>计算复杂度方面，一些工作尝试提出近似的 attention 算法，来降低 attention 的理论上的计算复杂度。主要可以分为稀疏 (sparse) 估计、低秩 (low-rank) 估计等。</p>
+<p>其中，稀疏估计的基本思想是通过一个稀疏的矩阵来估计完整的、稠密 (dense)的注意力矩阵。比如，Reformer (https//openreview.net/forum%3Fid%3DrkgNKkHtvB)对  和  进行局部敏感哈希 (Local Sensitive Hashing(https//en.wikipedia.org/wiki/Locality-sensitive_hashing)， LSH)，只对同一个桶 (bucket) 中的  和  计算 attention，将 attention 的时间复杂度从  降低到  ，而 Routing Transformer (https//aclanthology.org/2021.tacl-1.4)  和  进行聚类，只对同一个簇 (cluster) 中的  和  计算attention，从而将attention的时间复杂度从  降低到  。</p>
+<p>低秩估计的基本思想通过一个低秩 (low-rank) 矩阵来估计注意力矩阵。比如， linear transformer(http//proceedings.mlr.press/v119/katharopoulos20a/katharopoulos20a.pdf) 引入核函数  ，将 score  形式化成 score  ，来解耦开 softmax 运算中的  和  。这样操作之后，可以先计算  ，然后再和 相乘，由于  的尺寸为 ， 和  的尺寸为  ，因此 的时间复杂度为  (简要推导:  ，时间复杂度为  。</p>
+<p>虽然降低 attention 的计算复杂度在理论上非常具有吸引力，但是在实际应用中仍然存在一些短板，比如以下两点：</p>
+<p>*<strong>性能比不上原始 attention。</strong> 不论是稀疏估计、低秩估计还是其他，这些方法都采用了某种近似算法来估算注意力权重矩阵，难免会丢失信息。目前主流的还是原始的attention；</p>
+<p>*<strong>无法减少内存读取的时间消耗</strong> 。这些方法只能降低 attention 的计算复杂度，但是无法对 attention 运算过程中的空间复杂度等进行控制，无法减少内存读写带来的时间损耗。</p>
+<h4 id="路径2降低attention的空间复杂度">路径2：降低attention的空间复杂度</h4>
+<p>空间复杂度方面，这方面工作的基本思路是<strong>降低 attention 对于显存的需求，减少 HBM 和 SRAM 之间的换入换出</strong> ，进而减少 attention 运算的时间消耗。</p>
+<blockquote>
+<p>值得一提的是，“减少 attention 对于显存的需求”和“减少 HBM 和 SRAM 之间的换入换出”这两者之间并不等价，前者重点在于减少显存消耗，比如 memory-efficient attention(https//arxiv.org/pdf/2112.05682)，而后者重在降低数据交换的时间成本，比如 &laquo;DATA MOVEMENT IS ALL YOU NEED: A CASE STUDY ON OPTIMIZING TRANSFORMERS&raquo;(https//proceedings.mlsys.org/paper_files/paper/2021/file/bc86e95606a6392f51f95a8de106728d-Paper.pdf) 这篇文章。</p>
+</blockquote>
+<p>为降低空间复杂度，一种具有代表性的方法是<strong>kernel fusion</strong> 。kernel fusion 的思想很简单，即将需要通过多个 CUDA kernel 来分步完成的操作融合到一个或者少数几个 CUDA kernel，从而减少数据在HBM和SRAM之间换入换出的次数，进而节省运算时间。</p>
+<p>比如，在图 2 的 attention 算法中，我们在 SRAM 上计算  ，将矩阵  写入到 HBM 中，然后再将矩阵  从 HBM 读入到 SRAM 中，计算  。上述两步可以合并在一个 kernel 中完成，即在 SRAM 中计算完  之后紧接着就通过  计算  ，这样就可以避免在 HBM 和 SRAM 交换  。</p>
+<p>Flash Attention 的做法其实也是 kernel fusion，只是对应的 kernel 专门针对数据的换入换出进行了优化 (<strong>IO-aware</strong> )，尽可能最小化 HBM 和 SRAM 之间的数据交换次数。</p>
+<h4 id="flash-attention-介绍">Flash Attention 介绍</h4>
+<p>本节介绍 Flash ttention 的动机、具体方法和实现细节，并基于 Numpy 实现 Flash Attention 的主体算法（代码已开源，链接(https//gist.github.com/xiabingquan/a4a9a743f97aadd531ed6218be20afd2)）。</p>
+<blockquote>
+<p>本文以实现 Flash Attention的前向过程为主，后向传播、masking、Dropout 等略过。</p>
+</blockquote>
+<p>和 Transformer 的原始 attention 相比，Flash Attention 有以下三点特点：</p>
+<p>*<strong>运算速度更快 (Fast)；</strong></p>
+<p>*<strong>更节省显存 (Memory-Efficient)；</strong></p>
+<p>*<strong>计算结果相同 (Exact)</strong> 。</p>
+<p>这三点刚好和 Flash Attention 论文名《FLASHATTENTION: Fast and Memory-Efficient Exact Attention with IO-Awareness》相对应。得益于 Flash Attention 的这几点特性，自 PyTorch 2.0(https//pytorch.org/blog/accelerated-pytorch-2/) 开始，Flash Attention 已经被集成到 PyTorch 官方库中，使用者可以直接通过 torch.nn.functional.scaled_dot_product_attention(https//pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html) 进行调用。</p>
+<h4 id="摘要">摘要</h4>
+<p>Flash Attention 的动机是尽可能避免大尺寸的注意力权重矩阵在 HBM 和 SRAM 之间的换入换出。具体方法包含两个部分：<strong>tiling</strong>  和<strong>recomputation</strong> 。</p>
+<p>tiling 的基本思路：不直接对整个输入序列计算注意力，而是将其分为多个较小的块，逐个对这些块进行计算，增量式地进行 softmax 的规约。规约过程中只需要更新某些中间变量，<strong>不需要计算整个注意力权重矩阵</strong> 。</p>
+<p>recomputation 的基本思路：基于 tiling 技巧，在反向传播过程中不保留整个注意力权重矩阵，而是只保留前向过程中 tiling 的某些中间变量，然后在反向传播过程中重新计算注意力权重矩阵。recomputation 可以看作是<strong>一种基于 tiling 的特殊的 gradient checkpointing</strong> ，因此后文主要介绍 tiling，想进一步了解 recomputation 的读者可以翻阅 Flash Attention 原文。</p>
+<p>得益于上述技巧，Flash Attention 可以同时做到又快（运算速度快）又省（节省显存）。</p>
+<h4 id="基于tiling技巧的softmax">基于Tiling技巧的Softmax</h4>
+<p>本节主要介绍 Flash Attention 中用到的 tiling 技巧。Tiling 技巧不是 Flash Attention 的首创，该技巧在之前的工作中已有探索[3][4][5]。</p>
+<p>Tiling 技巧的核心思想是，尽可能避免对整个序列进行操作，而是通过维护一些中间变量来递推式地完成某些操作，从而减少内存的消耗。</p>
+<p>以 softmax 为例，原始的 softmax 可以用如下算法表示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3j0F1YGYfJrDMdX6TE6UDfGgFdaSmPDUQnOjYygkaQ1hbq7C4BNF3k1w/640?wx_fmt=png&amp;from=appmsg" alt="">图3. 原始softmax。图源：《Online normalizer calculation for softmax》</p>
+<p>该算法的实现如下。为了展示 softmax 运算的详细过程，以下代码没有使用 PyTorch、Numpy 等科学计算库，或者Python原生的 max、min 等归约函数，而仅仅使用 Python 原生的数值运算符对浮点数的列表进行操作。</p>
+<pre><code>class SoftMax(object):  
+    def forward(self, x: List[float]):  
+  
+        # loop 1: get the maximum value  
+        max_x = -np.inf  
+        for t in x:  
+            max_x = t if t &gt; max_x else max_x  
+  
+        # loop 2: get the accumulative sum of exp(x_i - x_max)  
+        accum_exp = 0.  
+        for t in x:  
+            accum_exp += np.exp(t - max_x)  
+  
+        # loop 3: get the softmax output by dividing the exponential of `x-max(x)` with `accum_exp`  
+        output = [0. for _ in range(len(x))]  
+        for i, t in enumerate(x):  
+            output[i] = np.exp(t - max_x) / accum_exp  
+  
+        return output  
+  
+    def __call__(self, *args, **kwargs):  
+        return self.forward(*args, **kwargs)  
+</code></pre>
+<p>从上面的代码可以看出，softmax 函数需要三个循环，第一个循环计算数组的最大值，第二个循环计算 softmax 的分母，第三个循环计算 softmax 输出。</p>
+<p>使用 tiling 技巧的 softmax 的算法如下图所示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3jalYSXwp1DktDYhiaGPk4CK70cT7Ursrb1jeVjDmBwHv5spb8V1icXuGg/640?wx_fmt=png&amp;from=appmsg" alt="">图4. 使用tiling技巧的softmax。图源：《Online normalizer calculation for softmax》</p>
+<p>该算法的实现如下：</p>
+<pre><code>class SoftMaxWithTiling(object):  
+    def forward(self, x: List[float]):  
+        # loop 1: get the maximum value of x and the accumulated exponential values  
+        max_x = -np.inf  
+        accum_exp = 0.  
+        for t in x:  
+            max_x_new = t if t &gt; max_x else max_x  
+            accum_exp = np.exp(max_x - max_x_new) * accum_exp + np.exp(t - max_x_new)  
+            max_x = max_x_new  
+  
+        # loop 2: get the softmax output by dividing the exponential of `x-max(x)` with `accum_exp`  
+        out = [0. for _ in range(len(x))]  
+        for i, t in enumerate(x):  
+            out[i] = np.exp(t - max_x) / accum_exp  
+  
+        return out  
+</code></pre>
+<p>单元测试的代码如下，单元测试的结果此处略过。</p>
+<pre><code>class SoftMaxTest(unittest.TestCase):  
+    def test_softmax(self):  
+  
+        n_test = 10  
+        for _ in range(n_test):  
+            n_elem = np.random.randint(1, 11)  
+            x = np.random.randn(n_elem).tolist()  
+            expected = torch.nn.functional.softmax(torch.tensor(x), dim=-1).tolist()  
+  
+            out = SoftMax()(x)  
+            self.assertTrue(np.allclose(expected, out, atol=1e-4))  
+  
+            out_with_tiling = SoftMaxWithTiling()(x)  
+            self.assertTrue(np.allclose(expected, out_with_tiling, atol=1e-4))  
+  
+  
+if __name__  == &quot;__main__&quot;:  
+    unittest.main()  
+</code></pre>
+<p>该算法和原始的 softmax 最大的区别在于，我们在第一个循环中同时对最大值  以及 softmax 的分母  进行更新，从而减少了一个循环。</p>
+<p>在这个循环中，最大值  的更新和原始 softmax 相同，但是 softmax 分母的更新却稍有区别。在原始 softmax 中，我们已经通过第一个循环拿到了整个数组  的最大值，因此在第二个循环中可以直接计算  ，但是在此处，当进行到 for 循环的第j（1≤j＜V）步时，我们手头只有子数组  的最大值，此时计算得到的  并不等于  。为了一直维护正确的  ，我们需要同步地对  进行更新。</p>
+<p>我们用一个简单的例子来展开上述递推公式，说明  和  的更新过程。以  为例:</p>
+<p>通过上面的递推式可以看出，在 for 循环的第  步，  为子数组  的最大值 (不考虑后面的元素  )，  为对子数组  计算 softmax 时的分母 (不考虑后面的元素  )。。因此，当 for 循环结束以后，  为整个数组的最大值，  为对整个数组计算 softmax 时的分母，基于数学归纳法的详细证明过程可以翻阅论文  。</p>
+<p>通过 tiling 的方式，softmax 的循环数从三个减到了两个，从而可以降低内存消耗。</p>
+<h4 id="flash-attention的numpy实现">Flash Attention的Numpy实现</h4>
+<p>Flash Attention 同样基于上述的tiling技巧实现，但是和上述的 sofmax 有两点不同：</p>
+<ul>
+<li>
+<p>attention 的计算过程需要对 QQ 和 KK 进行内积，并且需要维护 attention 的输出矩阵 OO ；</p>
+</li>
+<li>
+<p>在上述 tiling 形式的 softmax 中，我们的每一步只更新一个元素，但是 Flash Attention 将输入分为多个块，每个块包含多个元素。</p>
+</li>
+</ul>
+<p>Flash Attention 的完整算法如图5所示。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3jQibnWkEPv3QzicJz8mAxobZBXzANYbwBLKC1Z1wjNeqDgbeGy1QUvcRg/640?wx_fmt=png&amp;from=appmsg" alt="">图5. Flash Attention完整算法。图源：Flash Attention原文</p>
+<p>由于我们无法直接从 Python 层面在 GPU 的 SRAM 和 HBM 之间进行数据交换，因此我们使用 load
+和 write
+方法来分别模拟 HBM -&gt; SRAM 和 SRAM -&gt; HBM 的数据传输过程：</p>
+<pre><code>def load(self, arr, st, ed, step):  
+    # Simulate the process that moves data from HBM to SRAM  
+    return arr[:, st * step: ed * step]  
+  
+def write(self, arr, val, st, ed, step):  
+    # Simulate the process that moves data from SRAM to HBM  
+    arr[:, st * step: ed * step] = val  
+</code></pre>
+<p>接下来去我们结合代码来逐步理解该算法：</p>
+<p><strong>输入</strong> : 矩阵 、、 的 SRAM 大小</p>
+<p><strong>输出</strong> : attention 的输出矩阵</p>
+<p>(1) 根据 GPU 的 SRAM 大小  和  的特征维度  ，设置块大小  和  。 和  的具体数值和使用的 GPU 有关，一个准则是让尽可能多的 GPU 流式处理器 (Streaming Multirocessor, SM) 处于工作状态，参考该 issue（https://github.com/Dao-AILab/flash-attention/issues/609）。由于我们缺少  的具体数值，这里我们直接人为预先设定为常数值；</p>
+<p>(2) 初始化输出矩阵  、中间量  和 。 和  的尺寸都为 ,，其中 为输入序列的长度。 和  的含义和上一节中基于 tiling 技巧计算 softmax 时的  和  相同。， 表示对 、、 进行 attention 运算时 softmax 中分子中的  项，  表示 softmax 的分母;</p>
+<pre><code>out = np.zeros((batch_size, q_len, hidden_size))  
+l = np.zeros((batch_size, q_len))  
+m = np.zeros((batch_size, q_len))  
+m.fill(-np.inf)  
+</code></pre>
+<p>(3) 分别对 、、 进行分块;</p>
+<pre><code># Tr: number of row blocks  
+# Tc: number of column blocks  
+Tr = q_len // self.row_block_size  
+Tc = k_len // self.col_block_size  
+</code></pre>
+<p>(4) 对 、、 进行分块。此处代码中不需要额外操作;</p>
+<p>(5) 对  和  的块进行遍历；</p>
+<pre><code>for j in range(Tc):  
+</code></pre>
+<p>(6) 将  和  对应的块  和  从 HBM 加载到 SRAM 中</p>
+<pre><code>kj = self.load(k, j, j + 1, self.col_block_size)  
+vj = self.load(v, j, j + 1, self.col_block_size)  
+</code></pre>
+<p>(7) 对  的块进行遍历；</p>
+<pre><code>for i in range(Tr):  
+</code></pre>
+<p>(8) 将 、、、 对应的块 、、、 从 HBM 加载到 SRAM 中;</p>
+<pre><code>qi = self.load(q, i, i + 1, self.row_block_size)  
+oi = self.load(out, i, i + 1, self.row_block_size)  
+mi = self.load(m, i, i + 1, self.row_block_size)  
+li = self.load(l, i, i + 1, self.row_block_size)  
+</code></pre>
+<p>(9) 计算  的块  和  的块  之间的注意力分数 ;</p>
+<pre><code>sij = np.matmul(qi, kj.transpose(0, 2, 1)) / np.sqrt(hidden_size)  
+</code></pre>
+<p>(10) 计算用于更新变量  和  的相关变量 、 和 ;</p>
+<pre><code>mij = np.max(sij, axis=-1)  
+pij = np.exp((sij - mij[..., np.newaxis]))  
+lij = pij.sum(axis=-1)  
+</code></pre>
+<p>(11) 根据上一步计算得到的信息，更新  和  对应的块；</p>
+<pre><code>m_new = np.maximum.reduce([mi, mij])  
+l_new = np.exp(mi - m_new) * li + np.exp(mij - m_new) * lij  
+</code></pre>
+<p>(12) 根据更新之后的  和  ，更新输出矩阵  对应的块 。 的更新方式和  类似；</p>
+<pre><code>temp = li[..., np.newaxis] * np.exp(mi - m_new)[..., np.newaxis] * oi + np.exp(mij - m_new)[..., np.newaxis] * np.matmul(pij, vj)  
+temp /= l_new[..., np.newaxis]  
+self.write(out, temp, i, i + 1, self.row_block_size)  
+</code></pre>
+<p>(13) 将更新之后的  和  从 SRAM 写回到 HBM;</p>
+<pre><code>self.write(m, m_new, i, i + 1, self.row_block_size)  
+self.write(l, l_new, i, i + 1, self.row_block_size)  
+</code></pre>
+<p>(14) 循环结束；</p>
+<p>(15) 循环结束；</p>
+<p>(16) 返回计算结果  。</p>
+<pre><code>return out  
+</code></pre>
+<blockquote>
+<p>注：上述代码只是Flash Attention原文算法1的直观实现，可能和底层C++实现在细节上存在一些出入。官方实现请请翻阅Flash Attention的原始仓](https//github.com/Dao-AILab/flash-attention)。</p>
+</blockquote>
+<p>为验证上述 Flash Attention 实现的正确性，我们可以通过对比上述实现的 Flash Attention、“Transformer 简介”一节实现的 self_attention
+函数以及 PyTorch 官方库的 nn.functional.scaled_dot_production
+函数的运算结果（单元测试的完整代码见github仓库(https//gist.github.com/xiabingquan/a4a9a743f97aadd531ed6218be20afd2)）。单元测试通过。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3jA5eYtV224nubIX6Tgdh5ibl6NS3Nbp4IHibM7hWHS8pGQVV9X8JINXkQ/640?wx_fmt=png&amp;from=appmsg" alt="">图6. Flash Attention单元测试结果</p>
+<h4 id="实验效果">实验效果</h4>
+<p>为验证Flash Attention在实际训练场景中的有效性，Flash Attention论文原文对比了分别基于原始attention和Flash Attention的BERT和GPT2模型的训练时间以及模型性能等，还基于Flash Attention做了长上下文语言模型建模相关实验，此处略过，请参考论文原文(https//arxiv.org/abs/2205.14135)。</p>
+<p>这里贴一些Flash Attention仓库(https//github.com/Dao-AILab/flash-attention)中的图，让大家对Flash Attention的时间加速比以及空间节省情况有一个更直观的认识。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3jico1eoQ2hEJyrK3ktcib8TcvC4zNuZ8eaDP7fQqwBtndlJgD7IiaDIxbQ/640?wx_fmt=png&amp;from=appmsg" alt="">图7. Flash Attention加速情况<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/gYUsOT36vfqgwUP6RXpvotwSLqPrhT3jAoicIu3gjeo27E6prWZAETVydpczTKymficRyibWRjg6ygsZSOYnNm7Yw/640?wx_fmt=png&amp;from=appmsg" alt="">图8. Flash Attention节省显存情况</p>
+<blockquote>
+<p>注：上述为A100的测试结果，不代表其他GPU的情况。</p>
+</blockquote>
+<h4 id="总结">总结</h4>
+<p>本文介绍了 Flash Attention，一种相比于原始attention运算速度更快、更节省显存的精确注意力算法。</p>
+<p>Flash Attention 的特点在于尽量减少 GPU 的 HBM 和片上 SRAM 之间的数据交换，从而达到加速运算以及节省显存的目的。</p>
+<p>Flash Attention 的核心方法是 tiling 和 recomputation。其中 tiling 递推式地计算 softmax，避免了计算整个注意力权重矩阵，而 recomputation 则基于前向运算中的 tiling 保存的某些中间变量，在反向传播时重新计算注意力权重矩阵。</p>
+<p>自 PyTorch 2.0 起，Flash Attention已经集成到 PyTorch 官方库中。使用者可以通过 torch.nn.functional.scaled_dot_prodoction
+进行调用。</p>
+<p>当前，Flash Attention还在迭代中，Flash Attention-2(https//tridao.me/publications/flash2/flash2.pdf) 已经推出。</p>
+<p>个人觉得比较好的讲解Flash Attention的其他文章：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/665170554">https://zhuanlan.zhihu.com/p/665170554</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/664061672">https://zhuanlan.zhihu.com/p/664061672</a></p>
+<p><a href="https://www.zhihu.com/question/611236756/answer/3310819022">https://www.zhihu.com/question/611236756/answer/3310819022</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/639228219">https://zhuanlan.zhihu.com/p/639228219</a></p>
+<p><strong>参考</strong></p>
+<ol>
+<li>
+<p><a href="https://arxiv.org/abs/1706.03762">https://arxiv.org/abs/1706.03762</a></p>
+</li>
+<li>
+<p><a href="https://arxiv.org/abs/1409.3215">https://arxiv.org/abs/1409.3215</a></p>
+</li>
+<li>
+<p><a href="https://arxiv.org/pdf/2112.05682">https://arxiv.org/pdf/2112.05682</a></p>
+</li>
+<li>
+<p><a href="https://arxiv.org/pdf/1805.02867">https://arxiv.org/pdf/1805.02867</a></p>
+</li>
+<li>
+<p><a href="https://ieeexplore.ieee.org/document/8980322">https://ieeexplore.ieee.org/document/8980322</a></p>
+</li>
+<li>
+<p><a href="https://arxiv.org/abs/1805.02867">https://arxiv.org/abs/1805.02867</a></p>
+</li>
+</ol>
+<p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
+<p><strong>请备注具体方向+所用到的相关技术点</strong></p>
+<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=other&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1&amp;tp=webp)
+</code></pre>
+<p><strong>关于AINLP</strong></p>
+<pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
+
+  
+
+
+![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=other&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1&amp;tp=webp)**** 
+</code></pre>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
