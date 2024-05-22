@@ -78,6 +78,9 @@ aibard123.com 是一个开源导航网站，旨在为爱好人工智能的人提
 如果想看看效果可也访问：[aibard123.com](https://aibard123.com/?github_web) 或者[aibard123.top](https://aibard123.top/?github_web)
 
 
+#### 合作：
+
+如需合作可以联系QQ；1752338621
 
 
 #### 副业搞钱交流群：
