@@ -1,0 +1,874 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>Build your own voice assistant and run it locally  Build your own voice assistant and run it locally 构建和本地运行语音助手：Whisper &#43; Ollama &#43; Bark 在这篇文章中，作者展示了如何构建一个语音助手，该助手集合了大型语言模型的对话能力和语音的听说功能，可以在本地计算机上离线运行。这个语音助手类似于《钢铁侠》中的Jarvis或Fr  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 1000px;
+  }
+}
+
+.left-section img {
+			max-width: 100%;
+			float: left;
+		}
+.right-section {
+	max-width: 100%;
+	float: right;
+}
+
+.visit {
+    padding-top: 50px;
+}
+
+	.visit a:hover {
+		background-color: #499def;
+		color: white;
+	}
+	.visit a {
+		background-color: #035cb4;
+		color: #fff;
+	}
+
+	.blog-single {
+		background-color: #fff;
+		border-radius: 12px 12px 12px 12px;
+		box-shadow: 6px 6px 16px 0 rgba(0,64,128,.03);
+		padding-left: 50px;
+		padding-right: 50px;
+	}
+
+	.blog-single .single-blog p {
+		font-size: 14px;
+		font-weight: 500;
+	}
+
+	.featured-post-title {
+		font-size: 22px;
+	}
+
+
+</style>
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<div class="featured-post-content">
+
+	<a href="/newtutorial/" class="featured-post-title">
+		AI新工具
+	</a>
+
+</div>
+
+<section class="blog-single">
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6 left-section">
+				<img src="https://aibard123.com/images/aitools/2024/06/local-talking-llm.jpg" alt="banner">
+			</div>
+			<div class="col-md-6 right-section">
+				<br />
+				<h3>Build your own voice assistant and run it locally </h3>
+				<br />
+				
+				<h6>介绍：</h6>
+				<p style="font-size:14px">本教程利用Whisper、Ollama和Bark，教你本地构建自己的语音助手并运行。</p>
+
+				<div class="visit">
+
+					<a style="border-radius: 10px;padding: 5px 10px 5px 10px;border:none;min-width: 100px;"
+					   href="https://github.com/vndee/local-talking-llm"  target="_blank" class="btn btn-arrow mr-2">
+					<span >去看看<i class="iconfont icon-arrow-r-m"></i>
+					</span>
+					</a>
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+	<br />
+	<br />
+	<br />
+	<br />
+	<br />
+	<br />
+	<br />
+	<br />
+	<div class="container" style="max-width: 1000px;">
+		  
+		<div class="row">
+
+		  <div class="col-lg-12 order-1 order-lg-2">
+			<article class="single-blog">
+
+			  
+			  <div class="single-blog-content">
+				<h2 id="build-your-own-voice-assistant-and-run-it-locally">Build your own voice assistant and run it locally</h2>
+<h2 id="构建和本地运行语音助手whisper--ollama--bark">构建和本地运行语音助手：Whisper + Ollama + Bark</h2>
+<p>在这篇文章中，作者展示了如何构建一个语音助手，该助手集合了大型语言模型的对话能力和语音的听说功能，可以在本地计算机上离线运行。这个语音助手类似于《钢铁侠》中的Jarvis或Friday。本文使用Python语言实现，并提供了一些扩展应用的建议。</p>
+<h5 id="技术栈">技术栈</h5>
+<p>首先，需要设置一个虚拟Python环境，可以使用pyenv、virtualenv、诗歌等工具。本文选用Poetry。以下是需要安装的关键库：</p>
+<ul>
+<li><strong>rich</strong>: 提供美观的控制台输出。</li>
+<li><strong>openai-whisper</strong>: 进行语音转文本的工具。</li>
+<li><strong>suno-bark</strong>: 进行高质量文本转语音的库。</li>
+<li><strong>langchain</strong>: 一个与大型语言模型（LLMs）交互的简单库。</li>
+<li><strong>sounddevice</strong>、<strong>pyaudio</strong> 和 <strong>speechrecognition</strong>: 用于音频录制和播放的工具。</li>
+</ul>
+<p>还需要一个大型语言模型（LLM）的后端，这里使用Ollama。在开始前，需要下载并运行Ollama应用以提供语言模型服务。</p>
+<h5 id="架构">架构</h5>
+<p>整个应用由三个主要部分组成：</p>
+<ol>
+<li><strong>语音识别</strong>：使用 OpenAI 的 Whisper 将语音转换为文本。</li>
+<li><strong>对话链</strong>: 使用 Langchain 接口与 Llama-2 语言模型进行对话，该模型由 Ollama 提供。</li>
+<li><strong>语音合成</strong>: 通过 Suno AI 的 Bark 模型将文本转换为语音。</li>
+</ol>
+<p>工作流程如下: 录制语音 -&gt; 转换为文本 -&gt; 生成语言模型响应 -&gt; 使用Bark合成语音并播放。</p>
+<h5 id="实现">实现</h5>
+<p><strong>TextToSpeechService</strong>类用于进行文本到语音的转换，支持处理较长文本：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> nltk
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> warnings
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> transformers <span style="color:#f92672">import</span> AutoProcessor, BarkModel
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>warnings<span style="color:#f92672">.</span>filterwarnings(<span style="color:#e6db74">&#34;ignore&#34;</span>, message<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;torch.nn.utils.weight_norm is deprecated in favor of torch.nn.utils.parametrizations.weight_norm.&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TextToSpeechService</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, device: str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;cuda&#34;</span> <span style="color:#66d9ef">if</span> torch<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>is_available() <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;cpu&#34;</span>):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>device <span style="color:#f92672">=</span> device
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>processor <span style="color:#f92672">=</span> AutoProcessor<span style="color:#f92672">.</span>from_pretrained(<span style="color:#e6db74">&#34;suno/bark-small&#34;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>model <span style="color:#f92672">=</span> BarkModel<span style="color:#f92672">.</span>from_pretrained(<span style="color:#e6db74">&#34;suno/bark-small&#34;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>model<span style="color:#f92672">.</span>to(self<span style="color:#f92672">.</span>device)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">synthesize</span>(self, text: str, voice_preset: str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;v2/en_speaker_1&#34;</span>):
+</span></span><span style="display:flex;"><span>        inputs <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>processor(text, voice_preset<span style="color:#f92672">=</span>voice_preset, return_tensors<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;pt&#34;</span>)
+</span></span><span style="display:flex;"><span>        inputs <span style="color:#f92672">=</span> {k: v<span style="color:#f92672">.</span>to(self<span style="color:#f92672">.</span>device) <span style="color:#66d9ef">for</span> k, v <span style="color:#f92672">in</span> inputs<span style="color:#f92672">.</span>items()}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> torch<span style="color:#f92672">.</span>no_grad():
+</span></span><span style="display:flex;"><span>            audio_array <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>model<span style="color:#f92672">.</span>generate(<span style="color:#f92672">**</span>inputs, pad_token_id<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        audio_array <span style="color:#f92672">=</span> audio_array<span style="color:#f92672">.</span>cpu()<span style="color:#f92672">.</span>numpy()<span style="color:#f92672">.</span>squeeze()
+</span></span><span style="display:flex;"><span>        sample_rate <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>model<span style="color:#f92672">.</span>generation_config<span style="color:#f92672">.</span>sample_rate
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> sample_rate, audio_array
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">long_form_synthesize</span>(self, text: str, voice_preset: str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;v2/en_speaker_1&#34;</span>):
+</span></span><span style="display:flex;"><span>        pieces <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>        sentences <span style="color:#f92672">=</span> nltk<span style="color:#f92672">.</span>sent_tokenize(text)
+</span></span><span style="display:flex;"><span>        silence <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(int(<span style="color:#ae81ff">0.25</span> <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>model<span style="color:#f92672">.</span>generation_config<span style="color:#f92672">.</span>sample_rate))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> sent <span style="color:#f92672">in</span> sentences:
+</span></span><span style="display:flex;"><span>            sample_rate, audio_array <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>synthesize(sent, voice_preset)
+</span></span><span style="display:flex;"><span>            pieces <span style="color:#f92672">+=</span> [audio_array, silence<span style="color:#f92672">.</span>copy()]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>model<span style="color:#f92672">.</span>generation_config<span style="color:#f92672">.</span>sample_rate, np<span style="color:#f92672">.</span>concatenate(pieces)
+</span></span></code></pre></div><p>然后，初始化必要的组件，包括语音到文本（Whisper）、对话链（Langchain）和文本到语音（Bark）的实例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> threading
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> whisper
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sounddevice <span style="color:#66d9ef">as</span> sd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> queue <span style="color:#f92672">import</span> Queue
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> rich.console <span style="color:#f92672">import</span> Console
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> langchain.memory <span style="color:#f92672">import</span> ConversationBufferMemory
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> langchain.chains <span style="color:#f92672">import</span> ConversationChain
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> langchain.prompts <span style="color:#f92672">import</span> PromptTemplate
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> langchain_community.llms <span style="color:#f92672">import</span> Ollama
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> tts <span style="color:#f92672">import</span> TextToSpeechService
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>console <span style="color:#f92672">=</span> Console()
+</span></span><span style="display:flex;"><span>stt <span style="color:#f92672">=</span> whisper<span style="color:#f92672">.</span>load_model(<span style="color:#e6db74">&#34;base.en&#34;</span>)
+</span></span><span style="display:flex;"><span>tts <span style="color:#f92672">=</span> TextToSpeechService()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>template <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">You are a helpful and friendly AI assistant. You are polite, respectful, and aim to provide concise responses of less 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">than 20 words.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">The conversation transcript is as follows:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#e6db74">{history}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">And here is the user&#39;s follow-up: </span><span style="color:#e6db74">{input}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Your response:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>PROMPT <span style="color:#f92672">=</span> PromptTemplate(input_variables<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;history&#34;</span>, <span style="color:#e6db74">&#34;input&#34;</span>], template<span style="color:#f92672">=</span>template)
+</span></span><span style="display:flex;"><span>chain <span style="color:#f92672">=</span> ConversationChain(
+</span></span><span style="display:flex;"><span>    prompt<span style="color:#f92672">=</span>PROMPT,
+</span></span><span style="display:flex;"><span>    verbose<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>    memory<span style="color:#f92672">=</span>ConversationBufferMemory(ai_prefix<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Assistant:&#34;</span>),
+</span></span><span style="display:flex;"><span>    llm<span style="color:#f92672">=</span>Ollama(),
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>定义录音、转录、获取语言模型响应和播放音频的函数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">record_audio</span>(stop_event, data_queue):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">callback</span>(indata, frames, time, status):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> status:
+</span></span><span style="display:flex;"><span>            console<span style="color:#f92672">.</span>print(status)
+</span></span><span style="display:flex;"><span>        data_queue<span style="color:#f92672">.</span>put(bytes(indata))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> sd<span style="color:#f92672">.</span>RawInputStream(
+</span></span><span style="display:flex;"><span>        samplerate<span style="color:#f92672">=</span><span style="color:#ae81ff">16000</span>, dtype<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;int16&#34;</span>, channels<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, callback<span style="color:#f92672">=</span>callback
+</span></span><span style="display:flex;"><span>    ):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> <span style="color:#f92672">not</span> stop_event<span style="color:#f92672">.</span>is_set():
+</span></span><span style="display:flex;"><span>            time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">0.1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">transcribe</span>(audio_np: np<span style="color:#f92672">.</span>ndarray) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> stt<span style="color:#f92672">.</span>transcribe(audio_np, fp16<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)  <span style="color:#75715e"># Set fp16=True if using a GPU</span>
+</span></span><span style="display:flex;"><span>    text <span style="color:#f92672">=</span> result[<span style="color:#e6db74">&#34;text&#34;</span>]<span style="color:#f92672">.</span>strip()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> text
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_llm_response</span>(text: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>    response <span style="color:#f92672">=</span> chain<span style="color:#f92672">.</span>predict(input<span style="color:#f92672">=</span>text)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> response<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74">&#34;Assistant:&#34;</span>):
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> response[len(<span style="color:#e6db74">&#34;Assistant:&#34;</span>) :]<span style="color:#f92672">.</span>strip()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">play_audio</span>(sample_rate, audio_array):
+</span></span><span style="display:flex;"><span>    sd<span style="color:#f92672">.</span>play(audio_array, sample_rate)
+</span></span><span style="display:flex;"><span>    sd<span style="color:#f92672">.</span>wait()
+</span></span></code></pre></div><p>最后，定义主应用逻辑来处理用户互动：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    console<span style="color:#f92672">.</span>print(<span style="color:#e6db74">&#34;[cyan]Assistant started! Press Ctrl+C to exit.&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+</span></span><span style="display:flex;"><span>            console<span style="color:#f92672">.</span>input(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Press Enter to start recording, then press Enter again to stop.&#34;</span>
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            data_queue <span style="color:#f92672">=</span> Queue()  <span style="color:#75715e"># type: ignore[var-annotated]</span>
+</span></span><span style="display:flex;"><span>            stop_event <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Event()
+</span></span><span style="display:flex;"><span>            recording_thread <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Thread(
+</span></span><span style="display:flex;"><span>                target<span style="color:#f92672">=</span>record_audio,
+</span></span><span style="display:flex;"><span>                args<span style="color:#f92672">=</span>(stop_event, data_queue),
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>            recording_thread<span style="color:#f92672">.</span>start()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            input()
+</span></span><span style="display:flex;"><span>            stop_event<span style="color:#f92672">.</span>set()
+</span></span><span style="display:flex;"><span>            recording_thread<span style="color:#f92672">.</span>join()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            audio_data <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join(list(data_queue<span style="color:#f92672">.</span>queue))
+</span></span><span style="display:flex;"><span>            audio_np <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>                np<span style="color:#f92672">.</span>frombuffer(audio_data, dtype<span style="color:#f92672">=</span>np<span style="color:#f92672">.</span>int16)<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>float32) <span style="color:#f92672">/</span> <span style="color:#ae81ff">32768.0</span>
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> audio_np<span style="color:#f92672">.</span>size <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> console<span style="color:#f92672">.</span>status(<span style="color:#e6db74">&#34;Transcribing...&#34;</span>, spinner<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;earth&#34;</span>):
+</span></span><span style="display:flex;"><span>                    text <span style="color:#f92672">=</span> transcribe(audio_np)
+</span></span><span style="display:flex;"><span>                console<span style="color:#f92672">.</span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[yellow]You: </span><span style="color:#e6db74">{</span>text<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">with</span> console<span style="color:#f92672">.</span>status(<span style="color:#e6db74">&#34;Generating response...&#34;</span>, spinner<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;earth&#34;</span>):
+</span></span><span style="display:flex;"><span>                    response <span style="color:#f92672">=</span> get_llm_response(text)
+</span></span><span style="display:flex;"><span>                    sample_rate, audio_array <span style="color:#f92672">=</span> tts<span style="color:#f92672">.</span>long_form_synthesize(response)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                console<span style="color:#f92672">.</span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[cyan]Assistant: </span><span style="color:#e6db74">{</span>response<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>                play_audio(sample_rate, audio_array)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                console<span style="color:#f92672">.</span>print(
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;[red]No audio recorded. Please ensure your microphone is working.&#34;</span>
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">KeyboardInterrupt</span>:
+</span></span><span style="display:flex;"><span>        console<span style="color:#f92672">.</span>print(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">[red]Exiting...&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    console<span style="color:#f92672">.</span>print(<span style="color:#e6db74">&#34;[blue]Session ended.&#34;</span>)
+</span></span></code></pre></div><h5 id="使用场景">使用场景</h5>
+<ol>
+<li><strong>个人助理</strong>：可以作为日常个人助理，处理事务提醒、日程安排等。</li>
+<li><strong>客户服务</strong>：在本地运行的语音助手可用于提供客户服务，响应用户询问。</li>
+<li><strong>学习和教育</strong>：作为学习辅助工具，帮助用户进行语言学习或提供即时答案。</li>
+<li><strong>智能家居</strong>：集成到智能家居设备中，进行语音控制。</li>
+<li><strong>隐私保护</strong>：本地运行能够确保用户数据不会上传到云端，保护隐私。</li>
+</ol>
+<p>通过这篇教程，即使是初学者也可以实现一个初步的语音助手，并在需要时增加更多的功能和优化。</p>
+
+
+				  
+<div id="gitalk-container"></div>
+<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '926ba3af7dcb9cbfcf08',
+        clientSecret: '258ddefeac06598c65895743c01b9c180691d84c',
+        repo: 'AiBard123-comments',
+        owner: 'go2coding',
+        admin: ['go2coding'],
+        id: location.pathname, 
+        distractionFreeMode: false 
+    });
+    (function() {
+
+        gitalk.render('gitalk-container');
+    })();
+</script>
+
+			  </div>
+
+				可关注我们的公众号：每天AI新工具
+
+<p><img src="/images/aitools/2024/03/qrcode_for_gh_dde1b429630d_258.jpg" alt=""></p>
+
+<p style="font-weight: bold;">广告：私人定制视频文本提取，字幕翻译制作等，欢迎联系QQ:1752338621</p>
+
+			</article>
+
+		  </div>
+		</div>
+	</div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+         <footer class="main-footer footer-type-1 text-xs">
+            <div id="footer-tools" class="d-flex flex-column">
+                <a href="javascript:" id="go-to-up" class="btn rounded-circle go-up m-1" rel="go-top">
+                    <i class="iconfont icon-to-up"></i>
+                </a>
+                
+                <a href="javascript:" data-toggle="modal" data-target="#search-modal" class="btn rounded-circle m-1"
+                    rel="search" one-link-mark="yes">
+                    <i class="iconfont icon-search"></i>
+                </a>
+                <a href="/about/" class="btn rounded-circle kefu m-1" target="_blank" data-toggle="tooltip" data-placement="left" title="联系我们">
+                    <i class="mode-ico iconfont icon-qq"></i>
+                </a>
+                
+                
+		<a href="javascript:" onclick="window.location.href='javascript:switchNightMode()'" class="btn rounded-circle switch-dark-mode m-1" id="yejian"
+                    data-toggle="tooltip" data-placement="left" title="日间模式">
+                    <i class="mode-ico iconfont icon-night"></i>
+                </a>
+                
+            </div>
+            <div class="footer-inner">
+                <div class="footer-text">本站内容源自互联网，如有内容侵犯了你的权益，请联系删除相关内容，联系邮箱：aibard123.com@gmail.com <br/>© 2022 - 2024 By <a href="https://github.com/shenweiyan/WebStack-Hugo">WebStack-Hugo</a> | <a href="https://www.aibard123.com/">AIBard123 Ai工具导航</a>)<br/></div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
