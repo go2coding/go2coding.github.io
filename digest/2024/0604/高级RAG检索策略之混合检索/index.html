@@ -1,0 +1,1111 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>高级RAG检索策略之混合检索 作者： 极客与黑客之路 来源： 极客与黑客之路 古人云：兼听则明，偏信则暗 ，意思是要同时听取各方面的意见，才能正确认识事物，只相信单方面的话，必然会犯片面性的错误。在 RAG（Retrieval Augmented Generation）应用中也是如此，如果我们可以同时  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">高级RAG检索策略之混合检索</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 4, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3aSVyDu45eg67OZaD7ibiccyicK0zh0B9vRqibU1jK78x5ic57oviaTyCamROyNfeKIhDtnx2Pz7EdEz2Q/640?wx_fmt=png" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 极客与黑客之路  来源： <a href="https://mp.weixin.qq.com/s/8Sdrv0_RcfW4xcKBabd5yQ">极客与黑客之路</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/adswRFDIWz3aSVyDu45eg67OZaD7ibiccyoDxYSdvCO571a2AUWCVAWqKeT7w0EvnRzYrkSsY1pfTxniclgWeH8FQ/640?wx_fmt=jpeg" alt=""></p>
+<p>古人云：<strong>兼听则明，偏信则暗</strong> ，意思是要同时听取各方面的意见，才能正确认识事物，只相信单方面的话，必然会犯片面性的错误。在 RAG（Retrieval Augmented Generation）应用中也是如此，如果我们可以同时从多个信息源中获取信息，那么我们的检索结果会更加全面和准确。今天我们就来介绍高级 RAG 检索策略中的混合检索，并在实际操作中结合 ElaticSearch 和 Llama3 来实现混合检索的效果。</p>
+<h4 id="原理介绍">原理介绍</h4>
+<p>混合检索也叫融合检索，也叫多路召回，是指在检索过程中，同时使用多种检索方式，然后将多种检索结果进行融合，得到最终的检索结果。混合检索的优势在于可以充分利用多种检索方式的优势，弥补各种检索方式的不足，从而提高检索的准确性和效率，下面是混合检索的流程图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3aSVyDu45eg67OZaD7ibiccyoLJVV7s6ia8dE4TMs7TfLj8TlRxhDt6Nm3PZaU5H3BuLu1ewPKic8AsQ/640?wx_fmt=png" alt=""></p>
+<ul>
+<li>
+<p>首先是问题查询，这一过程的设计可以简单也可以复杂，简单的做法是直接将原始查询传递给检索器，而复杂一点的做法是通过 LLM（大语言模型）为原始查询生成子查询或相似查询，然后再将生成后的查询传递给检索器</p>
+</li>
+<li>
+<p>然后是检索器执行检索，检索可以在同一数据源上进行不同维度的检索，比如向量检索和关键字检索，也可以是在不同数据源上进行检索，比如文档和数据库</p>
+</li>
+<li>
+<p>检索过程从原来一个问题变成了多个问题检索，如果串行执行这些检索，那么检索的效率会大大降低，所以我们需要<strong>并行执行多个检索</strong> ，这样才可以保证检索的效率</p>
+</li>
+<li>
+<p>最后是融合检索结果，在这一过程中，我们需要对检索结果进行去重，因为在检索的多个结果中，有些结果可能是重复的，同时我们还需要对检索结果进行排序，排序方法一般采用 RRF（倒数排名融合），选出最匹配的检索结果</p>
+</li>
+</ul>
+<h4 id="环境准备">环境准备</h4>
+<p>为了更好地了解混合检索的原理和实现，今天我们将通过 LLM 应用框架LlamaIndex[1]，结合 Meta 最新开源的模型Llama3[2]和开源搜索引擎ElasticSearch[3]，来实现一个高效的混合检索系统。在 RAG 检索过程中除了需要用到 LLM 的模型外，还需要用到 Embedding 模型和 Rerank 模型，这些模型我们也统一使用本地部署的模型，这样可以更好地了解各种模型的使用和部署。</p>
+<h4 id="llamaindex-集成-llama3">LlamaIndex 集成 Llama3</h4>
+<p>首先是进行 Llama3 的本地化部署，有多种工具可以部署 Llama3，比如 Ollama[4] 或 vllm[5]，而且这些工具都提供了兼容 OpenAI 的 API 接口，vllm 的部署方式可以参考我之前的<a href="http://mp.weixin.qq.com/s?__biz=Mzg5NDkxMzQwMA==&amp;mid=2247484186&amp;idx=1&amp;sn=39c36efad87eedb632c13566b36c13b3&amp;chksm=c0191d0df76e941bc067bee89f080a9034b137a861b9371cacb8e329f1e1a4843dd46d897d14&amp;scene=21#wechat_redirect">这篇文章</a>。</p>
+<p>部署完成后，我们再看如何在 LlamaIndex 中集成 Llama3。虽然 LlamaIndex 提供了自定义 LLM[7]的功能，但继承自CustomeLLM
+类来实现自定义 LLM 的方式比较复杂，需要从头实现complete
+或chat
+等方法。这里推荐 LlamaInex 另外一个创建自定义 LLM 的方法，即使用OpenAILike
+类，这个类是对 OpenAI
+类进行轻量级封装，只要有兼容 OpenAI 的 API 服务，就可以直接使用该类来获得 OpenAI LLM 的功能。</p>
+<p>要使用OpenAILike
+类，首先需要安装相关依赖包pip install llama-index-llms-openai-like
+，然后使用以下代码进行集成：</p>
+<pre><code>from llama_index.llms.openai_like import OpenAILike  
+from llama_index.core.base.llms.types import ChatMessage, MessageRole  
+from llama_index.core import PromptTemplate  
+  
+llm = OpenAILike(  
+    model=&quot;llama3&quot;,  
+    api_base=&quot;you-local-llama3-api&quot;,  
+    api_key=&quot;fake_key&quot;,  
+    is_chat_model=True,  
+)  
+prompt_str = &quot;Please generate related movies to {movie_name}&quot;  
+prompt_tmpl = PromptTemplate(prompt_str)  
+response = llm.chat(  
+    [  
+        ChatMessage(  
+            role=MessageRole.SYSTEM,  
+            content=&quot;You are a helpful assistant.&quot;,  
+        ),  
+        ChatMessage(  
+            role=MessageRole.USER,  
+            content=prompt_tmpl.format(movie_name=&quot;Avengers&quot;),  
+        ),  
+    ]  
+)  
+print(f&quot;response: {response}&quot;)  
+  
+# 显示结果  
+response: assistant: Here are some movie recommendations that are similar to the Avengers franchise:  
+  
+1.**Guardians of the Galaxy** (2014) - Another Marvel superhero team-up film, with a fun and quirky tone.  
+2.**The Justice League** (2017) - A DC Comics adaptation featuring iconic superheroes like Superman, Batman, Wonder Woman, and more.  
+......  
+</code></pre>
+<ul>
+<li>
+<p>在OpenAILike
+对象中，参数model
+为模型名称，api_base
+为本地 Llama3 的 API 服务地址</p>
+</li>
+<li>
+<p>api_key
+可以随便填写，但不能不传这个参数，否则会出现连接超时的错误</p>
+</li>
+<li>
+<p>is_chat_model
+为是否是 chat 模型，因为 OpenAI 的模型分为 chat 模型和非 chat 模型</p>
+</li>
+<li>
+<p>然后我们使用 LLM 对象进行了一个普通的对话，结果可以正常返回</p>
+</li>
+</ul>
+<h4 id="llamaindex-集成-elasticsearch">LlamaIndex 集成 ElasticSearch</h4>
+<p>在 RAG 应用中向量数据库是必不可少的一项功能，而 Elasticsearch 能够存储各种类型的数据，包括结构化和非结构化数据，并且支持全文检索和向量检索。ElasticSearch 本地环境的安装和部署可以参考我之前的<a href="http://mp.weixin.qq.com/s?__biz=Mzg5NDkxMzQwMA==&amp;mid=2247484036&amp;idx=1&amp;sn=af0a3575b52620ab8e92cddf3792a59a&amp;chksm=c0191c93f76e958588e155e9cf23225ed8c70f70354b2a0c6e114d40727c1fc7a6cb00c9d776&amp;scene=21#wechat_redirect">这篇文章</a>。</p>
+<p>部署完 ElasticSearch 后，还需要安装 LlamaIndex 的 Elasticsearch 依赖包pip install llama-index-vector-stores-elasticsearch
+，然后使用以下代码示例就可以集成 ElasticSearch：</p>
+<pre><code>from llama_index.vector_stores.elasticsearch import ElasticsearchStore  
+  
+es = ElasticsearchStore(  
+    index_name=&quot;my_index&quot;,  
+    es_url=&quot;http://localhost:9200&quot;,  
+)  
+</code></pre>
+<ul>
+<li>index_name
+是 ElasticSearch 的索引名称，es_url
+是 ElasticSearch 服务的地址</li>
+</ul>
+<h4 id="自定义-embedding-和-rerank-模型">自定义 Embedding 和 Rerank 模型</h4>
+<p>在高级 RAG 的检索过程中，需要用到 Embedding 模型来对文档和问题进行向量化，然后使用 Rerank 模型对检索结果进行重排序。同样有很多工具可以部署这 2 种模型，比如TEI[9] 和 Xinference[10]等。这里我们使用 TEI 来部署这 2 种模型，TEI 和模型的部署可以参考我之前的<a href="http://mp.weixin.qq.com/s?__biz=Mzg5NDkxMzQwMA==&amp;mid=2247484042&amp;idx=1&amp;sn=6243d11fedafc9443662af77d5bdb831&amp;chksm=c0191c9df76e958b9b99a98154297c5177aea340dcae8c9a056fffc547b26cfa9670c96a6c25&amp;scene=21#wechat_redirect">这篇文章</a>。</p>
+<p>Embedding 模型的启动命令如下，这里我们使用了BAAI/bge-base-en-v1.5[12]这个 Embeddings 模型，服务端口为 6006：</p>
+<pre><code>text-embeddings-router --model-id BAAI/bge-base-en-v1.5 --revision refs/pr/4 --port 6006  
+</code></pre>
+<p>Rerank 模型的启动命令如下，这里我们使用了BAAI/bge-reranker-base[13]这个 Rerank 模型，服务端口为 7007：</p>
+<pre><code>text-embeddings-router --model-id BAAI/bge-reranker-base --revision refs/pr/4 --port 7007  
+</code></pre>
+<h4 id="多种检索方式">多种检索方式</h4>
+<h4 id="数据入库">数据入库</h4>
+<p>在介绍检索之前，我们先来了解下 LlamaIndex 如何使用 ElasticSearch 对文档进行解析和入库，这里的测试文档还是用维基百科上的复仇者联盟[14]电影剧情，示例代码如下：</p>
+<pre><code>from llama_index.vector_stores.elasticsearch import ElasticsearchStore  
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext  
+from llama_index.core.node_parser import SentenceSplitter  
+from llms import CustomEmbeddings  
+  
+store = ElasticsearchStore(  
+    index_name=&quot;avengers&quot;,  
+    es_url=&quot;http://localhost:9200&quot;,  
+)  
+documents = SimpleDirectoryReader(&quot;./data&quot;).load_data()  
+node_parser = SentenceSplitter(chunk_size=256, chunk_overlap=50)  
+storage_context = StorageContext.from_defaults(vector_store=store)  
+embed_model = CustomEmbeddings(  
+    model=&quot;BAAI/bge-base-en-v1.5&quot;, url=&quot;http://localhost:6006&quot;  
+)  
+VectorStoreIndex.from_documents(  
+    documents,  
+    transformations=[node_parser],  
+    embed_model=embed_model,  
+    storage_context=storage_context,  
+)  
+</code></pre>
+<ul>
+<li>
+<p>首先定义了一个 ElasticsearchStore 对象来连接 ElaticSearch 本地服务</p>
+</li>
+<li>
+<p>然后使用 SimpleDirectoryReader 加载本地的文档数据</p>
+</li>
+<li>
+<p>使用 SentenceSplitter 对文档进行分块处理，应为 TEI 的输入 Token 数最大只能 512，所以这里的 chunk_size 设置为 256，chunk_overlap 设置为 50</p>
+</li>
+<li>
+<p>构建 StorageContext 对象，指定向量存储为之前定义的 ElasticsearchStore 对象</p>
+</li>
+<li>
+<p>创建一个自定义 Embeddings 对象，使用的是 TEI 部署的 Embeddings 模型服务，这里CustomEmbeddings
+的代码可以参考<a href="http://mp.weixin.qq.com/s?__biz=Mzg5NDkxMzQwMA==&amp;mid=2247484036&amp;idx=1&amp;sn=af0a3575b52620ab8e92cddf3792a59a&amp;chksm=c0191c93f76e958588e155e9cf23225ed8c70f70354b2a0c6e114d40727c1fc7a6cb00c9d776&amp;scene=21#wechat_redirect">这篇文章</a>中的代码</p>
+</li>
+<li>
+<p>最后使用 VectorStoreIndex 对象将文档数据入库</p>
+</li>
+</ul>
+<p>当执行完代码后，可以在 ElasticSearch 的avengers
+索引中看到文档数据，如下图所示：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3aSVyDu45eg67OZaD7ibiccyicK0zh0B9vRqibU1jK78x5ic57oviaTyCamROyNfeKIhDtnx2Pz7EdEz2Q/640?wx_fmt=png" alt=""></p>
+<h4 id="全文检索">全文检索</h4>
+<p>数据入库后，我们再来看下如何在 LlamaIndex 中使用 Elasticsearch 进行全文检索。</p>
+<p>全文检索是 Elasticsearch 的基本功能，有时候也叫关键字检索，是指根据关键字在文档中进行检索，支持精确匹配，同时高级功能也支持模糊匹配、同义词替换、近义词搜索等。在 LlamaIndex 中使用 Elasticsearch 进行全文检索的代码如下：</p>
+<pre><code>from llama_index.vector_stores.elasticsearch import AsyncBM25Strategy  
+from llama_index.core import Settings  
+  
+text_store = ElasticsearchStore(  
+    index_name=&quot;avengers&quot;,  
+    es_url=&quot;http://localhost:9200&quot;,  
+    retrieval_strategy=AsyncBM25Strategy(),  
+)  
+Settings.embed_model = embed_model  
+text_index = VectorStoreIndex.from_vector_store(  
+    vector_store=text_store,  
+)  
+text_retriever = text_index.as_retriever(similarity_top_k=2)  
+</code></pre>
+<ul>
+<li>
+<p>这里重新定义了一个 ElasticsearchStore 对象，但这次指定了检索策略为 BM25，如果要使用全文检索则必须指定这个检索策略</p>
+</li>
+<li>
+<p>将ElasticsearchStore
+对象作为参数来创建VectorStoreIndex
+对象</p>
+</li>
+<li>
+<p>最后通过VectorStoreIndex
+对象创建全文检索的检索器，这里设置检索结果的数量为 2</p>
+</li>
+</ul>
+<blockquote>
+<p>BM25 是一种在信息检索领域广泛采用的排名函数，主要用于评估文档与用户查询的相关性。该算法的基本原理是将用户查询（query）分解为若干语素（qi），然后计算每个语素与搜索结果之间（document D）的相关性。通过累加这些相关性得分，BM25 最终得出查询与特定文档之间的总相关性评分。这种检索策略在现代搜索引擎中非常常见。</p>
+</blockquote>
+<h4 id="向量检索">向量检索</h4>
+<p>我们再来了解 LlamaIndex 中如何使用 Elasticsearch 进行向量检索。</p>
+<p>向量检索是一种基于机器学习的信息检索技术，它使用数学向量来表示文档和查询。在 LlamaIndex 中使用 Elasticsearch 进行向量检索有 2 种检索策略，分别是Dense
+和Sparse
+，这两种策略的区别在于向量的稠密度，Dense
+检索的号码每一位都是有用的数字，就像一个充满数字的电话号码，而Sparse
+检索的号码大部分都是零，只有少数几个位置有数字，就像一个电话号码大部分是零，只有几个位置有数字。如果需要更精细、更复杂的检索方法，用Dense
+检索，如果需要简单快速的方法，用Sparse
+检索。ElasicsearchStore
+类默认的检索策略是Dense
+，下面是向量检索的代码示例：</p>
+<pre><code>from llama_index.vector_stores.elasticsearch import AsyncDenseVectorStrategy, AsyncSparseVectorStrategy  
+  
+vector_store = ElasticsearchStore(  
+    index_name=&quot;avengers&quot;,  
+    es_url=&quot;http://localhost:9200&quot;,  
+    retrieval_strategy=AsyncDenseVectorStrategy(),  
+    # retrieval_strategy=AsyncSparseVectorStrategy(model_id=&quot;.elser_model_2&quot;),  
+)  
+Settings.embed_model = embed_model  
+vector_index = VectorStoreIndex.from_vector_store(  
+    vector_store=vector_store,  
+)  
+vector_retriever = vector_index.as_retriever(similarity_top_k=2)  
+</code></pre>
+<ul>
+<li>
+<p>向量检索的代码和全文检索的代码类似</p>
+</li>
+<li>
+<p>如果是使用Dense
+检索策略，可以指定retrieval_strategy=AsyncDenseVectorStrategy()
+，也可以不指定retrieval_strategy
+参数</p>
+</li>
+<li>
+<p>如果是使用Sparse
+检索策略，需要指定retrieval_strategy=AsyncSparseVectorStrategy(model_id=&quot;.elser_model_2&quot;)
+，这里需要额外部署 ElasticSearch 的 ELSER 模型[16] #### 混合检索</p>
+</li>
+</ul>
+<p>定义好了 2 种检索器后，我们再来了解如何将这些检索进行融合，在 LlamaIndex 的 ElasticsearchStore 类中提供了混合检索的方法，示例代码如下：</p>
+<pre><code>from llama_index.vector_stores.elasticsearch import AsyncDenseVectorStrategy  
+  
+vector_store = ElasticsearchStore(  
+    index_name=&quot;avengers&quot;,  
+    es_url=&quot;http://localhost:9200&quot;,  
+    retrieval_strategy=AsyncDenseVectorStrategy(hybrid=True),  
+)  
+</code></pre>
+<ul>
+<li>这里的检索策略还是使用Dense
+检索策略，但是指定了hybrid=True
+参数，表示使用混合检索</li>
+</ul>
+<p>设置了混合检索策略后，在融合检索结果时会自动使用 Elasicsearch 的 RRF 功能。</p>
+<blockquote>
+<p>RRF（倒数排名融合） 是一种融合检索算法，用于结合多个检索结果列表。每个结果列表中的每个文档被分配一个分数，分数基于文档在列表中的排名位置。该算法的基本思想是，通过对多个检索器的结果进行融合，来提高检索性能。</p>
+</blockquote>
+<p>但在 Elasticsearch 的免费版本中，这个功能是<strong>不可用</strong> 的：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/adswRFDIWz3aSVyDu45eg67OZaD7ibiccys7o0VhVtC7beqIpjs1Xgtiaoia0eibRWKRiaGNX7vcL64icWoVxlXlfiatEw/640?wx_fmt=png" alt=""></p>
+<p>因此我们需要自己实现 RRF 功能，RRF 的论文可以看这里[17]，下面是 RRF 的代码实现：</p>
+<pre><code>from typing import List  
+from llama_index.core.schema import NodeWithScore  
+  
+def fuse_results(results_dict, similarity_top_k: int = 2):  
+    &quot;&quot;&quot;Fuse results.&quot;&quot;&quot;  
+    k = 60.0  
+    fused_scores = {}  
+    text_to_node = {}  
+  
+    # 计算倒数排名分数  
+    for nodes_with_scores in results_dict.values():  
+        for rank, node_with_score in enumerate(  
+            sorted(  
+                nodes_with_scores, key=lambda x: x.score or 0.0, reverse=True  
+            )  
+        ):  
+            text = node_with_score.node.get_content()  
+            text_to_node[text] = node_with_score  
+            if text not in fused_scores:  
+                fused_scores[text] = 0.0  
+            fused_scores[text] += 1.0 / (rank + k)  
+  
+    # 结果按分数排序  
+    reranked_results = dict(  
+        sorted(fused_scores.items(), key=lambda x: x[1], reverse=True)  
+    )  
+  
+    # 结果还原为节点集合  
+    reranked_nodes: List[NodeWithScore] = []  
+    for text, score in reranked_results.items():  
+        reranked_nodes.append(text_to_node[text])  
+        reranked_nodes[-1].score = score  
+  
+    return reranked_nodes[:similarity_top_k]  
+</code></pre>
+<ul>
+<li>
+<p>方法的参数results_dict
+是所有检索器的检索结果集合，similarity_top_k
+是最相似的结果数量</p>
+</li>
+<li>
+<p>假设results_dict
+的值是{&lsquo;full-text&rsquo;: [nodes], &lsquo;vector&rsquo;: [nodes]}
+，这个方法方法的作用是将所有的检索结果节点进行融合，然后选出最相似的similarity_top_k
+个节点</p>
+</li>
+<li>
+<p>方法开头是初始化一些变量，k
+用于计算倒数排名分数，fused_scores
+用于存储节点文本和融合后分数的映射，text_to_node
+用于存储节点文本到节点的映射</p>
+</li>
+<li>
+<p>然后是计算每个节点的倒数排名分数，先将 results_dict
+中的每个节点按照分数进行排序，然后计算每个节点的倒数排名分数，将结果保存到 fused_scores
+中，同时将节点文本和节点的关系保存到 text_to_nodes
+中</p>
+</li>
+<li>
+<p>接着再对 fused_scores
+按照倒数排名分数进行排序，得到 reranked_results</p>
+</li>
+<li>
+<p>然后根据 reranked_results
+将结果还原成节点集合的形式，并将节点的分数设置为融合后的分数，最终结果保存到 reranked_nodes
+列表中</p>
+</li>
+<li>
+<p>最后返回最相似的结果，返回 reranked_nodes
+列表中的前 similarity_top_k
+个节点</p>
+</li>
+</ul>
+<p>定义好融合函数后，我们再定义一个方法来执行多个检索器，这个方法返回的结果就是融合函数的参数 results_dict
+，示例代码如下：</p>
+<pre><code>from tqdm.asyncio import tqdm  
+  
+def run_queries(query, retrievers):  
+    &quot;&quot;&quot;Run query against retrievers.&quot;&quot;&quot;  
+    tasks = []  
+    for i, retriever in enumerate(retrievers):  
+        tasks.append(retriever.aretrieve(query))  
+  
+    task_results = await tqdm.gather(*tasks)  
+  
+    results_dict = {}  
+    for i, query_result in enumerate(task_results):  
+        results_dict[(query, i)] = query_result  
+  
+    return results_dict  
+</code></pre>
+<ul>
+<li>
+<p>方法的参数query
+是原始问题，retrievers
+是多个检索器的集合</p>
+</li>
+<li>
+<p>将问题传给每个检索器，构建异步任务列表tasks</p>
+</li>
+<li>
+<p>然后使用await tqdm.gather(*tasks)
+来<strong>并行</strong> 执行所有的检索器，并行执行可以提高检索效率</p>
+</li>
+<li>
+<p>最后将检索结果保存到results_dict
+中，返回results_dict</p>
+</li>
+</ul>
+<p>因为我们使用了异步方式进行检索，原先的CustomEmbeddings
+中的方法也需要修改，示例代码如下：</p>
+<pre><code>+import asyncio  
+  
+-    def _aget_query_embedding(self, query: str) -&gt; Embedding:  
+-        return get_embedding(text=query, model=self._model, url=self._url)  
++    async def _aget_query_embedding(self, query: str) -&gt; Embedding:  
++        loop = asyncio.get_event_loop()  
++        return await loop.run_in_executor(  
++            None, get_embedding, query, self._model, self._url  
++        )  
+</code></pre>
+<p>然后我们构建一个融合检索器来将上面定义的方法组合到一起，示例代码如下：</p>
+<pre><code>from typing import List  
+from llama_index.core import QueryBundle  
+from llama_index.core.retrievers import BaseRetriever  
+from llama_index.core.schema import NodeWithScore  
+import asyncio  
+  
+class FusionRetriever(BaseRetriever):  
+    &quot;&quot;&quot;Ensemble retriever with fusion.&quot;&quot;&quot;  
+  
+    def __init__(  
+        self,  
+        retrievers: List[BaseRetriever],  
+        similarity_top_k: int = 2,  
+    ) -&gt; None:  
+        &quot;&quot;&quot;Init params.&quot;&quot;&quot;  
+        self._retrievers = retrievers  
+        self._similarity_top_k = similarity_top_k  
+        super().__init__()  
+  
+    def _retrieve(self, query_bundle: QueryBundle) -&gt; List[NodeWithScore]:  
+        &quot;&quot;&quot;Retrieve.&quot;&quot;&quot;  
+        results = asyncio.run(  
+            run_queries(query_bundle.query_str, self._retrievers)  
+        )  
+        final_results = fuse_results(results, similarity_top_k=self._similarity_top_k)  
+        return final_results  
+</code></pre>
+<ul>
+<li>
+<p>这个融合检索器的类继承自BaseRetriever
+类，重写了_retrieve
+方法</p>
+</li>
+<li>
+<p>构造方法中的参数retrievers
+是多个检索器的集合，similarity_top_k
+是最相似的结果数量</p>
+</li>
+<li>
+<p>在_retrieve
+方法中，调用了run_queries
+方法来获取检索结果results</p>
+</li>
+<li>
+<p>然后调用了fuse_results
+方法来融合检索结果并返回</p>
+</li>
+</ul>
+<p>我们来看融合检索器运行后的检索结果，代码示例如下：</p>
+<pre><code>fusion_retriever = FusionRetriever(  
+    [text_retriever, vector_retriever], similarity_top_k=2  
+)  
+question = &quot;Which two members of the Avengers created Ultron?&quot;  
+nodes = fusion_retriever.retrieve(question)  
+for node in nodes:  
+    print(&quot;-&quot; * 50)  
+    print(f&quot;node content: {node.text[:100]}...&quot;)  
+    print(f&quot;node score: {node.score}\n&quot;)  
+  
+# 显示结果  
+-----------------------------------------------node content: In the Eastern European country of Sokovia, the Avengers—Tony Stark, Thor, Bruce Banner, Steve Roger...  
+node score: 0.03306010928961749  
+  
+-----------------------------------------------node content: Thor departs to consult with Dr. Erik Selvig on the apocalyptic future he saw in his hallucination, ...  
+node score: 0.016666666666666666  
+</code></pre>
+<ul>
+<li>
+<p>首先定义了一个 FusionRetriever 对象，传入了全文检索器和向量检索器，同时设置了最相似的结果数量为 2</p>
+</li>
+<li>
+<p>然后传入了一个问题，获取检索结果</p>
+</li>
+</ul>
+<p>从结果中可以看到，检索结果节点返回的分数是经过 RRF 融合后的分数，分数值比较低，与原始的 Rerank 分数值不太匹配，这时我们可以使用 Rerank 模型来对检索结果进行重排序。</p>
+<pre><code>from llama_index.core.query_engine import RetrieverQueryEngine  
+  
+rerank = CustomRerank(  
+    model=&quot;BAAI/bge-reranker-base&quot;, url=&quot;http://localhost:7007&quot;, top_n=2  
+)  
+Settings.llm = llm  
+query_engine = RetrieverQueryEngine(fusion_retriever, node_postprocessors=[rerank])  
+response = query_engine.query(question)  
+print(f&quot;response: {response}&quot;)  
+for node in response.source_nodes:  
+    print(&quot;-&quot; * 50)  
+    print(f&quot;node content: {node.text[:100]}...&quot;)  
+    print(f&quot;node score: {node.score}\n&quot;)  
+  
+# 显示结果  
+response: Tony Stark and Bruce Banner.  
+-----------------------------------------------node content: In the Eastern European country of Sokovia, the Avengers—Tony Stark, Thor, Bruce Banner, Steve Roger...  
+node score: 0.8329173  
+  
+-----------------------------------------------node content: Thor departs to consult with Dr. Erik Selvig on the apocalyptic future he saw in his hallucination, ...  
+node score: 0.24689633  
+</code></pre>
+<ul>
+<li>
+<p>CustomRerank
+类是一个自定义的 Rerank 类，这个类的代码可以参考<a href="http://mp.weixin.qq.com/s?__biz=Mzg5NDkxMzQwMA==&amp;mid=2247484042&amp;idx=1&amp;sn=6243d11fedafc9443662af77d5bdb831&amp;chksm=c0191c9df76e958b9b99a98154297c5177aea340dcae8c9a056fffc547b26cfa9670c96a6c25&amp;scene=21#wechat_redirect">这篇文章</a>中的代码</p>
+</li>
+<li>
+<p>在系统设置中设置了 LLM 模型来生成答案</p>
+</li>
+<li>
+<p>通过混合检索器构建查询引擎，并在node_postprocessors
+参数中传入了 Rerank 模型，表示在检索结果后使用 Rerank 模型对检索结果进行重排序</p>
+</li>
+<li>
+<p>最后传入问题，获取检索结果</p>
+</li>
+</ul>
+<p>从结果中可以看到，检索结果节点返回的分数是经过 Rerank 模型重排序后的分数，分数值比较高，这样我们的混合检索系统就构建完成了。</p>
+<h4 id="总结">总结</h4>
+<p>混合检索是一种在 RAG 应用中常用的检索策略，通过融合多种检索方式，可以提高检索的准确性和效率。今天我们通过 LlamaIndex 的代码实践，了解了构建混合检索系统的流程，同时也学习了如何使用 Llama3 和 ElasticSearch 来实现混合检索的效果，以及混合检索中一些常见的检索策略和排序算法。</p>
+<p>关注我，一起学习各种人工智能和 AIGC 新技术，欢迎交流，如果你有什么想问想说的，欢迎在评论区留言。</p>
+<h4 id="参考">参考:</h4>
+<p>[1]</p>
+<p>LlamaIndex: <em><a href="https://www.llamaindex.ai/">https://www.llamaindex.ai/</a></em></p>
+<p>[2]</p>
+<p>Llama3: <em><a href="https://llama.meta.com/llama3/">https://llama.meta.com/llama3/</a></em></p>
+<p>[3]</p>
+<p>ElasticSearch: <em><a href="https://www.elastic.co/cn/elasticsearch/">https://www.elastic.co/cn/elasticsearch/</a></em></p>
+<p>[4]</p>
+<p>Ollama: <em><a href="https://ollama.com/">https://ollama.com/</a></em></p>
+<p>[5]</p>
+<p>vllm: <em><a href="https://github.com/vllm-project/vllm">https://github.com/vllm-project/vllm</a></em></p>
+<p>[7]</p>
+<p>自定义 LLM: <em><a href="https://docs.llamaindex.ai/en/stable/module_guides/models/llms/usage_custom/">https://docs.llamaindex.ai/en/stable/module_guides/models/llms/usage_custom/</a></em></p>
+<p>[9]</p>
+<p>TEI: <em><a href="https://github.com/huggingface/text-embeddings-inference">https://github.com/huggingface/text-embeddings-inference</a></em></p>
+<p>[10]</p>
+<p>Xinference: <em><a href="https://inference.readthedocs.io/en/latest/">https://inference.readthedocs.io/en/latest/</a></em></p>
+<p>[12]</p>
+<p>BAAI/bge-base-en-v1.5: <em><a href="https://huggingface.co/BAAI/bge-base-en-v1.5">https://huggingface.co/BAAI/bge-base-en-v1.5</a></em></p>
+<p>[13]</p>
+<p>BAAI/bge-reranker-base: <em><a href="https://huggingface.co/BAAI/bge-reranker-base">https://huggingface.co/BAAI/bge-reranker-base</a></em></p>
+<p>[</p>
+<p>14]</p>
+<p>复仇者联盟: <em><a href="https://en.wikipedia.org/wiki/Avenger">https://en.wikipedia.org/wiki/Avenger</a></em></p>
+<p>[16]</p>
+<p>ELSER 模型: <em><a href="https://www.elastic.co/guide/en/machine-learning/current/ml-nlp-elser.html">https://www.elastic.co/guide/en/machine-learning/current/ml-nlp-elser.html</a></em></p>
+<p>[17]</p>
+<p>这里: <em><a href="https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf">https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf</a></em></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

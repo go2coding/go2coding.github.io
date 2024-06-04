@@ -1,0 +1,1102 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>Workflow的多种触发方式：手动、定时任务与事件触发 作者： 探索云原生 来源： 探索云原生 点击上方蓝字关注我们 argoworkflow-5-how-to-trigger-workflow.png 上一篇我们分析了 argo-workflow 中的 archive，包括 流水线 GC、流水线归档、日志归档等功能。本篇主要分析 Workflow 中的几种触发方式，包括手动触发、定时触发、Event 事件触发等。 1. 概述 Argo Workflows 的流水线有多种触  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">Workflow的多种触发方式：手动、定时任务与事件触发</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 4, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/DRPKCGMAPjKzncOsqKVQInBQ7RU7WTSXxzk2HwYamz55icr4bhTGgOpDnaFQBMLC8QKibU0b0GAd98RJALh9HIYw/640?wx_fmt=gif&amp;random=0.371367935202749&amp;random=0.8471740883179717&amp;random=0.8349570560716733&amp;random=0.7071803651079065" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 探索云原生  来源： <a href="https://mp.weixin.qq.com/s/VUf79Qj_9H9BKVUDqur6oA">探索云原生</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/8S5sPGibn10RWcyNqxSCKdCibHL6GCb2Indw9wsuOV9iccEV3DehQ3ibFX3GTgE5YsnE8AcxGibPbVibJLOrKhvKRejQ/640?" alt=""></p>
+<p>点击上方蓝字关注我们</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/lWBaJNsMRKnz4iakbDKq4APAKI1zYjvYtHvb36nDmaGU3fsY8ltAbgJq2JXicXx9PSicibZ3vV2r3dqMzWGDLLmhtg/640?wx_fmt=png&amp;from=appmsg&amp;random=0.7171378748723429&amp;random=0.10642666834801617&amp;random=0.9985389231128192&amp;random=0.05020532171498404&amp;random=0.2758346869125319" alt="">argoworkflow-5-how-to-trigger-workflow.png</p>
+<p>上一篇我们分析了 argo-workflow 中的 archive，包括 流水线 GC、流水线归档、日志归档等功能。本篇主要分析 Workflow 中的几种触发方式，包括手动触发、定时触发、Event 事件触发等。</p>
+<h4 id="1-概述">1. 概述</h4>
+<p>Argo Workflows 的流水线有多种触发方式：</p>
+<ul>
+<li>
+<p>手动触发：手动提交一个 Workflow，就会触发一次构建，那么我们创建的流水线，理论上是 WorkflowTemplate 对象。</p>
+</li>
+<li>
+<p>定时触发：CronWorkflow[1]，类似于 k8s 中的 job 和 cronjob，CronWorkflow 会定时创建 Workflow 来实现定时触发。</p>
+</li>
+<li>
+<p>Event 事件触发：比如通过 git commit 触发，借助 argo-events[2] 可以实现此功能。</p>
+</li>
+</ul>
+<h4 id="2-定时触发">2. 定时触发</h4>
+<p>CronWorkflow
+本质上就是一个 Workflow + Cron Spec。</p>
+<blockquote>
+<p>设计上参考了 k8s 中的 CronJob</p>
+</blockquote>
+<h4 id="demo">Demo</h4>
+<p>一个简单的 CronWorkflow 如下：</p>
+<pre><code>apiVersion: argoproj.io/v1alpha1  
+kind: CronWorkflow  
+metadata:  
+  name: test-cron-wf  
+spec:  
+  schedule: &quot;* * * * *&quot;  
+  concurrencyPolicy: &quot;Replace&quot;  
+  startingDeadlineSeconds: 0  
+  workflowSpec:  
+    entrypoint: whalesay  
+    templates:  
+    - name: whalesay  
+      container:  
+        image: alpine:3.6  
+        command: [sh, -c]  
+        args: [&quot;date; sleep 90&quot;]  
+</code></pre>
+<p>apply 一下，可以看到创建出来的 Workflow 命名为 $cronWorkflowName-xxx</p>
+<pre><code>[root@lixd-argo workdir]# k get cwf  
+NAME           AGE  
+test-cron-wf   116s  
+[root@lixd-argo workdir]# k get wf  
+NAME                      STATUS    AGE   MESSAGE  
+test-cron-wf-1711852560   Running   47s  
+</code></pre>
+<p>由于 template 中运行任务是 sleep 90s
+因此，整个任务耗时肯定是超过 60s 的，根据设置的 concurrencyPolicy 为 Replace ，因此 60s 后，第二个 Workflow 被创建出来，第一个就会被停止掉。</p>
+<pre><code>[root@lixd-argo workdir]# k get wf  
+NAME                      STATUS    AGE    MESSAGE  
+test-cron-wf-1711852560   Failed    103s   Stopped with strategy 'Terminate'  
+test-cron-wf-1711852620   Running   43s  
+</code></pre>
+<h4 id="具体参数">具体参数</h4>
+<p>支持的具体参数如下：</p>
+<pre><code>type CronWorkflowSpec struct {  
+ // WorkflowSpec is the spec of the workflow to be run  
+ WorkflowSpec WorkflowSpec `json:&quot;workflowSpec&quot; protobuf:&quot;bytes,1,opt,name=workflowSpec,casttype=WorkflowSpec&quot;`  
+ // Schedule is a schedule to run the Workflow in Cron format  
+ Schedule string `json:&quot;schedule&quot; protobuf:&quot;bytes,2,opt,name=schedule&quot;`  
+ // ConcurrencyPolicy is the K8s-style concurrency policy that will be used  
+ ConcurrencyPolicy ConcurrencyPolicy `json:&quot;concurrencyPolicy,omitempty&quot; protobuf:&quot;bytes,3,opt,name=concurrencyPolicy,casttype=ConcurrencyPolicy&quot;`  
+ // Suspend is a flag that will stop new CronWorkflows from running if set to true  
+ Suspend bool `json:&quot;suspend,omitempty&quot; protobuf:&quot;varint,4,opt,name=suspend&quot;`  
+ // StartingDeadlineSeconds is the K8s-style deadline that will limit the time a CronWorkflow will be run after its  
+ // original scheduled time if it is missed.  
+ StartingDeadlineSeconds *int64 `json:&quot;startingDeadlineSeconds,omitempty&quot; protobuf:&quot;varint,5,opt,name=startingDeadlineSeconds&quot;`  
+ // SuccessfulJobsHistoryLimit is the number of successful jobs to be kept at a time  
+ SuccessfulJobsHistoryLimit *int32 `json:&quot;successfulJobsHistoryLimit,omitempty&quot; protobuf:&quot;varint,6,opt,name=successfulJobsHistoryLimit&quot;`  
+ // FailedJobsHistoryLimit is the number of failed jobs to be kept at a time  
+ FailedJobsHistoryLimit *int32 `json:&quot;failedJobsHistoryLimit,omitempty&quot; protobuf:&quot;varint,7,opt,name=failedJobsHistoryLimit&quot;`  
+ // Timezone is the timezone against which the cron schedule will be calculated, e.g. &quot;Asia/Tokyo&quot;. Default is machine's local time.  
+ Timezone string `json:&quot;timezone,omitempty&quot; protobuf:&quot;bytes,8,opt,name=timezone&quot;`  
+ // WorkflowMetadata contains some metadata of the workflow to be run  
+ WorkflowMetadata *metav1.ObjectMeta `json:&quot;workflowMetadata,omitempty&quot; protobuf:&quot;bytes,9,opt,name=workflowMeta&quot;`  
+}  
+</code></pre>
+<p>内容可以分为 3 部分：</p>
+<ul>
+<li>
+<p>WorkflowSpec ：这个就是 Workflow 的 Spec，一模一样的</p>
+</li>
+<li>
+<p>Cron Spec：增加了一些 Cron 相关字段</p>
+</li>
+<li>
+<p>WorkflowMetadata：一些 metadata，后续该 CronWorkflow 创建的 Workflow 都会携带上这里指定的 metadata</p>
+</li>
+</ul>
+<p>WorkflowSpec 和 WorkflowMetadata 没太大区别，就不赘述了，分析一下 Cron Spec 相关的几个字段：</p>
+<ul>
+<li>
+<p>schedule：cron 表达式，* * * * *
+每分钟创建一次</p>
+</li>
+<li>
+<p>concurrencyPolicy：并发模式，支持 Allow、Forbid、Replace</p>
+<ul>
+<li>
+<p>Allow：允许同时运行多个 Workflow</p>
+</li>
+<li>
+<p>Forbid：禁止并发，有 Workflow 运行时，就不会再创建新的</p>
+</li>
+<li>
+<p>Replace：表示新创建 Workflow 替换掉旧的，不会同时运行多个 Workflow。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>startingDeadlineSeconds：Workflow 创建出来到第一个 Pod 启动的最大时间，超时后就会被标记为失败。</p>
+</li>
+<li>
+<p>suspend：flag 是否停止 CronWorkflow，在定时任务不需要执行是可以设置为 true。</p>
+</li>
+<li>
+<p>timezone：时区，默认使用机器上的本地时间</p>
+</li>
+</ul>
+<blockquote>
+<p>大部分字段和 K8s CronJob 一致</p>
+</blockquote>
+<pre><code>apiVersion: argoproj.io/v1alpha1  
+kind: CronWorkflow  
+metadata:  
+  name: my-cron  
+spec:  
+  schedule: &quot;* * * * *&quot;  
+  concurrencyPolicy: &quot;Replace&quot;  
+  startingDeadlineSeconds: 0  
+  workflowSpec:  
+    entrypoint: whalesay  
+    templates:  
+    - name: whalesay  
+      container:  
+        image: alpine:3.6  
+        command: [sh, -c]  
+        args: [&quot;date; sleep 10&quot;]  
+  workflowMetadata:  
+    labels:  
+      from: cron  
+</code></pre>
+<p>增加了 metadata，测试一下</p>
+<pre><code>[root@lixd-argo workdir]# k get wf my-cron-1711853400 -oyaml|grep labels -A 1  
+  labels:  
+    from: cron  
+</code></pre>
+<p>可以看到，创建出来的 Workflow 确实携带上了，在 CronWorkflow 中指定的 label。</p>
+<h4 id="3-event">3. Event</h4>
+<p>argo 提供了一个 Event API：/api/v1/events/{namespace}/{discriminator}
+,该 API 可以接受任意 json 数据。</p>
+<blockquote>
+<p>通过 event API 可以创建 Workflow ，类似于 Webhook。</p>
+</blockquote>
+<p>具体请求长这样：</p>
+<pre><code>curl https://localhost:2746/api/v1/events/argo/ \  
+  -H &quot;Authorization: $ARGO_TOKEN&quot; \  
+  -d '{&quot;message&quot;: &quot;hello&quot;}'  
+</code></pre>
+<p>或者这样：</p>
+<pre><code>curl https://localhost:2746/api/v1/events/argo/my-discriminator \  
+  -H &quot;Authorization: $ARGO_TOKEN&quot; \  
+  -d '{&quot;message&quot;: &quot;hello&quot;}'  
+</code></pre>
+<ul>
+<li>
+<p>1）准备 Token</p>
+</li>
+<li>
+<p>2）创建 WorkflowEventBinding，配置接收 event 以及收到 event 后创建的 Workflow 信息</p>
+</li>
+<li>
+<p>3）发送请求进行测试</p>
+</li>
+</ul>
+<h4 id="token">Token</h4>
+<p>创建 RBAC 相关对象,role、rolebinding、sa，其中 role 只需要提供最小权限即可。</p>
+<blockquote>
+<p>直接创建在 default 命名空间</p>
+</blockquote>
+<pre><code>kubectl apply -f - &lt;&lt;EOF  
+apiVersion: rbac.authorization.k8s.io/v1  
+kind: Role  
+metadata:  
+  name: test  
+rules:  
+  - apiGroups:  
+      - argoproj.io  
+    resources:  
+      - workfloweventbindings  
+    verbs:  
+      - list  
+  - apiGroups:  
+      - argoproj.io  
+    resources:  
+      - workflowtemplates  
+    verbs:  
+      - get  
+  - apiGroups:  
+      - argoproj.io  
+    resources:  
+      - workflows  
+    verbs:  
+      - create  
+EOF  
+</code></pre>
+<p>serviceaccount 和 rolebinding</p>
+<pre><code>kubectl create sa test  
+  
+kubectl create rolebinding test --role=test --serviceaccount=default:test  
+</code></pre>
+<p>然后创建一个 Secret</p>
+<pre><code>kubectl apply -f - &lt;&lt;EOF  
+apiVersion: v1  
+kind: Secret  
+metadata:  
+  name: test.service-account-token  
+  annotations:  
+    kubernetes.io/service-account.name: test  
+type: kubernetes.io/service-account-token  
+EOF  
+</code></pre>
+<p>最后就可以查询 Secret 解析 Token 了</p>
+<pre><code>ARGO_TOKEN=&quot;Bearer $(kubectl get secret test.service-account-token -o=jsonpath='{.data.token}' | base64 --decode)&quot;  
+  
+echo $ARGO_TOKEN  
+Bearer ZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNkltS...  
+</code></pre>
+<p>测试，能否正常使用</p>
+<pre><code>ARGO_SERVER=$(kubectl get svc argo-workflows-server -n argo -o=jsonpath='{.spec.clusterIP}')  
+  
+curl http://$ARGO_SERVER:2746/api/v1/workflow-event-bindings/default -H &quot;Authorization: $ARGO_TOKEN&quot;  
+</code></pre>
+<h4 id="workfloweventbinding">WorkflowEventBinding</h4>
+<p>为了接收 Event，可以创建 WorkflowEventBinding 对象，具体如下：</p>
+<pre><code>apiVersion: argoproj.io/v1alpha1  
+kind: WorkflowEventBinding  
+metadata:  
+  name: event-consumer  
+spec:  
+  event:  
+    # metadata header name must be lowercase to match in selector  
+    selector: payload.message != &quot;&quot; &amp;&amp; metadata[&quot;x-argo-e2e&quot;] == [&quot;true&quot;] &amp;&amp; discriminator == &quot;my-discriminator&quot;  
+  submit:  
+    workflowTemplateRef:  
+      name: my-wf-tmple  
+    arguments:  
+      parameters:  
+      - name: message  
+        valueFrom:  
+          event: payload.message  
+</code></pre>
+<p>spec.event 指定了该 Binding 该如何匹配收到的 Event，比如这里的条件就是：</p>
+<ul>
+<li>
+<p>1）payload 中有一个 message 参数，值不为空</p>
+</li>
+<li>
+<p>2）header 中包含 x-argo-e2e，且值为 true</p>
+<ul>
+<li>注意：这里匹配的时候 header 都会被转为小写</li>
+</ul>
+</li>
+<li>
+<p>3）最后就是 discriminator 名字为 my-discriminator</p>
+</li>
+</ul>
+<p>如果匹配则会使用 submit 下面指定的内容创建 Workflow：</p>
+<ul>
+<li>
+<p>1）使用 my-wf-tmple 这个 workflowTemplate 创建 Workflow</p>
+</li>
+<li>
+<p>2）使用 payload.message 作为参数</p>
+</li>
+</ul>
+<p>至于创建出的 Workflow 则是由 my-wf-tmple 定义了,先创建这个 Template</p>
+<pre><code>apiVersion: argoproj.io/v1alpha1  
+kind: WorkflowTemplate  
+metadata:  
+  name: my-wf-tmple  
+spec:  
+  templates:  
+    - name: main  
+      inputs:  
+        parameters:  
+          - name: message  
+            value: &quot;{{workflow.parameters.message}}&quot;  
+      container:  
+        image: docker/whalesay:latest  
+        command: [cowsay]  
+        args: [&quot;{{inputs.parameters.message}}&quot;]  
+  entrypoint: main  
+</code></pre>
+<p>最后我们就可以发送 API 来触发 event 实现 Workflow 的创建</p>
+<pre><code>curl $ARGO_SERVER:2746/api/v1/events/default/my-discriminator \  
+    -H &quot;Authorization: $ARGO_TOKEN&quot; \  
+    -H &quot;X-Argo-E2E: true&quot; \  
+    -d '{&quot;message&quot;: &quot;hello events&quot;}'  
+</code></pre>
+<p>测试一下：</p>
+<pre><code>{}[root@lixd-argo workdir]# curl $ARGO_SERVER:2746/api/v1/events/default/my-discriminator \  
+&gt;     -H &quot;Authorization: $ARGO_TOKEN&quot; \  
+&gt;     -H &quot;X-Argo-E2E: true&quot; \  
+&gt;     -d '{&quot;message&quot;: &quot;hello events&quot;}'  
+{}[root@lixd-argo workdir]# k get wf  
+NAME                STATUS    AGE   MESSAGE  
+my-wf-tmple-ea81n   Running   5s  
+[root@lixd-argo workdir]# k get wf my-wf-tmple-ea81n -oyaml|grep parameters -A 5  
+    parameters:  
+    - name: message  
+      value: hello events  
+</code></pre>
+<p>可以看到，Workflow 已经创建出来了，而且参数也是我们发请求时给的 hello events。</p>
+<h4 id="扩容">扩容</h4>
+<p>默认情况下 argo-server 可以同时处理 64 个事件，再多就会直接返回 503 了，可以通过以下参数进行调整：</p>
+<ul>
+<li>
+<p>1）&ndash;event-operation-queue-size：增加队列大小，以接收更多的事件</p>
+</li>
+<li>
+<p>2）&ndash;event-worker-count：增加 worker 数量，提升处理速度</p>
+</li>
+</ul>
+<h4 id="4-webhook">4. Webhook</h4>
+<p>前面 Event 章节提到了可以通过发送 HTTP 请求的方式来创建触发 event 以 Workflow，但是需要客户端提供 AuthToken。</p>
+<p>问题来了，对于一些不能指定 Token 的客户端来说就比较麻烦了，比如 Github、Gitlab 等 Git 仓库，都可以配置 Webhook，在收到 commit 的时候调用 Webhook 来触发流水线。</p>
+<p>此时，这些发送过来的请求肯定是没有带 Token 的，因此需要额外配置来进行验证，保证 argo 只处理来自 Github、Gitlab 等等平台的 Webhook 请求。</p>
+<ul>
+<li>
+<p>1）创建 RBAC 相关对象,role、rolebinding、sa 准备好 token</p>
+</li>
+<li>
+<p>2）配置 Webhook-clients，告诉 argo 什么类型的 Webhook 过来使用那个 secret 作为 token</p>
+</li>
+</ul>
+<p>第一步 Token 和 Event 章节一致，就不在赘述了，主要是第二步。</p>
+<h4 id="webhook-clients-config">webhook-clients config</h4>
+<p>上一步，创建 RBAC 对象，准备好 Secret 之后，一般客户端都是解析 Secret 中的 Token，然后带上该 Token 发送请求，就像这样：</p>
+<pre><code>ARGO_SERVER=$(kubectl get svc argo-workflows-server -n argo -o=jsonpath='{.spec.clusterIP}')  
+ARGO_TOKEN=&quot;Bearer $(kubectl get secret jenkins.service-account-token -o=jsonpath='{.data.token}' | base64 --decode)&quot;  
+  
+curl https://$ARGO_SERVER:2746/api/v1/events/default/ \  
+  -H &quot;Authorization: $ARGO_TOKEN&quot; \  
+  -d '{&quot;message&quot;: &quot;hello&quot;}'  
+</code></pre>
+<p>但是，对于 Webhook 客户端来说，是没办法这样指定 token 的，因此需要通过argo-workflows-webhook-clients
+配置来告诉 argo,哪个 Webhook 使用哪个 Secret 中的 token。</p>
+<p>创建一个名为argo-workflows-webhook-clients
+的 Secret，内容大致是这样的：</p>
+<pre><code>kind: Secret  
+apiVersion: v1  
+metadata:  
+  name: argo-workflows-webhook-clients  
+# The data keys must be the name of a service account.  
+stringData:  
+  # https://support.atlassian.com/bitbucket-cloud/docs/manage-webhooks/  
+  bitbucket.org: |  
+    type: bitbucket  
+    secret: &quot;my-uuid&quot;  
+  # https://confluence.atlassian.com/bitbucketserver/managing-webhooks-in-bitbucket-server-938025878.html  
+  bitbucketserver: |  
+    type: bitbucketserver  
+    secret: &quot;shh!&quot;  
+  # https://developer.github.com/webhooks/securing/  
+  github.com: |  
+    type: github  
+    secret: &quot;shh!&quot;  
+  # https://docs.gitlab.com/ee/user/project/integrations/webhooks.html  
+  gitlab.com: |  
+    type: gitlab  
+    secret: &quot;shh!&quot;  
+</code></pre>
+<ul>
+<li>
+<p>其中 Key 必须是当前 Namespace 下的 Serviceaccount 名称。</p>
+</li>
+<li>
+<p>Value 则包含 type 和 secret 两部分。</p>
+<ul>
+<li>
+<p>type：Webhook 来源，比如 github、gitlab</p>
+</li>
+<li>
+<p>secret：一个字符串，非 k8s secret，一般在对应平台添加 Webhook 时进行配置</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>以 Github 具体，secret 配置如下：</p>
+<p>在添加 Webhook 时可以填一个 Secret 配置，实际就是一串加密字符，随便填什么都可以。</p>
+<p>这样 Github 发送 Webhook 请求时就会携带上这个 Secret 信息，Argo 收到后就根据argo-workflows-webhook-clients
+的 Secret 里配置的 type=github 的 secret 字段进行对比，如果匹配上就处理，否则就忽略该请求。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/lWBaJNsMRKnz4iakbDKq4APAKI1zYjvYtDFRr9LHYIwddKicH2hv4mAjoWjIUIfxa32fvTOpTUicXP0snxCLXAwxw/640?wx_fmt=png&amp;from=appmsg&amp;random=0.32352775566720227&amp;random=0.6471037447930459&amp;random=0.18557755485851102&amp;random=0.10771666100831778&amp;random=0.8803009671685296" alt="">argo-webhook-github-config.png</p>
+<p>如果能匹配上就从对应的 Serviceaccount 中解析 Token 作为 Authorization 信息。</p>
+<h4 id="源码分析">源码分析</h4>
+<p>Webhook 这一块，官方文档不是很详细，一笔带过了，因此翻了下源码。</p>
+<p>这块逻辑以一个 Interceptor 的形式出现，对于所有 Event API 都会经过该逻辑，<strong>用于为没有携带 Authorization 的请求添加 Authorization 信息</strong> 。</p>
+<pre><code>// Interceptor creates an annotator that verifies webhook signatures and adds the appropriate access token to the request.  
+func Interceptor(client kubernetes.Interface) func(w http.ResponseWriter, r *http.Request, next http.Handler) {  
+ return func(w http.ResponseWriter, r *http.Request, next http.Handler) {  
+  err := addWebhookAuthorization(r, client)  
+  if err != nil {  
+   log.WithError(err).Error(&quot;Failed to process webhook request&quot;)  
+   w.WriteHeader(403)  
+   // hide the message from the user, because it could help them attack us  
+   _, _ = w.Write([]byte(`{&quot;message&quot;: &quot;failed to process webhook request&quot;}`))  
+  } else {  
+   next.ServeHTTP(w, r)  
+  }  
+ }  
+}  
+</code></pre>
+<p>调用 addWebhookAuthorization 尝试添加认证信息。</p>
+<pre><code>func addWebhookAuthorization(r *http.Request, kube kubernetes.Interface) error {  
+ // try and exit quickly before we do anything API calls  
+ if r.Method != &quot;POST&quot; || len(r.Header[&quot;Authorization&quot;]) &gt; 0 || !strings.HasPrefix(r.URL.Path, pathPrefix) {  
+  return nil  
+ }  
+ parts := strings.SplitN(strings.TrimPrefix(r.URL.Path, pathPrefix), &quot;/&quot;, 2)  
+ if len(parts) != 2 {  
+  return nil  
+ }  
+ namespace := parts[0]  
+ secretsInterface := kube.CoreV1().Secrets(namespace)  
+ ctx := r.Context()  
+  
+ webhookClients, err := secretsInterface.Get(ctx, &quot;argo-workflows-webhook-clients&quot;, metav1.GetOptions{})  
+ if err != nil {  
+  return fmt.Errorf(&quot;failed to get webhook clients: %w&quot;, err)  
+ }  
+ // we need to read the request body to check the signature, but we still need it for the GRPC request,  
+ // so read it all now, and then reinstate when we are done  
+ buf, _ := io.ReadAll(r.Body)  
+ defer func() { r.Body = io.NopCloser(bytes.NewBuffer(buf)) }()  
+ serviceAccountInterface := kube.CoreV1().ServiceAccounts(namespace)  
+ for serviceAccountName, data := range webhookClients.Data {  
+  r.Body = io.NopCloser(bytes.NewBuffer(buf))  
+  client := &amp;webhookClient{}  
+  err := yaml.Unmarshal(data, client)  
+  if err != nil {  
+   return fmt.Errorf(&quot;failed to unmarshal webhook client \&quot;%s\&quot;: %w&quot;, serviceAccountName, err)  
+  }  
+  log.WithFields(log.Fields{&quot;serviceAccountName&quot;: serviceAccountName, &quot;webhookType&quot;: client.Type}).Debug(&quot;Attempting to match webhook request&quot;)  
+  ok := webhookParsers[client.Type](client.Secret, r &quot;client.Type&quot;)  
+  if ok {  
+   log.WithField(&quot;serviceAccountName&quot;, serviceAccountName).Debug(&quot;Matched webhook request&quot;)  
+   serviceAccount, err := serviceAccountInterface.Get(ctx, serviceAccountName, metav1.GetOptions{})  
+   if err != nil {  
+    return fmt.Errorf(&quot;failed to get service account \&quot;%s\&quot;: %w&quot;, serviceAccountName, err)  
+   }  
+   tokenSecret, err := secretsInterface.Get(ctx, secrets.TokenNameForServiceAccount(serviceAccount), metav1.GetOptions{})  
+   if err != nil {  
+    return fmt.Errorf(&quot;failed to get token secret \&quot;%s\&quot;: %w&quot;, tokenSecret, err)  
+   }  
+   r.Header[&quot;Authorization&quot;] = []string{&quot;Bearer &quot; + string(tokenSecret.Data[&quot;token&quot;])}  
+   return nil  
+  }  
+ }  
+ return nil  
+}  
+</code></pre>
+<p>具体流程如下：</p>
+<ul>
+<li>
+<p>首先判断了，只有 POST 方法，而且 Authorization 为空时才会自动添加。</p>
+</li>
+<li>
+<p>然后就从 API 中指定的 Namespace 下查询名为 argo-workflows-webhook-clients 的 Secret。</p>
+</li>
+<li>
+<p>最后就是循环对比，Secret 中的 type 和 secret 能否和当前请求匹配上，如果匹配上则把 data 对应的 key 做了 serviceaccount 名去查询 token 然后解析 token 做了 Authorization 使用。</p>
+</li>
+</ul>
+<p>第三步会直接使用 key 作为 serviceaccount，这也就是为什么配置argo-workflows-webhook-clients
+时需要把 serviceaccount 名称做为 key。</p>
+<h4 id="5-小结">5. 小结</h4>
+<p>本文主要分析了 Argo 中的 Workflow 的几种触发方式。</p>
+<ul>
+<li>
+<p>1）手动触发：手动创建 Workflow 对象方式触发流水线运行</p>
+</li>
+<li>
+<p>2）定时触发：使用 CronWorkflow 根据 Cron 表达式自动创建 Workflow</p>
+</li>
+<li>
+<p>3）Event：使用 argo-server 提供的 event api 配合 WorkflowEventBinding 创建 Workflow</p>
+</li>
+<li>
+<p>4）Webhook：该方式实则是 Event 方式的扩展，Event 方式请求时需要 Token 认证，Webhook 方式则通过argo-workflows-webhook-clients
+配置好不同来源的 Webhook 使用的 Secret 以实现认证，这样就可以把 Event API 用作 Webhook 端点 配置到 Github、Gitlab 等环境了。</p>
+</li>
+</ul>
+<p>参考资料</p>
+<p>[1] CronWorkflow: <em><a href="https://argoproj.github.io/argo-workflows/cron-workflows/">https://argoproj.github.io/argo-workflows/cron-workflows/</a></em></p>
+<p>[2] argo-events: <em><a href="https://github.com/argoproj/argo-events">https://github.com/argoproj/argo-events</a></em></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/DRPKCGMAPjKzncOsqKVQInBQ7RU7WTSXxzk2HwYamz55icr4bhTGgOpDnaFQBMLC8QKibU0b0GAd98RJALh9HIYw/640?wx_fmt=gif&amp;random=0.371367935202749&amp;random=0.8471740883179717&amp;random=0.8349570560716733&amp;random=0.7071803651079065" alt=""></p>
+<p>往期回顾</p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=Mzk0NzE5OTQyOQ==&amp;mid=2247483713&amp;idx=1&amp;sn=e8bb9bc1f06e42e6e5f027ca1968d2b2&amp;chksm=c37bcdebf40c44fda799f02dc8dc3a89080beb9d881dca38f470da5072e00601d363db912fe2&amp;scene=21#wechat_redirect">DevOps 另一选择？云原生 CICD: ArgoWorkflow 初体验</a></p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=Mzk0NzE5OTQyOQ==&amp;mid=2247485632&amp;idx=1&amp;sn=e4348925e8ea59e8dbc9f358e0603309&amp;chksm=c37bc46af40c4d7ccd58d2baca30c400b5eb45b75d6c479d2c66aa0c1d6be0012d2e6453c235&amp;scene=21#wechat_redirect">流水线正确打开方式：云原生 CICD Argo-Workflow Workflow &amp; Template 概念模型分析</a></p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=Mzk0NzE5OTQyOQ==&amp;mid=2247485867&amp;idx=1&amp;sn=b30d39055f48c440efaf609862220183&amp;chksm=c37bc501f40c4c172a6284bed87cee3f6583c98de4ae454612d9dbe9ded228c7caefbf785621&amp;scene=21#wechat_redirect">ARgoWorkflow 实战指南：使用 Artifacts 实现步骤间文件共享</a></p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=Mzk0NzE5OTQyOQ==&amp;mid=2247485906&amp;idx=1&amp;sn=a3d58aa4e2ae7c4ab4062b38d30099c1&amp;chksm=c37bc578f40c4c6eb6f8810912d0b0c39dda006e7c789600fe6355067340b1bee3149e8f887c&amp;scene=21#wechat_redirect">ArgoWorkflow 数据持久化：Workflow GC &amp; 归档</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/lWBaJNsMRKnz4iakbDKq4APAKI1zYjvYtoOxPYVVLSFCYz3OjHwLvSufIkSgS1cKA9OsibWY8WIXbX2wAjicJSMTw/640?wx_fmt=jpeg&amp;from=appmsg&amp;random=0.5270426477048638" alt=""></p>
+<p>探索云原生</p>
+<p>长按扫描二维码<br>
+关注我们 获取更多文章<br>
+微信号：KubeExplorer</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/GTYMPD3QEMBARsHI2LvgDDqrousetLicypnEjLWXSFRfEZDKzuUgMeKXHTZOqgpZEmXwe45mQz8Q9QxRVTSfYMA/640?wx_fmt=gif&amp;random=0.553895601761573" alt=""></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
