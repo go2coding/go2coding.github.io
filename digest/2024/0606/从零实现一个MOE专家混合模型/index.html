@@ -1,0 +1,752 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>从零实现一个MOE（专家混合模型） 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 ####**【点击】加入大模型技术交流群** 原文：https://zhuanlan.zhihu.com/p/701777558 什么是混合模型（MOE） MOE主要由两个关键点组成： 一是将传统Tran  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">从零实现一个MOE（专家混合模型）</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 6, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwfPDcicOs4VGt1dJRfUubD1ujWaABp0vmDWpYdEn7wo8ZSo7K4Diciay8N2tJTuyj1XR9APx3cIzreA/640?wx_fmt=other&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/NEGRYUvl9FjodbVjufea1A">吃果冻不吐果冻皮</a></p>
+<p>####**<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群** </a></p>
+<h4 id="heading"></h4>
+<h4 id="原文httpszhuanlanzhihucomp701777558">原文：https://zhuanlan.zhihu.com/p/701777558</h4>
+<h4 id="什么是混合模型moe">什么是混合模型（MOE）</h4>
+<p>MOE主要由两个关键点组成：</p>
+<p>一是将传统Transformer中的FFN（前馈网络层）替换为多个稀疏的专家层（Sparse MoE layers）。每个专家本身是一个独立的神经网络，实际应用中，这些专家通常是前馈网络 (FFN)，但也可以是更复杂的网络结构。</p>
+<p>二是门控网络或路由：此部分用来决定输入的token分发给哪一个专家。</p>
+<p>可能有对FFN（前馈网络层）不太熟悉的小伙伴可以看一下下面的代码及图例，很简单就是一个我们平时常见的结构。</p>
+<pre><code>class FeedForward(nn.Module):  
+    def __init__(self, dim_vector, dim_hidden, dropout=0.1):  
+        super().__init__()  
+        self.feedforward = nn.Sequential(  
+            nn.Linear(dim_vector, dim_hidden),  
+            nn.ReLU(),  
+            nn.Dropout(dropout),  
+            nn.Linear(dim_hidden, dim_vector)  
+        )  
+          
+    def forward(self, x):  
+        out = self.feedforward(x)  
+        return out  
+</code></pre>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwfPDcicOs4VGt1dJRfUubD1FhEvwzaCRED2x2n1VYicr0ZlSiclzKZnepoxRE3iaVw7AXYn1FsPHodeA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p>MLP</p>
+<h4 id="从零实现一个moe">从零实现一个MOE</h4>
+<p>完整的从零实现MOE代码已集成至git代码训练框架项目：https://github.com/mst272/LLM-Dojo/blob/main/llm_tricks/moe</p>
+<h4 id="1-创建一个专家模型">1. 创建一个专家模型</h4>
+<p>这一步也很简单了，其实就是一个多层感知机MLP。</p>
+<pre><code>class Expert(nn.Module):  
+    def __init__(self, n_embd):  
+        super().__init__()  
+        self.net = nn.Sequential(  
+            nn.Linear(n_embd, 4 * n_embd),  
+            nn.ReLU(),  
+            nn.Linear(4 * n_embd, n_embd),  
+            nn.Dropout(dropout),  
+        )  
+  
+    def forward(self, x):  
+        return self.net(x)  
+</code></pre>
+<h4 id="2-创建topkrouter">2. 创建TopKrouter</h4>
+<p>即创建MOE的路由部分。</p>
+<p>假设我们定义了4个专家，路由取前2名专家，即expert=4， top_k=2。接收注意力层的输出作为输入X，即将输入从（Batch size，Tokens，n_embed）的形状（2，4，32）投影到对应于（Batch size，Tokens，num_experts）的形状（2，4，4），其中num_experts即expert=4。其中返回的indices可以理解为对于每个token的4个专家来说，选的两个专家的序号索引。</p>
+<p>代码如下：</p>
+<pre><code># 这里我们假设定义n_embed为32， num_experts=4, top_k=2  
+  
+class TopkRouter(nn.Module):  
+    def __init__(self, n_embed, num_experts, top_k):  
+        super(TopkRouter, self).__init__()  
+        self.top_k = top_k  
+        self.linear =nn.Linear(n_embed, num_experts)  
+      
+    def forward(self, mh_output):  
+        logits = self.linear(mh_output)    # (2,4,32) ---&gt; (2,4,4)  
+        # 获取前K大的值和索引，沿列。  
+        top_k_logits, indices = logits.topk(self.top_k, dim=-1)  
+        # 创建一个形状和logits相同全'-inf'矩阵，即(2,4,4)  
+        zeros = torch.full_like(logits, float('-inf'))  
+        # 按照索引和值填充上述zeros矩阵  
+        sparse_logits = zeros.scatter(-1, indices, top_k_logits)  
+        # 对其进行softmax，未被填充的位置会为0  
+        router_output = F.softmax(sparse_logits, dim=-1)  
+        return router_output, indices
+</code></pre>
+<p>看完代码之后配合整体流程图将会更清晰：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwfPDcicOs4VGt1dJRfUubD1l7p3kbFQkibFXbcYT338wvfDfAMg5L09P1Fw2XDvCyXpKvhPNFulXicw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p>更清晰的图示如下，每个字代表一个token：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwfPDcicOs4VGt1dJRfUubD1ujWaABp0vmDWpYdEn7wo8ZSo7K4Diciay8N2tJTuyj1XR9APx3cIzreA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<h4 id="3-添加noisy噪声">3. 添加noisy噪声</h4>
+<p>从本质上讲，我们不希望所有token都发送给同一组“受青睐”的expert。需要一个良好平衡，因此，<strong>将标准正态噪声添加到来自门控线性层的logits</strong> 。</p>
+<p>代码对比2中的代码只改动了几行，非常的简单。</p>
+<pre><code>class NoisyTopkRouter(nn.Module):  
+    def __init__(self, n_embed, num_experts, top_k):  
+        super(NoisyTopkRouter, self).__init__()  
+        self.top_k = top_k  
+        self.topkroute_linear = nn.Linear(n_embed, num_experts)   
+        # add noise  
+        self.noise_linear =nn.Linear(n_embed, num_experts)  
+  
+      
+    def forward(self, mh_output):  
+        # mh_ouput is the output tensor from multihead self attention block  
+        logits = self.topkroute_linear(mh_output)  
+  
+        #Noise logits  
+        noise_logits = self.noise_linear(mh_output)  
+  
+        #Adding scaled unit gaussian noise to the logits  
+        noise = torch.randn_like(logits)*F.softplus(noise_logits)  
+        noisy_logits = logits + noise  
+  
+        top_k_logits, indices = noisy_logits.topk(self.top_k, dim=-1)  
+        zeros = torch.full_like(noisy_logits, float('-inf'))  
+        sparse_logits = zeros.scatter(-1, indices, top_k_logits)  
+        router_output = F.softmax(sparse_logits, dim=-1)  
+        return router_output, indices  
+</code></pre>
+<h4 id="4-构建完整的稀疏moe-module">4. 构建完整的稀疏MOE module</h4>
+<p>前面的操作主要是获取了router分发的结果，获取到这些结果后我们就可以将router乘给对应的token。这种选择性加权乘法最终构成了稀疏MOE。</p>
+<p>代码部分如下所示：</p>
+<pre><code>class SparseMoE(nn.Module):  
+    def __init__(self, n_embed, num_experts, top_k):  
+        super(SparseMoE, self).__init__()  
+        self.router = NoisyTopkRouter(n_embed, num_experts, top_k)  
+        self.experts = nn.ModuleList([Expert(n_embed) for _ in range(num_experts)])  
+        self.top_k = top_k  
+  
+    def forward(self, x):  
+        # 1. 输入进入router得到两个输出  
+        gating_output, indices = self.router(x)  
+        # 2.初始化全零矩阵，后续叠加为最终结果  
+        final_output = torch.zeros_like(x)  
+  
+        # 3.展平，即把每个batch拼接到一起，这里对输入x和router后的结果都进行了展平  
+        flat_x = x.view(-1, x.size(-1))  
+        flat_gating_output = gating_output.view(-1, gating_output.size(-1))  
+  
+        # 以每个专家为单位进行操作，即把当前专家处理的所有token都进行加权  
+        for i, expert in enumerate(self.experts):  
+            # 4. 对当前的专家(例如专家0)来说，查看其对所有tokens中哪些在前top2  
+            expert_mask = (indices == i).any(dim=-1)  
+            # 5. 展平操作  
+            flat_mask = expert_mask.view(-1)  
+            # 如果当前专家是任意一个token的前top2  
+            if flat_mask.any():  
+                # 6. 得到该专家对哪几个token起作用后，选取token的维度表示  
+                expert_input = flat_x[flat_mask]  
+                # 7. 将token输入expert得到输出  
+                expert_output = expert(expert_input)  
+  
+                # 8. 计算当前专家对于有作用的token的权重分数  
+                gating_scores = flat_gating_output[flat_mask, i].unsqueeze(1)  
+                # 9. 将expert输出乘上权重分数  
+                weighted_output = expert_output * gating_scores  
+  
+                # 10. 循环进行做种的结果叠加  
+                final_output[expert_mask] += weighted_output.squeeze(1)  
+  
+        return final_output  
+</code></pre>
+<p>其中的一些讲解都在注释中了，特别注意的是该部分的逻辑是：以专家为单位遍历每个专家，抽取每个专家对于所有token中在前top_k的tokens。可能有一些绕，但是结合上述代码注释中的序号，可以参考下面tensor流向图，可以完整清晰的理解该内容，图中的序号代表注释中的数字顺序。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwfPDcicOs4VGt1dJRfUubD1RlHSOPLbm4ynV8czJNtD1fWhoBx009iaLwsEO6ayhQNZZJFQgmamZiaA/640?wx_fmt=other&amp;from=appmsg" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwfPDcicOs4VGt1dJRfUubD1ZPUVLZsLfy6sVRpyBichmjUrev9R2VDRbSxQJpZczialg6nMBg9PAAxg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<h4 id="5-将moe与transformer结合">5. 将MOE与transformer结合</h4>
+<p>这一部分主要就是将上述所做的工作与常规的transformer层结合，即用moe替代MLP层。</p>
+<pre><code>class Block(nn.Module):  
+    &quot;&quot;&quot;Mixture of Experts Transformer block: communication followed by computation (multi-head self attention + SparseMoE) &quot;&quot;&quot;  
+    def __init__(self, n_embed, n_head, num_experts, top_k):  
+        super().__init__()  
+        head_size = n_embed // n_head  
+        self.sa = MultiHeadAttention(n_head, head_size)  
+        self.smoe = SparseMoE(n_embed, num_experts, top_k)  
+        self.ln1 = nn.LayerNorm(n_embed)  
+        self.ln2 = nn.LayerNorm(n_embed)  
+  
+    def forward(self, x):  
+        x = x + self.sa(self.ln1(x))  
+        x = x + self.smoe(self.ln2(x))  
+        return x  
+</code></pre>
+<h4 id="总结">总结</h4>
+<p>最终我们得到了上述block，算是一个完整的模块了，并从头到尾将MOE的实现细节都讲解了一遍，理解原理后我们就可以对当前的一些主流模型进行moe魔改等操作了。</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,802 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>借着tritoninferenceserver聊一下各种batching方法 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 ####**【点击】加入大模型技术交流群** 在实际的模型部署场景中，我们一般会先优化模型的性能，这也是最直接提升模型服务性能的方式。但如果从更全局方面考虑的话，除了模型的性能，整体的调度和pipe  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">借着tritoninferenceserver聊一下各种batching方法</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 6, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzjUuicSZVTTCnJNnLTF08AB5h5HBnvFvdyOOWWeficl80lkuleu2LSsibA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/R2PPbHcOgJVAM3nPVOKdFw">吃果冻不吐果冻皮</a></p>
+<p>####**<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群** </a></p>
+<p>在实际的模型部署场景中，我们一般会先优化模型的性能，这也是最直接提升模型服务性能的方式。但如果从更全局方面考虑的话，除了模型的性能，整体的调度和pipeline优化对服务的性能影响也是很大。</p>
+<p>比如LLM中提的很多的<code>Continuous batching</code>[1]，对整体LLM推理的性能影响就很大，这个不光光是提升kernel性能能够解决的问题。</p>
+<p>这里总结下各种batching策略，以及各种batch策略对整体性能的影响，可能不够全面，也希望能够抛砖引玉，一起交流。</p>
+<h4 id="单batch">单batch</h4>
+<p>单batch就是不组batch，也就是一个图片或者一个sentence传过来，直接送入模型进行推理。</p>
+<p>对于普通CV模型来说，我们的输入tensor大小可以是[1,3,512,512]
+，以NCHW维度举例子，这里的N是1，即batch=1
+。对于LLM来说，可能是一个input_ids，维度是[1,1]
+，比如：</p>
+<pre><code>input_ids  
+tensor([[   0,  376, 1366,  338,  263, 3017,  775, 6160]], device='cuda:0')  
+input_ids.shape  
+torch.Size([1, 8])  
+</code></pre>
+<p>这种情况比较简单，在搭建服务的时候不需要额外处理什么，单batch比较适合dymamic shape的场景，模型尺寸是否是dynamic也就是<strong>NCHW中的HW是否是可变的</strong> 。如果你的模型的推理场景需要dynamic shape，那么一般无法组batch（不过可以用ragged batch，后续介绍），只能设置为batch=1，一般我们batch的时候HW都需要固定，比如[8,3,256,256]
+。</p>
+<p>对于dynamic shape，不管是优化还是转模型都需要额外注意，比如tensorrt中转换dynamic shape需要设置动态范围：</p>
+<pre><code>polygraphy run model_sim.onnx --trt --onnxrt  --fp16 \  
+        --trt-min-shapes input:[1,64,64,3]   \  
+        --trt-opt-shapes input:[1,1024,1024,3] \  
+        --trt-max-shapes input:[1,1920,1920,3]     
+</code></pre>
+<p><strong>dynamic shape的好处就是不需要padding了，避免了额外计算，适合那种请求shape变化特别剧烈的场景，不管是传输图片还是推理，少了无效的padding像素，自然变快了不少。</strong></p>
+<h4 id="static-batching">Static Batching</h4>
+<p>上述batch=1的情况虽然简单而且灵活，不过因为每次只能处理一张图，对GPU资源的利用率还是不如大batch，增大batch一般可以提升模型的FLOPS，同时也可以更多地利用tensor core，实际场景中表现一般就是这样：</p>
+<pre><code># centernet res50  
+[1,3,1024,1024]  # trt inference 需要10ms  
+[8,3,1024,1024]  # trt inference 需要50ms  
+</code></pre>
+<p>很显然增大batch可以提升throughput，所以某些场景，对于时延（latency）要求没有那么高的时候，可以尝试大batch来提升吞吐。</p>
+<p>静态batch比较简单，对于图像来说，我们可以在模型推理前，输入将图像cat到一起，比如[4,3,1024,1024]
+，送给模型推理，这时的batch=4。</p>
+<p>对于非图像场景也一样，将输入tensor合并后就相当利用了batch。不过比较尴尬的是，LLM场景因为decode阶段batch中每个case最终结束时输出的长度不一样，所以会有有些case吐完字儿了，有些还在继续吐，早吐完的需要等还没吐完的。这种情况不管是速度还是GPU利用率都是比较低的：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzQDYz6nqx2F2flDiaiaQgGeH2ntZpq13L9HricNwHasic7pOIib7Pvk1BwfA/640?wx_fmt=png&amp;from=appmsg" alt="">LLM-static 来自https://www.anyscale.com/blog/continuous-batching-llm-inference</p>
+<p>不过当然有解决方案：</p>
+<ul>
+<li><a href="https://www.anyscale.com/blog/continuous-batching-llm-inference">https://www.anyscale.com/blog/continuous-batching-llm-inference</a></li>
+</ul>
+<h4 id="dynamic-batching">Dynamic Batching</h4>
+<p>除了在客户端直接送给模型大batch数据，也可以在triton服务端组batch，</p>
+<blockquote>
+<p>Dynamic batching, i.e., server-side batching of incoming queries, significantly improves both latency and performance.</p>
+</blockquote>
+<p>动态组batch在图像推理场景很常用，也可以配合static batch使用。</p>
+<p>比如你的模型支持最大batch是16，然后客户端可以每次发送batch=x过来，服务端在收到这些请求后，可以根据规则去组batch，组成更大的batch送给模型：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzjUuicSZVTTCnJNnLTF08AB5h5HBnvFvdyOOWWeficl80lkuleu2LSsibA/640?wx_fmt=png&amp;from=appmsg" alt="">image</p>
+<p>当模型实际拿到的tensor batch越大，模型的性能就越强，找个例子压测看下：</p>
+<pre><code>$ perf_analyzer -m inception_graphdef --percentile=95 --concurrency-range 1:8  
+...  
+Inferences/Second vs. Client p95 Batch Latency  
+Concurrency: 1, throughput: 66.8 infer/sec, latency 19785 usec  
+Concurrency: 2, throughput: 80.8 infer/sec, latency 30732 usec  
+Concurrency: 3, throughput: 118 infer/sec, latency 32968 usec  
+Concurrency: 4, throughput: 165.2 infer/sec, latency 32974 usec  
+Concurrency: 5, throughput: 194.4 infer/sec, latency 33035 usec  
+Concurrency: 6, throughput: 217.6 infer/sec, latency 34258 usec  
+Concurrency: 7, throughput: 249.8 infer/sec, latency 34522 usec  
+Concurrency: 8, throughput: 272 infer/sec, latency 35988 usec  
+</code></pre>
+<p>随着请求并行度的增加，triton服务端模型组的batch越来越大，服务的QPS也随之增加，不过时延也会有所增加，这个时候就要trade off了。</p>
+<h4 id="continuing-batching">Continuing Batching</h4>
+<p>Continuing Batching，也可以叫做inflight batching或者Iteration batching。不同于static batching，当一个输入的生成结束了，就将新的输入插进来，所以batch size是动态的。下图第三个输入先生成完，新的输入S5就插入进来了，一直到输出最长的S2的输出结束的时候，batch size由4变成了7，任意case跑完就能返回：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzkFSdZadKxat04OSqeSU9ZI6R13XjB06XnSTJJVaVMqfuia8pXbia9Hiaw/640?wx_fmt=png&amp;from=appmsg" alt="">Continuing Batching</p>
+<blockquote>
+<p>当然实际情况更为复杂，这里不进行详细讨论。另外Continuing Batching也有人称为dynamic batching，和上述不是一回事儿哈</p>
+</blockquote>
+<p>之前static batching的时候也提过，对于LLM场景，假如batch中某个case已经提前结束了，但是其余batch还在decode，那么这个case只能等其他case而无法直接返回，导致某些请求时延变长了。</p>
+<p>另外，假如遇到特别长的case，为了等这个case跑完，其他case都需要等它，其他请求进来也得等他，等来等去待请求队列就长了，服务也就崩了。</p>
+<p>所以Continuing Batching这个调度策略很重要，相比模型本身的kernel性能，调度对整体性能的影响是很大的，夸张点，拿23倍的吞吐量轻而易举：</p>
+<ul>
+<li>How continuous batching enables 23x throughput in LLM inference while reducing p50 latency[2]</li>
+</ul>
+<p>很多优秀的LLM推理框架都用到了这个技术，几乎是必用的：TensorRT-LLM、vLLM、Imdeploy等。</p>
+<h4 id="ragged-batching">Ragged Batching</h4>
+<p>上文我们提到<strong>Triton有动态批处理功能</strong> ，它可以将多个相同模型执行的请求合并以提供更大的吞吐量。</p>
+<p>默认情况下，只有在每个请求中的输入具有<strong>相同shape时，才能进行动态批处理</strong> 。如果我们想同时用上dynamic batching和dynamic shape，一般则需要客户端将请求中的输入tensor填充到相同的形状。</p>
+<p>举个例子，比如输入[1,3,768,932]
+和[1,3,1024,768]
+，合并为batch的时候需要将两个tensor都padding到同样尺寸，比如[1,3,1024,1024]
+，然后再cat起来为[2,3,1024,1024]
+才可以传给服务端模型；又或者客户端分别发了两个padding后的[1,3,1024,1024]
+过来，服务端自动组batch为[2,3,1024,1024]
+送给模型。</p>
+<p>咱们之前也说过，padding会带来不必要的传输和计算量，所以我们可以稍微修改下调度逻辑从而实现dynamic shape + dynamic batching，也就是所谓的ragged batching。</p>
+<p>在triton中，ragged batching是一种避免显式padding的功能，它允许用户指定哪些输入不需要进行形状检查。用户可以通过在模型配置中设置allow_ragged_batch字段来指定这样的输入（不规则输入）：</p>
+<pre><code>input [  
+  {  
+    name: &quot;input0&quot;  
+    data_type: TYPE_FP32  
+    dims: [ 16 ]  
+    allow_ragged_batch: true  
+  }  
+]  
+</code></pre>
+<p>举个triton官方的例子。</p>
+<p>如果我们有一个接受变长输入tensor INPUT 的模型，INPUT 的形状为 [ -1, -1 ]。第一个维度是 batch 维度，第二个维度是变长内容。当客户端发送三个形状为 [ 1, 3 ]、[ 1, 4 ]、[ 1, 5 ] 的请求时，为了利用动态 batching，最直接的实现方法是期望 INPUT 的形状为 [ -1, -1 ] 并假设所有输入都被填充到相同的长度，这样所有请求都变成形状为 [ 1, 5 ]，因此 Triton 可以将它们 batch 并作为一个 [ 3, 5 ] 张量发送到模型中。在这种情况下，会有padding的开销和对padding进行额外模型计算的开销。以下是输入配置：</p>
+<pre><code>max_batch_size: 16  
+input [  
+  {  
+    name: &quot;INPUT&quot;  
+    data_type: TYPE_FP32  
+    dims: [ -1 ]  
+  }  
+]  
+</code></pre>
+<p>那如果使用 Triton 的 ragged batching，模型将被实现为期望 INPUT 形状为 [ -1 ]，并且有一个额外的 batch 输入 INDEX，形状为 [ -1 ]，模型应该使用它来解释 INPUT 中的 batch 元素。对于这种模型，客户端请求不需要padding，可以按原样发送（形状为 [ 1, 3 ]、[ 1, 4 ]、[ 1, 5 ]）。上述后端将把输入 batch 成一个形状为 [ 12 ] 的张量，其中包含 3 + 4 + 5 个请求的连接。Triton 还创建了一个形状为 [ 3 ] 的 batch 输入张量，值为 [ 3, 7, 12 ]，它给出了每个 batch 元素在输入张量中的结束位置，即索引。以下是输入配置：</p>
+<pre><code>max_batch_size: 16  
+input [  
+  {  
+    name: &quot;INPUT&quot;  
+    data_type: TYPE_FP32  
+    dims: [ -1 ]  
+    allow_ragged_batch: true  
+  }  
+]  
+batch_input [  
+  {  
+    kind: BATCH_ACCUMULATED_ELEMENT_COUNT  
+    target_name: &quot;INDEX&quot;  
+    data_type: TYPE_FP32  
+    source_input: &quot;INPUT&quot;  
+  }  
+]  
+</code></pre>
+<p>使用ragged batch需要实际的模型支持才行（如何处理ragged batch和index）。实际LLM推理中用到的比较多，比如TensorRT-LLM中kernel实现的时候已经考虑到了这种情况：</p>
+<pre><code>// TensorRT-LLM/cpp/tensorrt_llm/kernels/gptKernels.cu  
+// This kernel also computes the padding offsets: Given the index (idx) of a token in a ragged tensor,  
+// we need the index of the token in the corresponding tensor with padding. We compute an array  
+// of numTokens elements, called the paddingOffsets, such that the position in the padded tensor  
+// of the token &quot;idx&quot; in the ragged tensor is given by idx + paddingOffset[idx].  
+//  
+// That kernel uses a grid of batchSize blocks.  
+</code></pre>
+<p>在图像中，ragged batch一般用不上。不过我们也可以自行设计一个使用ragged batch的策略，简单来说，我们可以把padding操作放在服务端（只是举个栗子，实际场景padding最好在客户端做）。</p>
+<p>当客户端分别请求[1,3,768,932]
+和[1,3,1024,768]
+这两个shape的时候，我们可以在客户端将这两个请求<strong>组batch</strong> ，然后进行某种预处理（padding或者resize），将input处理好再传入模型，需要我们设计模块处理这种ragged input并且利用起来：</p>
+<pre><code>    def execute(self, requests):  
+  
+        responses = []  
+        num_request = len(requests)  
+        input_tensors = []  
+        time_start = time.time()  
+          
+        for idx, request in enumerate(requests):  
+              
+            input = pb_utils.get_input_tensor_by_name(request, &quot;input&quot;)  
+            input = input.as_numpy()  
+            input = input.squeeze(0)  # NHWC -&gt; HWC  
+            input = Image.fromarray(input)  
+            # 这里可以将不同shape的input 搞成一个shape  
+            input_tensor = self.prepare_input(input).unsqueeze(0)  
+            input_tensors.append(input_tensor)  
+   
+        input_tensor = torch.cat(input_tensors, dim=0).to(&quot;cuda&quot;)      
+        self.logger.log_info(&quot;input_tensor: {}&quot;.format(input_tensor.shape))  
+  
+        output_texts = self.model.run(input_tensor, num_request, 4096)  
+              
+        for output_text in output_texts:  
+              
+            output = pb_utils.Tensor(  
+                'output',  
+                np.array(output_text).astype(self.output_dtype))  
+  
+            inference_response = pb_utils.InferenceResponse(  
+                output_tensors=[output]  
+            )  
+  
+            responses.append(inference_response)  
+  
+        # You should return a list of pb_utils.InferenceResponse. Length  
+        # of this list must match the length of `requests` list.  
+        return responses  
+</code></pre>
+<p>使用场景还有很多，需要我们自行探索了。</p>
+<h4 id="custom-batching">Custom batching</h4>
+<p>自定义的一种batch策略，一般就是有<strong>具体使用场景</strong> 才会有目的性的去设计。</p>
+<p>举个实际的例子，比如LLM中多模态推理中，有个nougat模型[3]，会识别一幅图中所有的单词并且一个一个吐出来，这个模型是由两部分组成的：</p>
+<ul>
+<li>
+<p>encoder（普通的cv模型，传入图像传出特征）</p>
+</li>
+<li>
+<p>decoder（可以理解为和llama一样的decoder模型，带有cross attention结构）</p>
+</li>
+</ul>
+<p>当decoder暂时不支持inflight batching的时候，我们只能使用static batching，但是显然在组batching的时候，字儿少的要等字儿多的都吐完才能一起返回。</p>
+<p>怎么办，我们可以利用nougat的特性，<strong>提前用一个检测模型检测当前图片中字儿的数量，然后根据数量将数量相近的请求组成batch传入模型</strong> ，并且将那种数量特别多的请求单独推理，这样就可以避免一些等待的情况。</p>
+<p>这种根据数量进行组batch就是一种custom batching策略。</p>
+<h4 id="参考">参考</h4>
+<ul>
+<li>
+<p><a href="https://github.com/triton-inference-server/server/blob/main/docs/user_guide/ragged_batching.md">https://github.com/triton-inference-server/server/blob/main/docs/user_guide/ragged_batching.md</a></p>
+</li>
+<li>
+<p><a href="https://github.com/triton-inference-server/server/issues/6458">https://github.com/triton-inference-server/server/issues/6458</a></p>
+</li>
+<li>
+<p><a href="https://github.com/NVIDIA/TensorRT-LLM/discussions/1469">https://github.com/NVIDIA/TensorRT-LLM/discussions/1469</a></p>
+</li>
+<li>
+<p>Continuous batching: <a href="https://zhuanlan.zhihu.com/p/676109470">https://zhuanlan.zhihu.com/p/676109470</a></p>
+</li>
+<li>
+<p>How continuous batching enables 23x throughput in LLM inference while reducing p50 latency: <a href="https://www.anyscale.com/blog/continuous-batching-llm-inference">https://www.anyscale.com/blog/continuous-batching-llm-inference</a></p>
+</li>
+<li>
+<p>nougat模型: <a href="https://facebookresearch.github.io/nougat/">https://facebookresearch.github.io/nougat/</a></p>
+</li>
+</ul>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
