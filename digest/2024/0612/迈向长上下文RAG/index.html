@@ -1,0 +1,673 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>迈向长上下文RAG 作者： 大语言模型和具身智体及自动驾驶 来源： 大语言模型和具身智体及自动驾驶 原文链接:https://www.llamaindex.ai/blog/towards-long-context-rag 谷歌最近发布了具有100万上下文窗口的Gemin  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">迈向长上下文RAG</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 12, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46epm9B6SSROtstFDibzg8n8jlUJSZwbtmllClDHZm1eP2HFQppzNhpHQA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 大语言模型和具身智体及自动驾驶  来源： <a href="https://mp.weixin.qq.com/s/l_bFJAHsBBgo4-vwC00iIQ">大语言模型和具身智体及自动驾驶</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46e6JSmOUJibYKYno3wn6ABtO9fRrpTT4OAdzicTcLhH0JW8H5NYKE218Rg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>原文链接:https://www.llamaindex.ai/blog/towards-long-context-rag</p>
+<p>谷歌最近发布了具有100万上下文窗口的<strong>Gemini 1.5 Pro</strong>  [1],只面向有限的开发者和企业客户。它的表现激发了<strong>AI Twitter</strong> [2]的想象。它在<strong>Greg Kamradt</strong> [3]推广的**&ldquo;大海捞针&rdquo;<strong>[4]实验中</strong> 达到99.7%的召回率** [5] 。早期用户分享了同时输入数十篇研究论文、财务报告的结果,并报告了在综合大量信息方面令人印象深刻的结果。</p>
+<p>自然地,这引发了一个问题——RAG消失了吗?<strong>一些人认为是这样</strong> [6],而其他人<strong>不同意</strong> [7]。那些持第一种观点的人提出了有效的论点。大多数小型数据用例可以适应100万到1000万个标记的上下文窗口。随着时间的推移,标记的处理速度会变得更快、更便宜。与天真的RAG中存在的一次性检索相比,拥有原生交错检索/生成注意力层的LLM可以获得更高的响应质量。</p>
+<p>我们有幸预览了Gemini 1.5 Pro的能力,并通过使用它开发了一个关于上下文增强LLM应用程序将如何发展的论点。这篇博文阐明了<strong>我们作为数据框架的使命</strong> 以及<strong>我们对长上下文LLM架构会是什么样子的看法</strong> 。我们的观点是,虽然长上下文LLM将简化RAG管道的某些部分(例如分块),但需要进化的RAG架构来处理长上下文LLM带来的新用例。无论出现什么新范式,我们在LlamaIndex的使命都是为这个未来构建工具。</p>
+<h4 id="我们的使命超越rag">我们的使命超越RAG</h4>
+<p>LlamaIndex的目标非常简单:<strong>使开发人员能够在其数据之上构建LLM应用程序</strong> 。这个任务超越了单纯的RAG。迄今为止,我们已经在推进现有LLM的RAG技术方面投入了大量精力,我们这样做是因为它使开发人员能够解锁数十个新的用例,例如对半结构化数据的问答、对复杂文档的问答以及多文档设置中的代理推理。</p>
+<p>但我们也对Gemini Pro感到兴奋,我们将继续推进LlamaIndex作为长上下文LLM未来的生产数据框架。</p>
+<p><strong>LLM框架本身就有价值</strong> 。作为开源数据框架,LlamaIndex为从原型到生产构建任何LLM用例铺平了道路。与从头开始构建相比,框架使构建这些用例变得更容易。我们使所有开发人员能够为这些用例构建,无论是使用我们的核心抽象设置适当的架构,还是利用我们生态系统中数百个集成。无论底层LLM的进步如何,以及RAG是否继续以其当前形式存在,我们都将继续使该框架准备好投入生产,包括严密的抽象、一流的文档和一致性。</p>
+<p><strong>我们上周还推出了LlamaCloud</strong> [8]。我们对LlamaCloud的使命仍然是构建数据基础设施,使任何企业都能使其庞大的非结构化、半结构化和结构化数据源做好生产准备,以便与LLM一起使用。</p>
+<h4 id="最初对gemini-15-pro的观察">最初对Gemini 1.5 Pro的观察</h4>
+<p>在我们最初的测试中,我们尝试了一些PDF:SEC 10K文件、ArXiv论文、这个庞大的<strong>示意性设计活页夹</strong> [9]等等。一旦API可用,我们将进行更多深入分析,但同时我们在下面分享观察结果。</p>
+<p>Gemini的结果令人印象深刻,与我们在技术报告和社交网络上看到的一致:</p>
+<p>***Gemini对特定细节有惊人的记忆力:**我们输入了10万到100万标记的上下文,并询问了有关这些文档(非结构化文本和表格数据)中非常具体的细节的问题,在所有情况下,Gemini都能够回忆起细节。请参阅上面Gemini比较2019年Uber 10K文件中的表格结果。</p>
+<p>*<strong>Gemini具有令人印象深刻的总结能力。</strong> 该模型可以分析跨多个文档的大量信息并综合答案。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46eqEwUvc7wa1xccX6I5k4Vhngf77u0ib2VlleOMj7EkS2ibxpeicmiaKt8tA/640?wx_fmt=png&amp;from=appmsg" alt="">此图显示了Gemini对2019年Uber 10K文件的一个问题-回答对。问题和答案显示在顶部,源表格显示在底部。Gemini能够返回正确的答案。</p>
+<p>我们注意到Gemini在某些部分还有些吃力。</p>
+<p>*<strong>Gemini无法正确读取所有表格和图表。</strong> Gemini Pro仍然难以正确读取图形和复杂表格。</p>
+<p>*<strong>Gemini可能需要很长时间。</strong> 在Uber 10K文件(约16万字)上返回一个答案需要约20秒。在LHS示意性设计活页夹(约89万字)上返回一个答案需要60多秒。</p>
+<p>*<strong>Gemini可能会虚构页码。</strong> 当被要求给出摘要但同时包含页码引用时,Gemini虚构了来源。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46eRxA1W4NKVJ0gy7WL9GDM1MIc46KW6CV7O9TWb4JL6brClQia3YRZERg/640?wx_fmt=png&amp;from=appmsg" alt="">Gemini 1.5 Pro仍然会产生幻觉的一个例子。当被问及所有细分市场的总预订量时,该模型虚构了一个数字——该数字可见于图表中,也可以从表格中拼凑出来。</p>
+<p>尽管定性来看，这算得上是对未来的激动人心的一瞥，值得更广泛地讨论哪些RAG范式将会消失以及新兴的架构。请见下文！</p>
+<h4 id="长上下文解决了一些痛点但仍然存在一些挑战">长上下文解决了一些痛点,但仍然存在一些挑战</h4>
+<p>Gemini 1.5 Pro只是众多长上下文LLM中的第一个,它们将不可避免地改变用户构建RAG的方式。</p>
+<p>以下是我们认为长上下文LLM将解决的一些现有RAG痛点:</p>
+<p>1.<strong>开发人员将不必过多担心如何精确调整分块算法。</strong> 老实说,我们认为这对LLM开发人员来说将是一大福音。长上下文LLM使本机块大小可以更大。假设每个标记的成本和延迟也会下降,开发人员将不再需要通过调整分块分隔符、块大小和仔细注入元数据来决定如何将块拆分为精细条带。长上下文LLM使块可以达到整个文档的级别,或者至少是页面组的级别。</p>
+<p>2.<strong>开发人员需要花费更少的时间来调整单个文档的检索和思考链</strong> 。小块top-k RAG的一个问题是,虽然某些问题可能在文档的特定片段上得到答案,但其他问题需要在章节之间或两个文档之间进行深入分析(例如比较查询)。对于这些用例,开发人员将不再需要依赖思考链代理针对弱检索器进行两次检索;相反,他们可以一次性提示LLM以获得答案。</p>
+<p>3.<strong>总结会更容易。</strong> 这与上述陈述有关。很多关于大文档的总结策略都涉及&quot;黑客&quot;,例如顺序细化或分层总结(参考我们的<strong>响应合成模块</strong> [10]作为参考指南)。现在可以通过单个LLM调用来缓解这个问题。</p>
+<p>4.<strong>个性化记忆会更好、更容易构建</strong> ：构建会话助手的一个关键问题是如何将足够的会话上下文加载到提示窗口中。4k标记很容易溢出这个窗口,即使是非常基本的网络搜索代理——例如,如果它决定加载Wikipedia页面,该文本将很容易溢出上下文。100万到1000万的上下文窗口将让开发人员更容易实现会话记忆,而无需太多压缩技巧(例如向量搜索或自动知识图构建)。</p>
+<p>然而,仍然存在一些挑战:</p>
+<p>1.<strong>对于大型文档语料库,1000万个标记还不够——千文档检索仍然是一个挑战。</strong> 100万个标记大约相当于7个Uber SEC 10K文件。1000万个标记大约相当于70个文件。1000万个标记大致受限于40MB的数据。虽然这对于许多&quot;小型&quot;文档语料库来说已经足够,但企业中的许多知识语料库都是GB或TB级别的。为了在这些知识语料库之上构建LLM驱动的系统,开发人员仍然需要构建某种方式来检索这些数据,以使用上下文增强语言模型。</p>
+<p>2.<strong>嵌入模型在上下文长度方面落后。</strong> 到目前为止,我们看到嵌入的最大上下文窗口是<strong>together.ai的32k</strong> [11]。这意味着,即使用于与长上下文LLM合成的块可以很大,但用于检索的任何文本块仍然需要小得多。</p>
+<p>3.<strong>成本和延迟。</strong> 是的,随着时间的推移,所有的成本和延迟问题都会得到缓解。然而,使用当前定价,填充100万个上下文窗口大约需要60秒,可能花费从0.50美元到20美元不等。<strong>Yao Fu</strong> [12]提出的一个解决方案是<strong>KV缓存</strong> [13]可以缓存文档激活,这样任何后续生成都可以重用相同的缓存。这引出了我们下面的下一点。</p>
+<p>4.<strong>KV缓存占用大量GPU内存,并具有顺序依赖性</strong> 。我们与Yao聊天时,他提到目前缓存100万个标记的激活大约需要100GB的GPU内存,即2个H100。在管理缓存方面也有一些有趣的挑战,尤其是当底层语料库很大时——因为每个激活都是之前所有标记的函数,因此替换KV缓存中的任何文档都会影响文档之后的所有激活。</p>
+<h4 id="迈向新的rag架构">迈向新的RAG架构</h4>
+<p>正确使用长上下文LLM将需要新的架构,以最大限度地利用它们的能力,同时解决其余的限制。我们在下面概述了一些建议。</p>
+<h4 id="1对文档进行从小到大的检索">1.对文档进行从小到大的检索</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46epm9B6SSROtstFDibzg8n8jlUJSZwbtmllClDHZm1eP2HFQppzNhpHQA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在长上下文LLM需要在大型知识库(例如GB级别)上进行检索增强的情况下,我们将需要<strong>从小到大的检索</strong> :索引和检索小块,但使每个块链接到最终将在合成过程中输入LLM的大块。</p>
+<p>这种架构已经以不同的形式存在于LlamaIndex中<strong>句子窗口检索器</strong> [14]和<strong>块大小上的递归检索</strong> [15],但可以为长上下文LLM进一步扩展——嵌入文档摘要,但将它们链接到整个文档。</p>
+<p>我们希望嵌入和索引较小的块的一个原因是,当前的嵌入模型在上下文长度方面无法跟上LLM。另一个原因是,与文档的单个文档级嵌入相比,拥有多个精细的嵌入表示实际上可以带来检索优势。如果一个文档只有一个嵌入,那么该嵌入就承担了对整个文档中所有信息进行编码的负担。另一方面,我们发现嵌入许多较小的块并让每个小块链接到一个更大的块,将导致更好地检索相关信息。</p>
+<p>查看上图以了解从小到大检索的两种风格的插图。一种是索引文档摘要并将它们链接到文档,另一种是索引文档内的较小块并将它们链接到文档。当然,您也可以两者兼而有之——提高检索性能的一般最佳实践是一次尝试多种技术,然后将结果融合在一起。</p>
+<h4 id="2智能路由以平衡延迟成本">2.智能路由以平衡延迟/成本</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46eH8pA74rK6UNxeIV2Q43iaPuG4JyxrIIthsudcZdgeZ9dB0ibmSRFlJ0Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>长上下文LLM的出现将不可避免地引发关于每个用例适合多少上下文的问题。为LLM注入长上下文会带来实际的成本和延迟权衡,并不适合每个用例甚至每个问题。尽管未来成本和延迟会降低,但我们预计用户在接下来的一两年内需要仔细考虑这种权衡。</p>
+<p>询问特定细节的某些问题非常适合使用现有的top-k检索和合成RAG技术。</p>
+<p>更复杂的问题需要来自不同文档的不同部分的更多上下文,在这些情况下,如何在优化延迟和成本的同时正确回答这些问题就不太清楚了:</p>
+<ul>
+<li>
+<p>总结问题需要查看整个文档。</p>
+</li>
+<li>
+<p>多部分问题可以通过进行思维链并交错检索和推理来解决;它们也可以通过将所有上下文塞入提示来解决。</p>
+</li>
+</ul>
+<p>我们设想在知识库之上的多个RAG和LLM合成管道之上运行一个智能路由层。给定一个问题,路由器理想情况下可以在成本和延迟方面选择最佳策略,以检索上下文来回答问题。这确保单一界面可以处理不同类型的问题,同时不会变得过于昂贵。</p>
+<h4 id="3-检索增强的kv缓存">3. 检索增强的KV缓存</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/k47iawfCYibWFWf0BFVia2QuWKLqsdzm46eJiaxMJdmnUMNplE2kEHZk3k7KTZElNEbABuMLKciaBx2NLMEtO0h6MZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>谷歌和其他公司肯定正在努力通过<strong>KV缓存</strong> 来解决延迟和成本问题。在高层次上,KV缓存存储来自注意力层中预先存在的键和查询向量的激活,从而避免了在LLM生成期间重新计算整个文本序列的激活的需要(我们发现<strong>这个</strong> [16]是关于KV缓存如何工作的一个不错的入门参考)。</p>
+<p>使用KV缓存来缓存上下文窗口内的所有文档标记可以避免在后续对话中重新计算这些标记的激活,从而显著降低延迟和成本。</p>
+<p>但这导致了关于如何最好地使用缓存的有趣的检索策略,特别是对于超过上下文长度的知识语料库。我们设想会出现一种&quot;<strong>检索增强缓存</strong> &ldquo;范式,我们希望检索用户最想回答的最相关文档,并期望他们将继续使用缓存中的文档。</p>
+<p>这可能涉及将检索策略与<strong>传统缓存算法</strong> [17]如LRU缓存交错。但与现有的KV缓存架构不同的是,位置很重要,因为缓存的向量是截至该位置的所有标记的函数,而不仅仅是文档本身中的标记。这意味着你不能在不影响KV缓存中位置后面的所有缓存标记的情况下交换出KV缓存中的块。</p>
+<p>总的来说,使用KV缓存的API接口还悬而未决。缓存本身的性质是否会演变或算法会演变以最大限度地利用缓存也尚不明确。</p>
+<h4 id="下一步">下一步</h4>
+<p>我们相信LLM应用程序的未来是光明的,我们很高兴能站在这个快速发展领域的最前沿。我们邀请开发人员和研究人员加入我们,探索长上下文LLM的可能性,并构建下一代智能应用程序。</p>
+<h4 id="相关链接">相关链接</h4>
+<p>[1]https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/#gemini-15</p>
+<p>[2]https://x.com/alliekmiller/status/1760522046251962459?s=20</p>
+<p>[3]https://x.com/GregKamradt/status/1722386725635580292?s=20</p>
+<p>[4]https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf</p>
+<p>[5]https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf</p>
+<p>[6]https://twitter.com/francis_yao_/status/1759962812229800012?s=46&amp;t=pfae6EnnrBq2o8ok0KpVqw</p>
+<p>[7]https://x.com/ptsi/status/1758511307433947625?s=20</p>
+<p>[8]https://blog.llamaindex.ai/introducing-llamacloud-and-llamaparse-af8cedf9006b</p>
+<p>[9]https://www.lowellhsproject.com/DocumentCenter/View/236/LHS-Schematic-Design-Binder</p>
+<p>[10]https://docs.llamaindex.ai/en/stable/module_guides/querying/response_synthesizers/root.html</p>
+<p>[11]https://hazyresearch.stanford.edu/blog/2024-01-11-m2-bert-retrieval</p>
+<p>[12]https://twitter.com/Francis_YAO_</p>
+<p>[13]https://x.com/Francis_YAO_/status/1759962812229800012?s=20</p>
+<p>[14]https://docs.llamaindex.ai/en/stable/examples/node_postprocessor/MetadataReplacementDemo.html</p>
+<p>[15]https://docs.llamaindex.ai/en/stable/examples/retrievers/recursive_retriever_nodes.html</p>
+<p>[16]https://medium.com/@plienhar/llm-inference-series-3-kv-caching-unveiled-048152e461c8</p>
+<p>[17]https://www.notion.so/Long-Context-Window-Blog-Post-e2e3faaac23140eabc0e066ce2783890?pvs=21</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

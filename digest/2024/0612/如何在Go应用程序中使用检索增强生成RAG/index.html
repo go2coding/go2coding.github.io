@@ -1,0 +1,943 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>如何在Go应用程序中使用检索增强生成（RAG） 作者： 亚马逊云师兄 来源： 亚马逊云师兄 点击「听全文」解放双眼更轻松 本文将帮助大家****实现 RAG （使用 LangChain 和 PostgreSQL ）以提高 LLM 输出的准确性和相关性。 得益于强大的机器学习模型（特别是由托管平台/服务通过 API 调用公开的大型语言模型，如 Claude 的 LLama 2等），生成式 AI 开  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">如何在Go应用程序中使用检索增强生成（RAG）</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 12, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7KqPpo6dtDZVyDmGuFpLPb9eWInLIWef5YCGrgLoKBg90icZqmCVU0icg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 亚马逊云师兄  来源： <a href="https://mp.weixin.qq.com/s/v-v8gDldejkhMmkmRDUxXA">亚马逊云师兄</a></p>
+<p><strong>点击「听全文」解放双眼更轻松</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7jIX90y767j4P9yDxibWuWgvUocpISQiaKYaOFqdaoeFt1yIv4RBNicrvw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>本文将帮助大家****实现 RAG （使用 LangChain 和 PostgreSQL ）以提高 LLM 输出的准确性和相关性。</strong></p>
+<p>得益于强大的机器学习模型（特别是由托管平台/服务通过 API 调用公开的大型语言模型，如 Claude 的 LLama 2等），生成式 AI 开发已经变得普惠化了。这使开发人员免于考虑基础设施问题，从而可以专注于核心业务问题。这也意味着开发人员可以自由选择最适合其解决方案的编程语言。Python 通常是 AI/ML 解决方案的首选语言，但在这一领域有更大的灵活性。</p>
+<p>在本文中，您将看到如何利用 Go 编程语言来使用向量数据库和诸如 langchaingo 等技术实现检索增强生成（RAG） 。如果您是想<strong>学习如何构建生成式 AI 应用程序的 Go 开发人员</strong> ，那您就来对地方了！</p>
+<p>如果您正在寻找使用 Go 进行 AI/ML 的入门内容，欢迎查阅我在这一领域的前期博客和开源项目。</p>
+<p>首先，让我们在深入本文实践部分之前退后一步，了解一些背景。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p>** LLM 的局限性**</p>
+<p>大型语言模型（LLM）和其他基础模型经过了大量数据的训练，使它们能够在许多自然语言处理（NLP）任务中表现良好。但最重要的限制之一是大多数基础模型和 LLM 使用的是静态数据集，通常具有特定的知识截止时间（例如 2022 年 1 月） 。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7buCpAc0NTYdBGz5g2eVlme44x0IbxJVhibMHtNAibPU8PTMd2mx61GwA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>知识截止日期</strong></p>
+<p>例如，如果您询问了截止日期后发生的事件，它要么无法回答（这是可以的），要么更糟糕的是，自信地给出了错误的回应——通常被称为幻觉。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7MEyLoVg25Y2iaCF0B0EZOHkiacfWicaWXCIOIdW46EssVzMsseicNFxLyQ/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>幻觉</strong></p>
+<p>我们需要考虑到 LLM 只是根据它们训练的数据作出回应的事实——这限制了它们准确回答专业主题或专有主题问题的能力。例如，如果我提出了一个关于特定亚马逊云科技服务的问题， LLM 可能（也可能不）能给出准确的回应。如果 LLM 能够使用亚马逊云科技服务的官方文档作为参考，那不是很好吗？</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>RAG （检索增强生成）有助于缓解这些问题</strong></p>
+<p>它通过在响应生成过程中动态检索外部信息来增强 LLM ，从而扩展了模型的知识库超出其原始训练数据。基于 RAG 的解决方案包括一个向量存储，可以对其进行索引和查询以检索最新和相关的信息，从而扩展 LLM 的知识超出其训练截止日期。当需要生成响应时，配备了 RAG 的 LLM 首先会查询向量存储以找到与查询相关的最新信息。这确保了模型的输出不仅基于其现有知识，还增强了最新信息，从而提高了其响应的准确性和相关性。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>但 RAG 并非唯一的方式</strong></p>
+<p>尽管本文仅关注于 RAG ，但还有其他解决此问题的方式，每种方式都有其优缺点：</p>
+<ul>
+<li>
+<p>任务特定调优：在特定任务或数据集上微调大型语言模型，以提高它们在这些领域的性能。</p>
+</li>
+<li>
+<p>提示工程：仔细设计输入提示以引导语言模型产生期望的输出，无需进行重大架构更改。</p>
+</li>
+<li>
+<p>少量样本学习和零样本学习：使语言模型能够在有限或无额外训练数据的情况下适应新任务的技术。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>向量存储和嵌入</strong></p>
+<p>在上一段中，我多次提到了向量存储。它们只是存储和索引向量嵌入的数据库，向量嵌入是数据(如文本、图像或实体)的数值表示。嵌入使我们能够超越基本搜索，因为它们代表了源数据的语义含义——因此得名“<strong>语义搜索</strong> ”，这是一种理解单词的意义和上下文以提高搜索准确性和相关性的技术。向量数据库还可以存储元数据，包括嵌入的原始数据源（例如：Web 文档的 URL ）的引用。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7sibaMTX9EMmljx5goP6drPxJ82PCOSW68lSr3rMcdreyTuSSyvaF4wg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>RAG - 数据摄取</strong> 由于生成式 AI 技术的爆炸式发展，向量数据库也出现了爆炸式增长。这些包括您可能已经在其他架构部分中使用的成熟 SQL 和 NoSQL 数据库，例如PostgreSQL 、Redis 、MongoDB 和 OpenSearch 。但也有专门为向量存储构建的数据库。其中包括 Pinecone 、Milvus 、Weaviate 等。</p>
+<p><strong>好了，让我们回到 RAG ……</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>典型的 RAG 工作流程是怎样的？</strong></p>
+<p>从高层次来看，基于 RAG 的解决方案具有以下工作流程。这些通常作为一个连贯的管道执行：</p>
+<p><em><strong>从各种外部来源检索数据</strong> ，如文档、图像、网址、数据库、专有数据源等。这包括</em><em>分块</em>* 子步骤，即将大型数据集（例如 100 MB PDF 文件）分割为较小的部分（用于索引）。</p>
+<p>*<strong>创建嵌入</strong> - 这涉及使用嵌入模型将数据转换为其数值表示。</p>
+<ul>
+<li>在向量存储中<strong>存储/索引</strong> 嵌入。</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7KqPpo6dtDZVyDmGuFpLPb9eWInLIWef5YCGrgLoKBg90icZqmCVU0icg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>RAG ：端到端工作流程</strong></p>
+<p>最终，这将作为更大应用程序的一部分进行集成，在该应用程序中，上下文数据（语义搜索结果）将与提示一起提供给 LLM 。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>端到端 RAG 工作流程实际运行</strong></p>
+<p>工作流程的每个步骤都可以使用不同的组件执行。本博客中使用的组件包括：</p>
+<p>*<strong>PostgreSQL</strong> - 由于 pgvector 扩展，它将用作向量数据库。为简单起见，我们将在 Docker 中运行。</p>
+<p>*<strong>langchaingo</strong>  - 这是 langchain 框架的 Go 端口。它为各种组件(包括向量存储)提供插件。我们将使用它从 Web URL 加载数据并将其索引在 PostgreSQL 中。</p>
+<p>*<strong>文本和嵌入模型</strong> - 我们将使用 Amazon Bedrock Claude and Titan models （用于文本和嵌入）与 langchaingo 。</p>
+<p>*<strong>检索和应用集成</strong> - langchaingo 向量存储（用于语义搜索）和链（用于 RAG ）。</p>
+<p>您将了解这些单独部分的工作原理。我们将在后续博客中介绍这种架构的其他变体。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>开始之前</strong></p>
+<p>请确保您已安装：</p>
+<ul>
+<li>
+<p>Go、Docker 和 psql （例如，如果您使用的是Mac，可以使用 Homebrew ）。</p>
+</li>
+<li>
+<p>从本地机器配置 Amazon Bedrock 访问权限 。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>在 Docker 上启动 PostgreSQL</strong></p>
+<p><strong>我们可以使用 Docker 镜像！</strong></p>
+<ul>
+<li></li>
+</ul>
+<pre><code>docker run --name pgvector --rm -it -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres ankane/pgvector
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p>通过从不同终端登录 PostgreSQL （使用 psql）激活 pgvector 扩展：</p>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code># 提示输入密码时输入 postgres psql -h localhost -U postgres -W
+CREATE EXTENSION IF NOT EXISTS vector;
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/icFTnRoibgibp8fHdwq2pP3j6pTanpcIic9Sne2ZuUw49CUJRD6crY0TS5mbJla9Ev1cqswABib4ASDBxLDO1QtS8UfFibRqVREicxc/640?wx_fmt=svg&amp;from=appmsg" alt=""></p>
+<p><strong>将数据加载到 PostgreSQL（向量存储）</strong></p>
+<p><strong>克隆项目储存库</strong></p>
+<ul>
+<li></li>
+</ul>
+<pre><code>git clone https://github.com/build-on-aws/rag-golang-postgresql-langchain cd rag-golang-postgresql-langchain
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p><em>在这一步骤中，我假设您的本地机器已配置好可以使用Amazon Bedrock 。</em></p>
+<p>我们将要做的第一件事是将数据加载到 PostgreSQL中。在这种情况下，我们将使用一个现有的网页作为信息来源。</p>
+<p>我使用的现有网页是 ：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y757CqeCpySiaDial8S97hlJibXiaYutdicFg6bMrVFmwjRce1V4lm0MCEiblw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>扫码了解更多详情</p>
+<p>但请随意使用您自己的！确保在后续步骤中相应地更改搜索查询。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7pLHh0VUS49sgwg0Wp1rvyIAKfBSg9J3ZpicR3gicjHClr8gV09bk76Tw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<hr>
+<pre><code>export PG_HOST=localhost 
+export PG_USER=postgres 
+export PG_PASSWORD=postgres 
+export PG_DB=postgres
+  
+
+go run *.go -action=load -source=https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p><strong>您应该会看到以下输出：</strong></p>
+<p>loading data from</p>
+<p><a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html">https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html</a></p>
+<p>vector store ready - postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable</p>
+<p>no. of documents to be loaded 23</p>
+<p>给它一些时间。最后，如果一切顺利，您应该会看到“数据已成功加载到向量存储中”这样的输出。</p>
+<p>要验证，请返回 psql 终端并检查表：</p>
+<p>应该会看到几个表 - langchain_pg_collection 和 langchain_pg_embedding 。这些是由 langchaingo 创建的，因为我们没有明确指定它们（这没关系，对于入门来说很方便！）。langchain_pg_collection 包含集合名称，而 langchain_pg_embedding 存储实际的嵌入。</p>
+<p>Schema</p>
+<p>Name</p>
+<p>Type</p>
+<p>Owner</p>
+<p>public</p>
+<p>langchain_pg_collection</p>
+<p>table</p>
+<p>postgres</p>
+<p>public</p>
+<p>langchain_pg_embedding</p>
+<p>table</p>
+<p>postgres</p>
+<p>您可以检查表格内容：</p>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code>select * from langchain_pg_collection; select count(*) from langchain_pg_embedding;
+select collection_id， document， uuid from langchain_pg_embedding LIMIT 1;
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p><em>您将在 langchain_pg_embedding 表中看到 23 行，因为那是我们的网页源被分割成的 langchain 文档数（请参阅上面加载数据时的应用程序日志）。</em></p>
+<p><strong>快速了解其工作原理…</strong></p>
+<p>数据加载实现在 load.go 中，但让我们看看如何访问向量存储实例（在 common.go 中）：</p>
+<hr>
+<pre><code>brc := bedrockruntime.NewFromConfig(cfg)
+  
+
+embeddingModel, err := bedrock.NewBedrock(bedrock.WithClient(brc), bedrock.WithModel(bedrock.ModelTitanEmbedG1))
+//...
+store, err = pgvector.New(
+context.Background(),
+pgvector.WithConnectionURL(pgConnURL),
+pgvector.WithEmbedder(embeddingModel),
+)
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<ul>
+<li>
+<p>pgvector.WithConnectionURL 提供 PostgreSQL实例的连接信息</p>
+</li>
+<li>
+<p>pgvector.WithEmbedder 是有趣的部分，因为这是我们可以插入所选嵌入模型的地方。langchaingo 支持 Amazon Bedrock 嵌入。在这种情况下，我使用了<strong>Amazon Bedrock Titan 嵌入模型</strong> 。</p>
+</li>
+</ul>
+<p>回到<strong>load.go</strong>  中的加载过程。我们首先使用 langchaingo 内置的 HTML 加载器获取数据，形式为schema.Document 的切片（getDocs 函数）。</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>docs， err := documentloaders.NewHTML(resp.Body).LoadAndSplit(context.Background()， textsplitter.NewRecursiveCharacter())
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p>然后，我们将其加载到 PostgreSQL 中。我们不需要自己编写所有代码，可以使用 langchaingo 向量存储抽象并使用高级函数 AddDocuments ：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>_， err = store.AddDocuments(context.Background()， docs)
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p>太好了。我们已经建立了一个简单的管道来获取和摄取数据到 PostgreSQL 。让我们加以利用吧！</p>
+<p><strong>语义搜索执行</strong></p>
+<p>让我们提出一个问题。我将采用**“我可以使用哪些工具来设计 DynamoDB 数据模型?”**</p>
+<p>与下列相关，请扫码查看：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y757CqeCpySiaDial8S97hlJibXiaYutdicFg6bMrVFmwjRce1V4lm0MCEiblw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>扫码查看完成文档</p>
+<p>我将其作为数据源，您可以根据您的场景进行调整。</p>
+<hr>
+<pre><code>export PG_HOST=localhost 
+export PG_USER=postgres 
+export PG_PASSWORD=postgres 
+export PG_DB=postgres
+  
+
+go run *.go -action=semantic_search -query=&quot;what tools can I use to design dynamodb data models?&quot; -maxResults=3
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p>您应该会看到类似的输出 - 请注意，我们选择最多输出三个结果(您可以更改)：</p>
+<p>vector store ready</p>
+<p>vector store ready</p>
+<ul>
+<li>similarity search results</li>
+</ul>
+<p>similarity search info - can build new data models from, or design models based on, existing data models that satisfyyour application&rsquo;s data access patterns. You can also import and export the designed datamodel at the end of the process. For more information, see Building data models with NoSQL Workbenchsimilarity search score - 0.3141409</p>
+<ul>
+<li>
+<p>similarity search info - NoSQL Workbench for DynamoDB is a cross-platform, client-side GUIapplication that you can use for modern database development and operations. It&rsquo;s availablefor Windows, macOS, and Linux. NoSQL Workbench is a visual development tool that providesdata modeling, data visualization, sample data generation, and query development features tohelp you design, create, query, and manage DynamoDB tables. With NoSQL Workbench for DynamoDB, yousimilarity search score - 0.3186116</p>
+</li>
+<li>
+<p>similarity search info - key-value pairs or document storage. When you switch from a relational database managementsystem to a NoSQL database system like DynamoDB, it&rsquo;s important to understand the key differencesand specific design approaches.</p>
+</li>
+</ul>
+<p>TopicsDifferences between relational datadesign and NoSQLTwo key concepts for NoSQL designApproaching NoSQL designNoSQL Workbench for DynamoDBDifferences between relational datadesign and NoSQLsimilarity search score - 0.3275382</p>
+<p>现在您在这里看到的是前三个结果（感谢-maxResults=3） 。</p>
+<p>请注意，这不是对我们问题的回答。这些是来自向量存储的语义上接近查询的结果 - 这里的关键词是语义。</p>
+<p>多亏了 langchaingo 中的向量存储抽象，我们能够轻松地将源数据摄入到PostgreSQL中，并使用SimilaritySearch 函数获取与我们查询相对应的前 N 个结果（参见 [ query.go ] 中的 semanticSearch 函数）：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>searchResults， err := store.SimilaritySearch(context.Background()， searchQuery， maxResults)
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p><em>请注意， pgvector 在 langchaingo 中的实现使用余弦距离向量运算，但 pgvector 也支持 L2 和内积。</em></p>
+<p>有关详细信息，请扫码查看：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7lvucIHvKIO0SwQibMSW8ej5sSC48rJiaMQ3Vp0RnHoiaNbAlXXIfzEm7A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>扫码了解更多详情</p>
+<p>好的，到目前为止我们已经：</p>
+<ul>
+<li>
+<p>加载了向量数据</p>
+</li>
+<li>
+<p>执行了语义搜索</p>
+</li>
+</ul>
+<p>这是 RAG （检索增强生成）的基石 - 让我们看看它的实际应用！</p>
+<p><strong>智能搜索与 RAG</strong></p>
+<p>要执行基于 RAG 的搜索，我们运行与上述相同的命令（几乎相同），只需对动作（rag_search）做一点小改动：</p>
+<hr>
+<pre><code>export PG_HOST=localhost 
+export PG_USER=postgres 
+export PG_PASSWORD=postgres 
+export PG_DB=postgres 
+  
+
+go run *.go -action=rag_search -query=“我可以使用哪些工具来设计DynamoDB数据模型?” -maxResults=3
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p><strong>这是我得到的输出（您的情况可能会略有不同）：</strong></p>
+<p>Based on the context provided, the NoSQL Workbench for DynamoDB is a tool that can be used to design DynamoDB data models. Some key points about NoSQL Workbench for DynamoDB:</p>
+<ul>
+<li>
+<p>It is a cross-platform GUI application available for Windows, macOS, and Linux.</p>
+</li>
+<li>
+<p>It provides data modeling capabilities to help design and create DynamoDB tables.</p>
+</li>
+<li>
+<p>It allows you to build new data models or design models based on existing data models.</p>
+</li>
+<li>
+<p>It provides features like data visualization, sample data generation, and query development to manage DynamoDB tables.</p>
+</li>
+<li>
+<p>It helps in understanding the key differences and design approaches when moving from a relational database to a NoSQL database like DynamoDB.</p>
+</li>
+</ul>
+<p>So in summary, NoSQL Workbench for DynamoDB seems to be a useful tool specifically designed for modeling and working with DynamoDB data models.</p>
+<p>因此，总的来说， NoSQL Workbench for DynamoDB 是专门用于建模和处理 DynamoDB 数据模型的有用工具。</p>
+<p>正如您所看到的，结果不仅仅是**“这里是对您查询的前 X个响应”** 。相反，它是对该问题的周全阐述。让我们再看看幕后是如何运作的。</p>
+<p>与摄入和语义搜索不同，RAG 基于搜索没有直接在 langchaingo 向量存储实现中公开。为此，我们使用langchaingo 链，它负责以下工作：</p>
+<ul>
+<li>
+<p>调用语义搜索</p>
+</li>
+<li>
+<p>将语义搜索与提示组合在一起</p>
+</li>
+<li>
+<p>将其发送到大型语言模型( LLM ) ，在本例中就是[Amazon Bedrock上的Claude] 。</p>
+</li>
+</ul>
+<p>以下是链的样子（参考 [query.go] 中的 ragSearch 函数）：</p>
+<hr>
+<pre><code>result， err := chains.Run(
+context.Background()，
+chains.NewRetrievalQAFromLLM(
+llm，
+vectorstores.ToRetriever(store， numOfResults)，
+)，
+question，
+chains.WithMaxTokens(2048)，
+)
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p><strong>让我们尝试另一个</strong></p>
+<p>这只是一个例子。我提出了一个不同的问题，并将 maxResults 增加到 10 ，这意味着来自向量数据库的前 10 个结果将用于构建答案。</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>go run *.go -action=rag_search -query=&quot;how is NoSQL different from SQL?&quot; -maxResults=10
+</code></pre>
+<p>左右滑动查看完整示意</p>
+<p><strong>结果（同样，对于您可能会有所不同）：</strong></p>
+<p>Based on the provided context, there are a few key differences between NoSQL databases like DynamoDB and relational database management systems (RDBMS):</p>
+<ol>
+<li>
+<p>Data Modeling: - In RDBMS, data modeling is focused on flexibility and normalization without worrying much about performance implications. Query optimization doesn&rsquo;t significantly affect schema design. - In NoSQL, data modeling is driven by the specific queries and access patterns required by the application. The data schema is designed to optimize the most common and important queries for speed and scalability.</p>
+</li>
+<li>
+<p>Data Organization: - RDBMS organizes data into tables with rows and columns, allowing flexible querying. - NoSQL databases like DynamoDB use key-value pairs or document storage, where data is organized in a way that matches the queried data shape, improving query performance.</p>
+</li>
+<li>
+<p>Query Patterns: - In RDBMS, data can be queried flexibly, but queries can be relatively expensive and don&rsquo;t scale well for high-traffic situations. - In NoSQL, data can be queried efficiently in a limited number of ways defined by the data model, while other queries may be expensive and slow.</p>
+</li>
+<li>
+<p>Data Distribution: - NoSQL databases like DynamoDB distribute data across partitions to scale horizontally, and the data keys are designed to evenly distribute the traffic across partitions, avoiding hot spots. - The concept of &ldquo;locality of reference,&rdquo; keeping related data together, is crucial for improving performance and reducing costs in NoSQL databases.</p>
+</li>
+</ol>
+<p>In summary, NoSQL databases prioritize specific query patterns and scalability over flexible querying, and the data modeling is tailored to these requirements, in contrast with RDBMS where data modeling focuses on normalization and flexibility.</p>
+<p><strong>从这里前进到哪里</strong></p>
+<p>边做边学是一个好方法。如果您一直跟随并执行了到目前为止的应用程序，那太好了！</p>
+<p><strong>我建议您尝试以下操作：</strong></p>
+<ul>
+<li>
+<p>langchaingo 支持许多不同的模型，包括 [Amazon Bedrock 中的模型] （例如 Meta LLama 2、Cohere 等)- 尝试调整模型并查看是否会产生差异？输出是否更好？</p>
+</li>
+<li>
+<p>那么向量数据库呢？我演示了 PostgreSQL ，但 langchaingo 也支持其他数据库（包括 OpenSearch 、Chroma 等）- 尝试切换向量存储并查看搜索结果是否有差异？</p>
+</li>
+<li>
+<p>您可能已经大致了解了，但您也可以尝试不同的嵌入模型。我们使用了 Amazon Titan ，但 langchaingo 也支持许多其他模型，包括：Amazon Bedrock 中的 Cohereembed 模型。</p>
+</li>
+</ul>
+<p><strong>总结</strong></p>
+<p>这只是一个简单的示例，旨在让您更好地理解构建基于 RAG 的解决方案中的各个步骤。这些可能会根据实现的不同而略有变化，但高层次的思路保持不变。</p>
+<p>我使用了 langchaingo 作为框架。但这并不意味着您一定要使用某个框架。如果您需要在应用程序中进行细粒度控制或框架无法满足您的要求，您也可以移除抽象层并直接调用 LLM 平台的 API 。与大多数生成式 AI 一样，这个领域正在迅速发展，我对 Go 开发人员拥有更多选择来构建生成式 AI 解决方案持乐观态度。</p>
+<p><strong>本文作者</strong>** Abhishek Gupta**</p>
+<p><em>亚马逊云科技 资深开发者布道师</em></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7PQLicFKUwiaw9Gpz5rES8hyn0NsEpl5CEFLl8qO3zp8lrVJxLMejyHoA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><em><strong>扫描二维码关注</strong></em>*「亚马逊云师兄」** *</p>
+<p>*<strong>带你一路升级云计算大神！</strong> *</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_gif/ynmdr11YP8t8vrg9syCDxWMMZcXiaj8Y7ibASicibGsljZvqlrsAdRwKzDhhanFBiaPd0ib7icpfIzaK5MO6ZLGHrIGZQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p>*<strong>记得分享、点赞、在看哟~给你的云技能充个电！</strong> *</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,889 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>大模型「训练」与「微调」概念详解【6000字长文】 作者： 领航猿1号 来源： 领航猿1号 👍🏻 本文你将学到什么 1、大模型预训练与微调的基本流程 2、预训练、训练、后期预训练、微调的区别 3、大模型训练与微调的一些概念，如： Post-pretrain、SFT、RLHF、模型对齐、Lora、Q-Lora、  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">大模型「训练」与「微调」概念详解【6000字长文】</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 12, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/icS6QYnhpJckHlIj5d2BibCpyUibsiaIrSyMpiaAMNTNVtSeaGekkbMzokxl3zuzasdFupV8icJiaofSa5GLsVuV7pkCw/640?wx_fmt=gif" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 领航猿1号  来源： <a href="https://mp.weixin.qq.com/s/YCRfJKx60wel5BEFgt74iw">领航猿1号</a></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/icS6QYnhpJckHlIj5d2BibCpyUibsiaIrSyMpiaAMNTNVtSeaGekkbMzokxl3zuzasdFupV8icJiaofSa5GLsVuV7pkCw/640?wx_fmt=gif" alt=""></p>
+<p><strong>👍🏻</strong></p>
+<p><strong>本文你将学到什么</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iagk1ibLIibBWxUoJn0iaYLrperzoM969icNYvlMjibytluQ5GYS050iblEIt6R3JibosbTqB4qRzgicEqdL3WDCtdFwIyQ/640?wx_fmt=png" alt=""></p>
+<p>1、大模型预训练与微调的基本流程</p>
+<p>2、预训练、训练、后期预训练、微调的区别</p>
+<p>3、大模型训练与微调的一些概念，如：</p>
+<p>Post-pretrain、SFT、RLHF、模型对齐、Lora、Q-Lora、大模型量化、微调指标、微调参数、大模型评测指标</p>
+<p><strong>01</strong></p>
+<p><strong>预训练与微调概览</strong></p>
+<p>在大模型的预训练与微调过程中，我们通常面临如何告诉模型想要什么答案和不想要什么答案的问题（后者往往被大家忽略）。本节将详细阐述大模型预训练与微调的流程，包括预训练、微调的两个阶段（监督式微调SFT和对齐阶段）以及在实际操作中可能遇到的问题和解决方法。</p>
+<p>总结来说，<strong>预训练</strong> 是为了让模型学习<strong>通用知识</strong> ，Post-pretraining 是为了让模型更好地适应特定领域，微调是为了优化模型在特定任务上的表现。<strong>SFT</strong>  是微调的一种，侧重于<strong>有监督</strong> 的学习，而<strong>RLHF 是一种结合了人类反馈</strong> 的微调方法，旨在提高模型在复杂任务上的性能。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/qHkOblGAzvtKmfODbGKpsnmT6fzJ292dfMicGb0icHRwKPicvZsR33iaV0k0iaZnmg7bPmdVFt3qRuf3RzjmgA095mA/640?wx_fmt=png" alt=""></p>
+<p><strong>02</strong></p>
+<p><strong>预训练</strong> (Pre-training)</p>
+<p>预训练是训练过程的一个特殊阶段，通常发生在模型进行特定任务训练之前。预训练的目的是让模型在一个广泛的数据集上学习到一些通用的特征或知识，即通用的大模型（我们称之为“预训练模型”（Pre-trained Model）），这个阶段的目标是构建一个具备广泛能力的模型，但可能无法满足特定场景的需求。这些特征或知识可以帮助模型在后续的特定任务上表现得更好。预训练的步骤包括：</p>
+<ul>
+<li>
+<p>选择一个大型的、通用的数据集：这个数据集不需要和模型最终的任务完全相关，但它应该足够大和多样化，能够让模型学习到广泛的特征和模式。</p>
+</li>
+<li>
+<p>训练模型：在这个大型数据集上训练模型，使其学习到通用的知识或特征。</p>
+</li>
+<li>
+<p>保存预训练模型：完成预训练后，保存模型的参数。这些参数可以作为后续特定任务训练的起点。</p>
+</li>
+<li>
+<p>预训练模型通常使用自监督学习，这意味着模型试图从输入数据本身预测某些未知的或被遮蔽的部分，例如，预测句子中缺失的单词。</p>
+</li>
+<li>
+<p>预训练的结果是一个通用的模型，它对语言有一个基本的理解，但还没有针对任何特定任务进行优化。</p>
+</li>
+<li>
+<p>预训练的好处是显著减少了模型在特定任务上训练所需的数据量和时间，同时提高了模型在这些任务上的性能。这种方法在自然语言处理（NLP）、计算机视觉等领域尤其流行和有效。</p>
+</li>
+</ul>
+<p><strong>03</strong></p>
+<p><strong>训练</strong></p>
+<p>训练是指使用数据集对机器学习模型或深度学习网络进行学习的过程。在这个过程中，模型通过不断调整其内部参数（例如，神经网络中的权重和偏置）来最小化预测结果和实际结果之间的差异。这个过程通常涉及到以下几个步骤：</p>
+<p>*<strong>前向传播：</strong> 模型根据当前参数对输入数据进行预测。</p>
+<p>*<strong>损失计算：</strong> 计算模型预测结果和实际结果之间的差异（损失）。</p>
+<p>*<strong>反向传播：</strong> 根据损失函数计算对模型参数的梯度（即损失对每个参数的导数）。</p>
+<p>*<strong>参数更新：</strong> 使用梯度下降或其他优化算法调整模型参数，以减少损失。</p>
+<p>训练的目标是使模型能够准确地从输入数据中学习到输出结果，从而在未见过的数据上也能做出准确的预测或决策。</p>
+<p><strong>04</strong></p>
+<p>后期预训练</p>
+<p>Post-pretraining（后期预训练）是一种在模型的初始预训练和最终微调之间进行的训练方法。这种方法通常用于进一步适应模型以处理特定类型的数据或任务。以下是详细介绍，参考了之前对SFT和RLHF的描述方式：</p>
+<p><strong>1、后期预训练（Post-pretraining）</strong></p>
+<ul>
+<li>
+<p>Post-pretraining是在通用预训练模型的基础上，对模型进行额外训练的过程，通常是为了使模型更好地适应特定的领域或任务。</p>
+</li>
+<li>
+<p>这个过程使用的数据集通常比预训练阶段的数据集更专注于某个领域或任务，但比微调阶段使用的数据集更大、更广泛。</p>
+</li>
+<li>
+<p>训练方法可以是监督学习，也可以是自监督学习，具体取决于可用数据的类型和训练目标。</p>
+</li>
+<li>
+<p>Post-pretraining的目标是在不过度专化到某个特定任务的同时，提高模型对特定领域的理解和表现。</p>
+</li>
+</ul>
+<p><strong>2、训练过程</strong></p>
+<ul>
+<li>
+<p>在Post-pretraining阶段，模型通常会在一个包含大量领域特定数据的数据集上进行训练。</p>
+</li>
+<li>
+<p>这个阶段的训练可以包括多种任务，如语言建模、文本分类、实体识别等，这些任务都是为了提升模型在特定领域的表现。</p>
+</li>
+<li>
+<p>训练过程中，模型的参数会根据领域特定数据集进行调整，以便更好地捕捉和理解领域内的语言模式和知识。</p>
+</li>
+</ul>
+<p><strong>3、优势与目标</strong></p>
+<ul>
+<li>
+<p>Post-pretraining允许模型在保持通用性的同时，增强对特定领域的理解，这有助于模型在后续的微调阶段更快速地适应特定任务。</p>
+</li>
+<li>
+<p>与 SFT 相比，Post-pretraining在微调之前提供了一个中间步骤，有助于模型更平滑地过渡到特定任务上。</p>
+</li>
+<li>
+<p>与 RLHF 相比，Post-pretraining不依赖于复杂的奖励机制或人类反馈，而是通过大量的领域特定数据来提升模型性能。</p>
+</li>
+<li>
+<p>总结来说，Post-pretraining是一个<strong>介于预训练和微调之间的训练阶段</strong> ，它使用大量的领域特定数据来进一步调整模型，使其更好地理解特定领域的语言和任务。这个阶段不需要复杂的奖励机制，而是通过传统的监督或自监督学习方法来实现模型性能的提升。</p>
+</li>
+</ul>
+<p><strong>05</strong></p>
+<p><strong>微调</strong>  (Fine-tuning)</p>
+<ul>
+<li>
+<p>在这个阶段，预训练模型（可能经过了Post-pretraining）被进一步训练，以优化它在一个特定任务上的表现。</p>
+</li>
+<li>
+<p>微调通常在一个相对较小的、特定任务的数据集上进行，这个数据集包含了明确的标签，模型通过监督学习来进行优化。</p>
+</li>
+<li>
+<p>微调的目的是调整模型的参数，使其能够在特定任务上做出准确的预测。</p>
+</li>
+</ul>
+<p><strong>5.1</strong></p>
+<p><strong>SFT 监督微调</strong></p>
+<p>SFT (Supervised Fine-Tuning) 是微调的一种形式，强调在有监督的环境下进行。</p>
+<p>在SFT阶段，我们使用特定领域的数据或私有化数据对预训练模型进行改良。这一阶段需要指令微调数据，数据集通常由输入（用户问题）和输出（标准答案）两个字段构成。标准答案通常由专家标注获得。</p>
+<p>1、SFT是一种简单的微调方法，它使用带有正确答案的数据集来继续训练一个预训练的模型。</p>
+<p>2、这种方法依赖于大量的标注数据，即每个输入都有一个预先定义的正确输出。</p>
+<p>3、微调的目的是使模型更好地适应特定的任务或领域【垂直领域】，比如特定类型的语言理解或生成任务。</p>
+<p>4、SFT通常不涉及复杂的策略或奖励函数，只是简单地最小化预测输出和真实输出之间的差异。</p>
+<p><strong>5.2</strong></p>
+<p><strong>RLHF 人类反馈强化学习</strong></p>
+<p>RLHF是一种利用人类反馈来训练强化学习模型的方法。在RLHF中，模型通过与人类交互获得反馈，这些反馈作为奖励信号来指导模型的行为。RLHF通常用于训练能够生成更自然、更符合人类偏好的文本或其他输出的模型。这种方法特别适用于需要模型理解和适应人类偏好的场景。</p>
+<p>1、RLHF (Reinforcement Learning from Human Feedback) 是一种更复杂的训练方法，它结合了监督学习和强化学习。</p>
+<p>2、在RLHF中，模型首先通过监督学习进行预训练，然后通过人类提供的反馈来进行强化学习。</p>
+<p>3、人类反馈可以是对模型输出的评分，或者是在模型输出之间做出选择的偏好。</p>
+<p>4、强化学习部分涉及到定义一个奖励函数，该函数根据人类反馈来调整模型的行为，以优化长期的奖励。</p>
+<p>5、RLHF的目标是训练出一个在没有明确标签的复杂任务中表现良好的模型，这些任务可能需要更细致的判断和调整。</p>
+<p><strong>5.3</strong></p>
+<p><strong>模型对齐</strong></p>
+<p>对齐阶段目的是进一步优化模型，使其更符合实际应用需求。在这个阶段，我们收集用户反馈数据（如点赞或点踩），并基于这些数据进行模型的进一步训练。</p>
+<p>对齐阶段的数据格式与SFT阶段不同：</p>
+<p>通常包含对同一问题的<strong>接受（accept）和拒绝（reject）</strong> 两种答案。</p>
+<p>问题解决策略及部署</p>
+<p>在SFT阶段，模型被训练以识别“想要的答案”，但未明确告知“不想要的答案”。为解决这一问题，我们<strong>通过收集用户反馈和日志数据</strong> ，在对齐阶段告诉模型哪些答案是不可接受的。</p>
+<p>经过SFT和对齐阶段的训练，我们可以得到一个优化后的模型，这个模型可以部署上线。在对齐过程中，我们可以使用一些常见的方法，如PPO（Proximal Policy Optimization）和DPO（Distributional Proximal Optimization）。DPO由于训练过程相对简单，已成为对齐阶段的主流算法。</p>
+<p>总的来说，SFT更侧重于直接从标注数据中学习，而RLHF则试图通过人类的反馈来引导模型学习更复杂和更细粒度的行为。RLHF通常被认为是一种更接近人类学习方式的方法，因为它不仅仅依赖于标签数据，还依赖于人类对模型输出的评价和偏好。</p>
+<p><strong>06</strong></p>
+<p><strong>RLHF与模型对齐区别</strong></p>
+<p>总的来说，模型对齐阶段可以视为一个更广泛的概念，而RLHF是一种特定的实现方式，特别是在强化学习领域。两者在实践中可能会有交集，但它们侧重点和应用方式有所不同。</p>
+<p><strong>1、联系：</strong> 两者都涉及到根据反馈来调整模型的行为，以提高模型的性能和适应性。</p>
+<p><strong>2、区别：</strong></p>
+<ul>
+<li>
+<p>技术实现：对齐阶段可能不仅限于强化学习，还可以包括监督学习或其他类型的学习；而RLHF明确使用了强化学习框架。</p>
+</li>
+<li>
+<p>反馈来源：对齐阶段的反馈可以来自用户的实际使用情况，而RLHF的反馈通常来自与模型交互的人类评估者。</p>
+</li>
+<li>
+<p>目标：对齐阶段的目标是使模型的输出与用户期望对齐，而RLHF的目标是通过人类反馈来优化模型的决策过程。</p>
+</li>
+</ul>
+<p><strong>07</strong></p>
+<p>** 微调关键指标**</p>
+<p>在大模型微调过程中，评估模型是否需要继续训练通常涉及以下几个步骤：</p>
+<p><strong>1、验证集评估</strong></p>
+<ul>
+<li>
+<p>使用一个独立的验证集（不参与训练过程的数据集）来评估模型的性能。</p>
+</li>
+<li>
+<p>验证集应具有代表性，能够反映模型在实际应用中的表现。</p>
+</li>
+</ul>
+<p><strong>2、性能指标</strong></p>
+<p>根据任务类型选择合适的性能指标。例如，对于分类任务，可能使用准确率、精确率、召回率或F1分数；对于回归任务，则可能使用均方误差（MSE）、均方根误差（RMSE）或平均绝对误差（MAE）。</p>
+<p><strong>3、损失函数</strong></p>
+<ul>
+<li>
+<p>观察模型在验证集上的损失函数值。随着训练的进行，损失应该逐渐减小，如果损失不再显著下降，可能意味着模型已经收敛。</p>
+</li>
+<li>
+<p>若损失值震荡，可尝试降低学习率，以便让模型更稳定地收敛。</p>
+</li>
+<li>
+<p>若损失值下降较慢，但并没有出现明显的震荡，可尝试增大学习率，以便让模型更快地收敛。</p>
+</li>
+</ul>
+<p><strong>4、学习率调整</strong></p>
+<p>如果模型在验证集上的性能停止提升，可以考虑调整学习率。使用学习率衰减策略，如学习率预热、周期性调整或使用自适应学习率优化器。</p>
+<p><strong>5、过拟合与欠拟合</strong></p>
+<ul>
+<li>
+<p>检查模型是否存在过拟合（训练误差小，验证误差大）或欠拟合（训练和验证误差都大）的情况。</p>
+</li>
+<li>
+<p>如果出现过拟合，可以尝试使用正则化技术、数据增强或简化模型。</p>
+</li>
+<li>
+<p>如果出现欠拟合，可能需要增加模型复杂度、提供更多数据或调整模型参数。</p>
+</li>
+</ul>
+<p><strong>6、早停法（Early Stopping）</strong></p>
+<ul>
+<li>
+<p>一种常用的技术，用于在验证集上的性能不再提升时停止训练，以避免过拟合。</p>
+</li>
+<li>
+<p>设置一个阈值，如果在一定数量的epoch后性能没有改善，则停止训练。</p>
+</li>
+</ul>
+<p><strong>7、可视化工具</strong></p>
+<p>使用TensorBoard等可视化工具来监控训练和验证过程中的各种指标，这有助于直观地理解模型的行为。</p>
+<p><strong>8、交叉验证</strong></p>
+<p>如果数据集较小，可以考虑使用交叉验证来更全面地评估模型性能。</p>
+<p><strong>9、实验记录</strong></p>
+<p>记录不同epoch下的性能指标，以便进行比较和分析。</p>
+<p><strong>10、模型更新</strong></p>
+<p>如果在3-5个epoch后，模型在验证集上的表现没有达到预期，可以考虑更新模型架构、调整超参数或改进数据预处理。</p>
+<p>通过这些评估方法，你可以决定模型是否需要继续训练，或者是否需要采取其他措施来改善模型性能。</p>
+<p><strong>08</strong></p>
+<p><strong>Lora &amp; Q-Lora</strong></p>
+<p>常见微调方法有：</p>
+<ul>
+<li>
+<p>全参数微调：在训练过程中更新所有参数</p>
+</li>
+<li>
+<p>LoRA：只更新adapter层的参数而无需更新原有语言模型的参数。</p>
+</li>
+<li>
+<p>Q-LoRA：只更新adapter层的参数而无需更新原有语言模型的参数。</p>
+</li>
+</ul>
+<p>在深度学习领域，微调（Fine-tuning）是一种常见的技术，它涉及将一个在大型数据集上预训练好的模型应用到一个特定任务上，通过在该任务上继续训练模型来调整模型的权重。这样做可以利用预训练模型的知识，加快学习速度，并提高特定任务的性能。</p>
+<p>LoRA（Low-Rank Adaptation）和 Q-LoRA 是微调大型模型时使用的技术，它们旨在减少微调过程中所需的计算资源和时间。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/icS6QYnhpJckHlIj5d2BibCpyUibsiaIrSyMpiaAMNTNVtSeaGekkbMzokxl3zuzasdFupV8icJiaofSa5GLsVuV7pkCw/640?wx_fmt=gif" alt=""></p>
+<p><strong>01</strong></p>
+<p><strong>Lora（Low-Rank Adaptation）</strong></p>
+<p>LoRA 是一种微调技术，它通过在模型的权重矩阵中引入<strong>低秩结构</strong> 来进行微调。具体来说，它将原始的权重矩阵分解为两个较小的矩阵的乘积，这两个较小的矩阵在微调过程中被更新，而原始的权重矩阵保持不变。这样，只需要对模型的一小部分参数进行更新，从而减少了计算量和存储需求。</p>
+<p><strong>低秩适应</strong> 是一种有效的<strong>模型压缩和加速技术</strong> ，特别适用于大型模型，因为它可以<strong>显著减少模型的参数数量</strong> ，同时保持性能。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/iagk1ibLIibBWxUoJn0iaYLrperzoM969icNYszOK1Rib30qeEGOlW3QY2AKOKNvXgHujibD5tXvM8wO5tY1I22bMZQnA/640?wx_fmt=gif" alt=""></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/icS6QYnhpJckHlIj5d2BibCpyUibsiaIrSyMpiaAMNTNVtSeaGekkbMzokxl3zuzasdFupV8icJiaofSa5GLsVuV7pkCw/640?wx_fmt=gif" alt=""></p>
+<p><strong>02</strong></p>
+<p><strong>Q-Lora（</strong> Quantized Lora**）**</p>
+<p>Q-LoRA 是 LoRA 的一种变体，它结合了量化和低秩适应的概念。在 Q-LoRA 中，除了使用低秩矩阵来减少参数数量外，还会对这些矩阵进行量化，即将它们从浮点数转换为整数形式，如Int8或Int16。</p>
+<p>量化可以进一步减少模型的大小，加快模型的推理速度，并且可以在某些硬件上实现更高效的计算。Q-LoRA通过结合量化和低秩适应，旨在实现更高效的模型微调，特别是在资源受限的环境中。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/iagk1ibLIibBWxUoJn0iaYLrperzoM969icNYszOK1Rib30qeEGOlW3QY2AKOKNvXgHujibD5tXvM8wO5tY1I22bMZQnA/640?wx_fmt=gif" alt=""></p>
+<p>这些技术对于在保持模型性能的同时减少模型的计算和存储需求非常有用，特别是在部署大型模型到边缘设备或移动设备时。通过 LoRA 或 Q-LoRA，可以以较低的成本对大型模型进行微调，使其适应特定的应用场景。</p>
+<p>LoRA 与 Q-LoRA<strong>只更新 adapter层 的参数，不会更新原有语言模型的参数。所以微调结束后还需要做模型合并后才能使用微调后的模型。</strong></p>
+<p>关于层-Layer的概念请阅读下文👇</p>
+<p><strong>09</strong></p>
+<p><strong>大模型量化</strong></p>
+<p>大模型量化版（Quantized Version of Large Models）通常指的是对大型机器学习模型进行量化处理后的版本。量化是一种模型优化技术，用于减少模型的计算和存储需求，从而提高模型在硬件上的运行效率，尤其是在资源受限的环境中。</p>
+<p>以下是量化处理的一些关键点：</p>
+<ul>
+<li>
+<p>减少精度：量化涉及将模型中的浮点数权重和激活值转换为低精度的表示，例如从32位浮点数（FP32）转换为低精度格式（如 Int4、Int8、BF16 等）。</p>
+</li>
+<li>
+<p>减少大小：通过降低数值的精度，模型的文件大小可以显著减少，这有助于更快地下载和部署模型。</p>
+</li>
+<li>
+<p>提高速度：量化后的模型可以在特定的硬件上更快地运行，因为整数运算通常比浮点运算更快，也更节能。</p>
+</li>
+<li>
+<p>硬件兼容性：某些硬件加速器对整数运算进行了优化，量化后的模型可以更好地利用这些硬件特性。</p>
+</li>
+<li>
+<p>保持性能：尽管量化会降低数值精度，但目标是在不显著影响模型性能的情况下进行优化。</p>
+</li>
+<li>
+<p>适用场景：量化特别适用于需要在边缘设备上运行的模型，如智能手机、嵌入式系统和物联网设备，因为这些设备通常计算资源有限。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/qHkOblGAzvtKmfODbGKpsnmT6fzJ292d9ZAI8M8tdaDTnTKetTGeTqiajWGphRy2MoygQOZ6bCQYy2Ghs0QyUIw/640?wx_fmt=png" alt=""></p>
+<p>量化是模型部署前的一个重要步骤，它有助于平衡模型的性能和效率，在一些应用中，可以接受一定程度的精度损失以换取显著的效率提升，使得大型模型能够在各种设备上有效运行。然而，量化过程需要谨慎执行，以确保模型的准确度和性能不会受到太大影响。量化的过程需要在模型的精度和效率之间做出权衡。</p>
+<p><strong>10</strong></p>
+<p>** 大模型评测指标**</p>
+<p>1、语言、知识、创作、数学、推理</p>
+<p>2、长文本理解</p>
+<p>3、Function Call支持效果</p>
+<p>4、MMLU、GPQA、HumanEval、CEval (val)、GSM8K</p>
+<ul>
+<li>
+<p>MMLU (Massive Multitask Language Understanding): MMLU是一个大规模的多任务语言理解基准测试，它包含57个任务，旨在评估语言模型在多种语言理解和生成任务上的能力。</p>
+</li>
+<li>
+<p>GPQA (Graded Prompting Quality Assessment): GPQA是一个评估语言模型在不同难度级别上生成质量的测试。它通过分级的提示（graded prompts）来测试模型生成的文本质量。</p>
+</li>
+<li>
+<p>HumanEval: HumanEval是一个用于评估语言模型生成文本质量的测试，它通常包含一些人类编写的提示，用于测试模型生成的文本是否接近人类水平。</p>
+</li>
+<li>
+<p>CEval (val): 这个指标可能是指一个特定的评估集（validation set）或评估过程，用于在训练过程中评估模型的性能。&ldquo;CEval&quot;可能是指某个特定数据集或评估框架的名称，而&quot;val&quot;通常代表验证集（validation set），用于模型的调优和性能评估。</p>
+</li>
+<li>
+<p>GSM8K: 这个指标可能是指一个包含8000个句子的数据集，用于测试语言模型在特定任务上的表现。GSM8K可能是某个特定数据集的缩写或名称，但具体含义可能需要更多的上下文信息来确定。</p>
+</li>
+</ul>
+<p><strong>往期推荐</strong></p>
+<p>1</p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzI2MjYwMTA5MQ==&amp;mid=2247485176&amp;idx=1&amp;sn=5332e404b94cb08b7d2dc3da2f544e8b&amp;chksm=ea49e614dd3e6f02fd2bf6065490bc38b46c293c01455367d883623d4af9e1ba7550e27b8483&amp;scene=21#wechat_redirect">大模型训练及推理【硬件选型指南】及 GPU 通识</a></p>
+<p>2</p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzI2MjYwMTA5MQ==&amp;mid=2247485231&amp;idx=1&amp;sn=3dd5db9fbddfd0e38a28646b78ede1d5&amp;chksm=ea49e7c3dd3e6ed5887ff4fc82d5e2170330ae6e331a968417f3cf3543e96ac4af88ebcff355&amp;scene=21#wechat_redirect">【RAG+通用大模型】 or 【RAG+微调大模型】？企业知识库落地方案如何抉择？</a></p>
+<p>3</p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzI2MjYwMTA5MQ==&amp;mid=2247485087&amp;idx=1&amp;sn=6bf6851008e505eee1f1a85be7eda05b&amp;chksm=ea49e673dd3e6f6512c04addf31c9f1322e71ad546e986d026ce16dea2b9f198b31d21a6e03e&amp;scene=21#wechat_redirect">LangChain 劲敌强势崛起，Sping AI 震撼发布，AIGC开发终极武器登场！Java 程序员看过来！</a></p>
+<p>4</p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzI2MjYwMTA5MQ==&amp;mid=2247485205&amp;idx=1&amp;sn=5c704e1d24add6736402ce944a7cb412&amp;chksm=ea49e7f9dd3e6eefa7e0afff88bf92fb15811c8b0bc7c38731c086c6c428a0ad9b20557684da&amp;scene=21#wechat_redirect">用 LM Studio 1 分钟搭建可在本地运行大型语言模型平台，替代 ChatGPT</a></p>
+<p><strong>今夏618</strong></p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Etjg3YLXyhhoIALQembM0yM3naEk4Vf1IBiaOXrlsHuZYj2neLmayE2V50ZpR1hvbhJmYWUD1Z3TeaPmnYGvW8Q/640?wx_fmt=png" alt=""></p>
+<p>SHOPPING</p>
+<p>读到这里的你，已经很累了吧，本文先到这，接下来会更新微调实操，带大家一步一步从买 GPU 云服务开始进行微调实操。</p>
+<p>另外，在 618 之际，感兴趣的小伙伴也欢迎加入我的** 「AI全栈·人工智能研究院」** ，是AI2.0 最早一批的社群，从 2023 年 4 月份开始运营至今，保证让你学到AI全栈干货！</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/qHkOblGAzvtKmfODbGKpsnmT6fzJ292dL9NlzYWAkwNYHia2kicT1k0MqicPE5iaibc7TIYpLjHWOl8F9a5S84JcOOQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>特此送上66 元优惠券，仅限前 30 名，一顿汉堡钱🍔，全年一起学习 AIGC 相关知识。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/qHkOblGAzvtKmfODbGKpsnmT6fzJ292dIDiaCDAs8vxPhwdfOa8h6GHSwZOQBUuFBUZ1XqSIC6IZ52zfvYccW1g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>~最后，别忘了<strong>关注</strong> 哦~</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

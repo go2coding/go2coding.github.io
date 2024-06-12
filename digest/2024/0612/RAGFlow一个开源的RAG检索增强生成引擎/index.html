@@ -1,0 +1,836 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>RAGFlow—一个开源的RAG（检索增强生成）引擎 作者： 三人行AI 来源： 三人行AI 💡 什么是 RAGFlow？ RAGFlow[1] 是一个开源的 RAG（检索增强生成）引擎，基于深度文档理解。它为任何规模的企业提供了简化的 RAG 工作流程，结合大语言模型（LLM），提供真实的问题回答能力，并有复杂格式数据的可靠引用支持。  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">RAGFlow—一个开源的RAG（检索增强生成）引擎</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              June 12, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/K59RZP2bHiaAxCBbNhA0OtOhYuwFhhBhibwrRuZXGBLapSWfbZkZIMy75pVDOH9kTZ0GN6uJB3MYsH8hYlTNjNTg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 三人行AI  来源： <a href="https://mp.weixin.qq.com/s/Xrh2sHX7RN2B2bAby_LFkA">三人行AI</a></p>
+<h4 id="-什么是-ragflow">💡 什么是 RAGFlow？</h4>
+<p>RAGFlow[1] 是一个开源的 RAG（检索增强生成）引擎，基于深度文档理解。它为任何规模的企业提供了简化的 RAG 工作流程，结合大语言模型（LLM），提供真实的问题回答能力，并有复杂格式数据的可靠引用支持。</p>
+<h4 id="-演示">🎮 演示</h4>
+<p>试用我们的演示：https://demo.ragflow.io。</p>
+<h4 id="-最新更新">📌 最新更新</h4>
+<p>•2024-06-06 支持 Self-RAG，默认在对话设置中启用。•2024-05-30 集成 BCE [2]和 BGE 重排模型。•2024-05-28 支持 LLM Baichuan 和 VolcanoArk。•2024-05-23 支持 RAPTOR [3]以提高文本检索效果。•2024-05-21 支持流式输出和文本块检索 API。•2024-05-15 集成 OpenAI GPT-4o。•2024-05-08 集成 LLM DeepSeek-V2。</p>
+<h4 id="-主要功能">🌟 主要功能</h4>
+<p>•🍭**&ldquo;质量输入，质量输出&rdquo;** •基于深度文档理解[4]的知识提取，适用于复杂格式的非结构化数据。•在几乎无限的令牌数据中找到“数据干草堆中的针”。•🍱<strong>基于模板的分块</strong> •智能且可解释。•提供多种模板选项可供选择。•🌱<strong>减少幻觉的有根引用</strong> •文本分块的可视化以允许人工干预。•快速查看关键引用和可追溯的引用，支持有根答案。•🍔<strong>兼容异构数据源</strong> •支持 Word、幻灯片、Excel、txt、图像、扫描件、结构化数据、网页等。•🛀<strong>自动化且无缝的 RAG 工作流程</strong> •为个人和大型企业定制的简化 RAG 编排。•可配置的 LLM 和嵌入模型。•多重召回配合融合重排序。•直观的 API 便于与业务无缝集成。</p>
+<h4 id="-系统架构">🔎 系统架构</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/K59RZP2bHiaAxCBbNhA0OtOhYuwFhhBhibwrRuZXGBLapSWfbZkZIMy75pVDOH9kTZ0GN6uJB3MYsH8hYlTNjNTg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="-入门指南">🎬 入门指南</h4>
+<h4 id="-先决条件">📝 先决条件</h4>
+<p>•CPU ≥ 4 核•内存 ≥ 16 GB•硬盘 ≥ 50 GB•Docker ≥ 24.0.0 &amp; Docker Compose ≥ v2.26.1</p>
+<p>如果尚未在本地计算机（Windows、Mac 或 Linux）上安装 Docker，请参阅安装 Docker 引擎[5]。</p>
+<h4 id="-启动服务器">🚀 启动服务器</h4>
+<p>1.确保 vm.max_map_count
+≥ 262144：</p>
+<p>检查 vm.max_map_count
+的值：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>$ sysctl vm.max_map_count
+</code></pre>
+<p>如果值小于 262144，请重置：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>$ sudo sysctl -w vm.max_map_count=262144
+</code></pre>
+<p>此更改在系统重启后会重置。为了确保更改永久生效，请在 /etc/sysctl.conf 中添加或更新 vm.max_map_count
+值：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>vm.max_map_count=262144
+</code></pre>
+<p>2.克隆仓库：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>$ git clone https://github.com/infiniflow/ragflow.git
+</code></pre>
+<p>3.构建预构建的 Docker 镜像并启动服务器：</p>
+<h4 id="以下命令将自动下载开发版-ragflow-docker-镜像如需下载和运行指定的-docker-版本请在运行以下命令之前将-dockerenv-中的-ragflow_version-更新为所需版本例如-ragflow_versionv070">以下命令将自动下载开发版 RAGFlow Docker 镜像。如需下载和运行指定的 Docker 版本，请在运行以下命令之前，将 docker/.env 中的 RAGFLOW_VERSION 更新为所需版本，例如 RAGFLOW_VERSION=v0.7.0。</h4>
+<hr>
+<pre><code>$ cd ragflow/docker
+$ chmod +x ./entrypoint.sh
+$ docker compose up -d
+</code></pre>
+<h4 id="核心镜像大约-9-gb加载可能需要一些时间">核心镜像大约 9 GB，加载可能需要一些时间。</h4>
+<p>4.服务器启动后，检查服务器状态：</p>
+<ul>
+<li></li>
+</ul>
+<pre><code>$ docker logs -f ragflow-server
+</code></pre>
+<p>以下输出确认系统成功启动：</p>
+<hr>
+<pre><code>    ____                 ______ __
+   / __ \ ____ _ ____ _ / ____// /____  _      __
+  / /_/ // __ `// __ `// /_   / // __ \| | /| / /
+ / _, _// /_/ // /_/ // __/  / // /_/ /| |/ |/ /
+/_/ |_| \__,_/ \__, //_/    /_/ \____/ |__/|__/
+              /____/
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:9380
+ * Running on http://x.x.x.x:9380
+ INFO:werkzeug:Press CTRL+C to quit
+</code></pre>
+<h4 id="如果跳过此确认步骤直接登录-ragflow您的浏览器可能会提示网络异常错误">如果跳过此确认步骤直接登录 RAGFlow，您的浏览器可能会提示网络异常错误</h4>
+<p>，因为此时 RAGFlow 可能尚未完全初始化。</p>
+<p>5.在您的网络浏览器中，输入服务器的 IP 地址并登录 RAGFlow。</p>
+<h4 id="在默认设置下只需输入-http您的机器的ip">在默认设置下，只需输入 http://您的机器的IP</h4>
+<p>（不带端口号），因为默认的 HTTP 服务端口 80
+在使用默认配置时可以省略。</p>
+<p>6.在 service_conf.yaml [6]中，选择所需的 LLM 工厂，在 user_default_llm
+中更新 API_KEY
+字段，输入相应的 API 密钥。</p>
+<h4 id="有关更多信息请参阅-llm_api_key_setup">有关更多信息，请参阅 llm_api_key_setup。</h4>
+<p>现在，一切就绪！</p>
+<h4 id="-配置">🔧 配置</h4>
+<p>在系统配置方面，您需要管理以下文件：</p>
+<p>•.env[7]：包含系统的基本设置，例如 SVR_HTTP_PORT
+、MYSQL_PASSWORD
+和 MINIO_PASSWORD
+。•service_conf.yaml[8]：配置后端服务。•docker-compose.yml[9]：系统依赖 docker-compose.yml
+启动。</p>
+<p>您必须确保对 .env
+文件的更改与 service_conf.yaml
+文件中的配置一致。</p>
+<h4 id="dockerreadme10文件提供了环境设置和服务配置的详细说明您必须确保">./docker/README[10]文件提供了环境设置和服务配置的详细说明，您必须确保</h4>
+<p>./docker/README文件中列出的所有环境设置与
+service_conf.yaml` 文件中的相应配置一致。</p>
+<p>要更新默认的 HTTP 服务端口（80），请前往 docker-compose.yml[11] 并将 80:80
+更改为 &lt;YOUR_SERVING_PORT&gt;:80
+。</p>
+<h4 id="对所有系统配置的更新需要系统重启才能生效">对所有系统配置的更新需要系统重启才能生效：</h4>
+<ul>
+<li></li>
+</ul>
+<pre><code>$ docker-compose up -d
+</code></pre>
+<h4 id="-从源代码构建">🛠️ 从源代码构建</h4>
+<p>要从源代码构建 Docker 镜像：</p>
+<hr>
+<pre><code>$ git clone https://github.com/infiniflow/ragflow.git
+$ cd ragflow/
+$ docker build -t infiniflow/ragflow:dev .
+$ cd ragflow/docker
+$ chmod +x ./entrypoint.sh
+$ docker compose up -d
+</code></pre>
+<h4 id="-从源代码启动服务">🛠️ 从源代码启动服务</h4>
+<p>要从源代码启动服务：</p>
+<p>1.克隆仓库：</p>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code>$ git clone https://github.com/infiniflow/ragflow.git
+$ cd ragflow/
+</code></pre>
+<p>2.创建虚拟环境，确保已安装 Anaconda 或 Miniconda：</p>
+<hr>
+<pre><code>$ conda create -n ragflow python=3.11.0
+$ conda activate ragflow
+$ pip install -r requirements.txt
+</code></pre>
+<hr>
+<pre><code>如果您的 CUDA 版本高于 12.0，请运行以下附加命令：
+$ pip uninstall -y onnxruntime-gpu
+$ pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+</code></pre>
+<p>3.复制入口脚本并配置环境变量：</p>
+<hr>
+<pre><code>获取 Python 路径：
+$ which python
+获取 ragflow 项目路径：
+$ pwd
+</code></pre>
+<hr>
+<pre><code>复制并编辑 entrypoint.sh：
+$ cp docker/entrypoint.sh .
+$ vi entrypoint.sh
+</code></pre>
+<hr>
+<pre><code>根据实际情况调整配置（以下两个 export 命令是新添加的）：
+将 which python 的结果分配给 PY。
+将 pwd 的结果分配给 PYTHONPATH。
+如果配置了 LD_LIBRARY_PATH，请将其注释掉。
+可选：添加 Hugging Face 镜像。
+PY=${PY}
+export PYTHONPATH=${PYTHONPATH}
+export HF_ENDPOINT=https://hf-mirror.com
+</code></pre>
+<p>4.启动第三方服务（MinIO、Elasticsearch、Redis 和 MySQL）：</p>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code>$ cd docker
+$ docker compose -f docker-compose-base.yml up -d
+</code></pre>
+<p>5.检查配置文件，确保：</p>
+<p>·<strong>docker/.env</strong>  中的设置与<strong>conf/service_conf.yaml</strong>  中的设置一致。</p>
+<p>· service_conf.yaml 中相关服务的 IP 地址和端口与本地机器 IP 和容器暴露的端口匹配。</p>
+<p>6.启动 RAGFlow 后端服务：</p>
+<ul>
+<li>
+<ul>
+<li></li>
+</ul>
+</li>
+</ul>
+<pre><code>$ chmod +x ./entrypoint.sh
+$ bash ./entrypoint.sh
+</code></pre>
+<p>7.启动前端服务：</p>
+<hr>
+<pre><code>$ cd web
+$ npm install --registry=https://registry.npmmirror.com --force
+$ vim .umirc.ts
+更新 proxy.target 为 http://127.0.0.1:9380：
+$ npm run dev
+</code></pre>
+<p>8.部署前端服务：</p>
+<hr>
+<pre><code>$ cd web
+$ npm install --registry=https://registry.npmmirror.com --force
+$ umi build
+$ mkdir -p /ragflow/web
+$ cp -r dist /ragflow/web
+$ apt install nginx -y
+$ cp ../docker/nginx/proxy.conf /etc/nginx
+$ cp ../docker/nginx/nginx.conf /etc/nginx
+$ cp ../docker/nginx/ragflow.conf /etc/nginx/conf.d
+$ systemctl start nginx
+</code></pre>
+<h4 id="-文档">📚 文档</h4>
+<p>•快速开始[12]•用户指南[13]•参考文献[14]•常见问题[15] #### 📜 路线图</p>
+<p>请参阅 RAGFlow 2024 路线图[16] #### 🏄 社区</p>
+<p>•Discord•Twitter[17]•GitHub Discussions</p>
+<h4 id="更多信息">更多信息</h4>
+<p>本文由三人行AI整理自：https://github.com/infiniflow/ragflow?tab=readme-ov-file，如对您有帮助，请帮忙点赞、转发、关注。</p>
+<h4 id="references">References</h4>
+<p>[1]
+RAGFlow: <em><a href="https://ragflow.io/">https://ragflow.io/</a></em><br>
+[2]
+BCE : <em><a href="https://github.com/netease-youdao/BCEmbedding">https://github.com/netease-youdao/BCEmbedding</a></em><br>
+[3]
+RAPTOR : <em><a href="https://arxiv.org/html/2401.18059v1">https://arxiv.org/html/2401.18059v1</a></em><br>
+[4]
+深度文档理解: <em><a href="https://github.com/infiniflow/ragflow/blob/main/deepdoc/README.md">https://github.com/infiniflow/ragflow/blob/main/deepdoc/README.md</a></em><br>
+[5]
+安装 Docker 引擎: <em><a href="https://docs.docker.com/get-docker/">https://docs.docker.com/get-docker/</a></em><br>
+[6]
+service_conf.yaml : <em><a href="https://github.com/infiniflow/ragflow/blob/main/docker/service_conf.yaml">https://github.com/infiniflow/ragflow/blob/main/docker/service_conf.yaml</a></em><br>
+[7]
+.env: <em><a href="https://github.com/infiniflow/ragflow/blob/main/docker/.env">https://github.com/infiniflow/ragflow/blob/main/docker/.env</a></em><br>
+[8]
+service_conf.yaml: <em><a href="https://github.com/infiniflow/ragflow/blob/main/docker/service_conf.yaml">https://github.com/infiniflow/ragflow/blob/main/docker/service_conf.yaml</a></em><br>
+[9]
+docker-compose.yml: <em><a href="https://github.com/infiniflow/ragflow/blob/main/docker/docker-compose.yml">https://github.com/infiniflow/ragflow/blob/main/docker/docker-compose.yml</a></em><br>
+[10]
+./docker/README: <em><a href="https://github.com/infiniflow/ragflow/blob/main/docker/README.md">https://github.com/infiniflow/ragflow/blob/main/docker/README.md</a></em><br>
+[11]
+docker-compose.yml: <em><a href="https://github.com/infiniflow/ragflow/blob/main/docker/docker-compose.yml">https://github.com/infiniflow/ragflow/blob/main/docker/docker-compose.yml</a></em><br>
+[12]
+快速开始: <em><a href="https://ragflow.io/docs/dev/">https://ragflow.io/docs/dev/</a></em><br>
+[13]
+用户指南: <em><a href="https://ragflow.io/docs/dev/category/user-guides">https://ragflow.io/docs/dev/category/user-guides</a></em><br>
+[14]
+参考文献: <em><a href="https://ragflow.io/docs/dev/category/references">https://ragflow.io/docs/dev/category/references</a></em><br>
+[15]
+常见问题: <em><a href="https://ragflow.io/docs/dev/faq">https://ragflow.io/docs/dev/faq</a></em><br>
+[16]
+RAGFlow 2024 路线图: <em><a href="https://github.com/infiniflow/ragflow/issues/162">https://github.com/infiniflow/ragflow/issues/162</a></em></p>
+<p><em>[17]
+Twitter: <em><a href="https://x.com/infiniflowai">https://x.com/infiniflowai</a></em></em></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
