@@ -83,13 +83,6 @@ aibard123.com 是一个开源导航网站，旨在为爱好人工智能的人提
 如需合作可以联系QQ；1752338621
 
 
-#### 副业搞钱交流群：
-
-欢迎大家加入AiBard123交流群， AI知识学习可以加入QQ群，每天免费学习资料推送，发现潜在合作伙伴，迎接未来的赚钱机遇！。
-
-![aibard123_screenshot](https://aibard123.com/assets/images/screenshot/aibard123qqlogo.png)
-
-
 #### 关注AiBard123公众号
 
 AiBard123公众号推荐好玩的AI工具
