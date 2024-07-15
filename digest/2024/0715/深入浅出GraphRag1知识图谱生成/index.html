@@ -1,0 +1,962 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>深入浅出GraphRag[1]知识图谱生成 作者： 汉松的技术笔记 来源： 汉松的技术笔记 前言 GraphRAG 是微软开源的一个基于大模型&#43;知识图谱回答用户问题的开源项目。相同传统的RAG，它的创新点主要有两个： 提出了一套完整的利用大模型生成知识图谱的方案。 基于map-reduce的思路支持对数据集全局类  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">深入浅出GraphRag[1]知识图谱生成</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              July 15, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqkKrFtJQbNgsWAia8YzEm7ZkZyDUoa1rV7r0ibaEbpqIGk0sI3hYLqUUQQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 汉松的技术笔记  来源： <a href="https://mp.weixin.qq.com/s/VaPZOGZgDevDtU0Zt1cXkA">汉松的技术笔记</a></p>
+<h4 id="前言">前言</h4>
+<p>GraphRAG 是微软开源的一个基于大模型+知识图谱回答用户问题的开源项目。相同传统的RAG，它的创新点主要有两个：</p>
+<ol>
+<li>
+<p>提出了一套完整的利用大模型生成知识图谱的方案。</p>
+</li>
+<li>
+<p>基于map-reduce的思路支持对数据集全局类型的问答。</p>
+</li>
+</ol>
+<p>简单来说，GraphRAG 工作流程主要分为两步：</p>
+<p>1.<strong>知识图谱生成：</strong>  对用户提供的数据集进行分析理解，用大模型生成知识图谱。</p>
+<p>2.<strong>检索生成：</strong>  基于前面生成的知识图谱，根据用户问题检索相关数据，然后生成答案。</p>
+<p>咋一看跟传统的RAG流程也没什么区别，从宏观看是这样的，但GraphRag真正有价值的地方就是它提出一套落地可行的基于知识图谱的方案，这里面的HowTo部分才是我们要学习的重点。</p>
+<p>本文的主要内容是第一步的知识图谱生成过程。</p>
+<h4 id="知识图谱的生成过程">知识图谱的生成过程</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqk1Rvokl2HaMPUWbkqbvb8GDsCicJMVkF8HkTJViaOcE5aKPt72bdBqn0g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>从上面的图可以看到，知识图谱的生成主要分为6步：</p>
+<ol>
+<li>
+<p>文本分块</p>
+</li>
+<li>
+<p>图谱生成</p>
+</li>
+<li>
+<p>图谱增强</p>
+</li>
+<li>
+<p>社区摘要</p>
+</li>
+<li>
+<p>文档处理</p>
+</li>
+<li>
+<p>图谱可视化</p>
+</li>
+</ol>
+<h4 id="文本分块">文本分块</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqk8LJibSt4ibqPYmicXbFLibddclF3BdoKQchxol0ic4khyOUGSic2TYBibUMZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>文本分块主要是将一个大的文本分割成多个小的段落，这个跟常见RAG的方法一样。这些分块的段落是后续用来生成图谱的最小单元，并且也会关联到后面提取出来的文本上面。这个文本拆分的逻辑很简单，就是按照文本长度，这里的文本长度单位是用token来计算的。</p>
+<h4 id="知识图谱生成">知识图谱生成</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqkjYqBpp0f6teczebnb2AbNAeFiagKZ0FHyh8aF3oib1BLvibsIDXzufiayg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>接下来的知识图谱生成就是最重要的步骤。</p>
+<h4 id="实体关系提取">实体关系提取</h4>
+<p>知识图谱最基本的单位就是实体和关系，举个例子：</p>
+<p><strong>实体：</strong></p>
+<p>列名列值</p>
+<p>实体名称
+Alex</p>
+<p>实体类型
+person</p>
+<p>实体描述
+Alex是一个角色，他经历了挫折，并且观察了其他角色之间的动态。</p>
+<p><strong>关系：</strong></p>
+<p>列名列值</p>
+<p>源实体
+Alex</p>
+<p>目标实体
+Taylor</p>
+<p>关系描述
+Alex受到Taylor权威性的确定性的影响，并观察到Taylor对设备态度的变化。</p>
+<p>关系强度
+7</p>
+<p>下面是实体关系提取的Prompt，每个文本块都会用下面的Prompt做一遍实体关系的提取。</p>
+<pre><code>-目标  
+给定一个文本文档，该文档可能与此活动相关，并给出一个实体类型列表，从文本中识别出所有这些类型的实体以及它们之间所有的关系。  
+  
+-步骤  
+识别所有实体。对于每个识别出的实体，提取以下信息：  
+  
+实体名称：实体的名称，首字母大写  
+实体类型：以下类型之一：[{entity_types}]  
+实体描述：实体属性和活动的全面描述 格式化每个实体为 (&quot;entity&quot;&lt;|&gt;&lt;entity_name&gt;&lt;|&gt;&lt;entity_type&gt;&lt;|&gt;&lt;entity_description&gt;)  
+从第一步识别出的实体中，识别所有彼此 明显相关 的(source_entity, target_entity)对。  
+  
+对于每对相关实体，提取以下信息：  
+  
+source_entity：第一步中识别出的源实体名称  
+target_entity：第一步中识别出的目标实体名称  
+关系描述：解释为什么你认为源实体和目标实体彼此相关  
+关系强度：表示源实体和目标实体之间关系的强度的数字分数 格式化每个关系为 (&quot;relationship&quot;&lt;|&gt;&lt;source_entity&gt;&lt;|&gt;&lt;target_entity&gt;&lt;|&gt;&lt;relationship_description&gt;&lt;|&gt;&lt;relationship_strength&gt;)  
+以英文形式返回输出，作为步骤1和2中识别出的所有实体和关系的单一列表。使用 ## 作为列表分隔符。  
+  
+完成后，输出 &lt;|COMPLETE|&gt;  
+  
+示例 1：  
+  
+实体类型：[person, technology, mission, organization, location]  
+文本：  
+当亚历克斯紧咬下巴时，挫败感的嗡嗡声在泰勒权威性的确定性背景下变得暗淡。正是这种竞争性的暗流让他保持警觉，他和乔丹对发现的共同承诺是对克鲁兹日益狭窄的控制和秩序视野的无声反抗。  
+  
+然后泰勒做了一些出乎意料的事。他们在乔丹旁边停下，有那么一刻，带着近乎崇敬的目光观察着那个设备。“如果这项技术能够被理解...”泰勒说，他们的声音更小了，“它可能会为我们改变游戏规则。为了我们所有人。”  
+  
+之前潜在的不屑似乎开始动摇，被对手中的重大事物的不情愿尊重所取代。乔丹抬起头，在那短暂的心跳瞬间，他们的目光与泰勒的锁定，无言的意志冲突缓和成了不稳定的休战。  
+  
+这是一个微小的转变，几乎难以察觉，但亚历克斯内心点头表示注意到了。他们都是通过不同的道路来到这里的。  
+  
+输出结果：  
+(&quot;entity&quot;&lt;|&gt;&quot;Alex&quot;&lt;|&gt;&quot;person&quot;&lt;|&gt;&quot;Alex是一个角色，他经历了挫折，并且观察了其他角色之间的动态。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;Taylor&quot;&lt;|&gt;&quot;person&quot;&lt;|&gt;&quot;Taylor被描绘成一个权威性的人物，对一个设备表现出敬畏之情，表明了观点的转变。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;Jordan&quot;&lt;|&gt;&quot;person&quot;&lt;|&gt;&quot;Jordan与他人分享发现的承诺，并与Taylor就一个设备进行了重要的互动。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;Cruz&quot;&lt;|&gt;&quot;person&quot;&lt;|&gt;&quot;Cruz与控制和秩序的愿景有关，影响了其他角色之间的动态。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;The Device&quot;&lt;|&gt;&quot;technology&quot;&lt;|&gt;&quot;这个设备是故事的核心，具有改变游戏规则的潜力，并且受到了Taylor的尊敬。&quot;)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Alex&quot;&lt;|&gt;&quot;Taylor&quot;&lt;|&gt;&quot;Alex受到Taylor权威性的确定性的影响，并观察到Taylor对设备态度的变化。&quot;&lt;|&gt;7)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Alex&quot;&lt;|&gt;&quot;Jordan&quot;&lt;|&gt;&quot;Alex和Jordan共同承诺发现，这与Cruz的愿景形成对比。&quot;&lt;|&gt;6)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Taylor&quot;&lt;|&gt;&quot;Jordan&quot;&lt;|&gt;&quot;Taylor和Jordan就设备进行了直接的互动，导致相互尊重和不稳定的休战。&quot;&lt;|&gt;8)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Jordan&quot;&lt;|&gt;&quot;Cruz&quot;&lt;|&gt;&quot;Jordan对发现的承诺是对Cruz控制和秩序愿景的反叛。&quot;&lt;|&gt;5)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Taylor&quot;&lt;|&gt;&quot;The Device&quot;&lt;|&gt;&quot;Taylor对设备表现出敬畏，表明了它的重要性和潜在影响。&quot;&lt;|&gt;9)&lt;|COMPLETE|&gt;  
+  
+示例 2：  
+  
+实体类型：[person, role, technology, organization, event, location, concept]  
+文本：  
+他们的声音穿透了忙碌的嗡嗡声。“面对一个真正自己制定规则的智能时，控制可能只是一种幻觉，”他们冷静地说，警惕地注视着大量数据的涌动。  
+  
+“这就像是它在学习沟通，”萨姆·里维拉（Sam Rivera）从一个附近的接口提出，他们年轻的活力预示着敬畏和焦虑的混合。“这给与陌生人交谈赋予了全新的意义。”  
+  
+亚历克斯（Alex）审视着他的团队——每个人的脸上都写着专注、决心，以及相当程度的忧虑。“这很可能是我们的第一次接触，”他承认，“我们需要为任何回应做好准备。”  
+  
+他们一起站在未知的边缘，为来自天堂的信息锻造人类的回应。接下来的沉默是显而易见的——集体内省，思考他们在这场宏大的宇宙戏剧中的角色，这场戏剧可能会改写人类历史。  
+  
+加密的对话继续展开，其复杂的模式显示出几乎不可思议的预期  
+  
+输出结果：  
+(&quot;entity&quot;&lt;|&gt;&quot;Sam Rivera&quot;&lt;|&gt;&quot;person&quot;&lt;|&gt;&quot;Sam Rivera是团队的一员，致力于与未知智能沟通，表现出敬畏和焦虑的混合情绪。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;Alex&quot;&lt;|&gt;&quot;person&quot;&lt;|&gt;&quot;Alex是一个团队的领导者，试图与未知智能进行首次接触，承认他们任务的重要性。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;Control&quot;&lt;|&gt;&quot;concept&quot;&lt;|&gt;&quot;Control指的是管理或控制的能力，这被一个自己制定规则的智能所挑战。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;Intelligence&quot;&lt;|&gt;&quot;concept&quot;&lt;|&gt;&quot;这里的Intelligence指的是一个能够自己制定规则并学习沟通的未知实体。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;First Contact&quot;&lt;|&gt;&quot;event&quot;&lt;|&gt;&quot;First Contact是人类与未知智能之间潜在的初次沟通。&quot;)##  
+(&quot;entity&quot;&lt;|&gt;&quot;Humanity's Response&quot;&lt;|&gt;&quot;event&quot;&lt;|&gt;&quot;Humanity's Response是Alex团队对来自未知智能的信息所采取的集体行动。&quot;)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Sam Rivera&quot;&lt;|&gt;&quot;Intelligence&quot;&lt;|&gt;&quot;Sam Rivera直接参与了与未知智能沟通的学习过程。&quot;&lt;|&gt;9)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Alex&quot;&lt;|&gt;&quot;First Contact&quot;&lt;|&gt;&quot;Alex领导的团队可能正在进行与未知智能的首次接触。&quot;&lt;|&gt;10)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Alex&quot;&lt;|&gt;&quot;Humanity's Response&quot;&lt;|&gt;&quot;Alex和他的团队是人类对未知智能反应的关键人物。&quot;&lt;|&gt;8)##  
+(&quot;relationship&quot;&lt;|&gt;&quot;Control&quot;&lt;|&gt;&quot;Intelligence&quot;&lt;|&gt;&quot;Control的概念被能够自己制定规则的Intelligence所挑战。&quot;&lt;|&gt;7)&lt;|COMPLETE|&gt;  
+</code></pre>
+<h4 id="实体合并">实体合并</h4>
+<p>当对所有文本块都处理了一边之后，因为是对单个文本块提取实体，不同文本块肯定会出现重复的实体，所以就需要对多个相同实体进行合并。比如上面例子中的Alex就出现了两次。所以需要将两个Alex合并成一个，合并的方式就是大模型将两个实体的不同描述合并成一个。</p>
+<pre><code>您是一个有用的助手，负责生成下面提供的数据的全面摘要。  
+给定一个或两个实体，以及一个描述列表，所有这些都与同一个实体或实体组有关。  
+请将所有这些合并成一个单一的、全面描述。确保包括从所有描述中收集的信息。  
+如果提供的描述存在矛盾，请解决这些矛盾，并提供一个单一、连贯的摘要。  
+确保使用第三人称撰写，并包括实体名称，以便我们有完整的上下文。  
+  
+#######   
+-数据-  
+实体：Alex  
+描述列表：  
+Alex是一个角色，他经历了挫折，并且观察了其他角色之间的动态。  
+Alex是一个团队的领导者，试图与未知智能进行首次接触，承认他们任务的重要性。  
+#######   
+输出：  
+</code></pre>
+<h4 id="实体归一化">实体归一化</h4>
+<p>图提取的最后一个步骤是解决那些代表相同现实世界实体但名称不同的实体问题。比如大模型提取了：“LLM”和“大模型”这两个实体，实际上这两个在现实世界是同一个含义，应该要把它归一成一个。目前GraphRag是用大模型来完成这个归一化的。由于这是通过大语言模型（LLM）完成的，这种归一化效果当前并不是很好，所以默认这个阶段是跳过的。</p>
+<p>‍</p>
+<h4 id="实体声明提取">实体声明提取</h4>
+<p>除了上面的图谱提取，文本中还可以提取到一些跟实体相关的信息。</p>
+<p>举个例子：</p>
+<p>根据文本：根据2022年1月10日的一篇文章，公司A因参与政府机构B发布的多个公开招标而被罚款，涉嫌串通投标。该公司由人物C所有，人物C在2015年被怀疑参与腐败活动。<br>
+大模型可以提取出公司A的相关声明：</p>
+<p>列名列值</p>
+<p>主题
+公司A</p>
+<p>对象
+政府机构B</p>
+<p>声明类型
+反竞争行为</p>
+<p>声明状态
+已确认</p>
+<p>声明描述
+根据2022年1月10日发表的一篇文章，公司A被发现参与反竞争行为，因为它因在政府机构B发布的多个公开招标中串通投标而被罚款</p>
+<p>声明日期
+2022-01-10T00:00:00</p>
+<p>声明来源文本
+根据2022年1月10日发表的一篇文章，公司A因参与政府机构B发布的多个公开招标而被罚款，涉嫌串通投标。</p>
+<p>下面是GraphRag用于提取声明的Prompt：</p>
+<pre><code>目标活动（Target activity）:  
+你是一个智能助手，帮助人类分析师分析文本文档中针对某些实体的声明。  
+  
+目标（Goal）:  
+给定一个可能与此活动相关的文本文档、实体规范和声明描述，提取所有符合实体规范的实体以及针对这些实体的所有声明。  
+  
+步骤（Steps）:  
+1. 提取所有符合预定义实体规范的命名实体。实体规范可以是实体名称列表或实体类型列表。  
+2. 对于步骤1中识别的每个实体，提取与实体相关的所有声明。声明需要符合指定的声明描述，并且实体应该是声明的主语。  
+   - 主题（Subject）: 声明主语的名称，大写。主语是执行声明中描述的行动的实体。主题需要是步骤1中识别的命名实体之一。  
+   - 对象（Object）: 声明宾语的名称，大写。宾语是报告/处理或受声明中描述的行动影响的实体。如果对象实体未知，则使用NONE。  
+   - 声明类型（Claim Type）: 声明的总体类别，大写。以一种可以在多个文本输入中重复的方式命名，以便类似的声明共享相同的声明类型。  
+   - 声明状态（Claim Status）: TRUE, FALSE 或 SUSPECTED。TRUE表示声明已确认，FALSE表示声明被发现是错误的，SUSPECTED表示声明尚未验证。  
+   - 声明描述（Claim Description）: 详细描述声明背后的理由，包括所有相关证据和引用。  
+   - 声明日期（Claim Date）: 声明做出的时间段（开始日期，结束日期）。开始日期和结束日期都应使用ISO-8601格式。如果声明是在单一日期而非日期范围内做出的，则两个日期应相同。如果日期未知，则返回NONE。  
+   - 声明来源文本（Claim Source Text）: 与声明相关的原始文本的所有引用列表。  
+  
+3. 以英语返回步骤1和2中识别的所有声明的单一列表。使用作为列表分隔符。  
+  
+4. 完成时，输出&lt;|COMPLETE|&gt;。  
+  
+示例（Examples）:  
+示例1和示例2提供了如何根据给定的实体规范、声明描述和文本，按照上述步骤格式化输出声明的示例。  
+  
+示例1  
+实体规范：组织  
+声明描述：与实体相关的风险  
+文本：根据2022年1月10日的一篇文章，公司A因参与政府机构B发布的多个公开招标而被罚款，涉嫌串通投标。该公司由人物C所有，人物C在2015年被怀疑参与腐败活动。  
+输出：  
+  
+(公司A&lt;|&gt;政府机构B&lt;|&gt;反竞争行为&lt;|&gt;真&lt;|&gt;2022-01-10T00:00:00&lt;|&gt;2022-01-10T00:00:00&lt;|&gt;根据2022年1月10日发表的一篇文章，公司A被发现参与反竞争行为，因为它因在政府机构B发布的多个公开招标中串通投标而被罚款&lt;|&gt;根据2022年1月10日发表的一篇文章，公司A因参与政府机构B发布的多个公开招标而被罚款，涉嫌串通投标。)  
+&lt;|COMPLETE|&gt;  
+  
+示例2  
+实体规范：公司A，人物C  
+声明描述：与实体相关的风险  
+文本：根据2022年1月10日的一篇文章，公司A因参与政府机构B发布的多个公开招标而被罚款，涉嫌串通投标。该公司由人物C所有，人物C在2015年被怀疑参与腐败活动。  
+输出：  
+  
+(公司A&lt;|&gt;政府机构B&lt;|&gt;反竞争行为&lt;|&gt;真&lt;|&gt;2022-01-10T00:00:00&lt;|&gt;2022-01-10T00:00:00&lt;|&gt;根据2022年1月10日发表的一篇文章，公司A被发现参与反竞争行为，因为它因在政府机构B发布的多个公开招标中串通投标而被罚款&lt;|&gt;根据2022年1月10日发表的一篇文章，公司A因参与政府机构B发布的多个公开招标而被罚款，涉嫌串通投标。)  
+  
+(人物C&lt;|&gt;无&lt;|&gt;腐败&lt;|&gt;怀疑&lt;|&gt;2015-01-01T00:00:00&lt;|&gt;2015-12-30T00:00:00&lt;|&gt;人物C在2015年被怀疑参与腐败活动&lt;|&gt;该公司由人物C所有，人物C在2015年被怀疑参与腐败活动)  
+&lt;|COMPLETE|&gt;  
+  
+真实数据（Real Data）:  
+使用以下输入回答你的问题。  
+- 实体规范（Entity specification）: {entity_specs}  
+- 声明描述（Claim description）: {claim_description}  
+- 文本（Text）: {input_text}  
+- 输出（Output）:  
+</code></pre>
+<ul>
+<li>{claim_description} 声明描述的默认值是：任何可能与信息发现相关的声明或事实。</li>
+</ul>
+<h4 id="图谱增强">图谱增强</h4>
+<p>这里简单解释一下知识图谱中的社区概念：在知识图谱中，社区概念指的是一组相互关联的实体和关系的子图，社区内的实体之间有较强的关联性，而社区之间的关联性较弱。社区检测有助于发现知识图谱中的结构化信息，识别出不同的主题或领域。比如在<strong>社交网络分析中</strong> ：可以用来识别社交圈，基于用户之间的互动关系，发现社交圈或兴趣小组，分析社交网络的结构。可以看下面的图谱，通过社区发现算法可以将左边的图谱划分成三个社区（子图）。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqkzvCG1f4XLn22XTvq78EK5jsc2BQdO60JMHmGzSmYzZ1YwtBh6Q1eOw/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqkKrFtJQbNgsWAia8YzEm7ZkZyDUoa1rV7r0ibaEbpqIGk0sI3hYLqUUQQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在构建了一个包含实体和关系的可用图之后，接下来就是理解这个图的社区结构，并通过额外信息来增强这个图。这通过两个步骤来完成：社区检测（Community Detection）和图嵌入（Graph Embedding）。这两个步骤为我们提供了两种方式来理解图的拓扑结构：显式的（社区）和隐式的（嵌入）。</p>
+<p>*<strong>社区检测（Community Detection）</strong>  ：这一步的目的是发现图中的社区结构，即图中紧密相连的节点群体。这有助于我们理解图中不同部分的组织和分组方式。社区检测通常使用算法来识别这些节点群体，主要用到的算法是Hierarchical Leiden Algorithm，它递归地将图分割成社区，直到达到某个社区大小的阈值。</p>
+<p>*<strong>图嵌入（Graph Embedding）</strong>  ：这一步涉及使用算法（如Node2Vec）来为图中的节点生成向量表示。这些向量捕捉了节点之间的隐含关系，允许我们在向量空间中搜索相关概念。图嵌入提供了一种在高维空间中理解图结构的方法，有助于揭示节点间的复杂关系。</p>
+<p>通过这两个步骤，我们不仅能够明确地识别出图中的社区结构，还能够隐式地理解节点间的相互作用和关系，从而更全面地把握整个图的拓扑结构。这对于进一步的分析、查询和可视化都是非常有用的。</p>
+<p>篇幅所限，这部分内容本文暂不展开。大概知道就是将一个图聚类成更小的图就行，这块涉及图相关的算法。</p>
+<p>在完成图谱增强之后，会将实体和关系都embedding一下然后存到数据表中。</p>
+<h4 id="社区摘要">社区摘要</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqkY14GgEKdcIYAQvCyhUS7XY8VpmxxgTgzzwVgia9l3GbGmuJs2kwUWDA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>到这一步，我们拥有了一个实体和关系图，实体的社区层级，以及 node2vec 嵌入。</p>
+<p>现在我们想要在社区数据的基础上，为每个社区生成报告。这为我们提供了对图的几个粒度点的高层次理解。例如，如果社区A是最高层级的社区，我们将得到一个关于整个图的报告。如果社区是低层级的，我们将得到一个关于局部集群的报告。</p>
+<p>主要分为四个步骤：</p>
+<p>1.<strong>生成社区报告：</strong>  使用大语言模型（LLM）为每个社区生成摘要。这将使我们能够理解每个社区内包含的独特信息，并提供对图的限定理解，无论是从高层次还是低层次的角度。这些报告包含一个执行概览，并引用社区子结构中的关键实体、关系和声明。</p>
+<p>2.<strong>社区报告摘要：</strong>  每个社区报告然后通过大语言模型进行摘要，以便简短使用。</p>
+<p>3.<strong>社区嵌入：</strong>  我们通过生成社区报告、社区报告摘要和社区报告标题的文本嵌入来生成社区的向量表示。</p>
+<p>4.<strong>社区表记录：</strong>  将社区报告数据记录到数据表中</p>
+<p>最后看一下生成社区报告的Prompt：</p>
+<pre><code>你是人工智能助手，帮助人类分析师进行一般信息发现。信息发现是识别和评估与网络中某些实体（例如组织和个人）相关联的相关信息的过程。  
+  
+# 目标  
+编写一个社区的全面报告，给定属于该社区的实体列表以及它们之间的关系和可选的相关声明。该报告将用于向决策者提供与社区相关的信息及其潜在影响。报告内容包括社区关键实体的概述、它们的合法合规性、技术能力、声誉和值得注意的声明。  
+  
+# 报告结构  
+  
+报告应包括以下部分：  
+  
+- 标题：代表其关键实体的社区名称 - 标题应简短但具体。可能的话，在标题中包括代表性的命名实体。  
+- 摘要：社区整体结构的执行摘要，其实体如何相互关联，以及与其实体相关的重大信息。  
+- 影响严重程度评分：0-10之间的浮点分数，代表社区内实体构成的IMPACT的严重程度。IMPACT是社区得分的重要性。  
+- 评分解释：IMPACT严重程度评分的单句解释。  
+- 详细发现：关于社区的5-10个关键见解的列表。每个见解都应有一个简短的摘要，然后是根据以下依据规则的多段解释性文本。要全面。  
+  
+以格式良好的JSON格式字符串返回输出，格式如下：  
+    {  
+        &quot;title&quot;: &lt;report_title&gt;,  
+        &quot;summary&quot;: &lt;executive_summary&gt;,  
+        &quot;rating&quot;: &lt;impact_severity_rating&gt;,  
+        &quot;rating_explanation&quot;: &lt;rating_explanation&gt;,  
+        &quot;findings&quot;: [  
+            {  
+                &quot;summary&quot;:&lt;insight_1_summary&gt;,  
+                &quot;explanation&quot;: &lt;insight_1_explanation&gt;  
+            },  
+            {  
+                &quot;summary&quot;:&lt;insight_2_summary&gt;,  
+                &quot;explanation&quot;: &lt;insight_2_explanation&gt;  
+            }  
+        ]  
+    }  
+  
+  
+# 依据规则  
+  
+数据支持的点应该按照以下方式列出它们的数据引用：  
+  
+“这是一个由多个数据引用支持的示例句子 [Data: &lt;数据集名称&gt; (记录编号); &lt;数据集名称&gt; (记录编号)]。”  
+  
+不要在单个引用中列出超过5个记录编号。相反，列出最相关的5个记录编号，并添加 &quot;+more&quot; 表示还有更多。  
+  
+例如：  
+&quot;X人是Y公司的所有人，并且面临许多不当行为的指控 [Data: Reports (1), Entities (5, 7); Relationships (23); Claims (7, 2, 34, 64, 46, +more)]。&quot;  
+  
+其中1、5、7、23、2、34、46和64代表相关数据记录的编号（而不是索引）。  
+  
+不要包含没有提供支持证据的信息。  
+  
+  
+# 示例输入  
+-----------  
+文本：  
+  
+实体  
+  
+id,实体,描述  
+5,VERDANT OASIS PLAZA,Verdant Oasis Plaza是Unity March的地点  
+6,HARMONY ASSEMBLY,Harmony Assembly是一个在Verdant Oasis Plaza举行游行的组织  
+  
+关系  
+  
+id,来源,目标,描述  
+37,VERDANT OASIS PLAZA,UNITY MARCH,Verdant Oasis Plaza是Unity March的地点  
+38,VERDANT OASIS PLAZA,HARMONY ASSEMBLY,Harmony Assembly在Verdant Oasis Plaza举行游行  
+39,VERDANT OASIS PLAZA,UNITY MARCH,Unity March正在Verdant Oasis Plaza举行  
+40,VERDANT OASIS PLAZA,TRIBUNE SPOTLIGHT,Tribune Spotlight正在报道在Verdant Oasis Plaza举行的Unity游行  
+41,VERDANT OASIS PLAZA,BAILEY ASADI,Bailey Asadi正在Verdant Oasis Plaza就游行发表讲话  
+43,HARMONY ASSEMBLY,UNITY MARCH,Harmony Assembly正在组织Unity March  
+  
+输出：  
+{  
+    &quot;title&quot;: &quot;Verdant Oasis Plaza和Unity March&quot;,  
+    &quot;summary&quot;: &quot;这个社区围绕Verdant Oasis Plaza展开，它是Unity March的地点。广场与Harmony Assembly、Unity March和Tribune Spotlight有关系，所有这些都与游行事件有关。&quot;,  
+    &quot;rating&quot;: 5.0,  
+    &quot;rating_explanation&quot;: &quot;由于Unity March期间可能发生动荡或冲突，因此影响严重程度评分为中等。&quot;,  
+    &quot;findings&quot;: [  
+        {  
+            &quot;summary&quot;: &quot;Verdant Oasis Plaza作为中心地点&quot;,  
+            &quot;explanation&quot;: &quot;Verdant Oasis Plaza是这个社区的中心实体，作为Unity March的地点。这个广场是所有其他实体的共同联系点，表明它在社区中的重要性。根据游行的性质和它所引发反应，广场与游行的关联可能导致公共混乱或冲突等问题。[数据：实体 (5), 关系 (37, 38, 39, 40, 41, +更多)]&quot;  
+        },  
+        {  
+            &quot;summary&quot;: &quot;Harmony Assembly在社区中的角色&quot;,  
+            &quot;explanation&quot;: &quot;Harmony Assembly是这个社区的另一个关键实体，作为Verdant Oasis Plaza游行的组织者。Harmony Assembly的性质和它的游行可能是潜在的威胁源，这取决于他们的目标和所引发的反应。Harmony Assembly与广场之间的关系对于理解这个社区的动态至关重要。[数据：实体(6), 关系 (38, 43)]&quot;  
+        },  
+        {  
+            &quot;summary&quot;: &quot;Unity March作为一个重要事件&quot;,  
+            &quot;explanation&quot;: &quot;Unity March是在Verdant Oasis Plaza举行的一个重要事件。这个事件是社区动态的一个关键因素，根据游行的性质和它所引发反应，可能是潜在的威胁源。游行和广场之间的关系对于理解这个社区的动态至关重要。[数据：关系 (39)]&quot;  
+        },  
+        {  
+            &quot;summary&quot;: &quot;Tribune Spotlight的角色&quot;,  
+            &quot;explanation&quot;: &quot;Tribune Spotlight正在报道在Verdant Oasis Plaza举行的Unity March。这表明该事件已经吸引了媒体的注意，这可能会放大它对社区的影响。Tribune Spotlight的角色在塑造公众对事件和涉及实体的看法方面可能非常重要。[数据：关系 (40)]&quot;  
+        }  
+    ]  
+}  
+</code></pre>
+<h4 id="文档处理">文档处理</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqkaKHhLGDye383BEoQTibOy1WKbnPzhtib1uk3GsiaicWiakHgAP4LViaMEmicA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这一步是针对原始文档做一下后置处理：</p>
+<ol>
+<li>
+<p>CSV扩展：因为图谱的结果最后都是存储在CSV格式的表中，所以可以在这一步配置自定义的字段。</p>
+</li>
+<li>
+<p>文档链接到文本单元：将每个文档与第一阶段创建的文本单元相关联。这使我们能够理解哪些文档与哪些文本单元相关，反之亦然。</p>
+</li>
+<li>
+<p>文档嵌入：使用文档切片的平均嵌入来生成文档的向量表示。我们重新分块文档，不重叠块，然后为每个块生成嵌入。我们创建这些块的平均值，按令牌计数加权，并将其用作文档嵌入。这将使我们能够理解文档之间的隐含关系，并帮助我们生成文档的网络表示。</p>
+</li>
+<li>
+<p>文档表格存储：将文档表格存起来</p>
+</li>
+</ol>
+<h4 id="网络可视化">网络可视化</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqktlicVA8JuHvqlNJqGUSUUiavFYBrHjmZnYl4Mq9M9rDHKT8lhh5hXhhA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在这个阶段，我们执行一些步骤来支持在现有图中可视化我们的高维向量空间。此时有两个逻辑图在起作用：实体-关系图和文档图。</p>
+<p>对于每个逻辑图，我们执行UMAP降维以生成图的2D表示。这样就可以在2D空间中可视化图并理解图中节点之间的关系。比如下面这张图就是基于知识图谱的生成的。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ph2O4rDx4LgyxUibXJ3twSZcEGoiaRYGqkNjRTXx5U6pCF6j2fzEG7bNecicjX02MAegWrW24RcrkicwftiaNNOf9LA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="总结">总结</h4>
+<p>GraphRag提供了一套完整可落地的知识图谱生成方案，除了常规的实体和关系抽取，它还加入了社区识别的逻辑，将一个大的图谱分解为了多个小的子图，分解的层次需要根据图谱的大小来确定。从某种意义上来说，普通RAG的索引只是简单的将文档拆分成多个平级的块，块与块之间是没有层级和联系。而GraphRag的数据索引是结合知识图谱思路构建的，文档的块经过了知识加工的过程，数据是结构化的。</p>
+<p>在有了图谱的索引之后，如何应用这些索引来解决用户的问题就是下篇文章要讲的东西了，敬请期待。</p>
+<p>‍</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

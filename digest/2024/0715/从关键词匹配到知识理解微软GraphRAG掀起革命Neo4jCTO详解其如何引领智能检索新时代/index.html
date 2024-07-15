@@ -1,0 +1,806 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>从关键词匹配到知识理解：微软GraphRAG掀起革命，Neo4jCTO详解其如何引领智能检索新时代 作者： 子非AI 来源： 子非AI 导读：TLDR; 微软研究院开发的 GraphRAG 是一种利用知识图谱增强检索增强生成 (RAG) 的新技术，显著提高了 AI 在复杂信息处理和大型数据集上的问答和主题发现能力。与传统的仅基于向量的 RAG 方法相比，GraphRAG 能够提供更准确、上下文  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">从关键词匹配到知识理解：微软GraphRAG掀起革命，Neo4jCTO详解其如何引领智能检索新时代</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              July 15, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHe2DkYr7gxB3eQBJicmo1rDJKog1gMp4aRlE3LKGQdnvKvESqnZRy71Xw/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 子非AI  来源： <a href="https://mp.weixin.qq.com/s/wrNi_iZqyPUdn_mZE74FnA">子非AI</a></p>
+<h4 id="导读tldr">导读：TLDR;</h4>
+<p><em>微软研究院开发的 GraphRAG 是一种利用知识图谱增强检索增强生成 (RAG) 的新技术，显著提高了 AI 在复杂信息处理和大型数据集上的问答和主题发现能力。与传统的仅基于向量的 RAG 方法相比，GraphRAG 能够提供更准确、上下文相关且全面的答案。本文将深入探讨 GraphRAG 的原理、优势和应用前景，并阐述其如何引领智能检索新时代。</em></p>
+<p>在上篇文章 “<a href="http://mp.weixin.qq.com/s?__biz=Mzg2MjkwNzY4OA==&amp;mid=2247488120&amp;idx=1&amp;sn=ce8edc016b9706839f3aee7aaaaf4d66&amp;chksm=ce01ee3ff9766729a447bd955f0fadad0067d15fb854656eda1eb211162575c105d804e6d783&amp;scene=21#wechat_redirect">从关键词匹配到知识理解：微软GraphRAG开启智能检索新时代”</a> 中，我们介绍了微软研究院开发的全新检索增强生成 (RAG) 技术——GraphRAG，它利用大型语言模型 (LLM) 生成的知识图谱来分析复杂信息，显著提高了在私有数据集上进行问答和主题发现的性能，优于传统的基于向量相似性的 RAG 方法。今天，我们将更深入地探讨 GraphRAG 本身，看看这项技术如何为人工智能带来革命性的改变。</p>
+<h4 id="引言rag-的蓝链时代已经到来">引言：RAG 的“蓝链时代”已经到来</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHegjsEYwWdGglLAB2iancZbCXumIz1qicn2E9y2xPu675pzmcDfktdDs7w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>我们正处于一个技术变革的时代，生成式 AI 正在以前所未有的速度改变着我们与信息互动的方式。然而，仅仅依靠大型语言模型 (LLM) 进行内容生成，生成式 AI 应用仍然面临着诸多挑战。Neo4j 首席技术官 Emil Eifrem 在其最新的文章 &ldquo;The GraphRAG Manifesto: 为生成式 AI 赋予知识的力量&rdquo; 中指出，仅仅依赖自回归大型语言模型 (LLM) 做出决策，无法充分发挥生成式 AI 的潜力。</p>
+<p>他认为，要利用生成式 AI 完成任何有意义的任务，<strong>不能仅仅依赖自回归大型语言模型 (LLM)</strong>  做出决策。虽然像基于向量的 RAG 和微调这样的技术可以提供帮助，并且它们足以满足某些用例的需求，但是，对于另一类需要更高准确性、上下文理解和可解释性的用例，这些技术都会遇到瓶颈。</p>
+<p>早在 2012 年，谷歌就推出第二代搜索引擎，并在题为“Introducing the Knowledge Graph: things, not strings1”的标志性博客文章中介绍了该引擎。他们发现，除了执行所有字符串处理之外，如果使用知识图谱来组织所有这些网页中的字符串所代表的 <em>事物</em>，则可以大幅提升搜索能力。我们今天在生成式 AI 中看到了同样的模式。许多生成式 AI 项目都遇到了瓶颈，因为所使用的解决方案处理的是 <em>字符串而不是事物</em>，从而限制了结果的质量。</p>
+<p>快进到今天，处于领先地位的 AI 工程师和学术研究人员发现了与谷歌相同的结论：突破这一瓶颈的秘诀在于知识图谱。换句话说，将关于 事物 的知识融入基于统计的文本技术中。这与任何其他类型的 RAG 类似，只是除了向量索引之外，还需要调用知识图谱。换句话说，就是 _<strong>GraphRAG</strong> _！</p>
+<h4 id="graphrag突破传统-rag-瓶颈微软掀起革命">GraphRAG：突破传统 RAG 瓶颈，微软掀起革命</h4>
+<p>传统的基于向量的 RAG 方法仅仅依赖于文本的表征，缺乏对文本背后“事物”及其之间关系的理解，这限制了其在需要深度语义理解和复杂推理的场景下的应用。</p>
+<p>为了解决这个问题，微软研究院开发了一种名为<strong>GraphRAG</strong>  的全新技术，它将知识图谱整合到 RAG 中，利用图结构来表示和推理“事物”之间的关系，从而实现更精准的语义搜索和更深层次的知识理解。</p>
+<h4 id="什么是图">什么是图?</h4>
+<p>在深入探讨 GraphRAG 之前，让我们先来理解一下“图”的概念。当我们说“图”时，我们指的是像下面这样的东西：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHePiaiagwYrbkeXYbwG4YHIIIdu6LrCQvzXlIicFXRyksHqsEejwsOEdh9A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<blockquote>
+<p>虽然此图像已被广泛用于示例知识图谱，但原始来源和作者仍未确定。已知最早的使用似乎是 Farahnaz Akrami 的这篇 Medium 文章。如果您是此图像的创建者，请联系我们，以便我们提供正确的署名。</p>
+</blockquote>
+<p>或者这个：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeB1Ntn0R3q7AmV0WtJTP1LZzbjtAkRzxRUs5DONe9wgG5vJm6h7eyoA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<blockquote>
+<p>William Lyon 的《权力的游戏》可视化。</p>
+</blockquote>
+<p>或者这个：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeoszjWQgibjHbibmcoNAykSiaqTDHn3iasjJTibib58u3JD2QT5Z9HqHELw8w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<blockquote>
+<p>伦敦地铁地图（来源：伦敦交通局）。有趣的是，伦敦交通局最近部署了一个图形驱动的数字孪生，以改进事件响应并减少拥堵。</p>
+</blockquote>
+<p>简而言之，图是一种结构化的数据表示方式，它由节点和边组成，节点代表“事物”，边代表“事物”之间的关系。这种表示方式能够更好地捕捉现实世界的复杂性和关联性，为 AI 理解和推理提供了更强大的基础。</p>
+<h4 id="graphrag-的工作原理">GraphRAG 的工作原理</h4>
+<p>GraphRAG 的工作原理可以概括为以下几个步骤：</p>
+<ol>
+<li>
+<p>1.<strong>创建领域图谱和词汇图谱</strong> : 领域图谱用于表示与特定应用领域相关的世界模型，例如金融、医疗保健等；而词汇图谱则用于表示文本的结构和语义关系，例如文档、段落、实体之间的关系等。</p>
+</li>
+<li>
+<p>2.<strong>利用 LLM 从非结构化数据中提取实体和关系</strong> : GraphRAG 利用 LLM 的自然语言理解能力，从非结构化数据中自动提取实体、关系以及它们的属性，并将其用于构建知识图谱。</p>
+</li>
+<li>
+<p>3.<strong>将知识图谱与向量索引结合，进行更精准的语义搜索</strong> : GraphRAG 将知识图谱中的结构化信息与向量索引中的语义信息相结合，可以更精准地理解用户查询背后的意图，并检索到更相关的文本片段。</p>
+</li>
+<li>
+<p>4.<strong>利用图遍历和推理能力，提供更完整、上下文相关的答案</strong> : GraphRAG 可以根据知识图谱中的关系路径进行图遍历和推理，从而获得更完整、上下文相关的答案，而不仅仅是简单地拼凑文本片段。</p>
+</li>
+</ol>
+<h4 id="graphrag-与-rag">GraphRAG 与 RAG</h4>
+<p>LlamaIndex 的创始人 Jerry Liu 认为将 GraphRAG 视为包含向量是有帮助的。这与“仅限向量的 RAG”不同，后者严格基于文本中单词的嵌入相似性。</p>
+<p>从根本上说，GraphRAG 就是 RAG，其中检索路径包含一个知识图谱。如下所示，核心 GraphRAG 模式非常简单。它与使用向量 4 的 RAG 基本相同，只是在图中添加了一个知识图谱层。</p>
+<h4 id="graphrag-模式">GraphRAG 模式</h4>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeD2sBkxWr4VlicekIUiafKsCL9cmZZhpVpTMibcIg82BPMove74JzSxAcQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在这里，你可以看到一个图查询被触发了。它可以选择性地包含一个向量相似性组件。你可以选择将图和向量分别存储在两个不同的数据库中，或者使用像 Neo4j 这样也支持向量搜索的图数据库。</p>
+<h4 id="两种知识表示类型向量和图">两种知识表示类型：向量和图</h4>
+<p>典型的 RAG（向量搜索）的核心是接收一大块文本，并从候选的文本材料中返回概念上相似的文本。这非常神奇，而且对于基本搜索非常有用。</p>
+<p>你可能不会每次都想到向量是什么样子，或者相似度计算在做什么。让我们从人类的角度、向量的角度和图的角度来看待苹果：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHe9ibBBCyUL2Ob1QWAMm6gpW3HGeelGk8PzQ7wQpL7Rvyky42eWePCpVg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>人类的表征是复杂、多维的，我们无法用纸笔完全捕捉。让我们发挥一些诗意的想象力，想象一下这幅诱人的图画代表了一个苹果在所有感知和概念上的荣耀。</p>
+<p>苹果 2 的向量表示是一个数字数组，是统计领域的构造。向量的魔力在于，它们各自以编码的形式捕捉了其对应文本的本质。然而，在 RAG 上下文中，只有当你需要识别一小段文字与另一小段文字的相似程度时，它们才有价值。做到这一点很简单，只需运行一个相似度计算（又称向量数学）并获得匹配即可。但是，如果你想理解向量内部的内容，了解向量周围的内容，掌握文本中表示的事物，或者理解所有这些内容如何融入更大的上下文，那么向量作为一种表示形式就无法做到这一点。</p>
+<p>相比之下，知识图谱是对世界的一种声明性（或者用 AI 的术语来说是符号性）的表示。因此，人类和机器都可以理解和推理知识图谱。这很重要，我们将在后面重新讨论。此外，你还可以查询、可视化、注释、修复和扩展知识图谱。知识图谱代表了你的世界模型 3，即你正在处理的领域中代表世界的那一部分。</p>
+<h4 id="graphrag-的核心优势neo4j-cto-emil-eifrem-详解">GraphRAG 的核心优势：Neo4j CTO Emil Eifrem 详解</h4>
+<p>Emil Eifrem 在文章中详细阐述了 GraphRAG 相对于仅限向量的 RAG 的好处，主要分为三大类：</p>
+<ol>
+<li>
+<ol>
+<li>更高的准确性和更完整的答案（<strong>运行时/生产</strong>  好处）</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>创建知识图谱后，构建 5 和后续维护 RAG 应用程序都会更容易（<strong>开发时间</strong>  好处）</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>更好的可解释性、可追溯性 6 和访问控制（<strong>治理</strong>  好处）</li>
+</ol>
+</li>
+</ol>
+<p>让我们深入探讨一下：</p>
+<h4 id="1更高的准确性和更有用的答案">#1：更高的准确性和更有用的答案</h4>
+<p>我们从 GraphRAG 中看到的第一个（也是最直接的）好处是<strong>更高质量的响应</strong> 。除了我们从客户那里看到的越来越多示例外，越来越多的学术研究也支持这一点。其中一个例子来自数据目录公司 Data.world。2023 年底，他们发布了一项研究，结果表明，在 43 个业务问题中，<strong>GraphRAG 平均将 LLM 响应的准确率提高了 3 倍</strong> 。该基准测试发现，当有知识图谱的支持时，响应的准确率有显著提高。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHe2kIvgruRn1BP9VXsAQ2fDqwlbuoEWeJSIkrx5YVHzx2tICibzQZyXhA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>更深入地探讨准确性这个话题，重要的不仅仅是答案是否_正确_，还有答案的_有用_ 程度。人们在 GraphRAG 中发现，答案不仅更准确，而且更丰富、更完整、更有用。LinkedIn 最近发表的一篇描述 GraphRAG 对其客户服务应用程序影响的论文提供了一个很好的例子。GraphRAG 提高了回答客户服务问题的正确性和丰富度（以及有用性），将其客户服务团队的每个问题的平均解决时间减少了 28.6% 8。</p>
+<p>类似的例子来自 Neo4j 与我们在 GCP、AWS 和微软的合作伙伴联合举办的 GenAI 研讨会。下面的示例查询针对的是 SEC 文件的集合，它很好地说明了使用向量 + GraphRAG 时可以获得的答案类型与仅使用向量 RAG 时可以获得的答案类型之间的区别：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHev3GpkcVgowGiam6UDEqiaQQNGdDDV10W8JdAiawp1N1JkjEbIUQSp5OWQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>请注意描述可能受锂短缺影响的公司的_特征_ 与列出可能受影响的_具体公司_ 之间的区别。如果你是一名投资者，希望在市场发生变化时重新平衡你的投资组合，或者是一家公司，希望在自然灾害面前重新平衡其供应链，那么能够获得后者而不仅仅是前者可能会改变游戏规则。在这里，两个答案都是准确的。第二个答案显然更有用。</p>
+<p>Jesus Barrasa 的 Going Meta 第 23 集以法律文档用例为例，从词汇图开始，提供了另一个很好的例子。</p>
+<p>那些关注 X 领域并在 LinkedIn 上活跃的人会发现，不仅实验室，而且各个领域都会定期出现新的例子。在这里，Lettria 的 Charles Borderie 给出了一个仅限向量的 RAG 与 GraphRAG 的对比示例，该示例针对的是一个基于 LLM 的文本到图的管道，该管道将 10,000 篇财经文章摄取到一个知识图谱中：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeQHFkOdKwqWHEnD8xPaWor8cFNeYVSJbh5452ulO9KVvibiaTlgnHuxmw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>如你所见，与普通 RAG 相比，GraphRAG 不仅显著提高了答案质量，而且答案使用的标记数量减少了三分之一。</p>
+<p>我要举的最后一个值得注意的例子来自 Writer。他们最近发布了一份基于 RobustQA 框架的 RAG 基准测试报告，将他们基于 GraphRAG 的方法 9 与同类最佳工具进行了比较。GraphRAG 得分为 86%，与竞争对手的得分在 33% 到 76% 之间相比有了显著提高，并且延迟相当甚至更好。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeia8PWkalrKKiaiahbBhTH0PdOyYLWiaWuBqiatpykFCtORmUUfy4XlD3YwQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>我每周都会与许多行业的客户会面，他们使用各种 GenAI 应用程序都体验到了类似的积极效果。知识图谱通过提高结果的准确性和实用性，为 GenAI 扫清了障碍。</p>
+<h4 id="2改进数据理解加快迭代速度">#2：改进数据理解，加快迭代速度</h4>
+<p>知识图谱在概念上和视觉上都很直观。能够探索它们通常会揭示新的见解。许多用户报告的一个意外的额外好处是，一旦他们投资创建了知识图谱，他们就会发现它以意想不到的方式帮助他们构建和调试 GenAI 应用程序。这在一定程度上与将数据视为图谱如何描绘应用程序底层数据的生动画面有关。该图还为你提供了将答案追溯到数据的钩子，并将该数据追溯到因果链。</p>
+<p>让我们看一个使用上面锂暴露问题的例子。如果你将向量可视化，你将得到如下所示的内容，只是行和列要多得多：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHe8FicjZPLh2DtufzYaYQicCUwZdjl3icjWVFAuibpxh8iblq3CutXuJ4813g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>当你将数据作为图谱处理时，你可以用向量表示无法做到 的方式来理解它。</p>
+<p>以下是 LlamaIndex 最近举办的一次网络研讨会的示例 10，展示了他们提取向量化块图（词汇图）和 LLM 提取的实体（领域图）并将两者与“提及”关系联系起来的能力：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHe2DkYr7gxB3eQBJicmo1rDJKog1gMp4aRlE3LKGQdnvKvESqnZRy71Xw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（你可以在 Langchain、Haystack、SpringAI 等中找到类似的示例。）</p>
+<p>查看此图，你可能开始明白，拥有一个存储数据的丰富结构如何为新的开发和调试可能性打开了大门。各个数据片段保留了它们的价值，而结构本身则存储和传达了额外的含义，你可以利用这些含义为应用程序添加更多智能。</p>
+<p>这不仅仅是可视化的问题。这也是以一种能够传达和存储含义的方式构建数据结构的效果。以下是来自一家知名金融科技公司的开发人员在将知识图谱引入其 RAG 工作流程一周后的反应：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeYicj08lcwqpWmGzibjC6ePUjMfFmrWMXBsQehECcFe56ggPebPd2DyibA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这位开发人员的反应与测试驱动开发的假设相符，即验证（而不是信任）答案的正确性。就我个人而言，我感到毛骨悚然的是，我将 100% 的自主权交给了天网，让它做出完全不透明的决定！更具体地说，即使是非末日论者也能体会到看到与“苹果公司”相关的块或文档不应该映射到“苹果唱片公司”的价值。由于最终驱动 GenAI 决策的是_数据_，因此手头有工具来评估和确保正确性至关重要。</p>
+<h4 id="3治理可解释性安全性等">#3：治理：可解释性、安全性等</h4>
+<p>GenAI 决策的影响 11 越大，你就越需要能够说服最终负责的人_信任_ 决策（如果决策出错）。这通常涉及到能够审计每个决策。它还需要可靠且可重复的良好决策记录。但这还不够。你还需要能够在他们对某个决定提出质疑时向其解释其背后的原因。</p>
+<p>LLM 本身并不能很好地做到这一点。是的，你可以获得用于做出决定的文档的参考资料。但这些并不能解释决定本身——更不用说 LLM 众所周知会编造这些参考资料！知识图谱的运作方式完全不同，它使 GenAI 管道内的推理逻辑更加清晰，输入也更容易解释。</p>
+<p>让我们继续上面的一个例子，Lettria 的 Charles 将从 10,000 篇财经文章中提取的实体加载到一个知识图谱中，并将其与 LLM 一起用于执行 GraphRAG。我们已经看到了这如何提供更好的答案。让我们来看看数据：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHefHjOootDzkcUYea63ia1Mvib6GUk7Y74l9PibMsCfeVEGE4eSEWgDDmbA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>看到数据作为图表是第一步。数据也是可导航和可查询的，并且可以随着时间的推移进行更正和更新。治理优势在于，它可以更容易地查看和审计数据的“世界模型”。与提供相同数据的向量版本相比，使用图表更有可能让最终对决策负责的人理解它。在质量保证方面，将数据存储在知识图表中可以更容易地找出数据中的错误和意外（无论是令人愉快的还是其他），并将其追溯到源头。你还可以在图表中捕获出处和置信度信息，并将其不仅用于计算，还用于解释。当你查看相同数据的仅限向量版本时，这是不可能的，因为正如我们前面所讨论的，对于普通人，甚至高于平均水平的人来说，这都是非常难以理解的！</p>
+<p>知识图表还可以显著增强安全性和隐私性。在构建原型时，这往往不是最优先考虑的因素，但它是走向生产的关键部分。如果你身处银行或医疗保健等受监管行业，则任何给定员工对信息的访问权限都可能取决于该员工的角色。LLM 和向量数据库都无法很好地限制信息范围以匹配角色。你可以在知识图表中使用权限轻松处理这个问题，在知识图表中，任何给定参与者访问数据的能力都由数据库控制，并排除他们不允许查看的结果。下面是一个简单安全策略的模型，你可以在知识图表中使用细粒度的访问控制来实现它：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHe6eGv0icBjibvXcYYhAKjb3GjfribYXI8lXtmt3ONTYIp85scAxOewicQ2g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="graphrag-应用案例从研究到实践">GraphRAG 应用案例：从研究到实践</h4>
+<p>GraphRAG 不仅仅是一个停留在研究阶段的概念，它已经在多个领域展现出了巨大的应用潜力。</p>
+<ul>
+<li>
+<p>• 微软研究院的研究成果表明，GraphRAG 在处理叙述性私有数据方面表现出色，显著提升了问答和主题发现的效率和准确性。例如，在法律领域，GraphRAG 可以帮助律师从大量的法律文书中快速找到与案件相关的关键信息，并预测案件的走向。微软发现，“通过使用 LLM 生成的知识图谱，GraphRAG 极大地改进了 RAG 的“检索”部分，用高度相关的上下文填充了上下文窗口，从而得到了更好的答案并捕获了证据来源。” 他们还发现，与其他方法相比，GraphRAG 需要的标记数量减少了 26% 到 97%，这使得它不仅更善于提供答案，而且更便宜，可扩展性也更强 7。</p>
+</li>
+<li>
+<p>• LinkedIn 将 GraphRAG 应用于其客户服务系统，并取得了显著的成果。通过利用 GraphRAG 回答客户提出的问题，LinkedIn 缩短了客户服务团队的平均问题解决时间，提高了客户满意度。LinkedIn 最近发表的一篇描述 GraphRAG 对其客户服务应用程序影响的论文提供了一个很好的例子。GraphRAG 提高了回答客户服务问题的正确性和丰富度（以及有用性），将其客户服务团队的每个问题的平均解决时间减少了 28.6% 8。</p>
+</li>
+<li>
+<p>• Writer 公司在其开发的 RAG 基准测试中，将 GraphRAG 与其他 RAG 方法进行了对比，结果显示，GraphRAG 在 RobustQA 框架测试中取得了领先的准确率和延迟表现。这充分证明了 GraphRAG 在处理复杂问题和大型数据集方面的优势。最后一个值得注意的例子来自 Writer。他们最近发布了一份基于 RobustQA 框架的 RAG 基准测试报告，将他们基于 GraphRAG 的方法 9 与同类最佳工具进行了比较。GraphRAG 得分为 86%，与竞争对手的得分在 33% 到 76% 之间相比有了显著提高，并且延迟相当甚至更好。</p>
+</li>
+</ul>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHepDTLRQX4WhiblIjhwVd5oKWVkkH2Xgu4vQjKJYe1NqE4fJzJ5AxNpSg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<blockquote>
+<p>我每周都会与许多行业的客户会面，他们使用各种 GenAI 应用程序都体验到了类似的积极效果。知识图谱通过提高结果的准确性和实用性，为 GenAI 扫清了障碍。</p>
+</blockquote>
+<h4 id="graphrag引领智能检索新时代">GraphRAG：引领智能检索新时代</h4>
+<p>GraphRAG 的出现，标志着智能检索领域的一次重大突破，它将引领智能检索进入一个全新的时代。</p>
+<ul>
+<li>
+<p>•<strong>超越文本分析</strong> : GraphRAG 将自然语言处理 (NLP) 的关注点从文本分析转向对“事物”及其关系的理解，为构建更智能的 AI 应用开辟了新的可能性。传统 NLP 技术主要关注文本的语法、语义和语用分析，而 GraphRAG 则更进一步，试图理解文本背后的真实世界。这种从“字符串”到“事物”的转变，将推动 AI 向着更深层次的知识理解迈进。</p>
+</li>
+<li>
+<p>•<strong>可解释性驱动信任</strong> : GraphRAG 强调可解释性，增强了人们对 AI 决策的信任度，为负责任地部署 AI 应用提供了保障。随着 AI 应用的普及，人们越来越关注 AI 决策的透明度和可解释性。GraphRAG 通过提供可理解的推理路径，让用户了解 AI 决策背后的原因，从而建立用户对 AI 的信任，推动 AI 在各个领域的应用。</p>
+</li>
+<li>
+<p>•<strong>GraphRAG 生态系统日益完善</strong> : Neo4j、LlamaIndex、Langchain 等平台和工具的支持，推动 GraphRAG 技术的快速发展和普及。越来越多的开发者和企业开始关注并采用 GraphRAG 技术，这将进一步推动 GraphRAG 生态系统的完善，为 GraphRAG 的应用落地提供更强大的支持。</p>
+</li>
+</ul>
+<h4 id="graphrag-生命周期">GraphRAG 生命周期</h4>
+<p>使用 GraphRAG 的 GenAI 应用程序遵循与任何 RAG 应用程序相同的模式，只是在开始时添加了一个“创建图”步骤：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeFscU3OgFO70MmoWRLsY63yZUYVdqbSXZsnDSia5RYqAdcZOOO1lqyYQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>创建图类似于对文档进行分块并将它们加载到向量数据库中。工具的进步使得图的创建变得如此简单。好消息有三方面：</p>
+<ol>
+<li>
+<ol>
+<li>图是高度迭代的——你可以从“最小可行图”开始，然后逐步扩展。</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>一旦你的数据进入知识图谱，就很容易进行演变。你可以添加更多类型的数据，以获得数据网络效应的好处。你还可以提高数据的质量，以提高应用程序结果的价值。</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>堆栈的这一部分正在快速改进，这意味着随着工具变得更加复杂，图的创建只会变得更容易。</li>
+</ol>
+</li>
+</ol>
+<p>将图创建步骤添加到前面的图片中，你会得到一个如下所示的管道：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeJvXZOHEA98e2p6D9hsiaH8XHYSMMwngroMic7ZSjWib1Ws1VqyUw9G4mA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="知识图谱创建">知识图谱创建</h4>
+<p>人们经常问我构建知识图谱需要什么。了解答案的第一步是了解与 GenAI 应用程序最相关的两种图：</p>
+<ol>
+<li>1.<strong>领域图</strong> 是与你的应用程序相关的世界模型的图形表示。下面是一个简单的例子：</li>
+</ol>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHebEVYp1XlT7YT254FpLdqFXdIibGWoibURMS7cRMX2ibyibRFdTfaLFx74A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<ol start="2">
+<li>2.<strong>词汇图</strong>  12 是文档结构的图形。最基本的词汇图对每个文本块都有一个节点：</li>
+</ol>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHe3RArICe5UF5LLEdogswSaBMgHS9TIzWKeGVgLna42cYPsyurtUbzWg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>人们经常将其扩展为包含块和文档对象（如表格）、章节、部分、页码、文档名称/ID、集合、来源等之间的关系。你还可以像这样组合领域图和词汇图：</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHeIl6MTB8QVdD4VibRFdekoQSElnM8LEWdSHxr4WBvsngoTgehcbMmPkQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>创建词汇图很容易，很大程度上只是一个简单的解析和分块策略 13 问题。至于领域图，有几种不同的路径，具体取决于你引入的数据是来自结构化源、非结构化文本，还是两者兼而有之。幸运的是，用于从非结构化数据源创建知识图谱的工具正在迅速改进。例如，新的 Neo4j 知识图谱构建器可以从 PDF 文档、网页、YouTube 剪辑或维基百科文章中自动创建知识图谱。只需单击几下按钮，你就可以可视化（当然也可以查询）输入文本的领域图和词汇图。它功能强大且有趣，并显著降低了创建知识图谱的门槛。</p>
+<p>有关客户、产品、地理位置等的数据可能以结构化形式存储在企业的某个地方，并且可以直接从其所在位置获取。以最常见的情况为例，即数据存储在关系数据库中，你可以使用标准工具 14，这些工具遵循久经考验的关系到图谱映射规则。</p>
+<h4 id="使用知识图谱">使用知识图谱</h4>
+<p>一旦你有了知识图谱，就会有越来越多的框架可用于执行 GraphRAG，包括 LlamaIndex 属性图索引、Langchain 的 Neo4j 集成以及 Haystack 等。这个领域发展很快，但我们现在已经到了编程方法变得越来越简单的地步。</p>
+<p>图构建方面也是如此，例如 Neo4j 导入器（它有一个用于将表格数据映射和导入到图谱中的图形用户界面）和上面提到的 Neo4j 新的 v1 LLM 知识图谱构建器。下图总结了构建知识图谱的步骤。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHewyuSf5ZmmanD64mJib2Fa2OAnic5kRdazdVQ3xZt6b18gRb5FgPQOib6Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>你还会发现，使用知识图谱的另一个用途是将人类语言问题映射到图数据库查询。Neo4j 的一个新的开源工具 NeoConverse 旨在帮助对图谱进行自然语言查询。这是朝着概括这一点迈出的坚实的第一步 15。</p>
+<p>虽然图谱确实需要一些工作和学习才能上手，但好消息是，随着工具的改进，它正变得越来越容易。</p>
+<h4 id="结论graphrag-的下一个自然步骤是-rag">结论：GraphRAG 的下一个自然步骤是 RAG</h4>
+<p>LLM 和基于向量的 RAG 中固有的基于单词的计算和语言技能可以提供_良好_ 的结果。为了获得始终如一的_出色_ 结果，除了_单词模型_ 之外，还需要超越字符串并捕获_世界模型_。正如谷歌发现，要掌握搜索，他们需要超越单纯的文本分析，还要绘制出字符串背后的底层事物，我们开始看到人工智能领域也出现了同样的模式。这种模式就是 GraphRAG。</p>
+<p>进步发生在 S 曲线上：当一项技术达到顶峰时，另一项技术就会推动进步并超越前者。随着 GenAI 的发展，对于那些答案质量至关重要、内部、外部或监管利益相关者需要可解释性，或者需要对数据访问进行细粒度控制以保护隐私和安全性的用途，你的下一个 GenAI 应用程序很有可能会使用知识图谱。</p>
+<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/9NPFUkqkdFMHHPzMFqVhvibRcsXeHrgHelrwFOmL4Gjdleia1QFuibaUFDGUw3sjDvAqNXV0eSJTpVPiaTvqIyibG7w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="你可以亲身体验-graphrag">你可以亲身体验 GraphRAG！</h4>
+<p>如果你准备好用 GraphRAG 迈出下一步，我邀请你尝试 Neo4j LLM 知识图谱构建器。这个简单的 Web 应用程序可以让你只需点击几下，就可以从 PDF、网页和 YouTube 视频等非结构化文本源创建知识图谱。它是亲身体验 GraphRAG 强大功能的完美平台。</p>
+<p>使用 LLM 知识图谱构建器，你可以：</p>
+<ul>
+<li>
+<p>• 连接到你免费的基于云的 Neo4j 实例，并从你喜欢的文本源构建图谱。</p>
+</li>
+<li>
+<p>• 使用交互式可视化功能探索新创建的知识图谱。</p>
+</li>
+<li>
+<p>• 与你的数据聊天，并对 GraphRAG 进行测试。</p>
+</li>
+<li>
+<p>• 将你的知识图谱集成到应用程序中，并解锁新的见解。</p>
+</li>
+</ul>
+<p>要开始使用，请启动一个免费的 AuraDB 实例，并构建你的知识图谱。你可以在此处详细了解 Neo4j LLM 知识图谱构建器并获得导览！</p>
+<h4 id="相关链接">相关链接</h4>
+<ul>
+<li>
+<p>• Neo4j LLM Knowledge Graph Builder: <a href="https://llm-graph-builder.neo4jlabs.com/">https://llm-graph-builder.neo4jlabs.com/</a></p>
+</li>
+<li>
+<p>• Microsoft Research Blog: <a href="https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/">https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/</a></p>
+</li>
+</ul>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
