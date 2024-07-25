@@ -50,9 +50,9 @@ aibard123.com 是一个开源导航网站，旨在为爱好人工智能的人提
 
 ![aibard123_screenshot](https://aibard123.com/assets/images/screenshot/aireport.png)
 
-- AI文摘
+- AI新工具
 
-![aibard123_screenshot](https://aibard123.com/assets/images/screenshot/aidigest.png)
+![aibard123_screenshot](https://aibard123.com/assets/images/screenshot/aitools.jpg)
 
 如果想看看效果可也访问：[aibard123.com](https://aibard123.com/?github_web) 或者[aibard123.top](https://aibard123.top/?github_web)
 
