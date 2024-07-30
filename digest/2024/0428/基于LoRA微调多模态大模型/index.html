@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNIRNEQKUBr4QYdWLhJicu82gADzgH1ibSnf68ibpnN2cRaBkIFwhnbQVwsQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNIRNEQKUBr4QYdWLhJicu82gADzgH1ibSnf68ibpnN2cRaBkIFwhnbQVwsQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -429,11 +429,11 @@
 <p>本文为大模型参数高效微调技术实战的第七篇。本文将结合使用 LoRA 来训练用于图生文的blip2-opt-2.7b模型。</p>
 <h4 id="数据集和模型准备">数据集和模型准备</h4>
 <p>数据集使用6名足球运动员的虚拟数据集，带有可用于微调任何图像描述模型的文字说明。数据集下载地址：https://huggingface.co/datasets/ybelkada/football-dataset</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNIzeuogEuKLxTiay4WIZY5LcbD6uDCEEFNDIqkRdnDYiaLmiaynKribmBRPw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNIzeuogEuKLxTiay4WIZY5LcbD6uDCEEFNDIqkRdnDYiaLmiaynKribmBRPw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>模型为利用 OPT-2.7B 训练的 BLIP-2 模型，其由三个模型组成，下面会详细介绍，模型下载地址：https://huggingface.co/Salesforce/blip2-opt-2.7b</p>
 <h4 id="blip-2-简介">BLIP-2 简介</h4>
 <p><strong>BLIP-2</strong>  通过利用预训练的视觉模型和语言模型来提升多模态效果和降低训练成本，预训练的视觉模型能够提供高质量的视觉表征，预训练的语言模型则提供了强大的语言生成能力。如下图所示，由一个预训练的<strong>Image Encoder</strong> ，一个预训练的<strong>Large Language Model</strong>  和一个可学习的<strong>Q-Former</strong>  组成。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNINJKr1KlpXDaic3CU2ickSBbWa1kmjLicSupib2jKnPYelaNmywFE8IPL1Q/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNINJKr1KlpXDaic3CU2ickSBbWa1kmjLicSupib2jKnPYelaNmywFE8IPL1Q/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>*<strong>Image Encoder</strong> ：负责从输入图片中提取视觉特征。</p>
 <p>*<strong>Large Language Model</strong> ：负责文本生成。</p>
 <p><em><strong>Q-Former</strong> ：负责弥合视觉和语言两种模态的差距，由</em><em>Image Transformer</em>* 和<strong>Text Transformer</strong> 两个子模块构成，它们共享相同自注意力层，如下图所示。</p>
@@ -442,13 +442,13 @@
 
 ***Text Transformer** 作为文本编码器和解码器，它的自注意力层与Image Transformer共享，根据预训练任务，应用不同的自注意力掩码来控制Query和文本的交互方式。
 </code></pre>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNIMJRlYHndp6hGDHJRAJxSjQEzIibN4IdPM28J7WRLgicIaMvCE0247cnw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNIMJRlYHndp6hGDHJRAJxSjQEzIibN4IdPM28J7WRLgicIaMvCE0247cnw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>为了减少计算成本并避免灾难性遗忘的问题，BLIP-2 在预训练时冻结预训练图像模型和语言模型，但是，简单地冻结预训练模型参数会导致视觉特征和文本特征难以对齐，为此BLIP-2提出两阶段预训练 Q-Former 来弥补模态差距：<strong>表示学习阶段和生成学习阶段</strong> 。</p>
 <p><strong>表示学习阶段</strong></p>
 <p>在表示学习阶段，将 Q-Former 连接到冻结的 Image Encoder，训练集为图像-文本对，通过联合优化三个预训练目标，在Query和Text之间分别采用不同的注意力掩码策略，从而控制Image Transformer和Text Transformer的交互方式。</p>
 <p><strong>生成学习阶段</strong></p>
 <p>在生成预训练阶段，将 Q-Former连接到冻结的 LLM，以利用 LLM 的语言生成能力。这里使用全连接层将输出的 Query 嵌入线性投影到与 LLM 的文本嵌入相同的维度，然后，将投影的Query嵌入添加到输入文本嵌入前面。由于 Q-Former 已经过预训练，可以提取包含语言信息的视觉表示，因此它，可以有效地充当信息瓶颈，将最有用的信息提供给 LLM，同时删除不相关的视觉信息，减轻了 LLM 学习视觉语言对齐的负担。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNIRNEQKUBr4QYdWLhJicu82gADzgH1ibSnf68ibpnN2cRaBkIFwhnbQVwsQ/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBFPg4tdFvib1DW0LlbuSicjNIRNEQKUBr4QYdWLhJicu82gADzgH1ibSnf68ibpnN2cRaBkIFwhnbQVwsQ/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>该模型可用于如下的任务：图像描述生成、视觉问答任务、通过将图像和之前的对话作为提示提供给模型来进行类似聊天的对话。</p>
 <p>先预先准备Processor、模型和图像输入。</p>
 <pre><code>from PIL import Image  
@@ -561,9 +561,9 @@ for epoch in range(11):
 </li>
 </ul>
 <h4 id="heading"></h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/Nudicaj8u7eBFibBHRXJLeZoia1q7lEaSQh5nVoqyDeiaUUdoZ0ib71twL6CLICmOMJ25UuTFwl6ydwOXFbl8uiaYMAQ/640?wx_fmt=gif&amp;wxfrom=5&amp;wx_lazy=1&amp;tp=webp" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/y00icvcPjkfYXic35ml9MJkg41yEDAQhzc0iapH6CWjEX1NA3nKbfZutZD03lYTDD8xvsicziaB94zOohn2jEhFQnNg/640?wx_fmt=gif&amp;wxfrom=5&amp;wx_lazy=1&amp;tp=webp" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/Nudicaj8u7eBFibBHRXJLeZoia1q7lEaSQh5nVoqyDeiaUUdoZ0ib71twL6CLICmOMJ25UuTFwl6ydwOXFbl8uiaYMAQ/640?wx_fmt=gif&amp;wxfrom=5&amp;wx_lazy=1&amp;tp=webp" alt="">****</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/Nudicaj8u7eBFibBHRXJLeZoia1q7lEaSQh5nVoqyDeiaUUdoZ0ib71twL6CLICmOMJ25UuTFwl6ydwOXFbl8uiaYMAQ/640?wx_fmt=gif&amp;wxfrom=5&amp;wx_lazy=1&amp;tp=webp" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/y00icvcPjkfYXic35ml9MJkg41yEDAQhzc0iapH6CWjEX1NA3nKbfZutZD03lYTDD8xvsicziaB94zOohn2jEhFQnNg/640?wx_fmt=gif&amp;wxfrom=5&amp;wx_lazy=1&amp;tp=webp" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/Nudicaj8u7eBFibBHRXJLeZoia1q7lEaSQh5nVoqyDeiaUUdoZ0ib71twL6CLICmOMJ25UuTFwl6ydwOXFbl8uiaYMAQ/640?wx_fmt=gif&amp;wxfrom=5&amp;wx_lazy=1&amp;tp=webp" alt="">****</p>
 <p><strong>历史文章</strong></p>
 <p>**<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247488000&amp;idx=1&amp;sn=c6db931372bb7a8ab996062d11d57615&amp;chksm=fd3bfb53ca4c724512db47d98a9604e033b324c76256227d6955147e4d146570df22c99f4fea&amp;scene=21#wechat_redirect">2024年3月大模型文章集锦** </a></p>
 <p>**<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247487320&amp;idx=2&amp;sn=522fdf838d4ec03f24dbc7a11a3a5a65&amp;chksm=fd3be60bca4c6f1d0c9b0643db0d7334940fb592dac3b5fbf286c7232f6bb08b968fbd237a20&amp;scene=21#wechat_redirect">2024年2月大模型文章集锦** </a></p>

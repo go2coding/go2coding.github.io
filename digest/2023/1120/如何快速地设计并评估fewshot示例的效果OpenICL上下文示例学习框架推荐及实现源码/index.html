@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnGIcicyG8ECjVUew4mlRyibBy0auKo28kpqsK2GGwHYIA68Fztk5iboPrg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnGIcicyG8ECjVUew4mlRyibBy0auKo28kpqsK2GGwHYIA68Fztk5iboPrg/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -425,15 +425,15 @@
             <p>作者： 老刘说NLP  来源： <a href="https://mp.weixin.qq.com/s/D2Fbhs13IhpsLyCJoWSwGA">老刘说NLP</a></p>
 <p>今天是2023年11月18日，星期六，北京，天气晴。</p>
 <p>在昨天的文章中，我们谈了谈**《IN-CONTEXT LEARNING WITH ITERATIVE DEMON- STRATION SELECTION》** 这一工作，该工作提出了迭代示例选择（IDS）的方案，IDS利用Zero-shot-CoT，迭代选择多样化但仍与测试样本密切相关的示例作为ICL示例，并对比了不同构造方式的效果。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnz3OULZCibKuiabE31C3KKhDheDq8FOFibCXbU5MaCqnBtpCsm6joRN5bg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnz3OULZCibKuiabE31C3KKhDheDq8FOFibCXbU5MaCqnBtpCsm6joRN5bg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>常用的ICL示例构造方式如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnduuANYyKgTavnOusoxAhDTYE74mpVxrXVQYK6Kb6lY61LxTat2wkYw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnduuANYyKgTavnOusoxAhDTYE74mpVxrXVQYK6Kb6lY61LxTat2wkYw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>而最近在做评估方面的工作，<strong>在看Opencompass源码的时候，看到了其中对于prompt的一些生成策略，主要来自于OpenICL框架，OpenICL是一个用于上下文学习(In-context learning)工具包，同时也是一个LLLM评估的开源工具包，其中具体实现方式以及源码读了一通，很有趣。‍‍‍‍‍‍‍‍‍‍‍</strong></p>
 <p><strong>这对我们‍‍</strong> 如何快速地设计并评估few shot示例的效果很有帮助。推荐大家看看，其中还牵引出了好几个构造方案，本文对这些工作进行介绍，供大家一起参考。</p>
 <h4 id="一openicl上下文示例学习框架">一、OpenICL上下文示例学习框架</h4>
 <p>传统的微调方法不同，ICL采用预先训练的模式，适应了无形的任务，而没有任何参数更新。然而，由于所涉及的检索和推断方法多种多样，不同模型、数据集和任务都有不同的预处理要求，ICL的实施十分复杂。迫切需要为ICL建立一个统一灵活的框架，以方便上述组成部分的执行。</p>
 <p>《OpenICL: An Open-Source Framework for In-context Learning》这一工作，地址https://github.com/Shark-NLP/OpenICL项目。论文地址：<strong><a href="https://arxiv.org/abs/2303.02913">https://arxiv.org/abs/2303.02913</a></strong> 。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVndQMgfHjicPwicNXAcQIHEdcR77MlfgYMH1nVGV9FI7zus8rzMibXavWNQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVndQMgfHjicPwicNXAcQIHEdcR77MlfgYMH1nVGV9FI7zus8rzMibXavWNQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>基本的ICL流程如上图所示，OpenICL首先通过用户指定的检索方法（例如TopK或VoteK）从索引集中获取适当的上下文示例，针对每个测试输入或整个测试集。然后，根据提供的提示模板，将上下文示例和测试输入连接成单个序列。最后，所有提示都被馈送到语言模型中，通过定义的推理策略（例如Chain-of-thought）推断输出。</p>
 <p><strong>1、Retriever模块</strong></p>
 <p>Retriever负责从预先存在的训练数据中检索上下文示例。该模块支持语料库级别的（即仅为整个测试集检索一组示例）和实例级别的（即为每个测试输入分别检索示例）检索方法。包括以下方法：</p>
@@ -447,7 +447,7 @@
 <p>另一种是困惑度方法，<strong>Brown等人计算输入和候选答案的序列连接的句子困惑度，并选择困惑度最低的作为最终预测结果。</strong></p>
 <p>例如，对于ppl方式，ppl方式旨在解决base模型指令不遵循以及生成方式评估太慢的问题，可以应用于选择题以及生成任务上。</p>
 <p>假设由ABCD四个选项。对于一个样本，构造四个prompt，分别由问题+”答案：“+[ABCD]中的一个组成。然后将这四个prompt分别输入到大模型中，调用大模型生成logits。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnAs7Y4GLicqO88y4IqSCXyuSTIiamgbtZxAmYUicHUFpQqNmCW7OyxicXMA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnAs7Y4GLicqO88y4IqSCXyuSTIiamgbtZxAmYUicHUFpQqNmCW7OyxicXMA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>huggingface中关于ppl的实现：</p>
 <pre><code>import torch  
 from tqdm import tqdm  
@@ -484,13 +484,13 @@ ppl = torch.exp(torch.stack(nlls).mean())
 <p>其思想在于：遵循了滑窗的策略，即设置一个窗口，按照某个步长向右滑动，每次在窗口内计算ppl，直到窗口滑到结尾，然后将所有的ppl进行求平均得到最终的ppl。</p>
 <p><strong>3、几个例子</strong></p>
 <p>通过串联rtriver,inference、lm、metric等，可以快速地进行模型评估验证。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnGIcicyG8ECjVUew4mlRyibBy0auKo28kpqsK2GGwHYIA68Fztk5iboPrg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnGIcicyG8ECjVUew4mlRyibBy0auKo28kpqsK2GGwHYIA68Fztk5iboPrg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>1)采用PPL推理策略的 GPT2-XL (1.5B)在SST-2数据集上的ICL性能。</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVn1NCaXkubQAg2hnicryOUrNcQnSKbiaVvg3ib2B7ruibvAgglhWyiavhGBiag/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVn1NCaXkubQAg2hnicryOUrNcQnSKbiaVvg3ib2B7ruibvAgglhWyiavhGBiag/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>2) 基于直接生成方式-bleu推理策略评估XGLM (7.5B)在WMT16 (de-en) 数据集上的ICL性能</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnO02tugToljn3q6xr12AFKicIYibnib0ENcVfxWk5C0ibIEhgZzJj8K8pOA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnO02tugToljn3q6xr12AFKicIYibnib0ENcVfxWk5C0ibIEhgZzJj8K8pOA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>3）评估GPT-3 (175B) text-davinci-003 版本在GSM8K数据集上使用思维链推理策略的ICL性能</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnwmZibemYoQk39xIS20E8gbOalLiarkiauWBAzN0icFrvQ4oUEoPic5CXKCQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgCpRAqpMjqmEkzjpcThuVnwmZibemYoQk39xIS20E8gbOalLiarkiauWBAzN0icFrvQ4oUEoPic5CXKCQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <h4 id="二opencompass中几个内置的fewshot源码实现">二、Opencompass中几个内置的fewshot源码实现</h4>
 <p>Opencompass中几个内置的fewshot主要依靠retriever模块，主要用于大模型从数据集中选择N个固定数量的样本加入到prompt中。</p>
 <p>其预置了多种不同的样本选择方式。这个和基于知识库的问答应用差不多，主要是通过一些方法选择最适合当前数据样本的上下文召回，帮助大模型更好得理解当前数据样本。</p>

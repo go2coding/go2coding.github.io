@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPq5ndpH4nPSZlZ4rwjal4B10tEY5qOBqeYJ9rjQ9cWP2HPrUo7WpzI2g/640?wx_fmt=jpeg&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPq5ndpH4nPSZlZ4rwjal4B10tEY5qOBqeYJ9rjQ9cWP2HPrUo7WpzI2g/640?wx_fmt=jpeg&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -430,23 +430,23 @@
 </blockquote>
 <p>众所周知，大语言模型还在快速发展，应该有很多可以优化的地方。我用纯 C 语言来写，是不是能优化一大截？</p>
 <p>也许很多人开过这样的脑洞，现在有大佬实现了。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPqxa2UwibSWO3QCOLI4kWeT5F23zMw6w3Lc6u8RJulib67FibTwM8PHKq3g/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPqxa2UwibSWO3QCOLI4kWeT5F23zMw6w3Lc6u8RJulib67FibTwM8PHKq3g/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p>今天凌晨，前特斯拉 Autopilot 负责人、OpenAI 科学家 Andrej Karpathy 发布了一个仅用 1000 行代码即可在 CPU/fp32 上实现 GPT-2 训练的项目「llm.c」。</p>
 <p>GitHub 链接：https://github.com/karpathy/llm.c</p>
 <p>消息一出，立即引发了机器学习社区的热烈讨论，项目的 Star 量不到七个小时就冲上了 2000。有网友表示，大佬从零开始用 C 语言写大模型只为好玩，我等只能膜拜：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPq5cuOs0LmKP87Ric6PNTicbicslyhmqZBbQWFOStjn19K7pRSIXiamGM79w/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPq5cuOs0LmKP87Ric6PNTicbicslyhmqZBbQWFOStjn19K7pRSIXiamGM79w/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p>llm.c 旨在让大模型（LM）训练变得简单 —— 使用纯 C 语言 / CUDA，不需要 245MB 的 PyTorch 或 107MB 的 cPython。例如，训练 GPT-2（CPU、fp32）仅需要单个文件中的大约 1000 行干净代码（clean code），可以立即编译运行，并且完全可以媲美 PyTorch 参考实现。</p>
 <p>Karpathy 表示，选择从 GPT-2 开始，是因为它是 LLM 的鼻祖，是大语言模型体系首次以现代形式组合在一起，并且有可用的模型权重。</p>
 <p>原始训练的实现在这里：https://github.com/karpathy/llm.c/blob/master/train_gpt2.c</p>
 <p>你会看到，项目在开始时一次性分配所有所需的内存，这些内存是一大块 1D 内存。然后在训练过程中，不会创建或销毁任何内存，因此内存占用量保持不变，并且只是动态的，将数据批次流过。这里的关键在于手动实现所有单个层的前向和后向传递，然后将它们串联在一起。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPq7zXSDic1plA7ibIckHUQ1kAHOQ21ibZib0swjibmaWkLyzCHpjNSsiapWJ6A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPq7zXSDic1plA7ibIckHUQ1kAHOQ21ibZib0swjibmaWkLyzCHpjNSsiapWJ6A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>例如，这里是 layernorm 前向和后向传递。除了 layernorm 之外，我们还需要编码器、matmul、自注意力、gelu、残差、softmax 和交叉熵损失。</p>
 <p>「一旦你拥有了所有的层，接下来的工作只是将它们串在一起。讲道理，写起来相当乏味和自虐，因为你必须确保所有指针和张量偏移都正确排列， 」Karpathy 评论道。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPqjlJjHAL69fWw4czf1tc6X9NE517wNZRpf3EIODsWbjqWubrVQ7vPaA/640?wx_fmt=png&amp;from=appmsg" alt=""><em>左：我们分配一个 1D 内存数组，然后将所有模型权重和激活指向它。右：我们需要非常非常小心地进行所有指针运算。</em></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPqjlJjHAL69fWw4czf1tc6X9NE517wNZRpf3EIODsWbjqWubrVQ7vPaA/640?wx_fmt=png&amp;from=appmsg" alt=""><em>左：我们分配一个 1D 内存数组，然后将所有模型权重和激活指向它。右：我们需要非常非常小心地进行所有指针运算。</em></p>
 <p>一旦你有了前向 / 后向，其余部分（数据加载器、Adam 更新等）大多就不足为惧了。</p>
 <p>不过，真正的乐趣现在才开始：Karpathy 表示，他现在正在逐层将其移植到 CUDA 上，以便提高效率，甚至期待能在 PyTorch 的合理范围内，但没有任何严重的依赖关系 —— 现在工作已经完成了几层。所以这是一个非常有趣的 CUDA 练习。</p>
 <p>对此，有网友表示：即使顶着指针 ptsd，我也能感受到这些代码的美。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPq5ndpH4nPSZlZ4rwjal4B10tEY5qOBqeYJ9rjQ9cWP2HPrUo7WpzI2g/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPq5ndpH4nPSZlZ4rwjal4B10tEY5qOBqeYJ9rjQ9cWP2HPrUo7WpzI2g/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p>也有人说，这项目简直就是完美的机器学习工程师在线面试答案。</p>
 <p>从这开始，未来该项目的延伸会包括将精度从 fp32 降低到 fp16 / 以下，以及增加几个层（例如 RoPE）以支持更现代的架构，如 llama 2/mistral/gemma/ 等模型。</p>
 <p>最后，Andrej Karpathy 表示，一旦项目稳定起来，就会出关于从头开始用 C 语言写大模型的视频。</p>
@@ -569,11 +569,11 @@ Allay
 ./test_gpt2
 </code></pre>
 <p>这里加载 gpt2_124M_debug_state.bin 文件，运行前向传递，将 logits 和损失与 PyTorch 参考实现进行比较，然后使用 Adam 进行 10 次迭代训练，确保损失可与 PyTorch 参考实现媲美。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPqkBiaC2hw0qo1rjkdZPLfuyd4IIG70cOdUlZ3oXCAiaOZmM27q2pS1iclg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPqkBiaC2hw0qo1rjkdZPLfuyd4IIG70cOdUlZ3oXCAiaOZmM27q2pS1iclg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>最后，Karpathy 还附上了一个简单的教程。这是一个简单的分步指南，用于实现 GPT-2 模型的单层（layernorm 层），可以帮助你理解如何用 C 语言实现语言模型。</p>
 <p>教程地址：doc/layernorm/layernorm.md</p>
 <p>我们知道，最近 Andrej Karpathy 沉迷于制作教程。去年 11 月，他录制的《大语言模型入门》在 YouTube 上吸引了很多人观看。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPqSNFG2WNpkibHvynLT7ohoM9oFY3wDYKXODLaPiaukIWzANgzxjACUsDg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8tJibRHEaeFD7fGDxLU1wPqSNFG2WNpkibHvynLT7ohoM9oFY3wDYKXODLaPiaukIWzANgzxjACUsDg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p>这次新项目的配套视频什么时候出？我们都很期待。</p>
 <p>参考内容：</p>
 <p><a href="https://news.ycombinator.com/item?id=39973467">https://news.ycombinator.com/item?id=39973467</a></p>
@@ -581,7 +581,7 @@ Allay
 <p>机器之心 AI 技术论坛「视频生成技术与应用 — Sora 时代」，将于 4.13 在北京海淀举办。</p>
 <p>论坛聚焦于 Sora、视频生成技术、多模态大模型等前沿领域的技术突破和应用实践，助力企业和从业者紧跟技术发展潮流、掌握最新技术进展与技术突破。</p>
 <p>早鸟期即将结束，快来锁定入场席位吧！</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW88VOprJ8XTaHjHNqsZk5ibUS7hIQAgbpCRjIyqYnXia7oEVIjOrTFEbVvToiauK6VG1wLv3IgmZoukw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW88VOprJ8XTaHjHNqsZk5ibUS7hIQAgbpCRjIyqYnXia7oEVIjOrTFEbVvToiauK6VG1wLv3IgmZoukw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>© THE END</p>
 <p>转载请联系本公众号获得授权</p>
 <p>投稿或寻求报道：content@jiqizhixin.com</p>

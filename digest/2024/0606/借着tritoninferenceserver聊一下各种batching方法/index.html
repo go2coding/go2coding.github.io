@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzjUuicSZVTTCnJNnLTF08AB5h5HBnvFvdyOOWWeficl80lkuleu2LSsibA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzjUuicSZVTTCnJNnLTF08AB5h5HBnvFvdyOOWWeficl80lkuleu2LSsibA/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -457,7 +457,7 @@ torch.Size([1, 8])
 <p>静态batch比较简单，对于图像来说，我们可以在模型推理前，输入将图像cat到一起，比如[4,3,1024,1024]
 ，送给模型推理，这时的batch=4。</p>
 <p>对于非图像场景也一样，将输入tensor合并后就相当利用了batch。不过比较尴尬的是，LLM场景因为decode阶段batch中每个case最终结束时输出的长度不一样，所以会有有些case吐完字儿了，有些还在继续吐，早吐完的需要等还没吐完的。这种情况不管是速度还是GPU利用率都是比较低的：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzQDYz6nqx2F2flDiaiaQgGeH2ntZpq13L9HricNwHasic7pOIib7Pvk1BwfA/640?wx_fmt=png&amp;from=appmsg" alt="">LLM-static 来自https://www.anyscale.com/blog/continuous-batching-llm-inference</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzQDYz6nqx2F2flDiaiaQgGeH2ntZpq13L9HricNwHasic7pOIib7Pvk1BwfA/640?wx_fmt=png&amp;from=appmsg" alt="">LLM-static 来自https://www.anyscale.com/blog/continuous-batching-llm-inference</p>
 <p>不过当然有解决方案：</p>
 <ul>
 <li><a href="https://www.anyscale.com/blog/continuous-batching-llm-inference">https://www.anyscale.com/blog/continuous-batching-llm-inference</a></li>
@@ -469,7 +469,7 @@ torch.Size([1, 8])
 </blockquote>
 <p>动态组batch在图像推理场景很常用，也可以配合static batch使用。</p>
 <p>比如你的模型支持最大batch是16，然后客户端可以每次发送batch=x过来，服务端在收到这些请求后，可以根据规则去组batch，组成更大的batch送给模型：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzjUuicSZVTTCnJNnLTF08AB5h5HBnvFvdyOOWWeficl80lkuleu2LSsibA/640?wx_fmt=png&amp;from=appmsg" alt="">image</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzjUuicSZVTTCnJNnLTF08AB5h5HBnvFvdyOOWWeficl80lkuleu2LSsibA/640?wx_fmt=png&amp;from=appmsg" alt="">image</p>
 <p>当模型实际拿到的tensor batch越大，模型的性能就越强，找个例子压测看下：</p>
 <pre><code>$ perf_analyzer -m inception_graphdef --percentile=95 --concurrency-range 1:8  
 ...  
@@ -486,7 +486,7 @@ Concurrency: 8, throughput: 272 infer/sec, latency 35988 usec
 <p>随着请求并行度的增加，triton服务端模型组的batch越来越大，服务的QPS也随之增加，不过时延也会有所增加，这个时候就要trade off了。</p>
 <h4 id="continuing-batching">Continuing Batching</h4>
 <p>Continuing Batching，也可以叫做inflight batching或者Iteration batching。不同于static batching，当一个输入的生成结束了，就将新的输入插进来，所以batch size是动态的。下图第三个输入先生成完，新的输入S5就插入进来了，一直到输出最长的S2的输出结束的时候，batch size由4变成了7，任意case跑完就能返回：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzkFSdZadKxat04OSqeSU9ZI6R13XjB06XnSTJJVaVMqfuia8pXbia9Hiaw/640?wx_fmt=png&amp;from=appmsg" alt="">Continuing Batching</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/J4yKlPg2P0Z4yzv2FbN2ffjmyqGtV6NzkFSdZadKxat04OSqeSU9ZI6R13XjB06XnSTJJVaVMqfuia8pXbia9Hiaw/640?wx_fmt=png&amp;from=appmsg" alt="">Continuing Batching</p>
 <blockquote>
 <p>当然实际情况更为复杂，这里不进行详细讨论。另外Continuing Batching也有人称为dynamic batching，和上述不是一回事儿哈</p>
 </blockquote>

@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGT6lr3Mg58Ameb16ZhEJiaeOjUaGmuhrufDQnqvJC8msp03ibLyFsJ1g/640?wx_fmt=png" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGT6lr3Mg58Ameb16ZhEJiaeOjUaGmuhrufDQnqvJC8msp03ibLyFsJ1g/640?wx_fmt=png" width="640" >
           </div>
             <br>
             <br>
@@ -429,13 +429,13 @@
 <p><strong>第二，关于问答答案散落在多个文档以及多个文档内部段落里的问题，</strong> 这个问题的根在于，在有限的上下文窗口内，不同的答案很分散，不容易都放在窗口之内，因此需要将文本进行聚类（主题分割），尽可能地让有限的窗口下能塞满多个主题的内容。‍‍</p>
 <p>因此，我们会有很多思路，例如前面说到的泛化query来召回不同的答案点，又如，通过主题分割、检索文本主题聚类等方法进行处理。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
 <p><strong>第三，引文生成的问题。</strong> 现有的RAG方案都是先召回一堆文档，然后让大模型根据文档进行作答，但其中更重要的是能够自动的生成引文角标，如下图所示。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJzzHicJ4LlxhR1W87Z6CUogOwOND5UaQz1p5wzyhOyVlOLzHrVXy083g/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJzzHicJ4LlxhR1W87Z6CUogOwOND5UaQz1p5wzyhOyVlOLzHrVXy083g/640?wx_fmt=png" alt=""></p>
 <p>我们之前在《引证生成让大模型问答结果更为可信：也看大型语言模型生成带引证的文本方法与评估基准ALCE》一文中，介绍了最近的工作《Enabling Large Language Models to Generate Text with Citations (使大型语言模型生成带引证的文本)》，里面提到的方案可供参考，可以通过in-context learning，也可以通过微调，让大模型自动生成引文。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
 <p>但其中重要的问题是，数据并不好找，因此，针对这个问题，本文也进行介绍。‍‍‍‍‍‍‍‍‍‍‍</p>
 <p>本文主要针对以上三个问题的一些相关工作进行介绍，供大家一起参考。</p>
 <h4 id="一泛化query多召回排序策略提升意图相关性">一、泛化query多召回排序策略提升意图相关性</h4>
 <p>昨天看到一个分享，《使用RAG-Fusion和RRF让RAG在意图搜索方面更进一步》（https://mp.weixin.qq.com/s/N7HgjsqgCVf2i-xy05qZtA）介绍了《Forget RAG, the Future is RAG-Fusion》一文，（https://towardsdatascience.com/forget-rag-the-future-is-rag-fusion-1147298d8ad1），RAG-Fusion希望弥合用户明确提出的问题和他们（原本的意图）打算提出的问题之间的差距。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJ8TfD9rqicVbHhRtViaYp1ecQW2OyDpm0tfE5jicEveDZxicicBNeuoa3OCQ/640?wx_fmt=png" alt="">其思想在于通过生成多个用户查询和重新排序结果来解决RAG固有的约束；利用倒数排序融合（RRF）和自定义向量评分加权，生成全面准确的结果。 步骤很清晰，可以查看代码：</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJ8TfD9rqicVbHhRtViaYp1ecQW2OyDpm0tfE5jicEveDZxicicBNeuoa3OCQ/640?wx_fmt=png" alt="">其思想在于通过生成多个用户查询和重新排序结果来解决RAG固有的约束；利用倒数排序融合（RRF）和自定义向量评分加权，生成全面准确的结果。 步骤很清晰，可以查看代码：</p>
 <pre><code># Predefined set of documents (usually these would be from your search database)  
 all_documents = {  
     &quot;doc1&quot;: &quot;Climate change and economic impact.&quot;,  
@@ -489,7 +489,7 @@ def vector_search(query, all_documents):
 </code></pre>
 <p>接着，聚合和细化所有结果使用倒数排序融合(RRF),RRF是与滑铁卢大学(CAN)和谷歌(Google)合作开发，论文地址：https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf</p>
 <p>具体计算公式为：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGNWJiamz3IqRXOS3pczlRxPksfSopf1ysAbNnBVndXLRp9sOElAdARw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGNWJiamz3IqRXOS3pczlRxPksfSopf1ysAbNnBVndXLRp9sOElAdARw/640?wx_fmt=png" alt=""></p>
 <pre><code># Reciprocal Rank Fusion algorithm  
 def reciprocal_rank_fusion(search_results_dict, k=60):  
     fused_scores = {}  
@@ -520,18 +520,18 @@ def generate_output(reranked_results, queries):
 <p>论文地址: <a href="https://arxiv.org/abs/2305.14627">https://arxiv.org/abs/2305.14627</a></p>
 <p>代码地址: <a href="https://github.com/princeton-nlp/ALCE">https://github.com/princeton-nlp/ALCE</a></p>
 <p>该工作研究了一种新的LLM生成范式评测基准ALCE，给定一个问题，系统生成文本，同时从一个大型检索语料库中提供引文。每个语句可能包含多个引文（例如[1][2]）</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJnhBjXH2hl12krc93LD1ffWovbYmPiae8ZnHoqe1oXzvb6kg5QFmO0Ng/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJnhBjXH2hl12krc93LD1ffWovbYmPiae8ZnHoqe1oXzvb6kg5QFmO0Ng/640?wx_fmt=png" alt=""></p>
 <p>其核心工作在于如何生成引文，如VANILLA方案，向模型提供检索到的前k11段落，并指示模型进行相应的引用。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJdGia8R0q2M3FRb4VLHWW4lYdxXhkr1B1arkBcHeXdulpZAwXLLSccAg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJdGia8R0q2M3FRb4VLHWW4lYdxXhkr1B1arkBcHeXdulpZAwXLLSccAg/640?wx_fmt=png" alt=""></p>
 <p>完整的指令见如表22所示：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGT6lr3Mg58Ameb16ZhEJiaeOjUaGmuhrufDQnqvJC8msp03ibLyFsJ1g/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJGT6lr3Mg58Ameb16ZhEJiaeOjUaGmuhrufDQnqvJC8msp03ibLyFsJ1g/640?wx_fmt=png" alt=""></p>
 <p>当前，可用于引文数据集训练数据的，主流的有ASQA、QAMPARI以及ELI5，下面对其进行介绍：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJpfrEh1fDRW4SR3iaqiaPM6P6c4Bj7FVo6w69VgfFIVhibm6u08yejvVIQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJpfrEh1fDRW4SR3iaqiaPM6P6c4Bj7FVo6w69VgfFIVhibm6u08yejvVIQ/640?wx_fmt=png" alt=""></p>
 <p><strong>1、ASQA</strong></p>
 <p>ASQA《ASQA: Factoid Questions Meet Long-Form Answers》是一个长格式的事实类数据集。</p>
 <p>其中每个问题都是AmbigQA中的一个模棱两可的问题，需要多个简短答案来涵盖对问题的不同解释。</p>
 <p>例如，问题 &ldquo;美国何时脱离英国？&ldquo;应同时回答1776年7月2日（独立宣言）和1783年9月3日（巴黎条约）。由于问题的模糊性，有必要综合多份文件中的信息。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJFcffnJ7uufjBndZGWVN4NaDXRU97HTlGLqhIBrCMamP1cZ4kAAfFTA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJFcffnJ7uufjBndZGWVN4NaDXRU97HTlGLqhIBrCMamP1cZ4kAAfFTA/640?wx_fmt=png" alt=""></p>
 <p>地址：https://browse.arxiv.org/pdf/2204.06092.pdf</p>
 <p>数据地址：https://github.com/google-research/language/tree/master/language/asqa</p>
 <p><strong>2、QAMPARI</strong></p>
@@ -645,13 +645,13 @@ def generate_output(reranked_results, queries):
 }  
 </code></pre>
 <p>例如，&ldquo;哪些电影的演员中有巩俐？为了在数据集上实现高精确度和高召回率，模型需要对多个段落进行综合，这就提出了一个独特的挑战。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJNBHyzn8iahonD7joOcT08Cv724YMcG10JWjVcmiaOw40vN2fq9kr2APw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJNBHyzn8iahonD7joOcT08Cv724YMcG10JWjVcmiaOw40vN2fq9kr2APw/640?wx_fmt=png" alt=""></p>
 <p>地址：https://browse.arxiv.org/pdf/2205.12665.pdf</p>
 <p>地址：https://samsam3232.github.io/qampari/</p>
 <p><strong>3、ELI5</strong></p>
 <p>ELI5《ELI5: Long Form Question Answering》是建立在Reddit论坛 &ldquo;Explain Like I&rsquo;m Five &ldquo;6上的长式QA数据集，平均答案长度为131个单词。</p>
 <p>大多数ELI5问题都是how/why/what问题，需要有深度的长答案和多个段落作为证据。由于问题中讨论的主题多种多样。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJQ4s108Eqfib5IUjH0XYxJj2PMtnE58XQDot0K4dfWpwyQvyNyfp0Qog/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJhKZom4HQHxAeVHf3mw5nzJQ4s108Eqfib5IUjH0XYxJj2PMtnE58XQDot0K4dfWpwyQvyNyfp0Qog/640?wx_fmt=png" alt=""></p>
 <p>地址：https://aclanthology.org/P19-1346.pdf</p>
 <h4 id="总结">总结</h4>
 <p>本文主要介绍了在真实落地中RAG存在几个比较突出的问题，现在也出现了从多query、多召回策略以及排序修正等多个方案，但是这些方法是以时间换效果，并且query改写成多个，多个容易漂移，而且选项太多对于排序也有影响，这个提分不明显，是优化阶段要做的事，重点要放在文本切割上。</p>

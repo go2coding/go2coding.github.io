@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaESTos3sAYLVD59Zz4QoLnJlBWjU7lNB3I5uMa6YQmTgzIHbLoVM91DA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaESTos3sAYLVD59Zz4QoLnJlBWjU7lNB3I5uMa6YQmTgzIHbLoVM91DA/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -537,7 +537,7 @@ $ curl http://localhost:8000/v1/completions \
 类中（它继承自LLMEngine）。<strong>所以，只要我们搞懂了LLMEngine，对vLLM的这两种调用方式就能举一反三了。</strong></p>
 <h4 id="13-总结">1.3 总结</h4>
 <p>vLLM的两种调用方式与内核引擎LLMEngine的关系如下（图片来自vLLM团队2023 first meetup PPT）:</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaExT3R510fAD7NtyqqGPkwTnmTiaBdwazaKeMDiagSVmfmDsibRMicTq5ZaQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaExT3R510fAD7NtyqqGPkwTnmTiaBdwazaKeMDiagSVmfmDsibRMicTq5ZaQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>图中左侧是用户使用界面，罗列了上述所说的两种调用方式</strong> （注意，如前文所说，做demo用的api server官方已经不再维护了，openai_api_server才是官方推荐的使用方式，user custom server目前还没有实现）。<strong>右侧则是开发者界面，不难发现LLMEngine是vLLM的核心逻辑。</strong></p>
 <p>我们来看开发者界面下的几个函数，先来看LLMEngine：</p>
 <ul>
@@ -562,7 +562,7 @@ $ curl http://localhost:8000/v1/completions \
 <p><strong>背后有万行代码逻辑正在等你😊</strong></p>
 <p>所以说，<strong>vLLM真得是一个巨大的工程，它耦合了调度工程和模型本身的改造，代码中的嵌套非常复杂</strong> 。所以在代码解读的第一篇，我们得先理清整个代码架构，然后再逐一攻克细节。</p>
 <h4 id="二vllm代码整体架构">二、vLLM代码整体架构</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaER4dnnXICo0sXwhyq9wzsSelfUKdM2ib1LqobeburM7jibugUicWhYFQZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaER4dnnXICo0sXwhyq9wzsSelfUKdM2ib1LqobeburM7jibugUicWhYFQZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>LLMEngine可以具体分成两个部分：</p>
 <h4 id="21-centralized-controller">2.1 Centralized Controller</h4>
 <p><strong>Centralized Controller，也就是前文我们所说的调度器</strong> 。它和LLMEngine所在的进程是同一个，且两者都是在CPU上的。</p>
@@ -592,10 +592,10 @@ $ curl http://localhost:8000/v1/completions \
 <p>*<strong>预分配显存</strong></p>
 <p>我们分别来看这两个步骤。</p>
 <h4 id="31-加载模型">3.1 加载模型</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEPT2Bic5I8EjBJia6srANict38OQvEPnlngBMHPn5BuWOymQBqVxw1kiaQA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEPT2Bic5I8EjBJia6srANict38OQvEPnlngBMHPn5BuWOymQBqVxw1kiaQA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>这里在做的事很直观：把你的base model加载到worker上。如果你是online加载的，vLLM默认使用HuggingFace，你也可以在环境变量中把相关配置改成ModelScope。</p>
 <h4 id="32-预分配显存">3.2 预分配显存</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaESTos3sAYLVD59Zz4QoLnJlBWjU7lNB3I5uMa6YQmTgzIHbLoVM91DA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaESTos3sAYLVD59Zz4QoLnJlBWjU7lNB3I5uMa6YQmTgzIHbLoVM91DA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>欸这个就非常有意思了。<strong>在模型部署的初始化阶段（推理正式开始前），vLLM会通过模拟实验的方式，来决定gpu/cpu上到底有多少个KV cache物理块可以分配给后续的请求们做推理。vLLM管这个步骤叫</strong> profile_num_available_blocks
 。我们来看看这个模拟实验是怎么做的：</p>
 <h4 id="1杜撰假数据">（1）杜撰假数据</h4>
@@ -629,7 +629,7 @@ $ curl http://localhost:8000/v1/completions \
 <p>知道了物理块的大小，我们就能求出物理块的总数了。</p>
 <p>CPU上物理块总数也是同理，但与GPU不同的是，它不需要做模拟实验。CPU上可用的内存总数是用户通过参数传进来的（默认是4G）。也就是我们认为只能在这4G的空间上做swap。将上面公式中“分配给KV Cache的显存大小”替换成4G，就能得到CPU上物理块的数量。</p>
 <h4 id="4将预分配的kv-cache加载到gpu上">（4）将预分配的KV Cache加载到gpu上</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEdx8wNPBzPhgQwuQP7D92y7Uq3jM8mjrudKnqTibDgc0goico0QhO1rmw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEdx8wNPBzPhgQwuQP7D92y7Uq3jM8mjrudKnqTibDgc0goico0QhO1rmw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>当我们确定好KV Cache block的大小后，我们就可以创建empty tensor，将其先放置到gpu上，实现显存的预分配。以后这块显存就是专门用来做KV Cache的了。</strong> 也正是因为这种预分配，你可能会发现在vLLM初始化后，显存的占用比你预想地要多（高过模型大小），这就是预分配起的作用。相关代码如下（帮助大家更好看一下KV cache tensor的shape）:</p>
 <pre><code>    def _allocate_kv_cache(  
         self,  
@@ -656,7 +656,7 @@ $ curl http://localhost:8000/v1/completions \
 <p>整个预分配的过程，其实也是在提醒我们：当你发现vLLM推理吞吐量可能不及预期，或者出现难以解释的bug时，可以先查查输出日志中pending(waiting)/running/swapped的序列数量，以及此时KV Cache部分的显存利用程度，尝试分析下这些默认的预分配设置是不是很好契合你的推理场景，如果不行，可以先尝试调整这些参数进行解决。</p>
 <h4 id="四scheduler调度">四、Scheduler调度</h4>
 <p>好，目前为止，vLLM所有初始化的工作都完成了，我们现在可以来处理一条请求了。这就是我们调度器发挥作用的时候了，整个调度过程如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEyQDCyr1f9SNia2Nk3dJceDyZr6iauKzPFPd2wFx6xibd2AicPZoiatYiaslg/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEkbdybaYL3LojKia25VvJpe2N0CTiaULZndK1JvurhNPwYW3gSUqhYaHw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEyQDCyr1f9SNia2Nk3dJceDyZr6iauKzPFPd2wFx6xibd2AicPZoiatYiaslg/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEkbdybaYL3LojKia25VvJpe2N0CTiaULZndK1JvurhNPwYW3gSUqhYaHw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>具体的内容我们在前文说了很多了。<strong>这里只提一点：你会发现这出现了叫swapped的队列，这是前文没有提过的。</strong></p>
 <p>如果你读过vLLM的原理篇，<strong>你可能记得vLLM的调度策略中有一项叫做：后来先抢占（Preemption）</strong> 。它是指在准备执行当前这1个推理阶段时，如果gpu上没有足够的资源对running队列中的全部数据完成下1次推理，我们就取出running队列中最后来的数据，将它的KV Cache swapped到CPU上，同时将这个数据从running移到swapped中。<strong>我们重复执行这个步骤，直到当前gpu上有足够的KV Cache空间留给剩在running中的全部数据为止。</strong></p>
 <p>而存放在Swapped队列中的数据，也会在后续gpu上有足够空间时，被重新加入running计算。</p>

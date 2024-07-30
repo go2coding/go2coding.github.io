@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzu2T9gpyUnt9PAFlOOgPpds2QlBVRERlRXD2I8mpXaStPudX2S0XM3w/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzu2T9gpyUnt9PAFlOOgPpds2QlBVRERlRXD2I8mpXaStPudX2S0XM3w/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -431,12 +431,12 @@
 <p>在大型语言模型（LLM）领域，创建一个最小可行产品相对简单，但实现生产级性能和可用性是一个艰巨的任务，特别是构建高性能的RAG系统。RAG已在企业私域知识问答等领域广泛应用，例如，现在主流的各类chat to PDF，chat to doc等应用都是基于RAG来搭建的。</p>
 <p><strong>RAG基本流程</strong></p>
 <p>如下图所示RAG可分为5个基本流程：知识文档的准备；嵌入模型嵌入模型（embedding model）；向量数据库；查询检索和生产回答。下面会对每个环节进行详细描述：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzK4yr5QeiaYTf8RGFCGfwvnzj2P8IUibG5aCKDtdnccjlXvNueSXV6uFA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzK4yr5QeiaYTf8RGFCGfwvnzj2P8IUibG5aCKDtdnccjlXvNueSXV6uFA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>NO.1  知识文档的准备</p>
 <p>在构建一个高效的RAG系统时，首要步骤是准备知识文档。现实场景中，我们面对的知识源可能包括多种格式，如Word文档、TXT文件、CSV数据表、Excel表格，甚至是PDF文件、图片和视频等。因此，第一步需要使用专门的文档加载器（例如PDF提取器）或多模态模型（如OCR技术），将这些丰富的知识源转换为大语言模型可理解的纯文本数据。例如，处理PDF文件时，可以利用PDF提取器抽取文本内容；对于图片和视频，OCR技术能够识别并转换其中的文字信息。此外，鉴于文档可能存在过长的问题，我们还需执行一项关键步骤：文档切片。我们需要将长篇文档分割成多个文本块，以便更高效地处理和检索信息。这不仅有助于减轻模型的负担，还能提高信息检索的准确性。我们将在后文中详细讨论文档切片和其背后的逻辑。</p>
 <p>NO.2  嵌入模型</p>
 <p>嵌入模型的核心任务是将文本转换为向量形式。简而言之，我们使用的日常语言中充满歧义和对表达词意无用的助词，而向量表示则更加密集、精确，能够捕捉到句子的上下文关系和核心含义。这种转换使得我们能够通过简单计算向量之间的差异来识别语义上相似的句子。举例来说，如果我们想比较“苹果是一种水果”和“香蕉是黄色的”，嵌入模型可以将这些句子转换为向量，然后通过计算它们之间的相似度便可以确定它们的关联程度。那么这样的嵌入模型是如何得到的呢，作为一个经典的例子，我们以Google开发的Word2Vec模型为基础，来探讨其训练过程。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzmdIjsibCYGB9ibPrlvWDwgvibRZwkCwUYSGbqE7u9Wqia67q6EYdFkicu5Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzmdIjsibCYGB9ibPrlvWDwgvibRZwkCwUYSGbqE7u9Wqia67q6EYdFkicu5Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>Word2Vec有两种训练方法，为简单起见我们就以上图展示的CBOW模型方法讲解。CBOW模型的核心思想是在<strong>给定一句话中心词的上下文（即该词周围的几个词）的情况下，让模型预测这个中心词</strong> 。例如，假设我们有一个句子：“The cat sat on the mat”。使用CBOW模型，我们的目标是预测中心词“sat”。具体的训练流程如下：</p>
 <p>1.对于上下文词&quot;the&quot;, &ldquo;cat&rdquo;, &ldquo;on&rdquo;, &ldquo;the&rdquo;,&ldquo;mat&quot;首先生成它们的one-hot向量。One-hot向量是一个高维稀疏向量，代表词汇表中的每个单词，如果有这个词便是1，其余全是0，比如“the”的编码就可以是[1，0，0，0，0]</p>
 <ol start="2">
@@ -490,20 +490,20 @@
 <p>我们可以利用索引筛选数据，但说到底我们还是要从筛选后的数据中检索出相关的文本向量。由于向量数据量庞大且复杂，寻找绝对的最优解变得计算成本极高，有时甚至是不可行的。加之，大模型本质上并不是完全确定性的系统，这些模型在搜索时追求的是语义上的相似性——一种合理的匹配即可。从应用的角度来看，这种方法是合理的。例如，<strong>在推荐系统中，用户不太可能察觉到或关心是否每个推荐的项目都是绝对的最佳匹配；他们更关心的是推荐是否总体上与他们的兴趣相符。</strong> 因此查找与查询向量完全相同的项通常不是目标，而是要找到“足够接近”或“相似”的项，这便是最近邻搜索（ANN）。这样做不仅能满足需求，还为检索优化提供了巨大的优化潜力。下面我们会介绍一些常见的向量搜索算法以便大家在具体使用场景中进行取舍。</p>
 <p><strong>聚类</strong></p>
 <p>想象一下，当我们在网上购物时，通常不会在所有商品中盲目搜索，而是会选择进入特定的商品分类，比如“电子产品”或“服饰”，在一个更加细分的范畴内寻找心仪的商品。这个能帮我们大大缩小搜索范围。同样这种思路，聚类算法可以帮我们实现这个范围的划定。就比如说我们可以用K-mean算法把向量分为数个簇，当用户进行查询的时候，我们只需找到距离查询向量最近的簇，然后再这个簇中进行搜索。当然聚类的方法并不保证一定正确，如下图，查询距离黄色簇的中心点更近，但实际上距离查询向量最近的，即最相似的点在紫色类。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzz57na4RTHwFj8TxF1tARHJgmDOXgQYt8fXKvrIMhj4Cb7wdgTwcbTw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzz57na4RTHwFj8TxF1tARHJgmDOXgQYt8fXKvrIMhj4Cb7wdgTwcbTw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>有一些缓解这个问题的方法，例如<strong>增加聚类的数量，并指定搜索多个簇</strong> 。然而，任何提高结果质量的方法都不可避免地会增加搜索的时间和资源成本。实际上，质量和速度之间存在着一种权衡关系。我们需要在这两者之间找到一个最优的平衡点，或者找到一个适合特定应用场景的平衡。不同的算法也对应着不同的平衡。</p>
 <p><strong>位置敏感哈希</strong></p>
 <p>沿着缩小搜索范围的思路，<strong>位置敏感哈希算法</strong> 是另外一种实现的策略。在传统的哈希算法中，我们通常希望每个输入对应一个唯一的输出值，并努力减少输出值的重复。然而，在位置敏感哈希算法中，我们的目标恰恰相反，我们需要增加输出值碰撞的概率。这种碰撞正是分组的关键，<strong>哈希值相同的向量将被分配到同一个组中，也就是同一个“桶”里。</strong> 此外，这种哈希函数还需满足另一个条件：空间上距离较近的向量更有可能被分入同一个桶。这样在进行搜索时，只需获取目标向量的哈希值，找到相应的桶，并在该桶内进行搜索即可。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzu2T9gpyUnt9PAFlOOgPpds2QlBVRERlRXD2I8mpXaStPudX2S0XM3w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzu2T9gpyUnt9PAFlOOgPpds2QlBVRERlRXD2I8mpXaStPudX2S0XM3w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>量化乘积</strong></p>
 <p>上面我们介绍了两种牺牲搜索质量来提高搜索速度的方法，但除了搜索速度外，内存开销也是一个巨大挑战。在实际应用场景中，每个向量往往都有上千个维度，数据数量可达上亿。每条数据都对应着一个实际的的信息，因此不可能删除数据来减少内存开销，那唯一的选择只能是把每个数据本身大小缩减。有一种乘积量化的方法可以帮我们完成这点。图像有一种有损压缩的方法是把一个像素周围的几个像素合并，来减少需要储存的信息。同样我们可以在聚类的方法之上改进一下，用每个簇的中心点来代替簇中的数据点。虽然这样我们会丢失向量的具体值信息，但考虑到聚类中心点和簇中向量相关程度，再加上可以不断增加簇的数量来减少信息损失，所以很大程度上我们可以保留原始点的信息。而这样做带来的好处是十分可观的。如果我们给这些中心点编码，我们就可以用单个数字储存一个向量来减少存储的空间。而我们把每个中心向量值和他的编码值记录下来形成一个码本，这样每次使用某个向量的时候，我们只需用他的编码值通过码本找到对应的的中心向量的具体值，虽然这个向量已经不再是当初的样子了，但就像上面所说，问题不大。而这个把向量用其所在的簇中心点表示的过程就是量化。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzCYzCgTYiciboHNorialTibLLKMPRDxPwTN8aQ9a5yicyajJOSVl2AlZzQxg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzCYzCgTYiciboHNorialTibLLKMPRDxPwTN8aQ9a5yicyajJOSVl2AlZzQxg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>但是你可能会发现码本又引入了额外的开销。在真实的场景中因为维度爆炸的问题，更高的维度中数据分布更加稀疏，所以我们需要更多的聚类数量来减少丢失的细节，就比如一个128维的空间，我们需要2的64次方个聚类中心，所以最终这个码本所需的内存会变得非常恐怖，甚至超越量化本身所节省下来的内存。解决这个问题的办法是把高维的向量分割成多个低维的子向量，然后在这些低维的子向量中独立量化。比如把128维的向量分解成8个16维的子向量，然后独立的在8个独立的子空间进行量化形成自己子码本。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzoSxrYHm5D0WdmCHwr1oTP5O94eUwwwGmU4RzIrblExwcRgzES078pg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzoSxrYHm5D0WdmCHwr1oTP5O94eUwwwGmU4RzIrblExwcRgzES078pg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>每个16维的空间只需要256个聚类就可以得到不错的效果，并且每个子码本将变得很小，即便8个子码本加在一起的大小也仍然足够的小，实际上我们是在把码本大小增长从指数模型分解为加法模式。最后，我们还可以把前面的提速度方法和减内存的乘积量化法结合使用，同时实现速度和内存的优化。</p>
 <p><strong>分层导航小世界</strong></p>
 <p>从客户的角度来看，内存开销可能并不是最重要的考量因素。他们更加关注的是应用的最终效果，也就是回答用户问题的速度和质量。导航小世界（NSW）算法正是这样一种用内存换取更快速度和更高质量的实现方式。这个算法的思路和“六度分割理论”类似——你和任何一个陌生人之间最多只隔六个人，也就是说，最多通过六个人你就能够认识任何一个陌生人。我们可以将人比作向量点，把搜索过程看作是从一个人找到另一个人的过程。在查询时，我们从一个选定的起始点A开始，然后找到与A相邻且最接近查询向量的点B，导航到B点，再次进行类似的判断，如此反复，直到找到一个点C，其所有相邻节点都没有比它更接近目标。最终这个点C便是我们要找的最相似的向量。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzZ8micoMoGe0oofUIsia2ejkqfjOUrQ90ry61VpMneegsCp83sO1Loicfw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/5KDEHBqSicGxMFHQA8esV3yqibaicmmADnzZ8micoMoGe0oofUIsia2ejkqfjOUrQ90ry61VpMneegsCp83sO1Loicfw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>NO.7  查询转换</p>
 <p>在RAG系统中，用户的查询问题被转化为向量，然后在向量数据库中进行匹配。不难想象，查询的措辞会直接影响搜索结果。如果搜索结果不理想，可以尝试以下几种方法对问题进行重写，以提升召回效果：</p>
 <p>a)<strong>结合历史对话的重新表述</strong> ：在向量空间中，对人类来说看似相同的两个问题其向量大小并不一定很相似。我们可以直接利用LLM 重新表述问题来进行尝试。此外，在<strong>进行多轮对话时，用户的提问中的某个词可能会指代上文中的部分信息，因此可以将历史信息和用户提问一并交给LLM重新表述。</strong></p>

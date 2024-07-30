@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzibm5icNtSFicQqGsaURPnjibExFQ2Mwgic0gemRicpFR354cpsjk2MdBljrA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzibm5icNtSFicQqGsaURPnjibExFQ2Mwgic0gemRicpFR354cpsjk2MdBljrA/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -437,14 +437,14 @@
 </li>
 </ul>
 <p>今天给大家带来一篇增量预训练方法-Llama-Pro，<strong>对LLMs进行Transformer块扩展后，增量预训练过程中仅对新增块进行训练，有效地进行模型知识注入，并且极大程度地避免灾难性遗忘。</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzia8HG38X7ULzM5oqgic40TGA2hlKND0txEzXoJYUm9AXKj8DbDiauMVMw/640?wx_fmt=png&amp;from=appmsg" alt="">LLaMA Pro: Progressive LLaMA with Block Expansion</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzia8HG38X7ULzM5oqgic40TGA2hlKND0txEzXoJYUm9AXKj8DbDiauMVMw/640?wx_fmt=png&amp;from=appmsg" alt="">LLaMA Pro: Progressive LLaMA with Block Expansion</p>
 <pre><code>LLaMA Pro: Progressive LLaMA with Block Expansion  
 Paper: https://arxiv.org/abs/2401.02415  
 Github: https://github.com/TencentARC/LLaMA-Pro  
 </code></pre>
 <h4 id="块扩展方法">块扩展方法</h4>
 <p>块扩展，顾名思义，就是在原始模型中每个Transformer块或者某几个Transformer块后增加一个Transformer块，但为了保持扩展后的模型输出保持不变，需要增加的块为恒等块（输入输出相同），如下图所示。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzzzYfVaWZrDdZ37guiamGkIL1bjTRcbzH6KPAiaTeTtxplBaGpX9iaDh0Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzzzYfVaWZrDdZ37guiamGkIL1bjTRcbzH6KPAiaTeTtxplBaGpX9iaDh0Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>在构建恒等块过程中，<strong>主要是将多头注意力层和FFN层中的最后一个线性层（Linear）权重置为0变成Zero-Linear，即可保持经过该块的输入输出一致。</strong></p>
 <p><strong>PS：论文附录A中写了大段的推导公式来证明，在此不做过多介绍。</strong></p>
 <p>块的增加方式是，对原始模型的  个Transformer块分成  组，每组中包含  个Transformer块，对于每组后添加  个恒等块。代码实现具体如下：</p>
@@ -480,18 +480,18 @@ torch.save(output, output_path)
 </code></pre>
 <h4 id="实验细节">实验细节</h4>
 <p>数据由代码和数学组成，其中代码数据采用The-Stack-Dedup数据集中Python语言部分共22B Token，数学数据采用Proof-Pile-2数据集中AlgebraicStack、OpenWebMath和ArXiv部分共55B，详细如下表所示。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWz6dvIliaYULs5WWKO0MZaYjo3m4fr0k7xsOZkdTBCaJzU7ibgF8WlV6hw/640?wx_fmt=png&amp;from=appmsg" alt="">数据分布</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWz6dvIliaYULs5WWKO0MZaYjo3m4fr0k7xsOZkdTBCaJzU7ibgF8WlV6hw/640?wx_fmt=png&amp;from=appmsg" alt="">数据分布</p>
 <p>基础模型为LLaMA2-7B模型，通过块扩展方法将32层模型扩展到40层，其中 、 、 ，每个组从4个Transformer块扩展到5个Transformer块。</p>
 <p>对于代码和数学数据进行增量预训练，批量大小为1024，序列最大长度为4096，预热比率为6%，学习率为2e-4，采用余弦学习率调度器，BF16混合精度训练，权重衰减为0.1。使用16个NVIDIA H800 GPU进行了15900个步骤的训练，大约耗费2830个GPU/小时。</p>
 <p>在ARC、HellaSwag、MMLU、TruthfulQA、Winogrande、GSM8K、GSM8K-PoT、HumanEval、MBPP等多个评测数据集中进行评测，可以看出，在保持通用任务能力不下降的情况下，数学和代码能力较原始LLaMA2-7B模型有很大提升。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzMf7RLJwjGZHuOhSRCSibMNFNFbpX6srTe9v66RZUIUssWHdmRLkXZmg/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzibm5icNtSFicQqGsaURPnjibExFQ2Mwgic0gemRicpFR354cpsjk2MdBljrA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzMf7RLJwjGZHuOhSRCSibMNFNFbpX6srTe9v66RZUIUssWHdmRLkXZmg/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzibm5icNtSFicQqGsaURPnjibExFQ2Mwgic0gemRicpFR354cpsjk2MdBljrA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <h4 id="讨论分析">讨论分析</h4>
 <p>对比块扩展方法与正常训练和Lora方法之间的区别，采用TRACE基准利用总体性能（OP）和逆向转移（BWT）指标进行评估。如下表所示，块扩展方法整体提升较大。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWz1miczro1p5SBD2ryUfbOSwFbiaydl7AnicWvdL10mPEsVGHtGqG2qjnPg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWz1miczro1p5SBD2ryUfbOSwFbiaydl7AnicWvdL10mPEsVGHtGqG2qjnPg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>对比块个数对块扩展方法的影响，进行了不同个数块的实验，并且对比了MoE的方法，训练损失如下，MoE方法的损失下降程度与添加四个块相当。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzs0CJZY6IrWyo6ZibIng7iaHMknia6KzQw7R02tFwr1oAcbXdiawB5GADOQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzs0CJZY6IrWyo6ZibIng7iaHMknia6KzQw7R02tFwr1oAcbXdiawB5GADOQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>在代码和法律（16.7B）领域数据下进行增量预训练，在通用任务以及领域任务上比较不同个数块之间的差异，同时比较扩展块全部添加到模型底部或顶部之间的差别，如下所示。可以发现块个数为8时效果最佳，并且不能直接将扩展块全部堆积在头部或尾部，需要分开插入。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzF2XDkNnIsQ34a5e2Okf8Mp26qBFb1ibxDs1VTguianMUrKZjqNLav6Ag/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/iceGibVicRfib5nACfog42TxS14OiaMAUvBWzF2XDkNnIsQ34a5e2Okf8Mp26qBFb1ibxDs1VTguianMUrKZjqNLav6Ag/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <h4 id="写在最后">写在最后</h4>
 <p>该方法主要通过增加恒定块扩展模型层数，使模型在增量训练过程中仅训练新增层、冻结原始层，保持模型原有能力，防止模型出现灾难性遗忘现象。</p>
 <p>但有两点存疑：</p>

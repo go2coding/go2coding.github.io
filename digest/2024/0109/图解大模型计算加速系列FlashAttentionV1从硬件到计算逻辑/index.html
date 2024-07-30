@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXU7gHVfsLVCTW0yGcXvx7QiaFLAibV3h0XPnabxKW233CsN6lUwBjibhsQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXU7gHVfsLVCTW0yGcXvx7QiaFLAibV3h0XPnabxKW233CsN6lUwBjibhsQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -499,7 +499,7 @@
 <p>假设我们现在采用的硬件为A100-40GB SXM，同时采用混合精度训练（可理解为训练过程中的计算和存储都是<strong>fp16</strong> 形式的，一个元素占用2byte）</p>
 <p>假定我们现在有矩阵，其中为序列长度，为embedding dim。现在我们要计算，则有（<strong>对FLOPs要怎么算不了解的朋友，可以跳到6.1节进行阅读</strong> ）：</p>
 <p>不同取值下的受限类型如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXricX86TVvKjUEic9AFC2ic6IoicNvjCZvJiapSRyy5gY1tdmtQ2r81ic11hA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXricX86TVvKjUEic9AFC2ic6IoicNvjCZvJiapSRyy5gY1tdmtQ2r81ic11hA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>根据这个表格，我们可以来做下总结：</p>
 <p>*<strong>计算限制（math-bound）</strong> ：大矩阵乘法（N和d都非常大）、通道数很大的卷积运算。相对而言，<strong>读得快，算得慢</strong> 。</p>
 <p>*<strong>内存限制（memory-bound）</strong> ：逐点运算操作。例如：激活函数、dropout、mask、softmax、BN和LN。相对而言，<strong>算得快，读得慢。</strong></p>
@@ -511,21 +511,21 @@
 <p>这里最大性能指的是当前算法实际运行在硬件上时，每秒最多能达到的计算次数，单位是FLOP/s
 。</p>
 <p><strong>Roof-line模型</strong> 就是为了解答这一问题而提出的，它能直观帮我们看到算法在硬件上能跑得多快，模型见下图。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXYmiaib2jIR6J5xSvsG3vlM9qpqa68REWRzf10MZjicZafhuBpIUIFAkYg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXYmiaib2jIR6J5xSvsG3vlM9qpqa68REWRzf10MZjicZafhuBpIUIFAkYg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>如图，横坐标表示计算强度，满足；纵坐标表示算法运行在硬件上的性能。<strong>算法的运行性能不会超过硬件本身的计算上限</strong> ，所以的最大值取到。根据我们之前的分析，当时，存在计算限制；当时，存在内存限制。</p>
 <h4 id="三gpu上的存储与计算">三、GPU上的存储与计算</h4>
 <p>由于Flash attention的优化核心是减少数据读取的时间，而数据读取这块又离不开数据在硬件上的流转过程，所以这里我们简单介绍一些GPU上的存储与计算内容，作为Flash attention的背景知识。</p>
 <h4 id="31-gpu的存储分类">3.1 GPU的存储分类</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXBlU7O7p2GuoX2Z2ojQhVTLbz9rdajTOZ7iaVFUuSupen9rZTreichPYw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXBlU7O7p2GuoX2Z2ojQhVTLbz9rdajTOZ7iaVFUuSupen9rZTreichPYw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>上图是Flash attention论文所绘制的硬件不同的存储类型、存储大小和带宽。一般来说，GPU上的存储分类，可以按照是否在芯片上分为<strong>片上内存(on chip)和片下内存(off chip)</strong> 。</p>
 <p><em><strong>片上内存</strong> ：主要用于缓存（cache）及少量特殊存储单元（例如texture），其特点是</em>*“存储空间小，但带宽大”** 。对应到上图中，<strong>SRAM</strong> 就属于片上内存，它的存储空间只有20MB，但是带宽可以达到19TB/s。</p>
 <p><em><strong>片下内存</strong> ：主要用于全局存储（global memory），即我们常说的</em><em>显存</em>* ，其特点是**“存储空间大，但带宽小”** ，对应到上图中，<strong>HBM就属于片下内存（也就是显存）</strong> ，它的存储空间有40GB（A100 40GB），但带宽相比于SRAM就小得多，只有1.5TB/s。</p>
 <p>当硬件开始计算时，会先从显存（HBM）中把数据加载到片上（SRAM），在片上进行计算，然后将计算结果再写回显存中。<strong>那么这个“片上”具体长什么样，它又是怎么计算数据的呢？</strong></p>
 <h4 id="32-gpu是如何做计算的">3.2 GPU是如何做计算的</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXwa8AibicyBqmLaNwjRNmianzpZZXPjXcNp2YeGzGgZlJHUtIrj4urRicNw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXwa8AibicyBqmLaNwjRNmianzpZZXPjXcNp2YeGzGgZlJHUtIrj4urRicNw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>如图，负责GPU计算的一个核心组件叫<strong>SM（Streaming Multiprocessors，流式多处理器），可以将其理解成GPU的计算单元，一个SM又可以由若干个SMP（SM Partition）组成</strong> ，例如图中就由4个SMP组成。SM就好比CPU中的一个核，但不同的是一个CPU核一般运行一个线程，但是一个SM却可以运行多个轻量级线程（由Warp Scheduler控制，一个Warp Scheduler会抓一束线程（32个）放入cuda core（图中绿色小块）中进行计算）。</p>
 <p>我们将上图所示的结构再做一次简化:</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXLJXwOicricH2DRoNyQQPVGcLQqQD6nco8cSTvxmL7WBiaffMGUoQ8jdyA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXLJXwOicricH2DRoNyQQPVGcLQqQD6nco8cSTvxmL7WBiaffMGUoQ8jdyA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>*<strong>DRAM</strong> ：可以理解成是全局存储，也即可以当成是我们的显存</p>
 <p>*<strong>L1缓存</strong> ：每个SM都有自己的L1缓存，用于存储SM内的数据，被SM内所有的cuda cores共享。SM间不能互相访问彼此的L1。Flash attention中SRAM是on-chip的，对应到这里就是L1缓存。</p>
 <p>*<strong>L2缓存</strong> ：所有SM共享L2缓存。L1/L2缓存的带宽都要比显存的带宽要大，也就是读写速度更快，但是它们的存储量更小。</p>
@@ -544,17 +544,17 @@
 <p><strong>（3）最后看Flash Attention是如何通过分块计算控制I/O，进而解决memory-bound的问题，提升整体运算速度。</strong></p>
 <h4 id="41-标准attention计算">4.1 标准attention计算</h4>
 <p>这个大家应该都很熟悉了，假设一共有个token，每个token向量的维度为，则一个标准的attention计算如下图：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXgNlcdWUPrO1k1GlBOibeAsYU9nNhBmSZpyvxLWJQRrDTmNxpcXYhvicQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXgNlcdWUPrO1k1GlBOibeAsYU9nNhBmSZpyvxLWJQRrDTmNxpcXYhvicQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>其中，。在GPT类的模型中，还需要对做mask处理。<strong>为了表达方便，诸如mask、dropout之类的操作，我们都忽略掉，下文也是同理</strong> 。</p>
 <h4 id="42-标准safe-softmax">4.2 标准Safe softmax</h4>
 <p>这里我们需要额外强调这一步。正常来说，假设中某一行向量为，该行向量中的某一个元素为，则对做softmax后，有：</p>
 <p><strong>而如果****过大，那么在计算softmax的过程中，就可能出现数据上溢的情况。</strong> 为了解决这个问题，我们可以采用safe softmax方法：</p>
 <p>下图展示了safe softmax的过程，<strong>这里****分别表示做归一化前和做归一化后的结果。</strong> 大家记住图中表达的含义，在后面的分块（Tiling）计算中，我们会用到这两个概念：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQX2APzpDJBGqAwrXuKujl0o93G1f2LPQ596mwlWRzv5tjAPaBjT3R5ZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQX2APzpDJBGqAwrXuKujl0o93G1f2LPQ596mwlWRzv5tjAPaBjT3R5ZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <h4 id="43-分块计算整体流程tiling">4.3 分块计算整体流程（Tiling）</h4>
 <p>我们知道Flash Attention的核心优化技术是采用了分块计算（Tiling），那么它是如何分块的？分块后的计算方式和不分块的计算方式又有哪些不同之处呢？</p>
 <p><strong>我们先来了解分块计算的整体流程（帮助大家理解数据块是怎么流转的），然后我们再针对其中的细节做一一讲解。</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXQ3ibicASpWrjuAc3H2VYw30ZJxTCVuqa6NibPaptiaDTIwYUiazQW7e8TicA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXQ3ibicASpWrjuAc3H2VYw30ZJxTCVuqa6NibPaptiaDTIwYUiazQW7e8TicA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>（1）首先，将矩阵切为块（block），每块的长度为。用来表示切完后的某块矩阵，则的维度为。不难理解，中存储着某个token的query信息。</p>
 <p>（2）然后，将矩阵切为块，每块的长度为。用表示切完后的某块矩阵，则的维度为。易知中存储着某个token的key信息。</p>
 <p>（3）同样，将矩阵也切为块，每块长度为。用表示切完后的某块矩阵，则的维度为。易知中存储着某个token的value信息。</p>
@@ -573,9 +573,9 @@ for 1 &lt;= j &lt;= Tc:
         do....  
 </code></pre>
 <p>如果你还有疑惑，那么下面两张图可以更直观地解答你的疑惑.，遍历:</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXdCzN5ictiadGDgRR4OmrC0Gs8DL2H8dNE1TyJSQ7pv2kVDnLe86zTs6Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXdCzN5ictiadGDgRR4OmrC0Gs8DL2H8dNE1TyJSQ7pv2kVDnLe86zTs6Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>，遍历:</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXMCMh5uqnjkicUbrkZsBPF1uJVyuBOwo2ON74Qf5Q8BfCO7TY5ticJW9A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXMCMh5uqnjkicUbrkZsBPF1uJVyuBOwo2ON74Qf5Q8BfCO7TY5ticJW9A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>【⚠️特别提醒】：正如上文所说，这里的<strong><strong>还需要经过一定的处理，才能和不分块场景下的</strong></strong>完全等价。这里我们将每一块的****单独画出，是为了帮助大家更好理解分块计算的整体流程，不代表它是最终的输出结果。</strong></p>
 <p>好！到这一步为止，我们已经掌握了使用Tiling计算attention的整体框架。但我们依然有很多细节问题没有解决：</p>
 <p><em><strong>分块后，要如何正确计算attention score？（即</strong></em>*的计算方法）**</p>
@@ -583,7 +583,7 @@ for 1 &lt;= j &lt;= Tc:
 <p>*<strong>分块后，是如何实现优化I/O，解决memory-bound的问题的？</strong></p>
 <h4 id="44-分块计算中的safe-softmax">4.4 分块计算中的safe softmax</h4>
 <p>回顾之前绘制的标准safe softmax流程图，我们知道都是针对<strong>完整的一行</strong> 做rowmax、rowsum后的结果，那么在分块场景下，会变成什么样呢？</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXaXQ6fp5Fvzzch8wz0miaj3otxdLY0FLMFRpeXDoLLFZOp3icX9RU4VCw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXaXQ6fp5Fvzzch8wz0miaj3otxdLY0FLMFRpeXDoLLFZOp3icX9RU4VCw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>以上图红圈内的数据为例，在标准场景下，我们是对红圈内的每一行做rowmax、rowsum后得到的。</p>
 <p>现在切换到分块场景，我们分别算出了和，然后我们再对它们分别做rowmax、rowsum，是不是也能得到和标准场景下一模一样的结果呢？</p>
 <p>答案当然是否定的。举个简单的例子，<strong>标准场景下的****是每行的全局最大值，可是分块后如果你也这么算，它就变成了局部最大值了。</strong> 很明显，它不等同于标准场景下的结果。</p>
@@ -631,7 +631,7 @@ for 1 &lt;= j &lt;= Tc:
 <p>（5）现在，我们就可以用分块计算的结果，来表示标准场景下safe softmax的结果了：</p>
 <p>我们配合上面的图例和flash attention论文中的伪代码，再来进一步理解一下分块计算safe softmax的（1）～（5）步骤。</p>
 <p><strong>这里我们需注意：由于safe softmax是针对矩阵整行的计算，即相当于固定内圈</strong>**，移动外圈****的结果，所以在接下来的介绍中，我们都以这样的视角进行介绍。**</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXfUX2TEmW1LkQSHrIia1I3Jzujo78stNiaMqNNPyXAiaPwrUGeSh6OuCGg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXfUX2TEmW1LkQSHrIia1I3Jzujo78stNiaMqNNPyXAiaPwrUGeSh6OuCGg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>我们用（图中浅绿色方块）替换掉（1）～（5）步骤中的，用（图中深绿色方块）替换掉。我们关注点在伪代码部分的5-11行。</p>
 <p>由于伪代码中的表达符太多，容易阻碍大家的理解，因此我们先明确各个数学符号表达的含义：</p>
 <ul>
@@ -671,7 +671,7 @@ for 1 &lt;= j &lt;= Tc:
 <p><em><strong>所有以</strong></em>*作为下标的，都表示截止到前一个分块（包含前一个分块）的计算结果**</p>
 <p><em><strong>所有以</strong></em>*作为上标的，都表示引入当前分块做更新后的结果**</p>
 <p>*<strong>所有没有下标的，都表示全局结果</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXU7gHVfsLVCTW0yGcXvx7QiaFLAibV3h0XPnabxKW233CsN6lUwBjibhsQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXU7gHVfsLVCTW0yGcXvx7QiaFLAibV3h0XPnabxKW233CsN6lUwBjibhsQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>相信通过上面对数学表发符的介绍，大家已经大致理解了分块计算safe softmax的过程，为了加深理解，现在我们再来读一遍伪代码，把整个流程串起来：</p>
 <ul>
 <li>
@@ -709,7 +709,7 @@ for 1 &lt;= j &lt;= Tc:
 <p>所以，<strong>分块计算safe softmax的意义，就是抹去对****的读写。</strong></p>
 <h4 id="45-分块计算中的输出o">4.5 分块计算中的输出O</h4>
 <p>终于到翘首以盼的输出的分析部分了，当你第一次看到伪代码12行更新的公式，是不是觉得两眼一黑？不要紧，这里我们依然通过图解的方式，帮助大家理解并推导这个公式。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQX7kQ8TCG7blFyicv803YewYgXibLxgIuWW0LSZnTKqOlv2D6SZicJ6AvNA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQX7kQ8TCG7blFyicv803YewYgXibLxgIuWW0LSZnTKqOlv2D6SZicJ6AvNA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>之前我们说过，<strong>上图中画的6个****并不是我们最终想要的结果。</strong> 我们期望维护并更新，当该下的所有遍历完毕后，我们的就应该和标准场景下的完全相等。</p>
 <p>回到图例中，图中的就应该等于被红框圈起来的部分和部分的乘积。但是别忘记之前说过，这<strong>里各块****都是局部rowmax，rowsum计算出来的结果。</strong> 所以我们必须对各块再做一些处理，才能让它们和V相乘，更新。</p>
 <p>那么要处理到什么程度为止呢？<strong>第一想法可能是，只要让每块<strong><strong>结果和标准场景下的结果完全一致，不就行了吗？但是别忘了，你不计算到最后一块</strong></strong>，你是拿不到全局的rowmax和rowsum的。</strong> 而由于为了解决memory-bound的问题，我们只保留而不存各块。因此等你遍历到最后一块时，虽然有了全局的rowmax和rowsum，但没有，你根本算不出最终的。</p>
@@ -760,7 +760,7 @@ for 1 &lt;= j &lt;= Tc:
 <p>现在，针对所有的，我们将写成矩阵表达式有：</p>
 <p><strong>至此，大家记住这两个重要的结论：</strong></p>
 <h4 id="52-标准backward计算">5.2 标准backward计算</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXFx6gChsmibGaGIkBKC2uggfOTibdgoaz4VzIPHaHUxq0xUJBhNpkeJrA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXFx6gChsmibGaGIkBKC2uggfOTibdgoaz4VzIPHaHUxq0xUJBhNpkeJrA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>我们先来总结下forward中做的操作，为了表达简便，这里将mask、dropout等零碎操作省去，同时假设是损失函数：</p>
 <p>对于标准backward来说，在计算开始时，显存（HBM）上已经存放有这些数据。论文中的伪代码已经介绍得非常清楚，大家可以自行阅读，这里就不赘述了。对伪代码第3行求有困惑的朋友，可见上文“softamx求导”部分。</p>
 <h4 id="53-分块backward计算">5.3 分块backward计算</h4>
@@ -784,16 +784,16 @@ for 1 &lt;= j &lt;= Tc:
 </ul>
 <p>既然有了全局的和，那么现在对于任意一块，我们就能基于算出和标准场景下完全一致的了。因此，在backward的过程中，flash attention将采用<strong>重计算</strong> 的方式，<strong>重新算出</strong>**，并将它们运用到backward的计算中去** ，<strong>所以在接下来的讲解中，大家就可以把<strong><strong>理解成完全等同于标准场景下的结果，而不是像分块计算forward中那样的</strong></strong>。</strong></p>
 <p><strong>另外需要注意的是，为了简化表达，在接下来的分析中，关于mask、dropout之类的步骤，我们在表述上都略去。</strong> 现在让我们来看分块计算backward的伪代码：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQX3O6Mx4emaCYfcZIEGicIkYY4n4m73eJu10icia8LibibwH6W5XWAggrfiaLA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQX3O6Mx4emaCYfcZIEGicIkYY4n4m73eJu10icia8LibibwH6W5XWAggrfiaLA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <h4 id="1求梯度">（1）求梯度</h4>
 <p>由Forward过程我们知：，因此有了后，我们就可以先来求和了。<strong>观察下方的图，我们会发现此时所有的<strong><strong>都是不带波浪号的，再强调一下，这是因为经过了重计算，此处</strong></strong>的结果都等同于标准场景下的结果，而不是forward中所代表的含义。</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXuKAxWFKjk3S00sRjZUzQq7BjGRFymP7DE1Ya1AGodAjSSsNZVCwBug/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXuKAxWFKjk3S00sRjZUzQq7BjGRFymP7DE1Ya1AGodAjSSsNZVCwBug/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>假设现在，那我们要怎么求呢？</p>
 <p><strong>我们先来看<strong><strong>都参与了</strong></strong>哪些部分的计算，以及是怎么参与的</strong> ：由图可知，和参与了的计算，和参与了的计算，和参与了的计算。所以我们有：</p>
 <p>进而推知：</p>
 <p>在伪代码11～15行中，做的都是<strong>重计算</strong> 的过程，<strong>伪代码的第16行，就是在按这个方法分块计算并累积</strong>**。**</p>
 <h4 id="2求梯度">（2）求梯度</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXKGgKBY2IVLWqq2fzLHUictYfuxNUoS0WvDqA6pXVHf9uz24SQ9icwtsA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXKGgKBY2IVLWqq2fzLHUictYfuxNUoS0WvDqA6pXVHf9uz24SQ9icwtsA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>观察上图，可以发现只与相关，例如只与相关。因此我们有：</p>
 <p>这就是伪代码第17行做的事情。</p>
 <h4 id="3求梯度">（3）求梯度</h4>
@@ -803,14 +803,14 @@ for 1 &lt;= j &lt;= Tc:
 <p>如果实在难以理解推导过程，建议大家可以带一些具体的值进去，就能理解我们为什么要写成这种形式了。进而，我们可以推知：</p>
 <p>这就是伪代码第19～20行做的事情。</p>
 <h4 id="4求梯度">（4）求梯度</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXsyxPcejFOBVnqV7mZU6H3hpJtKukZgyJbsjicOsuuu6FpcjPVgYC2icg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXsyxPcejFOBVnqV7mZU6H3hpJtKukZgyJbsjicOsuuu6FpcjPVgYC2icg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>到目前为止，我们已经知道，那么现在就可以根据链式法则继续求了。</p>
 <p>对照上图，我们把目光聚焦在身上，由forward过程可知：</p>
 <p>因此，针对，我们有：</p>
 <p>推广到任意，我们有：</p>
 <p>这就是伪代码第21行做的事情。</p>
 <h4 id="5求梯度">（5）求梯度</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXunibtN1CLMJgt6mharIQdMII96WXT6PsvtgzM7iaDoW9hDlsobesHKJQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXunibtN1CLMJgt6mharIQdMII96WXT6PsvtgzM7iaDoW9hDlsobesHKJQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>这一步就很简单啦，<strong>如果你被复杂的分块推导弄懵了脑袋，那不妨再复习一下我们前面提过的trick</strong> ：对照上图，取出某一块。由于我们是从链式推向，所以这里只要搞明白这块和哪些一起计算出了哪些$再把相关结果相加即可。</p>
 <p>只要看了流程图，就不难得知：某块和对应的共同计算出了对应的，因此有：</p>
 <p><strong>这就是伪代码第22行做的事情。</strong></p>
@@ -820,7 +820,7 @@ for 1 &lt;= j &lt;= Tc:
 <p>我们先来看一个前置知识：<strong>两个矩阵相乘，要怎么统计它们的计算量？</strong></p>
 <p>我们一般用<strong>FLOPs（floating point operations，浮点运算次数）</strong> 来表示运算量的大小。对于“两矩阵相乘”这个操作而言，其<strong>运算量 = 乘法运算的次数 + 加法运算的次数。</strong></p>
 <p>来看一个具体例子：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXBC7iasdm4g3jqHWicwr4aiaTSY7UGE3yTZLReKhOEibI6slxicX1NnWA4KA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXBC7iasdm4g3jqHWicwr4aiaTSY7UGE3yTZLReKhOEibI6slxicX1NnWA4KA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>两矩阵相乘，<strong>为了获取图中深橘色部分的元素，我们一共需要进行n次乘法运算和n-1次加法运算</strong> 。</p>
 <p>那么现在结果矩阵中，一共有m<em>p个橘色方块，则意味着我们需要进行：m</em>p*(n + n - 1)
 次浮点计算。</p>
@@ -831,7 +831,7 @@ for 1 &lt;= j &lt;= Tc:
 <p>一般在矩阵运算中，<strong>乘法运算的时间要高于加法运算的时间，因此有时在统计运算量时，我们只考虑乘法运算的次数，则此时两矩阵相乘的运算量可近似为mnp</strong></p>
 <h4 id="62-flash-attention的计算量">6.2 Flash Attention的计算量</h4>
 <p>有了前置知识，我们就能分析flash attention的计算量了，我们以forward过程为例（为了大家阅读方便，我们再把forward的伪代码放一遍）：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXfUX2TEmW1LkQSHrIia1I3Jzujo78stNiaMqNNPyXAiaPwrUGeSh6OuCGg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXfUX2TEmW1LkQSHrIia1I3Jzujo78stNiaMqNNPyXAiaPwrUGeSh6OuCGg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>我们知道矩阵相乘运算占据了运算量的大头，因此我们把分析目光集中到所有的矩阵运算上来。</p>
 <p>（1）在代码第9行，我们有，其中。根据前置知识，求的计算量为。</p>
 <p>（2）在代码第12行，我们有，其中。则这里的计算量同样为</p>
@@ -845,7 +845,7 @@ for 1 &lt;= j &lt;= Tc:
 <h4 id="七io复杂度">七、IO复杂度</h4>
 <p>之前我们强调过，flash attention相比于标准attention的最大优势，就是其减少了对显存（HBM）的访问次数，一定程度上解决了memory bound的问题。所以这一节我们就来具体分析这两者对显存的访问次数（同样都是以forward为例，backward部分论文中也有给出相关推导过程，大家可以类比forward自行阅读）。</p>
 <h4 id="71-标准attention的io复杂度">7.1 标准attention的IO复杂度</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXHcbribeUCUvgCodkRIiatOL9MOu6l8FKibjoNT9gsFeWQBic2UticWtHZfg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQXHcbribeUCUvgCodkRIiatOL9MOu6l8FKibjoNT9gsFeWQBic2UticWtHZfg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>（1）从HBM中读取，计算并将写回HBM。一读一写的IO复杂度为：，在表示大O阶时我们忽略常数项。</p>
 <p>（2）从HBM中读取，同时计算并将其写回HBM。一读一写的IO复杂度为：。</p>
 <p>（3）从HBM中读取，计算并将写回HBM。一读一写的IO复杂度为：</p>
@@ -857,7 +857,7 @@ for 1 &lt;= j &lt;= Tc:
 <p>所以，<strong>总体来说flash attention的IO复杂度为：</strong></p>
 <p>论文中提过，一般d的取值在64～128，M的取值在100KB左右，因此有。<strong>因此可以看出，Flash attention的IO复杂度是要显著小于标准attention的IO复杂度的。</strong></p>
 <h4 id="八实验效果">八、实验效果</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQX03zq2AlMnexIBoiaRxQwPHsVxNB9JZ9QtQBbJUlStXJq5Obc8cH1k1A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkOEUa8OBkiaVDZEZYQPvGuQX03zq2AlMnexIBoiaRxQwPHsVxNB9JZ9QtQBbJUlStXJq5Obc8cH1k1A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>Flash attention的作者将的GPT2-medium部署在A100 GPU上，来观测采用flash attention前后的模型的计算性能。</p>
 <p>我们先看最左侧图表，标准attention下，计算强度，说明GPT2在A100上的训练是受到内存限制的。而在采用flash attention后得到了明显改善，runtime也呈现了显著下降。</p>
 <p>我们再来看中间的图表，它表示在使用flash attention的前提下，以forward过程为例，每个数据块的大小对HBM读写次数（绿色）和耗时（蓝色）的影响。可以发现，数据块越大，读写次数越少，而随着读写次数的减少，runtime也整体下降了（复习一下，读写复杂度为，数据块越大意味着越小）。<strong>但有意思的是，当数据块大小&gt;256后，runtime的下降不明显了，这是因为随着矩阵的变大，计算耗时也更大了，会抹平读写节省下来的时间。</strong></p>

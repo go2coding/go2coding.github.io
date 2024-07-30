@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fP8Dx2CKmBAowLDgdKGMjz6NWOJlUN10lhAnSaiaGexloIlb0IYdlC7CQ/640?wx_fmt=png" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fP8Dx2CKmBAowLDgdKGMjz6NWOJlUN10lhAnSaiaGexloIlb0IYdlC7CQ/640?wx_fmt=png" width="640" >
           </div>
             <br>
             <br>
@@ -426,19 +426,19 @@
 <p>今天是2024年2月20日，星期二，我们来继续回到RAG的话题。</p>
 <p>RAG发展至今，越来越多的方向是将其重要性弱化，如近期卷的长文本窗口大小，基座模型对长文本的阅读理解能力等等，从而降低chunk切分，rerank等pipeline的误差传播，这些都是一些值得关注的方向，虽然在实际应用环节会带来token量花费暴增、部署硬件成本加大等问题。</p>
 <p>因为在实际落地过程中，我们发现，虽然RAG整合外部信息有助于填补知识空白，其中不相关的上下文可能会在生成阶段增加幻觉的可能性，模型生成阶段没有获取到输入相关片段，存在的原因可能包括召回遗漏知识库确实不存在相关片段时，都会加剧这种情况。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicCGgHp0mticLIly4ABWAe3IwoWFibQ5pmTJAluc8P2AiaVPIPqWAkoLGYQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicCGgHp0mticLIly4ABWAe3IwoWFibQ5pmTJAluc8P2AiaVPIPqWAkoLGYQ/640?wx_fmt=png" alt=""></p>
 <p>如上图及下图所示，当不相关的证据被纳入生成阶段时，基于RAG容易受到外部幻觉的影响，从而出现问题。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fP6dyzXs1WTbb4kXKF5y570w872ib9KnTCoDE863PB7FJB5D6qtpXD11A/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fP6dyzXs1WTbb4kXKF5y570w872ib9KnTCoDE863PB7FJB5D6qtpXD11A/640?wx_fmt=jpeg" alt=""></p>
 <p>​</p>
 <p>社区也有问，是能够让大模型决定什么时候需要借助外部知识，什么时候使用内部知识就行。</p>
 <p>这其实涉及到RAG的几个经典问题：如何保证检索内容是有效，或有用的。如何验证检索的内容对输出的结果是支持的。如何验证输出的结果是来自检索还是模型的生成。</p>
 <p>我们粗浅的想法就是，做一个分类器，写prompt，提示大模型自己进行决策，比如用langchain，把RAG作为一个tool进行调用，如简单的function call</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fPicbwGkOLHZ0llopJiaiawyFiaEwxzUTtJcWTurjxn3e6xJxmwBWrWqMkrQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fPicbwGkOLHZ0llopJiaiawyFiaEwxzUTtJcWTurjxn3e6xJxmwBWrWqMkrQ/640?wx_fmt=png" alt=""></p>
 <p>​</p>
 <p>我们之前在文章《也看引入自我反思的大模型RAG检索增强生成框架：SELF-RAG的数据构造及基本实现思路》https://mp.weixin.qq.com/s/VyrkSnYb4Uss8cfZp1yrvA中也讲过，《SELF-RAG: LEARNING TO RETRIEVE, GENERATE, AND CRITIQUE THROUGH SELF-REFLECTION》<strong>(<a href="https://arxiv.org/pdf/2310.11511.pdf">https://arxiv.org/pdf/2310.11511.pdf</a>)</strong> 引入了一个名为&quot;自我反思检索-增强生成&quot;（SELF-RAG）的框架，通过检索和自我反思来提高LM的质量和事实性，但这实际上要训练多个模型，可操作性并不强。</p>
 <p>也有一个工作《Corrective Retrieval Augmented Generation》（https://arxiv.org/abs/2401.15884）提出了即插即用的纠正性检索增强生成(plug-and-play Corrective Retrieval Augmented Generation，CRAG)，设计了一个轻量级的检索评估器来评估一个查询检索到的文档的整体质量，以提高生成的鲁棒性，这种实际上是事后检索。</p>
 <p>在具体实现上，其通过 LLMs 进行检索评估（retrieval evaluator）来评估查询检索文档的整体质量，并为每个文档返回置信度分数。如果vectorstore检索被认为不明确或与用户查询无关，则执行基于 Web 的文档检索以补充上下文。通过将检索到的文档划分为“知识条”，对每个条带进行分级，并过滤不相关的条带，对检索到的文档进行知识细化。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fPYm6MJw2LDiazZN77nGLMtwq5On4JvicDERYrhHCyTibBOPIjDBGQiafdow/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fPYm6MJw2LDiazZN77nGLMtwq5On4JvicDERYrhHCyTibBOPIjDBGQiafdow/640?wx_fmt=jpeg" alt=""></p>
 <p>​</p>
 <p>因此，我们最好的点，其实是找到合适的时间进行检索，同时发挥大模型自有的知识和外部知识。</p>
 <p><strong>最近的工作《Retrieve Only When It Needs: Adaptive Retrieval Augmentation for Hallucination Mitigation in Large Language Models》(地址：https://arxiv.org/abs/2402.10612)</strong>  认为，跨语言一致性可以为识别幻觉提供高度敏感的信号。因此，利用一个多语言检测模块来交叉检查不同语言的相同问题的答案。</p>
@@ -453,22 +453,22 @@
 <p>不确定性是指模型输出的置信水平，它是识别和消除幻觉的重要指标。不确定性可以帮助用户确定何时信任llm。一般来说，探索幻觉检测的不确定性的方法可以分为三种类型:</p>
 <p><strong>一种是基于逻辑的估计依赖于访问模型的逻辑来计算用于测量不确定性的token级概率或熵，但很多</strong> 模型通常是闭源的，并且被视为黑盒。</p>
 <p>例如，《SelfCheckGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models》，https://arxiv.org/pdf/2303.08896.pdf</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicjJzV7OdTTREicM0eTVfj7VaAKWOQ1v3B4XUbFTuhYGZfPQPFAtE6vfg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicjJzV7OdTTREicM0eTVfj7VaAKWOQ1v3B4XUbFTuhYGZfPQPFAtE6vfg/640?wx_fmt=png" alt=""></p>
 <p>又如，《A Stitch in Time Saves Nine: Detecting and Mitigating Hallucinations of LLMs by Validating Low-Confidence Generation》，https://arxiv.org/pdf/2307.03987.pdf，给定输入，迭代地从模型中生成句子，并主动检测和减轻幻觉。</p>
 <p>在检测阶段，首先识别重要概念，计算模型在其上的不确定性，然后通过检索相关知识验证不确定性概念的正确性。</p>
 <p>在缓解阶段，使用检索到的知识作为证据来修复幻觉句子。最后，将修复后的句子附加到输入以及之前生成的句子上，并继续生成下一个句子。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicFdC5tqHVSrCoe4LmpL9rWI5C1ibRiaImEOG5kkG9ZZLPuDlgFVNN5jMw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicFdC5tqHVSrCoe4LmpL9rWI5C1ibRiaImEOG5kkG9ZZLPuDlgFVNN5jMw/640?wx_fmt=png" alt=""></p>
 <p><strong>一种是基于语言化的估计涉及提示语言模型，使用特定提示来表达其不确定性。</strong>  然而，这些方法在表达自信时往往表现出高度的过度自信。</p>
 <p>例如，《Can llms express their uncertainty? an empirical evaluation of confi-dence elicitation in llm》,https://arxiv.org/pdf/2306.13063.pdf中直接将置信度生成写成prompt提示大模型，如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmic19G1Ck3ib2yianF0Ov8StTUUicFkAMYXH6zz0C4JU3YWzzu5Itxle5oNg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmic19G1Ck3ib2yianF0Ov8StTUUicFkAMYXH6zz0C4JU3YWzzu5Itxle5oNg/640?wx_fmt=png" alt=""></p>
 <p><strong>另一种是采用基于一致性的估计来衡量模型为给定问题提供的多个回答之间的一致性得分。</strong></p>
 <p>例如，基于一致性的方法可以通过生成多个答案并测量其一致性来缓解这种过度自信。通过整合多种方法的优势，以进一步减少对错误答案的过度自信。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmiceH1D8Ty2k7D2DTlTTVzK8TicfPLwDuD8uRlvlrwKe1uSfC1IqtIlfCg/640?wx_fmt=png" alt=""><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicSLknBX8UUKgibuTYoHZb4oiabG4v6gXxTcd3lAG2O11JekMh6IHbK4icQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmiceH1D8Ty2k7D2DTlTTVzK8TicfPLwDuD8uRlvlrwKe1uSfC1IqtIlfCg/640?wx_fmt=png" alt=""><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicSLknBX8UUKgibuTYoHZb4oiabG4v6gXxTcd3lAG2O11JekMh6IHbK4icQ/640?wx_fmt=png" alt=""></p>
 <p><strong>2、进行事后纠正</strong></p>
 <p>另一个是缓解幻觉的事后纠正(Post-hoc Correction for Hallucination Mitigation)，在推理时间内减轻幻觉可能是一种经济有效且可控的方法。</p>
 <p>一系列研究利用大模型广泛的参数知识和逻辑推理能力，通过单个模型内的自我反思来确保逻辑一致性或通过涉及多个模型的协作改进或辩论。例如chain of verification，以及self rag。</p>
 <p>self rag在生成过程中引入一些特殊的token，来判断模型在回答query中要不要检索内容，判断检索内容是否相关，以及检索内容的支撑回答的程度怎样等问题。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fP8Dx2CKmBAowLDgdKGMjz6NWOJlUN10lhAnSaiaGexloIlb0IYdlC7CQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaHCYOCIxEiaKfev1evuX3fP8Dx2CKmBAowLDgdKGMjz6NWOJlUN10lhAnSaiaGexloIlb0IYdlC7CQ/640?wx_fmt=png" alt=""></p>
 <p>​</p>
 <p>self-RAG分三步：</p>
 <p>第一步按需检索，当LLM生成时需要检索内容支撑时，就触发[Retrieve]token，表示接下来要用检索内容；</p>
@@ -478,16 +478,16 @@
 <h4 id="二rowen的大致实现思路">二、Rowen的大致实现思路</h4>
 <p>最开始使用llm的思维链(CoT)推理能力来产生初步回复。</p>
 <p>为了评估初始回复中是否存在任何不正确的内容，集成了一个多语言幻觉检测模块，该模块通过分析各种潜在反应的不确定性来评估幻觉的可能性。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicnuPy6x1Vr1tLMAKallRDarVkp4bBzOUkDdZtJRq5ov0kqjwhxoja3A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicnuPy6x1Vr1tLMAKallRDarVkp4bBzOUkDdZtJRq5ov0kqjwhxoja3A/640?wx_fmt=png" alt=""></p>
 <p>当检测到幻觉时，通过检索增强来纠正初始回复中的任何事实不准确之处，检索增强包括来自外部来源的已验证信息，形成最终回复。</p>
 <p>然而，如果检测模块没有发现幻觉的证据，则认为初始反应是准确的，因此作为最终输出。</p>
 <h4 id="三具体实现的三个阶段策略">三、具体实现的三个阶段策略</h4>
 <p>整个系统包括生成初始答案Generating Initial Answer、决定是否检索Deciding Whether to Retrieve、检索增强生成Retrieval Augmented Generation三个模块。</p>
 <p><strong>1、生成初始答案Generating Initial Answer</strong></p>
 <p>为了处理输入查询x0，利用LM的大量参数知识和推理能力来生成初始答案。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicGeLGlUVZpbiciaYHePBdNJnOEB2GLUYnAQAeqfpibINC7Jc2NzEGu3bxA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicGeLGlUVZpbiciaYHePBdNJnOEB2GLUYnAQAeqfpibINC7Jc2NzEGu3bxA/640?wx_fmt=png" alt=""></p>
 <p>为了确保初始答案的质量，利用大模型的思维链(CoT)能力，指示LM在回复输入x0的同时生成思维过程。用于生成CoT思维过程的提示如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicolYLuzrtLfIp1TW1ms7gibt8jqtBMzSPlEKg7Kv1rRxxPLoFhPBL2RQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicolYLuzrtLfIp1TW1ms7gibt8jqtBMzSPlEKg7Kv1rRxxPLoFhPBL2RQ/640?wx_fmt=png" alt=""></p>
 <p>这一步最大限度地利用了llm内部的参数化知识及其推理能力，从而在一定程度上减少了幻觉的发生。</p>
 <p>一旦生成了CoT推理过程to0，则要求模型M根据思维过程提供一个简明的答案，这一块也采用提示的方式进行：</p>
 <p>Based on the above thought process, provide a brief and direct answer</p>
@@ -497,7 +497,7 @@
 <p>当大模型在各种干扰下给出连贯但不正确的答案时，这些方法可能会失效。</p>
 <p><strong>1）多语种变体生成</strong></p>
 <p>为了解决这个问题，引入了一种新的多语言检测模块，该模块涉及跨不同语言交叉检查同一问题的答案。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicEicr6mibuuayR3HEXBr3G82zddaIJtchHYSoOQ0ib14hO1OtP3GELLxfw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicEicr6mibuuayR3HEXBr3G82zddaIJtchHYSoOQ0ib14hO1OtP3GELLxfw/640?wx_fmt=png" alt=""></p>
 <p>如果一个问题在不同的语言中得到不一致的答案，特别是那些具有重大文化差异的语言，则倾向于认为它可能是不正确的。</p>
 <p>这块有个假设，就是使用多语言的能力，其首先利用LLM提示在源语言和目标语言中生成语义等效的变体。</p>
 <p>具体地，首先，从一个输入x0开始，并指示模型M提供一组k个语义等价的输入Xs=x1s,x2s。</p>
@@ -509,19 +509,19 @@
 <p><strong>2）一致性评分计算</strong></p>
 <p>在这一步中，利用从前面所有阶段生成的样本集来计算捕获语言级交叉检查范式的数值一致性分数，通过比较两个QA对之间的语义等价性，如果语义等价则返回“True”，否则返回“False”。</p>
 <p>对应的提示为：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicZuSibxAtAib0rQs75sjkS0ufrEs2X4Eguk99F8Gdn6Jjxickxx1Kyy1cQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicZuSibxAtAib0rQs75sjkS0ufrEs2X4Eguk99F8Gdn6Jjxickxx1Kyy1cQ/640?wx_fmt=png" alt=""></p>
 <p>然后，将回复映射到一个数字语义等效分数:{“True”→ 1.0，&ldquo;False&quot;→0.0}。</p>
 <p>因此，多语言一致性评分Z可计算为：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicpxuCV5YcDKm0uVqf1icNILgfxpiaNcvUTibJxXpQeAbnzBnXA0yibbUh2Q/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicpxuCV5YcDKm0uVqf1icNILgfxpiaNcvUTibJxXpQeAbnzBnXA0yibbUh2Q/640?wx_fmt=png" alt=""></p>
 <p>其中P∗=(x∗，r∗)表示上一步生成的QA对，分数Z是衡量模型出现幻觉的可能性。</p>
 <p><strong>3、检索增强生成Retrieval Augmented Generation</strong></p>
 <p>如果一致性得分低于预定义的阈值，则表明原始回答中存在幻觉内容的可能性，则引入一个检索增强生成过程。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicxchXIZjwG5WvMKe5iawhACsUibxBS94zuGkibB4fbYKMqXmtAicHTkJfNQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicxchXIZjwG5WvMKe5iawhACsUibxBS94zuGkibB4fbYKMqXmtAicHTkJfNQ/640?wx_fmt=png" alt=""></p>
 <p>为了帮助LM模型纠正内部错误，从外部知识来源(如在线网页)中寻找支持证据。</p>
 <p>最初，为了在寻找验证事实时对人类的查询进行模仿，指示模型M为x中的每个释义问题生成搜索查询。提示如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicMzeBt4qAqZfFhG5Q6qYoFLMNZLbw72LyNKdYsPBhatYCReJDGkqiaiaw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmicMzeBt4qAqZfFhG5Q6qYoFLMNZLbw72LyNKdYsPBhatYCReJDGkqiaiaw/640?wx_fmt=png" alt=""></p>
 <p>然后，将生成的相关搜索查询输入到GooglesearchAPI中以检索相关知识，将收集到的搜索结果在后续的幻觉纠正步骤中使用，以解决原始回复中潜在的事实错误。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmiczs5mWgxtynEMOoLL5bFHnA8MYHSyGTrOxhYGLOPbf3FEIondMEA87g/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJia4W5icUVIqBxRQO5v3c7gmiczs5mWgxtynEMOoLL5bFHnA8MYHSyGTrOxhYGLOPbf3FEIondMEA87g/640?wx_fmt=png" alt=""></p>
 <p>在获得相关证据后，提示模型根据通过检索程序获得的检索证据来回顾之前的思维过程和最初答案。</p>
 <h4 id="总结">总结</h4>
 <p>本文主要介绍了《Retrieve Only When It Needs: Adaptive Retrieval Augmentation for Hallucination Mitigation in Large Language Models》这一工作，其通过引入跨语言之间的一致性从而决定是否需要借助外部知识库进行检索。</p>

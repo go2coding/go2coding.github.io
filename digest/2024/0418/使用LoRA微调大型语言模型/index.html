@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/00mNbYia7vODxZs4jwENXx0riaUUNuyfTlayCD33PctDlHP241DTscVvoR2RoHurglf9Z7AVYPPOBtChz9nhUh6w/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/00mNbYia7vODxZs4jwENXx0riaUUNuyfTlayCD33PctDlHP241DTscVvoR2RoHurglf9Z7AVYPPOBtChz9nhUh6w/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -433,16 +433,16 @@
 <p>LoRA背后的数学原理是高维参数矩阵的低真实秩特性。具体而言，参数矩阵存在行秩和列秩，行秩指的是矩阵的线性无关的行的个数，列秩同理，行秩等于列秩。秩能够反映全连接层中关键特征的数目与位置。目前大型模型的内部维度通常极大，但这并不意味着其内部蕴藏的关键信息具有相同的高维度。实际上，网络中的矩阵基本上是过参数化的，其中存在大量冗余的参数信息。一些研究者认为，网络层矩阵的真实内部维度比人们认知中更小。这代表着我们能够采用更低维度的矩阵替代网络的高维矩阵，降低网络的体积和开销。</p>
 <p>LoRA的核心思想是在模型的微调过程中只更新一小部分参数。具体而言，LoRA通过在Transformer模型的每一层引入两个低秩矩阵，从而替代高维的参数更新矩阵。全连接网络层的参数更新可以用下列公式进行表示，其中和是实际网络层更新的参数矩阵：</p>
 <p>由于  同样是过参数化的高维矩阵，因此LoRA对其采用低秩分解，从而使用两个低秩的参数更新矩阵和进行替换，如下图所示。这两个矩阵分别负责降维和升维，从而模拟本征秩（intrinsic rank）。这样，只需训练这些低秩矩阵，就可以在保持模型性能的同时大幅减少参数量。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/00mNbYia7vODxZs4jwENXx0riaUUNuyfTlxwo0ia4MHBDu6DaTTUibbb6wn1bOfZ0327qT410wfsLeDXTvKrrUpE9w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/00mNbYia7vODxZs4jwENXx0riaUUNuyfTlxwo0ia4MHBDu6DaTTUibbb6wn1bOfZ0327qT410wfsLeDXTvKrrUpE9w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>图一</p>
 <p>LoRA作用的目标是Transformer模型中的全连接层，其中自注意力机制和前馈网络分别具有4个和2个全连接层，这些全连接层都能够用LoRA进行优化。低秩的参数更新矩阵和分别用随机正态分布和全零矩阵进行初始化，从而保证在优化开始时整个网络的等效输出仍与未优化时相同。训练过程中将冻结Tranformer网络的权重，仅对所有B和A进行优化。训练完成后，我们仅需要保存所有参数更新矩阵的参数即可，大幅降低了存储资源的消耗。而预测时则直接计算所有的结果，并叠加在原本的全连接层矩阵上即可。</p>
 <p>LoRA相较于现有的微调方法具有较多的优势。首先，LoRA需要优化的参数量极少，极大地降低了设备的需要。其次，LoRA的稳健性和灵活性较好，无需担心灾难性遗忘的问题，且能够依据多任务需要训练不同的LoRA，不同的LoRA间还支持动态切换。最后，LoRA还能适配传统的全参数训练。仅需将参数更新矩阵的尺寸设置为原本网络矩阵的秩，即可等效为全参数微调。</p>
 <p>实验结果显示，LoRA在多个任务上的微调效果能够与全参数微调方法相当，且需要优化的参数量极少，极大降低了设备需求。一些研究结果显示，LoRA相较于全参数训练，能够降低微调训练一个半精度模型的一半显存需要。这证明了LoRA方法的强大！</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/00mNbYia7vODxZs4jwENXx0riaUUNuyfTlayCD33PctDlHP241DTscVvoR2RoHurglf9Z7AVYPPOBtChz9nhUh6w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/00mNbYia7vODxZs4jwENXx0riaUUNuyfTlayCD33PctDlHP241DTscVvoR2RoHurglf9Z7AVYPPOBtChz9nhUh6w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>表一</p>
 <p>目前已经出现一种协助用户使用LoRA微调大型模型的框架，PEFT。该框架提供了包含LoRA等多种微调方法。通过调用相关的方法，自动为模型插入LoRA并选定训练网络部分。该框架还提供用于微调训练的方法。</p>
 <p>目前LoRA方法也发生了重大的改进。研究者将量化技术引入大模型的微调中，提出QloRA，进一步缩减了资源的需要。具体而言，该方法提出一种新型量化手段，在不缩减大模型性能的前提下，大幅降低模型的体积。随后再使用LoRA对量化后模型进行微调。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/00mNbYia7vODxZs4jwENXx0riaUUNuyfTlv1se9E9dd9EfCBGnHia4ESvXrHSJIBicUXGicB4HFdLiciaa3nansRLkThA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/00mNbYia7vODxZs4jwENXx0riaUUNuyfTlv1se9E9dd9EfCBGnHia4ESvXrHSJIBicUXGicB4HFdLiciaa3nansRLkThA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>图二</p>
 <p>编辑：张天瀚</p>
 <p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>

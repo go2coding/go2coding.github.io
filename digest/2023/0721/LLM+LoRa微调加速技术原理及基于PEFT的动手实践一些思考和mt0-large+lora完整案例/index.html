@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2qsQdnOJaUYVNHbtmARoN20xYxic7KAvn9xbmhWFyZlS4h3mw0unDA0A/640?wx_fmt=png" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2qsQdnOJaUYVNHbtmARoN20xYxic7KAvn9xbmhWFyZlS4h3mw0unDA0A/640?wx_fmt=png" width="640" >
           </div>
             <br>
             <br>
@@ -438,15 +438,15 @@
 <p><strong>为了进一步加深对lora的理解，本文主要从LoRA基本原理及PEFT中的实现、基于mt0-large+lora的完整实践两方面进行介绍，供大家一起参考。</strong></p>
 <h4 id="一lora基本原理及peft中的实现">一、LoRA基本原理及PEFT中的实现</h4>
 <p>当前，已经出现了很多lora作为adapter的微调模型，如Alpaca LoRA，Chinese-LLaMA-Alpaca等，其在公开时会注明：中文LLaMA/Alpaca LoRA模型无法单独使用，需要搭配原版LLaMA模型，发布的是LoRA权重，可以理解为原LLaMA模型上的一个“补丁”，两者进行合并即可获得完整版权重。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2SpUNZdP0AJ1scyymrEJcCAqguIUmuv64lZ4iaxhaUPqadUMIUhrEBBA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2SpUNZdP0AJ1scyymrEJcCAqguIUmuv64lZ4iaxhaUPqadUMIUhrEBBA/640?wx_fmt=png" alt=""></p>
 <p>LoRA的实现原理在于，冻结预训练模型权重，并将可训练的秩分解矩阵注入到Transformer层的每个权重中，大大减少了下游任务的可训练参数数量。直白的来说，实际上是增加了右侧的“旁支”，也就是先用一个Linear层A，将数据从 d维降到r，再用第二个Linear层B，将数据从r变回d维。最后再将左右两部分的结果相加融合，得到输出的hidden_state。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2YIan2k5ouzJZw7QAsleQEhgOhia10X53lfvCcspoXUogEI3UQLZfswA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2YIan2k5ouzJZw7QAsleQEhgOhia10X53lfvCcspoXUogEI3UQLZfswA/640?wx_fmt=png" alt=""></p>
 <p>如上图所示，左边是预训练模型的权重，输入输出维度都是d，在训练期间被冻结，不接受梯度更新。右边部分对A使用随机的高斯初始化，B在训练开始时为零，r是秩，会对△Wx做缩放 α/r。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2jRywJXR7YMEFFNhMGHDF6uibh4bWianEFicwQiaf3XInSfCZmazQ2NapBA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2jRywJXR7YMEFFNhMGHDF6uibh4bWianEFicwQiaf3XInSfCZmazQ2NapBA/640?wx_fmt=png" alt=""></p>
 <p>幸运的是，<strong>HuggingFace的PEFT(Parameter-Efficient Fine-Tuning，地址：https://github.com/huggingface/peft）</strong> 中提供了模型微调加速的方法，参数高效微调（PEFT）方法能够使预先训练好的语言模型（PLMs）有效地适应各种下游应用，而不需要对模型的所有参数进行微调。</p>
 <p>对大规模的PLM进行微调往往成本过高，在这方面，PEFT方法只对少数（额外的）模型参数进行微调，基本思想在于仅微调少量 (额外) 模型参数，同时冻结预训练 LLM 的大部分参数，从而大大降低了计算和存储成本，这也克服了灾难性遗忘的问题，这是在 LLM 的全参数微调期间观察到的一种现象PEFT 方法也显示出在低数据状态下比微调更好，可以更好地泛化到域外场景。</p>
 <p>例如，使用PEFT-lora进行加速微调的效果如下，从中我们可以看到该方案的优势：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2qsQdnOJaUYVNHbtmARoN20xYxic7KAvn9xbmhWFyZlS4h3mw0unDA0A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2qsQdnOJaUYVNHbtmARoN20xYxic7KAvn9xbmhWFyZlS4h3mw0unDA0A/640?wx_fmt=png" alt=""></p>
 <p>例如，其对LoRA做了封装支持，几步即可使用：</p>
 <pre><code>from peft import get_peft_model, LoraConfig, TaskType  
   
@@ -507,7 +507,7 @@ model.print_trainable_parameters()
 <p>接下来，我们来使用huggingface-peft库来进行一个lora的实践。</p>
 <p>首先，在模型方面，我们选用mt0-large模型为例（只有1.2b），进行实验，模型地址：https://huggingface.co/bigscience/mt0-large。</p>
 <p><strong>模型权重地址：https://huggingface.co/bigscience/mt0-large/tree/main</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2iaPdhEAbjwaQclBwKX8gJ0zrleiboicLh5YeIZe4ss94HRCtRIgFjCgXg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2iaPdhEAbjwaQclBwKX8gJ0zrleiboicLh5YeIZe4ss94HRCtRIgFjCgXg/640?wx_fmt=png" alt=""></p>
 <p>先看看mt0-large是什么。多任务提示微调（MTF）已被证明可以帮助大型语言模型在zero-shot的环境下生成新的任务，但到目前为止，MTF的探索主要集中在英语数据和模型上，将MTF应用于预训练的多语言BLOOM和mT5模型系列，就产生称为BLOOMZ和mT0的微调变体。</p>
 <p>具体的，总共生产了三种不同尺寸的核心型号：</p>
 <ul>
@@ -521,7 +521,7 @@ model.print_trainable_parameters()
 <p>BLOOMZ-MT / mT0-MT: 在xP3mt上进行模型微调，xP3mt由多语言数据集和机器翻译的提示语组成。</p>
 </li>
 </ul>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2SflGegPmHcCWzhKFEUszwnrV4bKEEYW76iaFUmaPboAQJX9hHmzXsyw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2SflGegPmHcCWzhKFEUszwnrV4bKEEYW76iaFUmaPboAQJX9hHmzXsyw/640?wx_fmt=png" alt=""></p>
 <p>其次，在任务方面，我们选用金融领域情感分析任务financial_sentiment_analysis，给定一个句子，要求识别出该句子是negative、positive还是neutral三个中的哪一个，其中的数据样式如下：</p>
 <pre><code>{'sentence': &quot;The 10,000-odd square metre plot that Stockmann has bought for the Nevsky Center shopping center is located on Nevsky Prospect , St Petersburg 's high street , next to the Vosstaniya Square underground station , in the immediate vicinity of Moscow Station .&quot;,  
  'label': 1,  
@@ -698,7 +698,7 @@ tensor([[    0,   259, 32588,     1]])
 <p>就职于360人工智能研究院、曾就职于中国科学院软件研究所。</p>
 <p>老刘说NLP，将定期发布语言资源、工程实践、技术总结等内容，欢迎关注。</p>
 <p><strong>对于想加入更优质的知识图谱、事件图谱实践、相关分享的，可关注公众号，在后台菜单栏中点击会员社区-&gt;会员入群加入。</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2r98Ir3JuyyDiab5V70O32ibSJq6myZzDIw9qicmRSq6y2uewaQPgkreibQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/fUBU1yiaEmJjxgZiaIEx07alFVMM76WSW2r98Ir3JuyyDiab5V70O32ibSJq6myZzDIw9qicmRSq6y2uewaQPgkreibQ/640?wx_fmt=png" alt=""></p>
 <p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
 
 

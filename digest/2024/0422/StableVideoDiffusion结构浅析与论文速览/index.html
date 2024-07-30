@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetkiaWEZ8GnwyicatoichfTmiaIkz7kczZS63pYvTdYzYWHNXPCKK3hhibNuw/640?wx_fmt=jpeg&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetkiaWEZ8GnwyicatoichfTmiaIkz7kczZS63pYvTdYzYWHNXPCKK3hhibNuw/640?wx_fmt=jpeg&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -424,7 +424,7 @@
           <div class="single-blog-content">
             <p>作者： 天才程序员周弈帆  来源： <a href="https://mp.weixin.qq.com/s/0pQjK9s1xOcy_4PAEOyTMQ">天才程序员周弈帆</a></p>
 <p>近期，各个科技公司纷纷展示了自己在视频生成模型上的最新成果。虽然不少模型的演示效果都非常惊艳，但其中可供学术界研究的开源模型却少之又少。Stable Video Diffusion (SVD) 算得上是目前开源视频生成模型中的佼佼者，有认真一学的价值。在这篇文章中，我将面向之前已经熟悉 Stable Diffusion (SD) 的读者，简要解读 SVD 的论文。由于 SVD 的部分结构复用了之前的工作，并没有在论文正文中做详细介绍，所以我还会补充介绍一下 SVD 的模型结构、调度器。后续我还会在其他文章中详细介绍 SVD 的代码实现及使用方法。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetG5ibiciajjsqtPojQB5b711suva29OUJgbGnGl1bMuJaabpTUibKWa8xqw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetG5ibiciajjsqtPojQB5b711suva29OUJgbGnGl1bMuJaabpTUibKWa8xqw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <h4 id="背景">背景</h4>
 <p>Stable Video Diffusion 是 Stability 公司于 2023 年 11 月 21 日公布并开源的一套用扩散模型实现的视频生成模型。由于该模型是从 Stability 公司此前发布的著名文生图模型 Stable Diffusion 2.1 微调而成的，因而得名 Stable Video Diffusion。SVD 的技术报告论文与模型同日发布，它对 SVD 的训练过程做了一个详细的分享。由于该论文过分偏向实践，这里我们仅对它的开头及中间模型设计的几处关键部分做解读。</p>
 <h4 id="摘要">摘要</h4>
@@ -436,7 +436,7 @@
 <h4 id="svd-模型架构回顾">SVD 模型架构回顾</h4>
 <h4 id="video-ldm-与-svd">Video-LDM 与 SVD</h4>
 <p>在阅读正文之前，我们先来回顾一下此前视频生成模型的开发历程，并重点探究 SVD 的模型架构——Video LDM 的具体组成。绝大多数工作在训练一个基于扩散模型的视频生成模型时，都是在预训练的 SD 上加入时序模块，如 3D 卷积，并通过微调把一个图像生成模型转换成视频生成模型。由于 SD 是一种 LDM (Latent Diffusion Model)，所以这些视频模型都可以归类为 Video-LDM。所谓 LDM，就是一种先生成压缩图像，再用解码模型把压缩图像还原成真实图像的模型。而对于视频，Video-LDM 则会先生成边长压缩过的视频，再把压缩视频还原。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetn3qsYL6hbp756hg9ehd5cwDDwDsLT3tRDbCuFLEyX12srgTMbOxulA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetn3qsYL6hbp756hg9ehd5cwDDwDsLT3tRDbCuFLEyX12srgTMbOxulA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p>虽然 Video-LDM 严格上来说是一个视频扩散模型的种类，但大家一般会用Video LDM （没有横杠） 来指代 <em>Align your Latents: High-Resolution Video Synthesis with Latent Diffusion Models</em> 这篇工作。这篇论文已在 CVPR 2023 上发布，两个主要作者正是前一年在 CVPR 上发表 SD 论文的主要作者，也是现在这篇 SVD 论文的主要作者。从署名上来看，似乎两个作者在毕业后就加入了 Stability 公司，并将 Video LDM 拓展成了 SVD。论文中也讲到，SVD 完全复用了 Video LDM 的结构。为了了解 SVD 的模型结构，我们再来回顾一下 Video LDM 的结构。</p>
 <p>在 SD 的基础上，Video LDM 做对模型结构了两项改动：在扩散模型的去噪模型 U-Net 中加入时序层、在对图像压缩和解压的 VAE 的解码器中加入时序层。</p>
 <h4 id="添加时序层">添加时序层</h4>
@@ -472,13 +472,13 @@
 <p>此处如果你没有理解注意力层的形状变换也不要紧，它只是一个实现细节，不影响后面的阅读。如果感兴趣的话，可以回顾一下 Transformer 论文的代码，看一下注意力运算为什么是对 B L C
 的数据做操作的。</p>
 </blockquote>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetzLcgjocQfcqbla7V4xtogJKTyN3TqEgF4Llck5EVjmtAlEPxAExRWA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetzLcgjocQfcqbla7V4xtogJKTyN3TqEgF4Llck5EVjmtAlEPxAExRWA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <h4 id="微调-vae-解码器">微调 VAE 解码器</h4>
 <p>Video LDM 的另一项改动是修改了图像压缩模型 VAE 的解码器。具体来说，方法先在 VAE 的解码器中加入类似的时序层，并在 VAE 配套的 GAN 的判别器里也加入了时序层，随后开始微调。在微调时，编码器不变，仅训练解码器和判别器。</p>
 <blockquote>
 <p>如果你没听过这套 VAE + GAN 的架构的话，请回顾 Stable Diffusion 论文及与其紧密相关的 VQGAN 论文。</p>
 </blockquote>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jethVTYXDthxwoPziaibicvd1G3lvTtYYNBofWeibUDiboG2vDB4WPN9MMlWxA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jethVTYXDthxwoPziaibicvd1G3lvTtYYNBofWeibUDiboG2vDB4WPN9MMlWxA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p>以上就是 Video LDM 的模型结构。SVD 对其没有做任何更改，所以也没有在论文里对模型结构做详细介绍。稍有不同的是，Video LDM 仅微调了新加入的模块，而 SVD 在加入新模块后对模型的所有参数都进行了重新训练。</p>
 <h4 id="svd-训练细节">SVD 训练细节</h4>
 <p>SVD 分四节介绍了模型训练过程。第一节介绍了数据精制的过程，后三节分别介绍了训练的三个阶段：文生图预训练、视频预训练、高质量视频微调。</p>
@@ -498,17 +498,17 @@
 <p>经上述训练后，开发团队得到了一个低分辨率的基础文生视频模型。在实验部分，SVD 论文除了给出视频生成模型在各大公开数据集上的指标外，还分享了几个基于基础模型的应用。</p>
 <h4 id="高分辨率文生视频">高分辨率文生视频</h4>
 <p>基础文生视频最直接的应用就是高分辨率文生视频。实现的方法很简单，只要准备一个高分辨率的视频数据集，在此数据集上微调原基础模型即可。SVD 高分辨率文生视频模型能生成 576 x 1024 的视频。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetkiaWEZ8GnwyicatoichfTmiaIkz7kczZS63pYvTdYzYWHNXPCKK3hhibNuw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetkiaWEZ8GnwyicatoichfTmiaIkz7kczZS63pYvTdYzYWHNXPCKK3hhibNuw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <h4 id="高分辨率图生视频">高分辨率图生视频</h4>
 <p>除了文生视频外，也可以用基础模型来微调出一个图生视频模型。为了把约束从文本换成图像，开发团队将 U-Net 交叉注意力层的约束从文本嵌入变成了约束图像的图像嵌入，并将约束图像与原 U-Net 的噪声输入在通道维度上拼接在一起。特别地，参考以往 <em>Cascaded diffusion models</em> 论文的经验，约束图像在与噪声输入拼接前，会加上一些噪声。除此之外，由于约束机制的变动，像文生图模型一样将约束强度（CFG scale）设成 7.5 会让 SVD 图生视频模型产生瑕疵。因此，SVD 图生视频模型每一帧的约束强度不同，从第一帧到最后一帧以 1.0 到 3.0 线性增长。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jet80WXPvelP7u8N3FrRUHqL98JAz6oB74IIgm21zsDOT9Eb3X3hdOXrg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jet80WXPvelP7u8N3FrRUHqL98JAz6oB74IIgm21zsDOT9Eb3X3hdOXrg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p>参考之前 <em>AnimateDiff</em> 工作，SVD 也成功训练了相机运动 LoRA，使得图生视频模型只会生成平移、缩放等某一种特定相机运动的视频。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetHS7nYQAkIJDicRnLicVwwBnibRb7nXRicrFCTD0ibictGRBhMNvtiaISsViaYw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetHS7nYQAkIJDicRnLicVwwBnibRb7nXRicrFCTD0ibictGRBhMNvtiaISsViaYw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <h4 id="视频插帧">视频插帧</h4>
 <p>Video LDM 曾提出了一种把基础视频模型变成视频插帧模型方法。该方法以视频片段的首末帧为额外约束，在此新约束下把视频生成模型微调成了预测中间帧的视频预测模型。SVD 以同样方式实现了这一应用。</p>
 <h4 id="多视角生成">多视角生成</h4>
 <p>多视角生成是计算机视觉中另一类重要的任务：给定 3D 物体某个视角的图片，需要算法生成物体另外视角的图片，从而还原 3D 物体的原貌。而视频生成模型从数据中学到了物体的平滑变换规律，恰好能帮助到多视角生成任务。SVD 论文用不少篇幅介绍了如何在 3D 数据集上生成视频并微调基础模型，从而得到一个能生成环绕物体旋转的视频的模型。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetYhNiazPtfNde1CicFBdibs4gex1kaTWvj7j1vuGKzmZuCkqgNKGqooK4A/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/PPYfhrH0Fa34iciaramNrDiaVuJ97el3jetYhNiazPtfNde1CicFBdibs4gex1kaTWvj7j1vuGKzmZuCkqgNKGqooK4A/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <h4 id="结语">结语</h4>
 <p>Stable Video Diffusion 是在文生图模型 Stable Diffusion 2.1 的基础上添加了和 Video LDM 相同的视频模块微调而成的一套视频生成模型。SVD 的论文主要介绍了其精制数据集的细节，并展示了几个微调基础模型能实现的应用。通过微调基础低分辨率文生视频模型，SVD 可以用于高分辨率文生视频、高分辨率图生视频、视频插帧、多视角生成。</p>
 <p>对于没有资源与需求训练大视频模型的多数科研人员而言，没有深究这篇文章细节的必要。并且，由于 SVD<strong>只开源了图生视频模型</strong>  （3D模型后来是在 SV3D 论文中正式公布的），这篇文章比较有用的只有和图生视频相关的部分。为了彻底搞懂 SVD 的原理，读这篇论文是不够的，我们还需要通过回顾 Video LDM 论文来了解模型结构，学习 EDM 论文来了解训练及采样机制。</p>

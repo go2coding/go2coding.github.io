@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZLqBw5RkMpPdBMHSVHzPahS7ibSyhib5r5QKSG3P9V8Xs6TIdPh3szw1Q/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZLqBw5RkMpPdBMHSVHzPahS7ibSyhib5r5QKSG3P9V8Xs6TIdPh3szw1Q/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -449,28 +449,28 @@
 <p>检索较小的块以获得更好的搜索质量，但将周围的上下文一起拼接起来传给LLM推理。当然在索引的时候就要把数据处理好，搜索的时候才能找到周围的上下文。这么做的好处，就是小的文本块可以提升搜索的准确率，而扩展上下文则可以给LLM更丰富的内容。</p>
 <p>一种处理的方案是，通过分割和存储小块数据来实现，在检索过程中，它首先获取小块，然后查找这些块的父ID，并返回那些较大的文档。</p>
 <p>参考LangChain中的实现ParentDocumentRetriever</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZN8rnwXbmtjzQlYwoZhYnbcey04Wusc3RibBqEQR89MGksC6NWiaGPy8w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZN8rnwXbmtjzQlYwoZhYnbcey04Wusc3RibBqEQR89MGksC6NWiaGPy8w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>4.<strong>融合检索或混合搜索</strong></p>
 <p>将检索到的结果与不同的相似性分数适当地结合起来——这个问题通常是在倒排融合算法的帮助下解决的，该算法将检索得到的结果重新排序以获得最终输出。在LangChain中，这是在EnsembleRetriever类中实现的，它结合了您定义的检索器列表，例如faiss矢量索引和基于BM25的检索器，并使用RRF进行重新排序。混合或融合搜索通常会提供更好的检索结果，因为两种互补的搜索算法结合在一起，同时考虑了查询和存储文档之间的语义相似性和关键字匹配。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZwFHKQGIskI5icb1wQOZaTibFp9dBYu28L0HIJIqrXC8iaq3KwCLQ80UEg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZwFHKQGIskI5icb1wQOZaTibFp9dBYu28L0HIJIqrXC8iaq3KwCLQ80UEg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>5.<strong>过滤和压缩</strong></p>
 <p>检索容易遇到的一个问题，当把数据向量化索引到数据库时，不太可能预想到对应的用户问题会是什么。这意味着，与查询最相关的信息可能隐藏在一个包含大量不相关文本的文档中，如果都一股脑传给LLM，不仅费用高（肉疼）而且效果可能也会受影响。</p>
 <p>LLMChainFilter是一个简单的压缩器，使用LLM链来决定最初检索到的文档中的哪些要过滤掉，哪些要返回，而无需操作文档内容。嗯。。。这个，我就是因为不想调用LLM费钱处理才采用这个方案的吗？EmbeddingsFilter通过嵌入文档和查询并只返回那些与查询具有足够相似嵌入的文档，提供了一个更便宜、更快的选项。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5Z6pu6XK4H673oWvAoqd1cNwkP7f9ETAPXhmydD7nEO2yaRLYByFO7AA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5Z6pu6XK4H673oWvAoqd1cNwkP7f9ETAPXhmydD7nEO2yaRLYByFO7AA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>上下文压缩是另一种解决问题的思路。这个想法很简单：您可以使用给定查询的上下文对它们进行压缩，从而只返回相关信息，而不是立即按原样返回检索到的文档。ContextualCompressionRetriever循环处理返回的原始文档，并从每个文档中仅提取与查询相关的内容。</p>
 <p><strong>6.元数据过滤</strong></p>
 <p>我们已经习惯了SQL查询的时候增加Where的限制条件，这个可以精确查询所需的数据。RAG也不是所有的时候都要通过语义或关键词检索。比如检索“所有评分大于8分的电影”，或者我们公司实际的业务场景，检索的时候只需要明确某个品牌的数据。</p>
 <p>通过元数据过滤实现精确过滤，和语义检索配合。在存储数据块到向量数据块时，需要先处理好元数据，在我们公司的场景中，就是把所属的品牌ID一起存储。检索的时候可以利用大模型的理解能力，把自然语言转成元数据过滤。看看LangChain的实现，metadata_field_info是pydantic的格式</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZLqBw5RkMpPdBMHSVHzPahS7ibSyhib5r5QKSG3P9V8Xs6TIdPh3szw1Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZLqBw5RkMpPdBMHSVHzPahS7ibSyhib5r5QKSG3P9V8Xs6TIdPh3szw1Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>7.时间加权</strong></p>
 <p>对于一些类似客服FAQ的场景，检索命中越频繁，数据的权重就越高，可以使用了语义相似性和时间衰减的组合。LangChain给出的计算公式是这样的</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZkeU7SMhSXZOicmn9N0hJYlwfgNNTuDuV3teVqUXY14lLCfEg9qdWg4Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/hvrTWwGO2PXDNWKDX9QwibJt7fKLuon5ZkeU7SMhSXZOicmn9N0hJYlwfgNNTuDuV3teVqUXY14lLCfEg9qdWg4Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>hours_passed是指自上次访问检索器中的对象以来（而不是自创建对象以来）经过的小时数。这意味着频繁访问的对象保持“新鲜”。</p>
 <p>还有另一种时间权重，比如新闻资讯，创建时间越近权重越高，甚至可以为其设置过期时间。</p>
 <p>RAG应用系统中，大家比较关心的因素：准确率、速度、成本。上面讨论的方案基本上都是提升准确率的，同时带来的问题就是速度下降，部分方案会成本上升。</p>
 <p>另一方面，在实际的业务场景中，准确率可能是现阶段最重要的问题，业务人员对于应用的要求可能是90分，而LLM目前的能力只能达到60分，如果不能通过其它的方式提升效果，那么应用可能无法在实际场景中使用了。</p>
 <p><strong>欢迎加入【数据行业交流群】社群，长按以下二维码加入专业微信群</strong>**，商务合作加微信备注商务合作，AIGC应用开发交流入群备注AIGC应用**</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/lWCdtxO0W7ibgViafMcVUoECd3JYXqlWCxzmNzEzbnlu9eKpNezjicv14b5vAUBf1vsLqnPPDboyuS7CqlsvTYNrw/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/lWCdtxO0W7ibgViafMcVUoECd3JYXqlWCxzmNzEzbnlu9eKpNezjicv14b5vAUBf1vsLqnPPDboyuS7CqlsvTYNrw/640?wx_fmt=jpeg" alt=""></p>
 <p><strong>往期数据平台历史热门文章：</strong></p>
 <p><a href="https://mp.weixin.qq.com/s?__biz=MzA4ODAyNzA4MQ==&amp;mid=2247484720&amp;idx=1&amp;sn=524e990f0e9e52f3fbbd79dc68aab48d&amp;scene=21#wechat_redirect">基于DataOps的数据开发治理：实现数据流程的自动化和规范化</a></p>
 <p><a href="http://mp.weixin.qq.com/s?__biz=MzA4ODAyNzA4MQ==&amp;mid=2247484725&amp;idx=1&amp;sn=5a0189a88752dfb11ebee050c1f4dbdf&amp;chksm=90313f93a746b685e787cd7d69a287ccbab432fb999fe24c6e1e50667bf3e15655ac5f1e0bc8&amp;scene=21#wechat_redirect">数据平台：湖仓一体、流批一体、存算分离的核心问题及原因解析</a></p>

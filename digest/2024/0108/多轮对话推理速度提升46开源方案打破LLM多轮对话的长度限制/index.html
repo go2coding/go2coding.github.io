@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCTm5MTw7c31Hfg3M51whSWUuC6NqhxfjuJc3ne8fqKybicpLNehzGiakg/640?wx_fmt=jpeg&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCTm5MTw7c31Hfg3M51whSWUuC6NqhxfjuJc3ne8fqKybicpLNehzGiakg/640?wx_fmt=jpeg&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -433,24 +433,24 @@
 <p>大语言模型能够记住的上下文长度，直接影响了 ChatGPT 等大模型应用与用户互动的质量。</p>
 <p>如何让 LLM 在多轮对话场景下保持生成质量，对推理系统提出了更高的要求，因为 LLM 在预训练期间只能在有限的注意力窗口的限制下进行训练。</p>
 <p>常见的 KV Cache 机制能够节约模型计算的时间，但是在多轮对话的情景下，key 和 value 的缓存会消耗大量的内存，无法在有限的显存下无限扩展上下文。同时，训练好的模型在不做二次微调的前提下也无法很好地泛化到比训练序列长度更长的文本，导致生成效果糟糕。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCBY6kicgUb9ZM2fia8wgAYR87DiccZJzIBdhiaL50QNOb5cbX4CyUA91Wgw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCBY6kicgUb9ZM2fia8wgAYR87DiccZJzIBdhiaL50QNOb5cbX4CyUA91Wgw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><em>图来源：https://arxiv.org/pdf/2309.17453.pdf</em></p>
 <p>StreamingLLM 为了解决了这个问题，通过观察了注意力模块中 Softmax 的输出，发现了 attention sink 的现象。我们知道注意力机制会为每一个 token 分配一个注意力值，而文本最初的几个 token 总是会分配到很多无用的注意力。当我们使用基于滑动窗口的注意力机制时，一旦这几个 token 被踢出了窗口，模型的生成效果就会迅速崩溃。只要一直把这几个 token 保留在窗口内，模型就能稳定地生成出高质量的文本。</p>
 <p>比起密集注意力（Dense Attention）、窗口注意力（Window Attention）以及带重计算的滑动窗口注意力 (Sliding Window w/ Re-computing)，StreamingLLM 基于 attention sink 的注意力机制无论是在计算复杂度还是生成效果上都表现优异。在不需要重新训练模型的前提下，StreamingLLM 能够直接兼容目前的主流大语言模型并改善推理性能。</p>
 <p><strong>SwiftInfer：基于 TensorRT 的 StreamingLLM 实现</strong></p>
 <p>为了将 StreamingLLM 这一技术更好的应用到落地场景，Colossal-AI 团队成功地将 StreamingLLM 方法与 TensorRT 推理优化结合，不仅继承了原始 StreamingLLM 的所有优点，而且还具有更高的运行效率。使用 TensorRT-LLM 的 API，我们还能够获得接近于 PyTorch API 的模型编写体验。</p>
 <p>基于 TensorRT-LLM，我们重新实现了 KV Cache 机制以及带有位置偏移的注意力模块。如下图所示，假设我们的窗口大小为 10 个 token，随着生成的 token 增加（由黄色方块表示），我们在 KV 缓存中将中间的 token 踢出，与此同时，始终保持着文本开始的几个 token（由蓝色方块表示）。由于黄色方块的位置会发生变化，在计算注意力时，我们也需要重新注入位置信息。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCicw6fNmiaUIITWfnwuTov5chBp8Yee43vgZKP8NqbdbdOgXPxqegO65A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCicw6fNmiaUIITWfnwuTov5chBp8Yee43vgZKP8NqbdbdOgXPxqegO65A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>需要注意的是，StreamingLLM 不会直接提高模型能访问的上下文窗口，而是能够在支持流式超多轮对话的同时保证模型的生成效果。</p>
 <p><strong>大模型无限输入流推理加速 46%</strong></p>
 <p>原版本的 StreamingLLM 可以可靠地实现超过 400 万个 token 的流式输入，实现了比带重计算的滑动窗口注意力机制高出 22.2 倍的速度提升。</p>
 <p>Colossal-AI 团队发布的 SwiftInfer 可以进一步提升推理性能，最多带来额外的最多<strong>46% 的推理吞吐速度提升，为大模型多轮对话推理提供低成本、低延迟、高吞吐的最佳实践。</strong> TensorRT-LLM 团队也在同期对 StreamingLLM 进行了类似支持。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCTm5MTw7c31Hfg3M51whSWUuC6NqhxfjuJc3ne8fqKybicpLNehzGiakg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCTm5MTw7c31Hfg3M51whSWUuC6NqhxfjuJc3ne8fqKybicpLNehzGiakg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p><strong>Colossal-AI 社区动态</strong></p>
 <p>Colossal-AI 目前已获得 GitHub 星数三万五千多颗，位列全球 TOP400，细分赛道排名世界第一，可通过高效多维并行、异构内存等，降低 AI 大模型训练 / 微调 / 推理的开发与应用成本，提升模型任务表现，降低 GPU 需求。作为主流开源 AI 大模型系统社区，Colossal-AI 生态在多方面保持活跃更新。</p>
 <p><strong>Colossal-LLaMA-2-13B 开源</strong></p>
 <p>Colossal-LLaMA-2-13B 模型，<strong>仅用 25B token 数据和万元算力，</strong> 效果远超基于 LLaMA-2 的其他中文汉化模型。即使<strong>与其他采用中文语料，可能花费上千万元成本，从头预训练的各大知名模型相比，</strong> Colossal-LLaMA-2 在<strong>同规模下仍表现抢眼。</strong> 13B 版本通过构建<strong>更为完善的数据体系，</strong> 在知识性内容掌握程度，自然语言处理任务理解程度，以及安全性，价值观等问题上，都有质的提升。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCxQKicze1HqYU3MDgbnC68eKN5uhusm2dbDdfetxIElbR9eCuXIB63nw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/KmXPKA19gW8EdpatxVjX4J1vtKmLFPjCxQKicze1HqYU3MDgbnC68eKN5uhusm2dbDdfetxIElbR9eCuXIB63nw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
 <p><strong>Colossal-AI 云平台</strong></p>
 <p>Colossal-AI 云平台在<strong>整合 Colossal-AI 系统优化和廉价算力</strong> 的基础上，近期发布了 AI 云主机的功能，方便用户以近似裸机的方式进行 AI 大模型的开发和调试，并提供了多种使用方式，包括：Jupyter Notebook、ssh、服务本地端口映射和 grafana 监控，全方位的为用户提供便捷的开发体验。同时，还为用户预制了含有 ColossalAI 代码仓库和运行环境的 docker 镜像，用户无需环境和资源配置，便可一键运行 ColossalAI 代码仓库中的代码样例。</p>
 <p>Colossal-AI 开源地址：https://github.com/hpcaitech/ColossalAI</p>

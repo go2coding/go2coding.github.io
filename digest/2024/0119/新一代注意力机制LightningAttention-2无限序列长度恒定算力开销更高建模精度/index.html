@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4q5TavKRYmuvKxbllZpUVXcznXwHuJfTfNGHdaiabYa6rbZibVYibibEshgg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4q5TavKRYmuvKxbllZpUVXcznXwHuJfTfNGHdaiabYa6rbZibVYibibEshgg/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -431,9 +431,9 @@
 <p>大语言模型序列长度的限制，极大地制约了其在人工智能领域的应用，比如多轮对话、长文本理解、多模态数据的处理与生成等。造成这一限制的根本原因在于当前大语言模型均采用的 Transformer 架构有着相对于序列长度的二次计算复杂度。这意味着随着序列长度的增加，需要的计算资源成几何倍数提升。如何高效地处理长序列一直是大语言模型的挑战之一。</p>
 <p>之前的方法往往集中在如何让大语言模型在推理阶段适应更长的序列。比如采用 Alibi 或者类似的相对位置编码的方式来让模型自适应不同的输入序列长度，亦或采用对 RoPE 等类似的相对位置编码进行差值的方式，在已经完成训练的模型上再进行进一步的短暂精调来达到扩增序列长度的目的。这些方法只是让大模型具有了一定的长序列建模能力，但实际训练和推理的开销并没有减少。</p>
 <p>OpenNLPLab 团队尝试一劳永逸地解决大语言模型长序列问题。他们提出并开源了 Lightning Attention-2—— 一种新型的线性注意力机制，让长序列的训练和推理成本与 1K 序列长度的一致。在遇到显存瓶颈之前，无限地增大序列长度并不会对于模型训练速度产生负面影响。这让无限长度预训练成为了可能。同时，超长文本的推理成本也与 1K Tokens 的成本一致甚至更少，这将极大地减少当前大语言模型的推理成本。如下图所示，在 400M、1B、3B 的模型大小下，随着序列长度的增加，FlashAttention2 加持的 LLaMA 的训练速度开始快速下降，然而 Lightning Attention-2 加持的 TansNormerLLM 的速度几无变化。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qFJpBCicPfcjuGGCHFB4CVVsQLyz15iaUsXSsoxLD6LnMlvaWQL7TJgwQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qFJpBCicPfcjuGGCHFB4CVVsQLyz15iaUsXSsoxLD6LnMlvaWQL7TJgwQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><em>图 1</em></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qTxY0ecorWhibxC3bIaDRopQX4WNQLDyXPH8OpxxnxXzxVlX83ootrLQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qTxY0ecorWhibxC3bIaDRopQX4WNQLDyXPH8OpxxnxXzxVlX83ootrLQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <ul>
 <li>
 <p>论文：Lightning Attention-2: A Free Lunch for Handling Unlimited Sequence Lengths in Large Language Models</p>
@@ -447,7 +447,7 @@
 </ul>
 <p><strong>Lightning Attention-2 简介</strong></p>
 <p>让大模型的预训练速度在不同序列长度下保持一致，这听起来是一个不可能的任务。事实上，如果一个注意力机制的计算复杂度相对于序列长度保持线性关系的话，就可以实现这一点。自 2020 年线性注意力【https://arxiv.org/abs/2006.16236】横空出世以来，研究人员一直在为了线性注意力的实际效率符合它的理论线性计算复杂度而努力。在 2023 年之前，大多数的关于线性注意力的工作均集中在对齐它们与 Transformer 的精度上。终于在 2023 年中期，改进的线性注意力机制【https://arxiv.org/abs/2307.14995】在精度上可以与最先进的 Transformer 架构对齐。然而，线性注意力中将计算复杂度变成线性的最关键的 “左乘变右乘” 的计算 Trick (如下图所示)，在实际实现中远慢于直接左乘的算法。其原因在于右乘的实现需要用到包含大量循环操作的累积求和（cumsum），大量的 IO 操作使得右乘的效率远低于左乘。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qYyQwatZjahgyQVsmUDkcqs0kEeVeoKzeL3yQjTmwngibGKZuVK5LrnA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qYyQwatZjahgyQVsmUDkcqs0kEeVeoKzeL3yQjTmwngibGKZuVK5LrnA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><em>图 2</em></p>
 <p>为了更好的理解 Lightning Attention-2 的思路，让我们先回顾下传统 softmax attention 的计算公式：O=softmax ((QK^T)⊙M_) V，其中 Q, K, V, M, O 分别为 query, key, value, mask 和输出矩阵，这里的 M 在单向任务（如 GPT）中是一个下三角的全 1 矩阵，在双向任务（如 Bert）中则可以忽略，即双向任务没有 mask 矩阵。</p>
 <p>作者将 Lightning Attention-2 的整体思路总结为以下三点进行解释：</p>
@@ -463,26 +463,26 @@
 </li>
 </ol>
 <p>想要了解更多细节的读者可以仔细阅读本文中的 Algorithm 1 和 Algorithm 2，以及论文中的详细推导过程。Algorithm 以及推导过程都对 Lightning Attention-2 的前向和反向过程进行了区分，可以帮助读者有更深入的理解。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qcftqDLawSNnds2seGMu3Whj3cBct80sZD3lNWXOvAm0FFOxGUg5Deg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qcftqDLawSNnds2seGMu3Whj3cBct80sZD3lNWXOvAm0FFOxGUg5Deg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><em>图 3</em></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qgSBmicCseb0kGqCgobpeFaWJIjrEFUdc4zFouia9U4YWwZZDRz6lulwQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4q0bLttbRqibFIW4gJQKV5dIz3uvQFkcLrPtzBUEqAPQlDraqgibmXdh0w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qgSBmicCseb0kGqCgobpeFaWJIjrEFUdc4zFouia9U4YWwZZDRz6lulwQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4q0bLttbRqibFIW4gJQKV5dIz3uvQFkcLrPtzBUEqAPQlDraqgibmXdh0w/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>Lightning Attention-2 精度对比</strong></p>
 <p>研究人员首先在小规模（400M）参数模型上对比了 Lightning Attention-2 与 Lightning Attention-1 的精度区别，如下图所示，二者几无差别。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4q5TavKRYmuvKxbllZpUVXcznXwHuJfTfNGHdaiabYa6rbZibVYibibEshgg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4q5TavKRYmuvKxbllZpUVXcznXwHuJfTfNGHdaiabYa6rbZibVYibibEshgg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>随后研究人员在 1B、3B 上将 Lightning Attention-2 加持的 TransNormerLLM（TNL-LA2）与其它先进的非 Transformer 架构的网络以及 FlashAttention2 加持的 LLaMA 在相同的语料下做了对比。如下图所示，TNL-LA2 与 LLaMA 保持了相似的趋势，并且 loss 的表现更优。这个实验表明，Lightning Attention-2 在语言建模方面有着不逊于最先进的 Transformer 架构的精度表现。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qeclnxiaMf74LP0EopsSNgNia5QDo6nic4tia5nDFPGiaGO5PrZbrKjRWRyg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qeclnxiaMf74LP0EopsSNgNia5QDo6nic4tia5nDFPGiaGO5PrZbrKjRWRyg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>在大语言模型任务中，研究人员对比了 TNL-LA2 15B 与 Pythia 在类似大小下的大模型常见 Benchmark 的结果。如下表所示，在吃掉了相同 tokens 的条件下，TNL-LA2 在常识推理和多项选择综合能力上均略高于基于 Softmax 的注意力的 Pythia 模型。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qiaTicWC6rf7NKflG0C4lTRI7Q1KFDC9YzotiaUu8WPxOmQwuSUWjMNMbw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qiaTicWC6rf7NKflG0C4lTRI7Q1KFDC9YzotiaUu8WPxOmQwuSUWjMNMbw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>Lightning Attention-2 速度对比</strong></p>
 <p>研究人员对 Lightning Attention-2 与 FlashAttention2 进行了单模块速度与显存占用对比。如下图所示，相比于 Lightning Attention-1 和 FlashAttention2，在速度上，Lightning Attention-2 表现出了相比于序列长度的严格线性增长。在显存占用上，三者均显示出了类似的趋势，但 Lightning Attention-2 的显存占用更小。这个的原因是 FlashAttention2 和 Lightning Attention-1 的显存占用也是近似线性的。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qh1Iq1ySwT47Q40Nz9rjXkgqM8V9FZeu31TaVcOUcjrIyym3Q6jPpZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qh1Iq1ySwT47Q40Nz9rjXkgqM8V9FZeu31TaVcOUcjrIyym3Q6jPpZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>笔者注意到，这篇文章主要关注点在解决线性注意力网络的训练速度上，并实现了任意长度的长序列与 1K 序列相似的训练速度。在推理速度上，并没有过多的介绍。这是因为线性注意力在推理的时候可以无损地转化为 RNN 模式，从而达到类似的效果，即推理单 token 的速度恒定。对于 Transformer 来说，当前 token 的推理速度与它之前的 token 数量相关。</p>
 <p>笔者测试了 Lightning Attention-1 加持的 TransNormerLLM-7B 与常见的 7B 模型在推理速度上的对比。如下图所示，在近似参数大小下，Lightning Attention-1 的吞吐速度是百川的 4 倍，ChatGLM 的 3.5 倍以上，显示出了优异的推理速度优势。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qtOxNs5FfoEicWqibLd2SKcmLzhkJ7DJJmAOdHuAmtGQM5GHRdvyj1RQA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gWicczmnPFfFysObVh9iahOn4qtOxNs5FfoEicWqibLd2SKcmLzhkJ7DJJmAOdHuAmtGQM5GHRdvyj1RQA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>小结</strong></p>
 <p>Lightning Attention-2 代表了线性注意力机制的重大进步，使其无论在精度还是速度上均可以完美的替换传统的 Softmax 注意力，为今后越来越大的模型提供了可持续扩展的能力，并提供了一条以更高效率处理无限长序列的途径。OpenNLPLab 团队在未来将研究基于线性注意力机制的序列并行算法，以解决当前遇到的显存屏障问题。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW9LSvGJnGeMgN5icZW9coZAvicwuFyhFM09n7QicLPKzKr3WHYGIdVvlVUA20KPvDWYDKFKvXlXMz5XA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW9LSvGJnGeMgN5icZW9coZAvicwuFyhFM09n7QicLPKzKr3WHYGIdVvlVUA20KPvDWYDKFKvXlXMz5XA/640?wx_fmt=png" alt=""></p>
 <p>© THE END</p>
 <p>转载请联系本公众号获得授权</p>
 <p>投稿或寻求报道：content@jiqizhixin.com</p>

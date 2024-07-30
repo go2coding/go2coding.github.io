@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuXhv9sFRVnthzZib2IawvhIYXeplDdFDkoBnLe6X4aJEjc9OuLXFZTZA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuXhv9sFRVnthzZib2IawvhIYXeplDdFDkoBnLe6X4aJEjc9OuLXFZTZA/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -424,7 +424,7 @@
           <div class="single-blog-content">
             <p>作者： AINLP  来源： <a href="https://mp.weixin.qq.com/s/S5VrbhAdTIeyL1UviJEvLA">AINLP</a></p>
 <h4 id="heading"></h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
 <p>作者：hemingkx</p>
 <p><strong>合作单位：香港理工大学、北京大学、微软亚洲研究院、阿里巴巴</strong></p>
 <p><strong>原文链接：https://zhuanlan.zhihu.com/p/678404136</strong></p>
@@ -436,7 +436,7 @@
 <p>近年来，随着LLM (Large Language Model) 规模的逐渐增大（200M-&gt;7B-&gt;175B），LLM的推理加速技术正逐步引起NLP学界的广泛关注。尤其是像ChatGPT[1]，Bard[2]这种线上实时交互的应用，LLM的inference latency（推理耗时）极大程度地影响了用户的使用体验。那么，LLM的Latency主要来自哪里呢？</p>
 <p>相关研究表明，LLM推理主要是受内存带宽限制的（memory-bandwidth bound）[3][4]&ndash; LLM每个解码步所用的推理时间大部分并不是用于模型的前向计算，而是消耗在了将LLM巨量的参数从GPU显存（High-Bandwidth Memory，HBM）迁移到高速缓存（cache）上（以进行运算操作）。也就是说，LLM推理下的GPU并不是一个合格的打工人：他把每天大多数的时间都耗费在了早晚高峰堵车上，在公司没干啥实事儿（可不就是我摸鱼仙人:P）。</p>
 <p>这个问题随着LLM规模的增大愈发严重。并且，如下左图所示，目前LLM常用的自回归解码（autoregressive decoding）在每个解码步只能生成一个token。这导致GPU计算资源利用率低下（-&gt;每个token的生成都需要重复读写LLM的巨量参数），并且序列的生成时间随着序列长度的增加而线性增加。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuTp1PmrMeQKKcI8rtzgEWoyfgBMo9H8xM9knZU51moEtIk90l5AOT3Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuTp1PmrMeQKKcI8rtzgEWoyfgBMo9H8xM9knZU51moEtIk90l5AOT3Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>图1: 自回归解码（左），推测解码（右）</p>
 <h4 id="2-speculative-decoding">2. Speculative Decoding</h4>
 <p>那么，如何更好地利用GPU资源，让它成为一个合格的打工人呢？相信大家心里已经有答案了：把公司当作家，减少通勤次数，就可以少摸鱼多打工了（泪目）。</p>
@@ -444,7 +444,7 @@
 <p>如上右图所示，在每个解码步，推测解码首先<strong>高效地“推测”</strong> target LLM（待加速的LLM）未来多个解码步可能生成的token，然后再用target LLM<strong>同时验证</strong> 这些token。通过验证的token作为当前解码步的解码结果。如果“推测”足够准确，推测解码就可以在单个解码步并行生成多个token，从而实现LLM推理加速。并且，使用target LLM的验证过程可以在理论上保证解码结果和target LLM自回归解码结果的完全一致[5][6]。</p>
 <p>也就是说，<strong>推测解码在实现对target LLM推理加速的同时，不损失LLM的解码质量</strong> 。这种优异的性质导致推测解码受到了学界和工业界的广泛关注，从2023年初至今涌现了许多优秀的研究工作和工程项目（如Assisted Generation[7]，Medusa[8]，Lookahead Decoding[9]等等）。</p>
 <p>考虑到推测解码领域2023年以来飞速的研究进展，我们撰写了一篇系统性的survey，给出推测解码的统一定义和通用算法，详细介绍了推测解码研究思路的演化，并对目前已有的研究工作进行了分类梳理。在下文中，我们将文章内容凝练为太长不看版——分享一些关于推测解码关键要素的看法，以及目前常用的研究思路，欢迎感兴趣的小伙伴一起讨论～</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuQEYQSyTDdn0lEt7vqLEL0AQrTicSVIDrOeyC1MhW625f0NYhicvsqdVg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuQEYQSyTDdn0lEt7vqLEL0AQrTicSVIDrOeyC1MhW625f0NYhicvsqdVg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>图2: 推测解码研究思路的演化</p>
 <h4 id="3-key-facets-of-speculative-decoding">3. Key Facets of Speculative Decoding</h4>
 <p>首先，我们总结推测解码的定义：</p>
@@ -459,7 +459,7 @@
 <p>*<strong>“验证“策略的选择</strong> ：如何在确保质量的同时，让尽可能多的“推测”token通过验证，提高解码并行性。</p>
 <p>如上文所述，LLM推理的主要latency瓶颈在于推理过程中参数的反复读写。在只考虑一个解码步的情况下，decoder-only LLM的forward latency主要和decoder层数有关——层数越深，推理时间越长。相比于这两者，LLM运算并行性带来的额外latency很小，这一点在非自回归解码的多个相关工作中有所讨论[10][11]。</p>
 <p>因此，推测解码的算法设计主要考虑如下两点：“推测”（Drafting）的高效性和准确性，以及“验证“策略（Verification）的选择：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnurQnwK7bBAGkrLDoLCAVfHcgIMXDM2RxkCzk4WJ4ick21gWh7rw9xjjA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnurQnwK7bBAGkrLDoLCAVfHcgIMXDM2RxkCzk4WJ4ick21gWh7rw9xjjA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>图3: 推测解码相关研究的归纳分类</p>
 <h4 id="4-推测的高效性和准确性">4. “推测”的高效性和准确性</h4>
 <blockquote>
@@ -468,7 +468,7 @@
 <p>因此，“推测”阶段的设计聚焦在“推测精度（accuracy）”和“推测耗时（latency）“的权衡上。一般来说，用以推测的模型越大，推测精度越高（即通过验证的token越多），但是推测阶段的耗时越大。<strong>如何在这两者之间达到权衡，使得推测解码总的加速比较高，是推测阶段主要关注的问题。</strong></p>
 <h4 id="41-independent-drafting">4.1 Independent Drafting</h4>
 <p>最简单的Drafting思路是，拿一个跟target LLM同系列的smaller LM进行“推测”[12][13]。比如OPT-70B的加速可以用OPT-125M进行推测，T5-XXL可以用T5-small。这样的好处是可以直接利用现有的模型资源，无需进行额外的训练。而且，由于同系列的模型使用相近的模型结构、分词方法、训练语料和训练流程，小模型本身就存在一定的和target LLM之间的“行为相似性“（behavior alignment），适合用来作为高效的“推测“模型。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuWb56HsnjiaruA9VkegD7peXpPskt38iaes4MhsciasXSkAwictWOHicHgAg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuWb56HsnjiaruA9VkegD7peXpPskt38iaes4MhsciasXSkAwictWOHicHgAg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>图4: <a href="https://huggingface.co/blog/assisted-generation">https://huggingface.co/blog/assisted-generation</a></p>
 <p>这一思路由Google和Deepmind同时提出[12][13]。作为Speculative Decoding的早期探索，这种“推测”思路易于实践和部署。并且，这两篇工作同时在理论上证明了推测解码不仅支持greedy decoding，还支持nucleus sampling的无损加速（我们下文会讲到）。这两种解码策略涵盖了LLM应用的大多数场景。因此，这两篇工作极大地促进推测解码在LLM推理加速中的应用，吸引了工业界和学术界的大量关注。</p>
 <blockquote>
@@ -486,7 +486,7 @@
 </li>
 </ul>
 <p>因此，相关研究工作提出利用<strong>target LLM自己</strong> 进行“高效推测”。比如Blockwise Decoding[5]和Medusa[8]在target LLM最后一层decoder layer之上引入了多个额外的FFN Heads（如下所示），使得模型可以在每个解码步并行生成多个token，作为“推测”结果。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuXhv9sFRVnthzZib2IawvhIYXeplDdFDkoBnLe6X4aJEjc9OuLXFZTZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuXhv9sFRVnthzZib2IawvhIYXeplDdFDkoBnLe6X4aJEjc9OuLXFZTZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>图5: <a href="https://sites.google.com/view/medusa-llm">https://sites.google.com/view/medusa-llm</a></p>
 <p>然而，这些FFN Heads依然需要进行额外的训练。除了这两个工作，还有一些研究提出利用Early-Existing或者Layer-Skipping来进行“高效推测“[16][17]，甚至仅仅是在模型输入的最后插入多个[PAD] token，从而实现并行的“推测”[18]。然而，“部署的便捷性”和“推测精度”之间依然存在一定的权衡关系。如何选择合适的“推测”策略，达到令人满意的加速效果，就见仁见智了。</p>
 <blockquote>
@@ -499,7 +499,7 @@
 <p>让我们重新回顾推测解码的验证过程：</p>
 <p>如下图所示，在给定“草稿”（即推测结果）时，LLM的并行验证其实和训练阶段teacher-forcing的形式是一致的——在生成每个token时，都假设LLM的前缀输入是正确的。比如，在验证第三个“推测”token时，LLM以绿色前缀和两个黄色的&quot;推测“token作为前缀输入。以贪婪解码（greedy decoding）为例，以该前缀作为输入时，LLM会自己生成一个概率最大的token。如果这个token（绿色）和第三个“推测”token相同，就说明第三个“推测”token通过了“验证”——这个token本来就是LLM自己会生成的结果。</p>
 <p>因此，第一个没有通过验证的“推测”token （图中的红色token）后续的“推测”token都将被丢弃。因为这个红色token不是LLM自己会生成的结果，那么前缀正确性假设就被打破，这些后续token的验证都无法保证前缀输入是“正确”的了。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuTp1PmrMeQKKcI8rtzgEWoyfgBMo9H8xM9knZU51moEtIk90l5AOT3Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuTp1PmrMeQKKcI8rtzgEWoyfgBMo9H8xM9knZU51moEtIk90l5AOT3Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>图6：recap of Speculative Decoding</p>
 <p>由此可见，推测解码是可以保证最终解码结果和target LLM原先的贪婪解码结果完全一致的。因此，贪婪解码经常被用于推测解码的demo展示[8]，用以清晰直观地表示推测解码在保持和target LLM解码结果等同的前提下，实现了数倍的推理加速。</p>
 <blockquote>
@@ -509,7 +509,7 @@
 <p>因此，有一些工作提出可以适当地放松“验证”要求，使得更多高质量的“推测”token被接受，增大每个解码步通过验证的“推测”token数量，进一步提升加速比[12][14][15]。</p>
 <p>除了支持贪婪解码，推测解码还可以在理论上保障和target LLM nucleus sampling的分布相同[12][13]，具体证明感兴趣的朋友可以查看相关paper～。另外，相比于只验证单一的“推测”序列，相关研究还提出可以让target LLM并行验证多条“推测”序列，从而进一步增大通过验证的“推测”token数量[19]。</p>
 <h4 id="6-总结">6. 总结</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuHCVsBAibDia1gfsxJHmBHXuD4Upm7PcnhIiaOwVuvBPBaPOfDdlpathaQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/nW2ZPfuYqSLNUySD4drzcdC8Q64BEbnuHCVsBAibDia1gfsxJHmBHXuD4Upm7PcnhIiaOwVuvBPBaPOfDdlpathaQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>表1: 推测解码算法总结</p>
 <p>在上表中，我们给出目前常用的推测解码算法的总结～。作为一种新兴的推理加速算法，推测解码在实现对target LLM推理加速的同时保障了解码结果的质量，具有广阔的应用前景和极大的科研潜力，个人比较看好～。然而，推测解码研究本身也存在许多尚未解答的问题，比如如何更好地实现target LLM和“推测”模型之间的行为对齐、如何结合具体任务的特点设计相应的推测解码策略（比如多模态模型加速），都是值得思考的问题。</p>
 <h4 id="参考">参考</h4>
@@ -574,7 +574,7 @@
 </ol>
 <p><strong>进技术交流群请添加AINLP小助手微信（id: ainlp2)</strong></p>
 <p><strong>请备注具体方向+所用到的相关技术点</strong></p>
-<pre><code>![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+<pre><code>![](https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
 </code></pre>
 <p><strong>关于AINLP</strong></p>
 <pre><code>AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机器学习、深度学习、推荐算法等相关技术的分享，主题包括LLM、预训练模型、自动生成、文本摘要、智能问答、聊天机器人、机器翻译、知识图谱、推荐系统、计算广告、招聘信息、求职经验分享等，欢迎关注！加技术交流群请添加AINLP小助手微信(id：ainlp2)，备注工作/研究方向+加群目的。
@@ -582,7 +582,7 @@
   
 
 
-![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)**
+![](https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)**
 </code></pre>
 <p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
 

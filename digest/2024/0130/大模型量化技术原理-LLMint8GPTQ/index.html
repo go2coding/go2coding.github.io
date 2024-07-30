@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7ialnLznNiassAxeLbHePo2LicEAXvuzbu3frziclJLXibkQBeebtCzjnTI4w/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7ialnLznNiassAxeLbHePo2LicEAXvuzbu3frziclJLXibkQBeebtCzjnTI4w/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -485,7 +485,7 @@
 <p>作者发现激活中存在一些离群值，它们的绝对值明显更大；并且这些离群值分布在少量的几个特征中，称为离群特征 (Emergent Features)。以激活和权重 的矩阵相乘为例，特征维度就是指h这个维度。不论是 per-token（针对激活 x 而言：每行对应一个量化系数） 还是 per-channel （针对权重 w 而言：每列对应一个量化系数）量化，都会受到这些离群值的很大影响。既然只有少量的特征包含离群值，LLM.in8() 的思路是把这些特征拿出来单独计算，只对剩余特征做量化。</p>
 <h4 id="技术原理">技术原理</h4>
 <p>LLM.int8()（论文：<strong>LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale</strong> ）是一种采用混合精度分解的量化方法。该方案先做了一个矩阵分解，对绝大部分权重和激活用8bit量化（vector-wise）。对离群特征的几个维度保留16bit，对其做高精度的矩阵乘法。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7ialJw7U09jqkZCmtBOaVs7geOsArKfqWx8d6LeMmYgPzPezLHH8ibicAiaw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7ialJw7U09jqkZCmtBOaVs7geOsArKfqWx8d6LeMmYgPzPezLHH8ibicAiaw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>LLM.int8() 通过三个步骤完成矩阵乘法计算:</p>
 <ol>
 <li>
@@ -499,16 +499,16 @@
 </li>
 </ol>
 <p>实验结果表明该方法效果良好。可以通过使用 LLM.int8() 的量化过程来恢复全部性能。您可以清楚地看到随着模型参数量逐渐变多 8 比特基线（即 vector-wise quantization）的性能大幅下降。而 LLM.int8() 方法使用<strong>vector-wise quantization</strong> 和<strong>混合精度分解</strong> 来恢复全部性能。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7iaJjAPBePBuA83ia0F4oeCwIJlbgmfDKNwD7vLxyLm6f01wqb8sajAictQ/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7iaJjAPBePBuA83ia0F4oeCwIJlbgmfDKNwD7vLxyLm6f01wqb8sajAictQ/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>虽然 LLM.in8() 带来的性能下降微乎其微，但是这种分离计算的方式<strong>拖慢了推理速度</strong> 。对于 BLOOM-176B，相比于 FP16，LLM.int8() 慢了大约 15% 到 23%；对于更小的模型（3B 和 11B），速度差距更为明显，LLM.int8() 慢了三倍以上。</p>
 <p>此外，论文中测量了异常值特征对于注意力和预测性能的影响。</p>
 <p>下图展示了 Transformer 中受模型大小或 C4 困惑度影响的大量异常值特征的层和所有序列维度的百分比。</p>
 <p>从图中可知，当通过参数数量进行测量时，Transformer 所有层上的大幅异常值特征突然出现在 6B 和 6.7B 参数之间。受影响层的百分比从 65% 增加到 100%， 受影响的序列维度数量从 35% 迅速增加到 75%。这种突然的转移与量化开始失败的点同时发生。</p>
 <p>当通过困惑度（perplexity）进行测量时，Transformer 所有层中大量异常值特征的出现可以被视为<strong>根据困惑度递减的指数函数</strong> 平滑的出现。这表明异常值的出现并不是突然的，并且通过研究较小模型中的指数趋势，我们也许能够在相移（相位移动，Phase shift，是一个物理学和工程学中常用的术语。它指的是一个波形在时间上发生的移位现象）发生之前检测到异常值出现的特征。这也表明，<strong>异常值的出现不仅与模型大小有关，还与困惑度有关</strong> ，而困惑度与多个其他因素有关，例如：使用的训练数据量和数据质量。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7ialnLznNiassAxeLbHePo2LicEAXvuzbu3frziclJLXibkQBeebtCzjnTI4w/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7ialnLznNiassAxeLbHePo2LicEAXvuzbu3frziclJLXibkQBeebtCzjnTI4w/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>如下图a所示，一旦异常值特征出现在Transformer的所有层中，中间的异常值特征量值就会迅速增加。大量异常值特征及其不对称分布破坏了 Int8 量化精度。这是量化方法从 6.7B 开始失败的核心原因——量化分布的范围太大，导致大多数量化 bins 为空，小的量化值被量化为零，基本上消除了信息。我们推测，除了 Int8 推理之外，由于超出 6.7B 参数范围，常规 16 位浮点训练也会因异常值而变得不稳定。如果通过向量填充乘以 60 的值，很容易偶然超过最大 16 位值 65535。</p>
 <p>如下图b所示，离群值特征的数量相对于 C4 困惑度的降低严格单调增加，而与模型大小的关系是非单调的。这表明模型的困惑度（perplexity）决定了相移，而不仅是模型的大小。我们推测模型大小只是离散特征出现所需的众多协变量中的一个重要协变量。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7ialnLznNiassAxeLbHePo2LicEAXvuzbu3frziclJLXibkQBeebtCzjnTI4w/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7ialnLznNiassAxeLbHePo2LicEAXvuzbu3frziclJLXibkQBeebtCzjnTI4w/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>目前，LLM.int8() 的实现主要在 bitsandbytes
 库；之前的文章 大模型微调实战（八）-使用INT8/FP4/NF4微调大模型 中介绍过bitsandbytes
 库，同时，transformers 库已经集成并<strong>原生</strong>  支持了 bitsandbytes 这个量化库。课可以说 bitsandbytes 是量化任何模型的最简单方法之一，因为它不需要量化校准数据及校准过程 (即零样本量化)。任何模型只要含有 torch.nn.Linear
@@ -552,13 +552,13 @@ model_nf4 = AutoModelForCausalLM.from_pretrained(model_id, quantization_confi
 <p>GPTQ(论文：<strong>GPTQ: ACCURATE POST-TRAINING QUANTIZATION FOR GENERATIVE PR E-TRAINED TRANSFORMERS</strong> ) 采用 int4/fp16 (W4A16) 的混合量化方案，其中模型权重被量化为 int4 数值类型，而激活值则保留在 float16，是一种仅权重量化方法。在推理阶段，模型权重被动态地反量化回 float16 并在该数值类型下进行实际的运算；同 OBQ 一样，GPTQ还是从单层量化的角度考虑，希望找到一个量化过的权重，使的新的权重和老的权重之间输出的结果差别最小。</p>
 <p>GPTQ 将权重分组（如：128列为一组）为多个子矩阵（block）。对某个 block 内的所有参数逐个量化，每个参数量化后，需要适当调整这个 block 内其他未量化的参数，以弥补量化造成的精度损失。因此，GPTQ 量化需要准备校准数据集。</p>
 <p>GPTQ 量化过程如下图所示。首先，使用 Cholesky 分解中 Hessian 矩阵的逆，在给定的step中对连续列的块（粗体）进行量化，并在step结束时更新剩余的权重（蓝色）。量化过程在每个块内递归应用：白色中间列表示当前正在被量化。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7iaKULvnBglcDia7bT3JSPD6ubOka9Y7iaM5Z2QwCHUnzvO5FkTbMynpubw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7iaKULvnBglcDia7bT3JSPD6ubOka9Y7iaM5Z2QwCHUnzvO5FkTbMynpubw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>GPTQ 的创新点如下：</p>
 <p><em><strong>取消贪心算法</strong> ：OBS 采用贪心策略，先量化对目标影响最小的参数；但 GPTQ 发现直接按顺序做参数量化，对精度影响也不大。这项改进使得</em><em>参数矩阵每一行的量化可以做并行的矩阵计算</em>* （这意味着我们可以独立地对每一行执行量化。即所谓的 per-channel quantization）。对于大模型场景，这项改进使得量化速度快了一个数量级；</p>
 <p><em><strong>Lazy Batch-Updates</strong> ：OBQ 对权重一个个进行单独更新，作者发现性能瓶颈实际在于GPU的内存带宽，而且同一个特征矩阵W不同列间的权重更新是不会互相影响的。因此作者提出了延迟批处理的方法，通过延迟一部分参数的更新，一次处理多个（如：128）列，来</em><em>缓解带宽的压力</em>* ，大幅提升了计算速度。</p>
 <p><em><strong>Cholesky 分解</strong> ：用 Cholesky 分解求海森矩阵的逆，提前计算好所有需要的信息，在</em><em>增强数值稳定性</em>* 的同时，后续更新的过程中再计算，进一步减少了计算量。</p>
 <p>GPTQ的伪代码如下所示，包括了上面讨论的一些优化：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7iaib0Wma4EwZ1gI1XE3L121pmyRn2kKUakkd8mDIjfctX8nXRYfEf28Fw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/J0mLianhFicBENz8EmdAaY69ocAYibczs7iaib0Wma4EwZ1gI1XE3L121pmyRn2kKUakkd8mDIjfctX8nXRYfEf28Fw/640?wx_fmt=png&amp;from=appmsg" alt="">image.png</p>
 <p>该方案有以下两方面的优点：</p>
 <ul>
 <li>

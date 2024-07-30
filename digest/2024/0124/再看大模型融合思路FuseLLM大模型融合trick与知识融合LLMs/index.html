@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0LqOicTg4GcgJmWYMX69FYSzgzUrEdkRfa0qD9omTfoYCCCdbK7fVWM6g/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0LqOicTg4GcgJmWYMX69FYSzgzUrEdkRfa0qD9omTfoYCCCdbK7fVWM6g/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -427,13 +427,13 @@
 <p>借着这种话题，我们来看看大模型模型融合的一些事儿。</p>
 <p>传统的模型融合方法分为集成的方法和权重合并的方法，这两种方法在以往的NLP的比赛中非常常见，是一种提分手段。然而，上述两种方法都需要预训练或者微调相应的模型。</p>
 <p><strong>在大模型场景下，对每个源模型都进行初始化成本太高，为了减少初始化源LLM的成本，使集成后的模型受益于所有源LLMs的优势。</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0LldnlAzKlBOcLxN7Q86a0M34Rd5VDvu24BGkkdCMkBNv7icKricqQicYmg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0LldnlAzKlBOcLxN7Q86a0M34Rd5VDvu24BGkkdCMkBNv7icKricqQicYmg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>因此，本文介绍一种知识融合的方法用来进行大模型的融合，供大家一起参考。</p>
 <p>本文主要对这两个工作牵出来的一些话题进行介绍，供大家一起参考。</p>
 <h4 id="1-背景与概念">1 背景与概念</h4>
 <h4 id="11因果语言建模causal-language-modeling-clm">1.1因果语言建模（Causal Language Modeling, CLM）</h4>
 <p>因果语言建模是训练语言模型的一种目标，它旨在最小化模型预测下一个词的负对数似然。在传统的语言模型训练中，这个目标是通过比较模型生成的词概率分布与实际文本中的词（以one-hot编码表示）来实现的。CLM训练目标可以表示为：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0LwicdbHOeItGuNy44hSU1awibPPESHk9iaYeYfeUNII7LyhLOicJevhlKNg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0LwicdbHOeItGuNy44hSU1awibPPESHk9iaYeYfeUNII7LyhLOicJevhlKNg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>是模型参数下第 i 个词给定前一个词的预测概率。</p>
 <h4 id="12-概率分布矩阵">1.2 概率分布矩阵</h4>
 <p>为了更一般地看待语言模型，将序列预测转换为概率分布矩阵。对于给定的文本序列 ，模型会生成一个概率分布矩阵 ，其中每一行 代表模型对第 个词的预测分布。这个矩阵可以看作是模型对词汇表 中每个词的概率预测。</p>
@@ -459,16 +459,16 @@
 <p><strong>Token Alignment的维度</strong> ：在<strong>文本维度</strong> 上，需要确保两个模型生成的标记序列在<strong>文本顺序上对齐</strong> ；在<strong>分布维度</strong> 上，需要确保来自不同模型的<strong>分布值也对齐</strong> ，即使它们可能对应不同的标记。</p>
 <p>因此有两种对齐策略，该文使用的是MinED：</p>
 <p>*<strong>动态规划对齐（EM）策略</strong></p>
-<p>文章提到了一种基于动规划的方法来实现标记对齐。这种方法通过递归地最小化编辑序列的成本来对齐两个标记序列。编辑操作包括插入、删除和替换标记。如果两个标记相同，它们可以直接对齐；如果不同，则需要通过编辑操作来找到最佳的对齐方式。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0LqOicTg4GcgJmWYMX69FYSzgzUrEdkRfa0qD9omTfoYCCCdbK7fVWM6g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>文章提到了一种基于动规划的方法来实现标记对齐。这种方法通过递归地最小化编辑序列的成本来对齐两个标记序列。编辑操作包括插入、删除和替换标记。如果两个标记相同，它们可以直接对齐；如果不同，则需要通过编辑操作来找到最佳的对齐方式。<img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0LqOicTg4GcgJmWYMX69FYSzgzUrEdkRfa0qD9omTfoYCCCdbK7fVWM6g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>*<strong>最小编辑距离（MinED）策略</strong></p>
-<p>为了提高对齐的成功率并保留更多的有用信息，文章提出了一种基于最小编辑距离（MinED）的策略。这种方法相对于传统的精确匹配（Exact Matching, EM）策略，能够更灵活地处理标记之间的差异。MinED策略通过计算两个标记之间的编辑距离来确定它们是否可以对齐，这通常比直接匹配更加宽松，因此能够减少对齐过程中的信息损失。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0L4jHj5BwerIUYw4Wae4TrRgxpTUuIky58Ls3jmJNC8yrzesrDY22ICg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>为了提高对齐的成功率并保留更多的有用信息，文章提出了一种基于最小编辑距离（MinED）的策略。这种方法相对于传统的精确匹配（Exact Matching, EM）策略，能够更灵活地处理标记之间的差异。MinED策略通过计算两个标记之间的编辑距离来确定它们是否可以对齐，这通常比直接匹配更加宽松，因此能够减少对齐过程中的信息损失。<img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0L4jHj5BwerIUYw4Wae4TrRgxpTUuIky58Ls3jmJNC8yrzesrDY22ICg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>小结</strong> ：标记对齐是FUSELLM方法中的关键步骤，它确保了不同模型生成的概率分布矩阵可以正确地融合在一起，从而实现有效的知识转移。MinED策略提供了一种灵活的对齐方法，能够在保持信息完整性的同时，处理不同模型生成的标记差异。</p>
 <h4 id="24-融合策略">2.4 融合策略</h4>
 <p>在对齐概率分布矩阵后，FUSELLM采用两种融合策略来整合源LLMs的知识：</p>
 <p>*<strong>MinCE</strong> ：选择具有最小交叉熵的分布矩阵。这种方法倾向于选择预测最准确的模型的分布。</p>
 <p>*<strong>AvgCE</strong> ：基于交叉熵得分的加权平均。这种方法为每个源模型的分布赋予不同的权重，权重由模型在预测时的交叉熵得分决定。</p>
 <h4 id="25-融合算法">2.5 融合算法</h4>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0L8CH87fmqr2DDppDmwWYlwjBRzEn3FfHPwshREAiaicsAdNFxwU4lgjAw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/kJguDvfjOGDq26flbEVJwgK200ND7Q0L8CH87fmqr2DDppDmwWYlwjBRzEn3FfHPwshREAiaicsAdNFxwU4lgjAw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>步骤概述：</p>
 <ol>
 <li>

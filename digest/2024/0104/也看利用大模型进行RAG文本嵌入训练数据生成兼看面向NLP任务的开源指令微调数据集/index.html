@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RbvCfS0NG0ib9cnJ4gXdicEZG8ZlrGxiaKBJCWBDyyMic43zKkdmYE0vwLg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RbvCfS0NG0ib9cnJ4gXdicEZG8ZlrGxiaKBJCWBDyyMic43zKkdmYE0vwLg/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -429,11 +429,11 @@
 <p>早期的文本嵌入方法包括潜在语义索引LSI和单词加权平均嵌入wordvec，最近的方法则利用自然语言推理和标注查询-文档对（如MS-MARCO段落排序数据集）的监督来训练文本嵌入，然而，有标签的数据在任务多样性和语言覆盖面方面往往是有限的。</p>
 <p>为了应对这一挑战，Contriever、OpenAIEmbeddings、E5和BGE等方法采用了多阶段训练模式，其首先使用对比损失在大规模弱监督文本对上进行预训练，然后在小规模但高质量的数据集上进行微调。</p>
 <p>但<strong>多样性不够好，尤其是针对不同的任务，应该有不同的嵌入表示</strong> ，因此，我们在昨天的文章**《引入任务Instruction指令的句子向量化方案：Instructor的实现思路及训练数据集构造方案》(<a href="https://mp.weixin.qq.com/s/qIh07eU8_lYL2gBVzTFzKA">https://mp.weixin.qq.com/s/qIh07eU8_lYL2gBVzTFzKA</a>)**  中有介绍到instructor的方案，其在每个query上，加上了指令信息，并一次来计算对比学习loss：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RWdhKL1UkxzjjaGe3Wibs5W6W6E2NibXniaX4CmYy6W2psESwwicEqW5rZg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RWdhKL1UkxzjjaGe3Wibs5W6W6E2NibXniaX4CmYy6W2psESwwicEqW5rZg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>这种思路引入了适配特定instruction任务的嵌入方案，这与instruction微调美妙结合。</p>
 <p>但是，这种方法，用的是已有的instruction任务数据，能否自动化构造合成数据？‍</p>
 <p>最近的另一个工作，<strong>《Improving Text Embeddings with Large Language Models》(<a href="https://arxiv.org/abs/2401.00368">https://arxiv.org/abs/2401.00368</a>)</strong>  这一工作，利用LLM为近100种语言的文本嵌入任务生成多样化的合成数据，在合成数据上使用标准对比损失对开源模型LLM进行微调，得到更好的嵌入表示。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3R2UwUib0Fwp61tIvxziaymlwIQYEEtS5bhFp8w8oic8UKfsFnEC8ic0ZcXA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3R2UwUib0Fwp61tIvxziaymlwIQYEEtS5bhFp8w8oic8UKfsFnEC8ic0ZcXA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>具体思路上，用了两步提示策略：首先提示LLMs对候选任务库进行头脑风暴，然后提示LLMs从任务库中生成以给定任务为条件的数据。为了涵盖各种应用场景，为每种任务类型设计了多个提示模板，并将不同模板生成的数据结合起来，以提高多样性。对于文本嵌入模型，选择微调功能强大的开源LLM，而不是BERT式的小型模型。</p>
 <p><strong>其中涉及到的数据合成思路，跟self-instruc等工作能够连起来了，很有趣，我们先来看看，更特别的，它在关注q-d匹配，并涉及到了short query/long document, long query/short document, short query/shor documenet, long query/long document等场景，这些都是与RAG直接相关的，值得大家关注。</strong></p>
 <p>而与此更为相关的，是现有相关NLP开放指令数据集，我们可以看到xp3系列以及coig系列，体量很大，建议大家收藏。</p>
@@ -449,7 +449,7 @@
 </code></pre>
 <p>如果是类似句子相似度的对称类任务，那就只有一个instruction，示例中的instruction_1跟instruction_2就是同一个，如果是类似检索的非对称任务，那么query跟doc都各有一个instruction，instruction_1跟instruction_2就是两个不同的instruction。</p>
 <p>为了生成多样化的合成数据，<strong>该工作则提出了利用大模型生成数据的方案，采用一种简单的分类法，将嵌入任务分为几个组，然后对每个组应用不同的提示模板。</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RV6N3sQGBJHaEJMTicVselLKI4xhKVePOO23iaGEKgicyK6XFdqpq1VYjg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RV6N3sQGBJHaEJMTicVselLKI4xhKVePOO23iaGEKgicyK6XFdqpq1VYjg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>1、非对称任务</strong></p>
 <p>此类别包括查询和文档在语义上相关但彼此互不转述的任务。根据查询和文档的长度，进一步将非对称任务分为四个子类型：短长匹配、长短匹配、短短匹配和长长匹配。</p>
 <p>例如，短长匹配任务涉及短查询和长文档，这是商业搜索引擎中的典型场景。</p>
@@ -462,26 +462,26 @@
 <p>例如，在图1中，“{query_length}”的值是从集合“{少于5个单词，5-10个单词，至少10个单词}”中采样的。</p>
 <p>为了生成多语言数据，从XLM-R的语言列表中采样“{语言}”的值，为高资源语言赋予更多权重，任何不符合预定义JSON格式的生成数据都会在解析过程中被丢弃，并根据精确的字符串匹配来删除重复项。</p>
 <p>最后，利用生成的合成数据和13个公共数据集的集合，采样后生成约180万个示例。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RvDjJbN8LtIWmGHPUkTiajFibcHJicZw7ofVW0zMkxMAichURGDIlP5Gdsg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RvDjJbN8LtIWmGHPUkTiajFibcHJicZw7ofVW0zMkxMAichURGDIlP5Gdsg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>3、模型训练</strong></p>
 <p>给定一个相关的查询-文档对(q+,d+)，首先将以下指令模板应用于原始查询q+以生成一个新的qinst+：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RzJsk6D3yUml6mOmqx7ugP3Mia32fbaZhFiaBNqEWK4HDibem71k12q22g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RzJsk6D3yUml6mOmqx7ugP3Mia32fbaZhFiaBNqEWK4HDibem71k12q22g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>其中“{task_definition}”是嵌入任务的一句话描述的占位符。对于生成的合成数据，使用头脑风暴步骤的输出。</p>
 <p>例如，对应的task_instruction如下包括：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RzRolOxvgbT1iabA5aHvWHMTvdxvib84ZJLvY0ZFIom6DjAqSlmTwliblQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RzRolOxvgbT1iabA5aHvWHMTvdxvib84ZJLvY0ZFIom6DjAqSlmTwliblQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>对于其他数据集，例如MS-MARCO，手动制定任务定义并将其应用于数据集中的所有查询。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RbvCfS0NG0ib9cnJ4gXdicEZG8ZlrGxiaKBJCWBDyyMic43zKkdmYE0vwLg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RbvCfS0NG0ib9cnJ4gXdicEZG8ZlrGxiaKBJCWBDyyMic43zKkdmYE0vwLg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>给定一个预训练的LLM，将[EOS]标记附加到查询和文档的末尾，然后通过最后一个实例将它们输入到LLM以获取查询和文档嵌入最后一层[EOS]向量。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3R1cQzmf56RY3n16AtpvWNb0uItfMKd2dU5Y2HZwGU7eMWH3uviclPnqA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3R1cQzmf56RY3n16AtpvWNb0uItfMKd2dU5Y2HZwGU7eMWH3uviclPnqA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>为了训练嵌入模型，对批内负例和难负例采用标准InfoNCE损失</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3Rn6INHFEibXALJH5Z8SJdrvIx10Rib0gkWroGTuJf6951ExOBFGDQ6PJg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3Rn6INHFEibXALJH5Z8SJdrvIx10Rib0gkWroGTuJf6951ExOBFGDQ6PJg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p><strong>4、模型评估</strong></p>
 <p>其中有个很有趣的点，为了评估长上下文能力，引入了一种称为个性化密钥检索(personalized passkey retrieval)的任务【这个很像前面我们说的大海捞针任务】，如图4所示，该任务需要将长上下文中的密钥信息编码到嵌入中。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RZClhibOFCzV7Vic9MR8Sg0s557q3XPYjjyicbjWvoibibof9aunEGf4BicBw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RZClhibOFCzV7Vic9MR8Sg0s557q3XPYjjyicbjWvoibibof9aunEGf4BicBw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>这块来自：<strong>《Landmark Attention: Random-Access Infinite Context Length for Transformers》(<a href="https://arxiv.org/abs/2305.16300">https://arxiv.org/abs/2305.16300</a>)</strong></p>
 <p>“&lt;前缀填充符 prefix filler&gt;”和“&lt;后缀填充符 suffix filler&gt;”是“The grass is green. The sky is blue. The sun is yellow. Here we go. There and back again”的重复，此外，每个文档都有一个唯一的人名和插入在随机位置的随机密钥。 任务是从100名候选人中检索包含给定人员密钥的文档。</p>
 <p>对应的prompt如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RoSFMjnlRzgbfvRqaM6wBhzQeJVtYxJcibTar33ibtiaV0wLVgiaxUuywaA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RoSFMjnlRzgbfvRqaM6wBhzQeJVtYxJcibTar33ibtiaV0wLVgiaxUuywaA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <h4 id="二现有开源面向nlp任务的instruction微调数据">二、现有开源面向NLP任务的instruction微调数据</h4>
 <p>实际上，目前已经有许多关于面向中文NLP任务的微调数据出来，构造方式包括有prompt source等。最近在关注这方面的工作，所以也分享出来，供大家一起参考。</p>
 <p><strong>1、英文：P3系列</strong></p>
@@ -489,7 +489,7 @@
 <p>数据样例如下：</p>
 <p>{ &ldquo;inputs&rdquo;: &ldquo;Sentence 1: Fue académico en literatura metafísica, teología y ciencias clásicas.\nSentence 2: Fue académico en literatura metafísica, teología y ciencia clásica.\nQuestion: Can we rewrite Sentence 1 to Sentence 2? Yes or No?&rdquo;, &ldquo;targets&rdquo;: &ldquo;Yes&rdquo; }</p>
 <p>其最关键的部分在于板，模板是将数据示例映射为输入序列和目标序列的自然语言的函数。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RNsnR3YMBIoF4CDQYkZKa0qLfAeyx9lgDurJvVHok4bEb8gLxard97g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJjS5tic5WepFNHWAO8ORwj3RNsnR3YMBIoF4CDQYkZKa0qLfAeyx9lgDurJvVHok4bEb8gLxard97g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>地址：https://huggingface.co/datasets/bigscience/P3</p>
 <p><strong>2、中文：cogi-c</strong></p>
 <p>COIG-PC(Prompt Collection)数据集是智源研究院等全面收集的中文任务和数据集，旨在提供丰富的资源，以提高大语言模型文本生成、信息提取、情感分析、机器翻译等能力，促进中文大语言模型的微调和优化。</p>

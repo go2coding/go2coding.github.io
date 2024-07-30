@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vDIWrDXrZpcn9P7skfTZRiarzel6HLPDRbsLOBibkubKeITyWatiauCng/640?wx_fmt=png" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vDIWrDXrZpcn9P7skfTZRiarzel6HLPDRbsLOBibkubKeITyWatiauCng/640?wx_fmt=png" width="640" >
           </div>
             <br>
             <br>
@@ -426,54 +426,54 @@
 <p>来源 | 机器之心 ID | almosthuman2014</p>
 <p>位置编码技术是一种能够让神经网络建模句子中 Token 位置信息的技术。在 Transformer 大行其道的时代，由于 Attention 结构无法建模每个 token 的位置信息，位置编码（Position embedding) 成为 Transformer 非常重要的一个组件。研究人员也提出了各种各样的位置编码方案来让网络建模位置信息，Rope 和 Alibi 是目前最被广泛采纳的两种位置编码方案。</p>
 <p>然而最近来自百川智能的研究发现，Rope 和 alibi 位置编码的主流实现在低精度（尤其是 bfloat16) 下存在位置编码碰撞的 bug, 这可能会影响模型的训练和推理。而且目前大部分主流开源模型的实现都存在该问题，连 llama 官方代码也中招了。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48XHskiaG74hJqBd6HgC6J4DcQJegupgRVoOMWAM2yTfwjzwVIy3Bn5Bg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48XHskiaG74hJqBd6HgC6J4DcQJegupgRVoOMWAM2yTfwjzwVIy3Bn5Bg/640?wx_fmt=png" alt=""></p>
 <p><strong>还得从位置编码算法说起</strong></p>
 <p>为了弄清楚这个问题，得先从位置编码的算法原理说起，在 Transformer 结构中，所有 Attention Block 的输入都会先经过位置编码，再输入网络进行后续处理。纯粹的 Attention 结构是无法精确感知到每个 token 的位置信息的，而对于语言的很多任务来说，语句的顺序对语义信息的影响是非常大的，为了建模 token 之间的位置关系，Transfomer 原始论文中引入位置编码来建模位置信息。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48WEMbKKh7ricoslrGjAtfdc2IhrkDzInibgGZ6ibaibV1a0ECT7B8XxPNMA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48WEMbKKh7ricoslrGjAtfdc2IhrkDzInibgGZ6ibaibV1a0ECT7B8XxPNMA/640?wx_fmt=png" alt=""></p>
 <p>*图 1 - 施加 Positon Embedding 示意图。</p>
 <p>为了让模型更好地建模句子的位置信息，研究人员提出了多种位置编码方案，meta 开源的 llama [4] 模型采用了 Rope [5] 方案，使得 Rope 成为在开源社区被广泛采纳的一种位置编码方案。而 Alibi 编码因其良好的外推性也被广泛应用。</p>
 <p>了解低精度下的位置编码碰撞之前，先来回顾一下相关算法原理。</p>
 <p><strong>Sinusoidal 位置编码</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48PFQEPTB343geicSfibMarBVNgnLxVlWqGl7hnI3et8ibTK2PjMwOE8FrA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48PFQEPTB343geicSfibMarBVNgnLxVlWqGl7hnI3et8ibTK2PjMwOE8FrA/640?wx_fmt=png" alt=""></p>
 <p>这是 Transformer 原始论文中提出的位置编码方法。它通过使用不同频率的正弦和余弦函数来为每个位置产生一个独特的编码。选择三角函数来生成位置编码有两个良好的性质：</p>
 <p>1）编码相对位置信息，数学上可以证明 PE (pos+k) 可以被 PE (pos) 线性表示， 这意味着位置编码中蕴含了相对位置信息。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48pNatDb1J4QtynT1Z4Hiag0mDmcfBakGkyb6fwtV8ic871JNQZzcTbvhA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48pNatDb1J4QtynT1Z4Hiag0mDmcfBakGkyb6fwtV8ic871JNQZzcTbvhA/640?wx_fmt=png" alt=""></p>
 <p><em>图 2- 句子长度为 50 的位置编码，编码维度 128，每行代表一个 Position Embedding。</em></p>
 <p>2）远程衰减：不同位置的 position encoding 点乘结果会随着相对位置的增加而递减 [1]。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48ItxBkfomkYlH30EfaQCULmCKPT01VG1C05zhP66pfw9L6ic4YbSfV6A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48ItxBkfomkYlH30EfaQCULmCKPT01VG1C05zhP66pfw9L6ic4YbSfV6A/640?wx_fmt=png" alt=""></p>
 <p><em>图 3 - 不同位置的位置编码点积可视化。</em></p>
 <p><strong>Rope</strong></p>
 <p>Rope 是目前开源社区应用最广泛的一种位置编码方案， 通过绝对位置编码的方式实现相对位置编码，在引入相对位置信息的同时保持了绝对位置编码的优势（不需要像相对位置编码一样去操作 attention matrix)。令 f_q, f_k 为 位置编码的函数，m 表示位置，x_m 表示该位置 token 对应的 embedding，我们希望经过位置编码后的 embedding 点积仅和相对位置有关，则可以有公式：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48g6Uya6JM9lfiaR94vHtibv7j55I0kOPFibJzFlyEiaS7dic1HicFcW3hpJHQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48g6Uya6JM9lfiaR94vHtibv7j55I0kOPFibJzFlyEiaS7dic1HicFcW3hpJHQ/640?wx_fmt=png" alt=""></p>
 <p>上面公式中 g 是某个函数，表示内积的结果只和 x_m 和 x_n 的值，以及二者位置的相对关系 (m-n) 有关在 2 维的情况下可以推导出（详细推导过程可参考原论文）：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48caKawvYXqReD4pmQpdRfpA4WnKibpC4yaZRLMica5JvK5EA0L0k35rBA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48caKawvYXqReD4pmQpdRfpA4WnKibpC4yaZRLMica5JvK5EA0L0k35rBA/640?wx_fmt=png" alt=""></p>
 <p>因为矩阵乘法线性累加的性质，可以拓展到多维的情况可得：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu487iaH8mm6g1xpBP4XkD3L6mbeSUrT8bhHUj0FAciacDFUfEHPmcKyCCJw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu487iaH8mm6g1xpBP4XkD3L6mbeSUrT8bhHUj0FAciacDFUfEHPmcKyCCJw/640?wx_fmt=png" alt=""></p>
 <p>为了引入远程衰减的特性，Rope 中 \theta 的选取选择了 Transformer 原始论文中 sinusoidal 公式。</p>
 <p><strong>Alibi</strong></p>
 <p>Alibi 是谷歌发表在 ICLR2022 的一篇工作，Alibi 主要解决了位置编码外推效果差的痛点，算法思想非常的简单，而且非常直观。与直接加在 embedding 上的绝对位置编码不同，Alibi 的思想是在 attention matrix 上施加一个与距离成正比的惩罚偏置，惩罚偏置随着相对距离的增加而增加。在具体实现时，对于每个 head 会有一个超参 m 来控制惩罚偏置随着相对距离增加的幅度（斜率）。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48YGXtobCe35xeaxGBHaPktYEG8dMCuqsdoiaSvyhP7eeTfRFUcAaQQ6Q/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vynUYzr34YZEGicngHf7BktLhp3HSuCJqMQq8sBRCVbkW4Jib3v8TUGw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48YGXtobCe35xeaxGBHaPktYEG8dMCuqsdoiaSvyhP7eeTfRFUcAaQQ6Q/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vynUYzr34YZEGicngHf7BktLhp3HSuCJqMQq8sBRCVbkW4Jib3v8TUGw/640?wx_fmt=png" alt=""></p>
 <p><em>图 4 - Alibi attention bias 示意图</em></p>
 <p>论文结果显示 Alibi 极大的提升了模型的外推性能，16k token 的输入依然可以很好的支持。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48JDCJ9FLZnYoBN1liabibsAyvn0XFqOZnnTG0ne6VGJiaI4vSxFLibDdtbw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48JDCJ9FLZnYoBN1liabibsAyvn0XFqOZnnTG0ne6VGJiaI4vSxFLibDdtbw/640?wx_fmt=png" alt=""></p>
 <p><em>图 5 - Alibi 外推效果对比。</em></p>
 <p><strong>混合精度下位置编码的 bug</strong></p>
 <p>从上面的算法原理中，不管是 rope 的 cos (m\theta) 还是 alibi 的 i-1（m, i 代表 postion id), 需要为每个位置生成一个整型的 position_id, 在上下文窗口比较大的时候，百川智能发现目前主流的位置编码实现在混合精度下都存在因为低精度（float16/bfloat16) 浮点数表示精度不足导致位置编码碰撞的问题。尤其当模型训练（推理）时上下文长度越来越长，低精度表示带来的位置编码碰撞问题越来越严重，进而影响模型的效果，下面以 bfloat16 为例来说明这个 bug。</p>
 <p><strong>浮点数表示精度</strong></p>
 <p>浮点数在计算机中表示由符号位（sign)，指数位 (exponent)，尾数位 (fraction) 三部分组成，对于一个常规的数值表示，可以由如下公式来计算其代表的数值（其中 offset 是指数位的偏置）：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu4894Q1pZEVKNQl0JsuK0OlLLDBdeFOlgmpiaf17IEmcOU2A0JdiaicbmCgA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu4894Q1pZEVKNQl0JsuK0OlLLDBdeFOlgmpiaf17IEmcOU2A0JdiaicbmCgA/640?wx_fmt=png" alt=""></p>
 <p>由公式可知，尾数位的长度决定了浮点数的表示精度。深度学习中常用的 float32/float16/bfloat16 内存中的表示分别如下图所示：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vDIWrDXrZpcn9P7skfTZRiarzel6HLPDRbsLOBibkubKeITyWatiauCng/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vDIWrDXrZpcn9P7skfTZRiarzel6HLPDRbsLOBibkubKeITyWatiauCng/640?wx_fmt=png" alt=""></p>
 <p><em>图 6- bfloat16 的表示格式</em></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48HgXAYeyonPQa0LoRibYsKc9LOZCDTrzYx1ibib85Ric6Kwqs424JLGM8xQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48HgXAYeyonPQa0LoRibYsKc9LOZCDTrzYx1ibib85Ric6Kwqs424JLGM8xQ/640?wx_fmt=png" alt=""></p>
 <p><em>图 7- float16 的表示格式</em></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48hoFEHnmYoCiaZNDCvMPzvRVWISTqNLIIWUxpVTGzR0QYdynZjXJsib3A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48hoFEHnmYoCiaZNDCvMPzvRVWISTqNLIIWUxpVTGzR0QYdynZjXJsib3A/640?wx_fmt=png" alt=""></p>
 <p>*图 8- float32 的表示格式</p>
 <p>可以看到 float16 和 bfloat16 相比于 float32 都牺牲了表示的精度，后续以 bfloat16 为例说明位置编码中存在的问题（float16 同理）。下表展示了 bfloat16 在不同数值范围（只截取整数部分）内的表示精度。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48EichTtZzEIia3DXibGBHlAGWAFnLOKHFkia5djRiaclGfwgqzJLTrqq1TCw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48EichTtZzEIia3DXibGBHlAGWAFnLOKHFkia5djRiaclGfwgqzJLTrqq1TCw/640?wx_fmt=png" alt=""></p>
 <p>可以看到当整数范围超过 256， bfloat16 就无法精确表示每一个整数，可以用代码验证一下表示精度带来的问题。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48edVo89NJ8IIyxQWx813zt3ibCMQudTRK1VOvoFjWeU2AEI3LwESsDYg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48edVo89NJ8IIyxQWx813zt3ibCMQudTRK1VOvoFjWeU2AEI3LwESsDYg/640?wx_fmt=png" alt=""></p>
 <p><strong>Rope&amp; Alibi 编码的问题</strong></p>
 <p>Meta 开源的 llama 模型采用了 Rope 的位置编码方式， 官方的实现（以及大部分的第三方 llama 系列模型）在 bfloat16 下存在精度问题带来的位置编码碰撞（不同位置的 token 在 bfloat16 下变成同一个数）。Llama 官方代码如下：</p>
 <pre><code>Python  
@@ -524,9 +524,9 @@ plt.scatter(t[-100:], t[-100:].to(torch.bfloat16).float(),s=0.8)
 plt.xlabel('position in float32')  
 plt.ylabel('position in bfloat16'  
 </code></pre>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48qQ2BD0v9ibvdZrosayEYPd8hAgIcAxJiawJcXWeWRvFl9FfP6fiawb84A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48qQ2BD0v9ibvdZrosayEYPd8hAgIcAxJiawJcXWeWRvFl9FfP6fiawb84A/640?wx_fmt=png" alt=""></p>
 <p>根据 bfloa16 的表示精度可知，训练（推理）时上下文长度越长，位置编码碰撞的情况越严重，长度为 8192 的上下文推理中，仅有大约 10% 的 token 位置编码是精确的，好在位置编码碰撞有局域性的特质，只有若干个相邻的 token 才会共享同一个 position Embedding, 在更大的尺度上，不同位置的 token 还是有一定的区分性。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu484xP8dnY8aoCRibWOMDHCJ41zueg1XEZpL1rt2dfXxtuibSdS4h8UuU8w/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu484xP8dnY8aoCRibWOMDHCJ41zueg1XEZpL1rt2dfXxtuibSdS4h8UuU8w/640?wx_fmt=png" alt=""></p>
 <p><em>图 10- 不同上下文窗口下位置编码精确 token 所占比例。</em></p>
 <p>除了 llama 模型，百川智能发现 alibi 位置编码也存在上述问题，原因依然在于生成整数的位置索引时会在低精度下产生碰撞问题。</p>
 <p><strong>修复方案</strong></p>
@@ -580,20 +580,20 @@ class LlamaRotaryEmbedding(torch.nn.Module):
 <p>针对该问题百川智能提出了一种新的 alibi attention 方案， 整个 attention bias 依然在 bfloat16 类型上，类似于 sinusiodal 的远程衰减特质， 可以尽量保证临近 token 位置编码的精确性，对于相对距离过远的的 token 则可以容忍其产生一定的位置碰撞。原本的 alibi 实现则相反，相对距离越远的 token 表示越精确，相对距离越近的 token 则会碰撞</p>
 </li>
 </ul>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vdJvmiak6dJI0b7licOj3YFvg5mlYocQOAunDTrAEUJLFTBcENiazW9sw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48vdJvmiak6dJI0b7licOj3YFvg5mlYocQOAunDTrAEUJLFTBcENiazW9sw/640?wx_fmt=png" alt=""></p>
 <p><em>图 11- 修复前后 alibi attention_bias 对照。</em></p>
 <p><strong>修复效果</strong></p>
 <p>百川智能仅在推理阶段对位置编码的精度问题进行修复【注：训练阶段可能也存在问题，取决于训练的具体配置和方法】，可以看到：</p>
 <p>a. 在长上下文的推理中，模型的 ppl 要显著优于修复前的 ppl</p>
 <p>b.Benchmark 上测试结果显示修复前后区别不大，可能是因为 benchmark 上测试文本长度有限，很少触发 Position embedding 的碰撞</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48APhcicWrXE2Gs8uJvL5y1UoLGCgshcJkwpPFXIuaNmhkwA6uMicb3jLQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48APhcicWrXE2Gs8uJvL5y1UoLGCgshcJkwpPFXIuaNmhkwA6uMicb3jLQ/640?wx_fmt=png" alt=""></p>
 <p><em>Benchmark 对比</em></p>
 <p><strong>Perplexity</strong></p>
 <p>我们在通用的文本数据上对修改前后模型在中英文文本上的困惑度进行测试，效果如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48k8L6D3WtibkWu3CFgAgb6sEfKC87bPT8UMbg2JQ5EIDsukGvr1RngBA/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48Lu3OQoraqkMxx4WS3kyytFYhrT7SWptqnKjSdMUbATXHXe6cCM7LkA/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48JVhnOXWO4VIwJymdFeUWpGib8uyQr7bBBWL11dI3INseph5BuM8q14w/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48HcqRJ2Ribvic9ohsIoPibveTus1pd3SoicMcTRTwHibeJ0H8ric6dkjmDibicA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48k8L6D3WtibkWu3CFgAgb6sEfKC87bPT8UMbg2JQ5EIDsukGvr1RngBA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48Lu3OQoraqkMxx4WS3kyytFYhrT7SWptqnKjSdMUbATXHXe6cCM7LkA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48JVhnOXWO4VIwJymdFeUWpGib8uyQr7bBBWL11dI3INseph5BuM8q14w/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8a1z8v6pdezofw5JmaPu48HcqRJ2Ribvic9ohsIoPibveTus1pd3SoicMcTRTwHibeJ0H8ric6dkjmDibicA/640?wx_fmt=png" alt=""></p>
 <p>[0] Dongxu Zhang, &amp; Dong Wang. (2015). Relation Classification via Recurrent Neural Network.</p>
 <p>[1] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, &amp; Illia Polosukhin. (2023). Attention Is All You Need.</p>
 <p>[2] Zihang Dai, Zhilin Yang, Yiming Yang, Jaime Carbonell, Quoc V. Le, &amp; Ruslan Salakhutdinov. (2019). Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context.</p>

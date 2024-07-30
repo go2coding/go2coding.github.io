@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycibwWqricoIM8y4a3J3InfRWNatCAJVqETIUiaXQYUyYtkr9SmN9t9rxRA/640?wx_fmt=other&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycibwWqricoIM8y4a3J3InfRWNatCAJVqETIUiaXQYUyYtkr9SmN9t9rxRA/640?wx_fmt=other&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -445,13 +445,13 @@
 </li>
 </ul>
 <p>详细数据参考下图：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycSq2T4MBuzLqYR0yUs1oGULRmJgV7ALFGzRibOyeF5IJjU7fgkK5HQFA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycSq2T4MBuzLqYR0yUs1oGULRmJgV7ALFGzRibOyeF5IJjU7fgkK5HQFA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>为了提高推理效率，人们探索了包括量化 、推测解码 、蒸馏，稀疏等技术，本文围绕稀疏，重点进行介绍。</p>
 <h4 id="稀疏化基础介绍">稀疏化基础介绍</h4>
 <p>模型剪枝（Pruning）也叫模型稀疏化，不同于模型量化对每一个权重参数进行压缩，稀疏化方法是尝试直接“删除”部分权重参数。<strong>模型剪枝的原理是通过剔除模型中 “不重要” 的权重，使得模型减少参数量和计算量，同时尽量保证模型的精度不受影响。</strong><br>
 论文[17]首先介绍了权重剪枝的方法：将权重低于某个阈值的全部被剪枝，之后进行fine-tuned直到准确率达到预期。该论文的作者在LeNet、AlexNet、VGGNet上分别进行了实验验证了剪枝的作用。另一个针对L1和L2正则化的结论表明，不进行fine-tuned的情况下L1正则化更好，进行fine-tuned则L2正则化更好。另外，<strong>前面的网络层对剪枝更加敏感，因此迭代式剪枝方式更好</strong> 。同时，作者基于实验，提出了彩票理论。彩票理论：对于一个已经训练好的网络，一定存在它的一个子网络可以在不超过原网络训练轮数的情况下达到和原网络相当的准确率。这个子网络就类似于买彩票。<br>
 为了恢复模型精度，通常在剪枝之后需要再训练模型。典型的模型剪枝三段式工作 pipeline 流程分成<strong>训练、剪枝、微调</strong> 三个步骤，剪枝前后网络连接变化如下图所示。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyccicUEo1ia5PGEBicWqgNMPkZnSPfFaq9eKalibUxhGlDEUBUM7jvhp3Ugw/640?wx_fmt=other&amp;from=appmsg" alt=""><br>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyccicUEo1ia5PGEBicWqgNMPkZnSPfFaq9eKalibUxhGlDEUBUM7jvhp3Ugw/640?wx_fmt=other&amp;from=appmsg" alt=""><br>
 同时根据深度学习模型中可以被稀疏化的对象，深度神经网络中的稀疏性主要包括<strong>权重稀疏，激活稀疏和梯度稀疏。</strong><br>
 以上是关于稀疏化的简单介绍，我们接下来把重点转移到‘LLM如何通过稀疏进行推理加速’这个关键命题上。</p>
 <h4 id="大模型如何做剪枝">大模型如何做剪枝</h4>
@@ -462,7 +462,7 @@
 <p>SparseGPT[12]是首个 在LLM场景中的one-shot 精确剪枝技术，可以在 100 - 1000 亿参数的模型规模上有效地运作。SparseGPT 的工作原理是将剪枝问题简化为大规模的稀疏回归实例。它基于新的近似稀疏回归求解器，用于解决分层压缩问题，其效率足以在几个小时内使用单个 GPU 在最大的 GPT 模型（175B 参数）上执行。同时，SparseGPT 准确率足够高，不需要任何微调，剪枝后所损耗的准确率也可以忽略不计。例如，当在最大的公开可用的生成语言模型（OPT-175B 和 BLOOM-176B）上执行时，SparseGPT 在 one-shot 测试中剪枝到 50-60% 的稀疏性，无论是以困惑度还是 zero-shot 测试准确率来衡量，损失准确率都极小。<br>
 工程代码，参考项目：https://github.com/IST-DASLab/sparsegptparsegpt<br>
 图 1 为实验结果，有以下两个关键点需要说明：首先，如图 1（左）所示，SparseGPT 可以在 OPT 家族的 1750 亿参数变量中剪枝到高达 60% 的均匀分层稀疏性，而几乎不会损失精度。相比之下，唯一已知的在此规模下工作的 one-shot 基线 —— 幅度剪枝（Magnitude Pruning）的准确率仅保持到 10% 的稀疏度，并在超过 30% 的稀疏度时完全崩掉。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyc8WBg2MGq0ANRc9tsLLkmE6NTUv8adXRaQ1mAhPibM9IpQiaoU3Wjr6dg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyc8WBg2MGq0ANRc9tsLLkmE6NTUv8adXRaQ1mAhPibM9IpQiaoU3Wjr6dg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>其次，如图 2（右）所示，<strong>SparseGPT 还可以在更严格但对硬件友好的 2：4 和 4：8 半结构化稀疏模式中准确地施加稀疏性</strong> 。尽管相对于密集基线，这些模式往往会失去额外的准确性，特别是对于较小的模型而言，但计算速度可以直接通过这些稀疏模式得出。此外，由技术引起的稀疏性与通过量化获得的额外压缩可以很好地混合在一起。</p>
 <h4 id="llm-pruner">LLM-Pruner</h4>
 <p>LLM-Pruner[13]，是<strong>一种采用结构剪枝，根据梯度信息选择性地去除非关键耦合结构，最大限度地保留LLM的大部分功能的稀疏化方法</strong> 。LLM-Pruner通过LoRA，仅需3小时和50K数据，即可有效恢复剪枝模型的性能。<br>
@@ -474,12 +474,12 @@ LLM-Pruner 是第一个专为 LLM 结构化修剪而设计的框架，将 LLMPru
 <p>为了评估 LLM-Pruner 的有效性，对三种大型语言模型进行了广泛的实验：LLaMA-7B、Vicuna-7B 和 ChatGLM-6B。使用九个数据集对压缩模型进行评估，以评估修剪模型的生成质量和零样本分类性能。<br>
 工程代码，参考项目：https://https://github.com/horseee/LLM-PrunerPruner<br>
 如下表所示，使用2.59M样本，通过LLM-Pruner对LLaMA-7B进行20%的剪枝，最终模型性能并未有太大的下降，但推理速度提升18%作用。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycicRZsBJib1SpfhZRiao86D6RG2QnFuAQEx5YdsuhuVBYS6P5ibleLDfN3A/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycicRZsBJib1SpfhZRiao86D6RG2QnFuAQEx5YdsuhuVBYS6P5ibleLDfN3A/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>Results of LLM-Pruner with 2.59M samples</p>
 <h4 id="wanda">Wanda</h4>
 <p>Wanda[14]（按权重和激活进行剪枝）是一种新颖、简单而有效的剪枝方法，旨在诱导预训练的 LLM 的稀疏性。受最近对LLM中出现的大幅值特征的观察的启发，Wanda在每个输出的基础上用最小量值乘以相应的输入激活来修剪权重。值得注意的是，<strong>Wanda 不需要重新训练或权重更新，并且修剪后的 LLM 可以按原样使用。</strong> 通过 LLaMA 和 LLaMA-2 进行Wanda评估，验证了Wanda有着优于既定的幅度剪枝基线，并且与最近涉及密集权重更新的方法相比具有竞争力。<br>
 工程代码，参考项目：https://https://github.com/locuslab/wandada</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycdrTMrvWXYsMibjYiaHiaEQ7EwWj7gRia0pMOiabvLOu6Md90R6MNkHcy1MA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycdrTMrvWXYsMibjYiaHiaEQ7EwWj7gRia0pMOiabvLOu6Md90R6MNkHcy1MA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>WikiText perplexity of pruned LLaMA and LLaMA-2 models. Wanda performs competitively against prior best method SparseGPT,** without introducing any weight update.**<br>
 参考上图，Wanda与SparseGPT，有着接近的模型剪枝性能。</p>
 <h4 id="剪枝方法的缺点">剪枝方法的缺点</h4>
@@ -498,7 +498,7 @@ LLM-Pruner 是第一个专为 LLM 结构化修剪而设计的框架，将 LLMPru
 值得注意的是，在神经网络中使用ReLU激活函数被认为可以诱导稀疏激活，并且已在各种先前的工作中被采用[7]。平均而言，在所有层中，这种激活稀疏性会导致 GPU 和 CPU 之间的权重传输 (I/O) 大幅节省，影响下投影层权重的95%的行。这种减少直接转化为计算节省，对于这些行，矩阵乘法运算的结果将为零。<br>
 此外，与非结构化稀疏性（例如非结构化的权重稀疏）不同，这种类型的稀疏性由于将更广泛和结构化的块（例如行或列）归零而对硬件更加友好[8]。<br>
 同样，参考下图，简易说明激活稀疏的加速有效性。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycv4E8iaGicG7ibT149ctmbtVtPqtD5wcexaDyUkdMFJEVicFMURSicn0R1uw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycv4E8iaGicG7ibT149ctmbtVtPqtD5wcexaDyUkdMFJEVicFMURSicn0R1uw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>在激活稀疏性的情况下，推理时进行稀疏向量密集矩阵乘法，训练期间调整为稀疏矩阵密集矩阵乘法。</p>
 <ul>
 <li>
@@ -512,7 +512,7 @@ LLM-Pruner 是第一个专为 LLM 结构化修剪而设计的框架，将 LLMPru
 <p>以下内容，主要参考[5]的数据，对ReLU激活的在LLM上落地的可行性进行论证。<br>
 激活稀疏与非激活稀疏模型的对比<br>
 通过对OPT 6.7B、Llama 7B（SiLU激活）、Falcon 7B（GELU激活）三个模型的FFN进行测量分析，从而得到以下三个结论：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycyBbKr6BfRZJhbdBfC9O7T10o7rQyb51fKanF2ubuuFEZNQuQVJwsQA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycyBbKr6BfRZJhbdBfC9O7T10o7rQyb51fKanF2ubuuFEZNQuQVJwsQA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>a，对比Llama 7B（SiLU激活）、Falcon 7B（GELU激活）不到10%的激活稀疏，OPT 6.7B（ReLU激活）超过90%以上的稀疏，证明了<strong>ReLU可以诱导稀疏激活。</strong><br>
 b，激活稀疏性会导致权重传输 (I/O) 大幅节省，影响下投影层权重的95%的行。<br>
 c，激活函数的选择不会明显影响准确性，因为 GELU、 SiLU或ReLU处于相同水平的精度，但ReLU可以节省了32% 的计算量（FLOPS）。</p>
@@ -526,34 +526,34 @@ c，激活函数的选择不会明显影响准确性，因为 GELU、 SiLU或ReL
 <p>在第 2 阶段，我们在归一化层之后插入新的ReLU 。</p>
 </li>
 </ul>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycpBZyfHYVbAGiaqKxSNSYcZJqywPibr0H9a4loia7Buq2a5wmyB2ePCbGA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycpBZyfHYVbAGiaqKxSNSYcZJqywPibr0H9a4loia7Buq2a5wmyB2ePCbGA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>第一阶段——非ReLU激活替换</p>
 <p>在 FFN 层中用ReLU替换非ReLU激活。对于 Falcon 和 Llama 模型，这意味着分别替换 GELU 和SiLU 。我们注意到，由于 OPT 模型已经使用ReLU激活，因此我们保持不变。对RefinedWeb的 30B个tokens进行微调后，模型在激活方面具有显著的稀疏性。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycO1QmzNOOtR1OswMCl7t3NBzqyHf5CpFkd1PB76edMribTErnT0QWmdg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycO1QmzNOOtR1OswMCl7t3NBzqyHf5CpFkd1PB76edMribTErnT0QWmdg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>第二阶段——插入新的ReLU<br>
 在上一阶段，我们替换了非ReLU激活以获得更多稀疏性。这导致<em>下投影</em>层的输入稀疏，大约占总计算量的30% 。然而，<strong>除了下投影之外，transformer的docode layers中还存在其他矩阵向量乘法</strong> 。例如，在FFN 层的<em>向上投影</em>以及注意层中的<em>QKV 投影</em>。总共，上述矩阵向量乘法消耗了总计算量的55%左右。<br>
 在现代 Transformer 层中，注意力层和 FFN 层的输入都来自归一化层，例如LayerNorm 或RMSNorm 。这些层可以被视为 MLP 的一种特定形式，其中<strong>它们不是应用任意可学习参数，而是学习缩放输入</strong> 。因此，我们应用ReLU来获得归一化层后的稀疏激活，来实现第二阶段。<br>
 效果总结<br>
 微调成本：阶段1和阶段2分别用30B 和 50B 的tokens完成了微调，相对比Llama的1T tokens的训练成本，大约只有3-5%的成本。<br>
 效果：对比Llama和Falcon微调后的推理时延。不能难看出，对应的模型性能并没有下降，但推理性能明显有着30%以上的提升。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyc5jvk9rmLzicHu5nqMuRpY4H6N2eL6icBiakBa6dsuV4wC3NWEeAqEQvxQ/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyc5jvk9rmLzicHu5nqMuRpY4H6N2eL6icBiakBa6dsuV4wC3NWEeAqEQvxQ/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>总体而言，结果证实，<strong>通过微调进行激活稀疏可以降低各个阶段和速率的推理 FLOPS，同时保持各种任务的同等性能。</strong> 对应的稀疏激活模型，可以参考项目：https://</p>
 <p>总体而言，结果证实，通过微调进行激活稀疏可以降低各个阶段和速率的推理 FLOPS，同时保持各种任务的同等性能。对应的稀疏激活模型，可以参考项目：https://huggingface.co/SparseLLM。</p>
 <h4 id="如何推理加速">如何推理加速</h4>
 <p>DejaVu给出的上下文稀疏性预测，就是非常好的一个方案（参考论文[1]）。<br>
 如何充分利用结构化稀疏进行加速<br>
 上下文稀疏性，假设预训练的模型存在上下文稀疏性，即对Attention和MLP进行稀疏化计算，能起到完整计算的同样效果。以这个为前提，上下文稀疏度平均为*85%*结构化稀疏模型，可以导致每个特定输入的参数减少7 倍，同时保持准确性，从而大大提升推理性能。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyc70ia3nGrNkZMpn1zlwSPuz4N5R7g36Pxo2LoWH4AS5Rs8u1DIRldicVg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyc70ia3nGrNkZMpn1zlwSPuz4N5R7g36Pxo2LoWH4AS5Rs8u1DIRldicVg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>如上图所示，根据上下文稀疏性，设计一个异步的稀疏预测器，提前一步预测下一层Attention和MLP的稀疏，不仅能保证推理效率，同时通过大大降低计算量与I/O。<br>
 验证上下文稀疏存在<br>
 通过 OPT-175B、66B 和30B 模型和各种下游数据集进行测试，例如OpenBookQA 和 Wiki -Text。方法是通过模型的两次前向传递找到每个输入示例的上下文稀疏性。在第一遍中，记录参数的子集，特别是哪些Attention head和 MLP 神经元为输入产生大的输出规范。在第二遍中，每个输入示例仅使用记录的参数子集进行计算。令人惊讶的是，这两个前向传播在所有上下文学习和语言建模任务上产生相似的预测或性能。<br>
 观察结果：平均而言，Attention head可以施加高达 80% 的稀疏度，对 MLP 神经元施加高达 95% 的稀疏度，总稀疏度约为 85%，大约能带来7 倍的加速。具体参考数据，如下图所示。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycibwWqricoIM8y4a3J3InfRWNatCAJVqETIUiaXQYUyYtkr9SmN9t9rxRA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycibwWqricoIM8y4a3J3InfRWNatCAJVqETIUiaXQYUyYtkr9SmN9t9rxRA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>工程效果<br>
 加速效果：<strong>因为GPU是面向块的设备：加载单个字节的内存与加载同一地址周围的内存块所需的时间相同。NVIDIA GPU 的块大小通常为128字节，因此进行了内存融合和算子合并都优化</strong> ，在batch_size=1的前提下，与FasterTransformer相比，加速达到2倍。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyceSPjwibibZicPtWzjQjcHDjjEfiabAQpmKNHibI7WO8rKOpamwYFq22rJVQ/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyceSPjwibibZicPtWzjQjcHDjjEfiabAQpmKNHibI7WO8rKOpamwYFq22rJVQ/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>吞吐影响：因为激活是每个token的函数，因此有效稀疏性也是随机分布在token上。因此，稀疏优化的效果会随着批大小的增加呈指数级衰减。参考论文当中的消融实验，可以进行一定的参考：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycI6goslJMG2hoCm2SgDbhmzjogU9xgRF7haMPxQBypvBkXxJChKHSRQ/640?wx_fmt=other&amp;from=appmsg" alt=""><br>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycI6goslJMG2hoCm2SgDbhmzjogU9xgRF7haMPxQBypvBkXxJChKHSRQ/640?wx_fmt=other&amp;from=appmsg" alt=""><br>
 值得庆幸的是，激活稀疏占比并不随着batch size而线性增长。这表明来自所有输入示例的参数访问是幂律分布而不是均匀分布，存在一定的高吞吐量的优化空间。<br>
 项目地址：https://https://github.com/FMInference/DejaVu</p>
 <p>DejaVu降低推理门槛</p>
@@ -581,13 +581,13 @@ PowerInfer[10]这是其中的一个方案，能在单卡 NVIDIA RTX 4090 GPU 上
 <p>概述<br>
 PowerInfer 会向 GPU 预加载权重对于频繁激活的神经元，而不太活跃的神经元的权重则保留在 CPU 上。<br>
 为了减少推理延迟，推理引擎仅计算在线预测器预测为活动的神经元，跳过大多数不活动的神经元。此外，预加载策略使PowerInfer能够将大量推理任务分配给 GPU，因为已加载到 GPU 上的热激活神经元构成了激活的主要部分。对于不在 GPU 内存中的冷激活神经元， PowerInfer在 CPU 上执行计算，从而无需将权重传输到 GPU 。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycORiaH325OaLtxneGarLVichvkTgLSMky73Begu8OJxM7icialI69SVJ0ibg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycORiaH325OaLtxneGarLVichvkTgLSMky73Begu8OJxM7icialI69SVJ0ibg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>The architecture overview and inference workflow of PowerInfer</p>
 <p>PowerInfer包括离线和在线组件。由于不同 LLM 之间的局部性属性存在差异，离线组件应该分析 LLM 的激活稀疏性，区分热神经元和冷神经元。在线阶段，推理引擎将两种类型的神经元加载到 GPU 和 CPU 中，在运行时以低延迟服务 LLM 请求。在处理用户请求之前，在线引擎根据离线求解器的输出，将两种类型的神经元分配给各自的处理单元。在运行时，引擎创建 GPU 和 CPU 执行器，它们是在 CPU 端运行的线程，以管理并发的 CPU-GPU 计算。（该引擎还预测神经元激活并跳过未激活的神经元。激活的神经元预加载在GPU 内存在那里进行处理，而 CPU 计算其神经元的结果并将其传输到 GPU 进行集成。该引擎在 CPU 和 GPU 上使用稀疏神经元感知运算符，重点关注矩阵内的各个神经元行/列。<br>
 项目地址：https://https://github.com/SJTU-IPADS/PowerInfer</p>
 <p>owerInfer<br>
 单层计算优化</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycVPc6E7AwORIGHDgShw8kUeIhkzEcDxw6AEib7R9JXWpyLicMZy6bDLEg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycVPc6E7AwORIGHDgShw8kUeIhkzEcDxw6AEib7R9JXWpyLicMZy6bDLEg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>An illustrative example shows how PowerInfer calculates different neurons for one LLM layer</p>
 <p>PowerInfer如何协调 GPU 和 CPU 来处理层的神经元？它根据离线数据对神经元进行分类，将热激活的神经元（例如索引 3、5、7）分配给 GPU 内存，将其他神经元分配给 CPU 内存。<br>
 收到输入后，预测器会识别当前层中的哪些神经元可能被激活。例如，它预测神经元 3、4 和 5 的激活。值得注意的是，通过离线统计分析识别的热激活神经元可能与运行时激活行为不一致。例如，神经元 7 虽然标记为热激活，但在这种情况下预计将处于非活动状态。<br>
@@ -606,14 +606,14 @@ PowerInfer为每个 Transformer 层的非固定大小预测器设计了一种迭
 <p>实验结论</p>
 <p>**<strong>性能对比</strong><br>
 *各种模型在 FP16 格式的 PC-High 上的加速。 *X 轴表示输出长度。Y 轴表示与 llama.cpp 相比的加速比。每个条上方的数字表示端到端生成速度（tokens/s）。图中第一行配置的输入长度约为 64，第二行配置的输入长度约为 128。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycKzT1l8WvaFTibbKhpdRhK26URpzA4vXibfUticRCJCZ1ceQoRPAft2icZA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycKzT1l8WvaFTibbKhpdRhK26URpzA4vXibfUticRCJCZ1ceQoRPAft2icZA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>配备 NVIDIA RTX 4090 的 PC-High 上各种模型和输入输出配置的生成速度。平均而言， PowerInfer 生成速度达到 8.32 个tokens/s，最高可达 16.0tokens/s，明显优于 llama.cpp，平均加速为 7.23 倍，而 Falcon-40B 则高达 11.69 倍。随着输出token数量的增加， PowerInfer的性能优势变得更加明显，因为生成阶段在整体推理时间中扮演着更重要的角色。在此阶段，CPU 和 GPU 上都会激活少量神经元，与 llama.cpp 相比，减少了不必要的计算。例如，在 OPT-30B 的情况下，每个生成的token仅激活约 20% 的神经元，其中大部分在 GPU 上处理，这是PowerInfer 的神经元感知推理引擎的优势。<br>
 batch_size影响<br>
 当批量大小小于 32 时， PowerInfer表现出显着的优势，与 llama.cpp 相比，性能平均提高了 6.08 倍。随着批量大小的增加， PowerInfer提供的加速比会降低。这种减少归因于模型关键激活的稀疏性减少。然而，即使批量大小设置为 32， PowerInfer仍然保持了相当大的加速比，达到了 4.38 倍的加速比。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycqFuvyqU8yCHe8oKRocEoIROFicu8YtjWR6ibI9kUEMFjR7sWG9LHWgiaw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycqFuvyqU8yCHe8oKRocEoIROFicu8YtjWR6ibI9kUEMFjR7sWG9LHWgiaw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>Batch inference speedup of Falcon-40B on PC-High. The X axis indicates the request batch size, the Y axis represents the end-to-end token generation speed (tokens/s). The number above each bar shows the speedup compared with</p>
 <p>负载对比</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycnFKic79IxkWIjjcIXz13eoRBzmTkFEbAXOvgiaTOKIibalAdvScOIOEhw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycnFKic79IxkWIjjcIXz13eoRBzmTkFEbAXOvgiaTOKIibalAdvScOIOEhw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>Neuron load distribution on CPU and GPU during inference. The yellow block refers to llama.cpp, and blue block refers to Power</p>
 <p>PowerInfer和 llama.cpp的 CPU 和 GPU 之间的神经元负载分布。神经元负载是指每个处理单元执行的激活神经元计算的比例。值得注意的是，在 PC-High 上， PowerInfer显着增加了 GPU 的神经元负载份额，从平均 20% 增加到 70%。这表明 GPU 处理了 70% 的激活神经元。然而，当模型的内存需求远远超过 GPU 的容量时，例如在一台机器上运行 60GB 的模型11GB 2080Ti GPU，GPU的神经元负载降低至42%。这种下降是由于 GPU 的内存有限，不足以容纳所有热激活的神经元，因此需要 CPU 计算这些神经元的一部分。<br>
 <strong>在涉及较长输入提示和相对较短输出长度的场景中， PowerInfer仅表现出有限的性能提升。</strong> 在这样的在这种情况下，同时处理大量token的提示阶段成为决定推理速度的关键因素。这导致每个token激活一组独特的神经元，从而大大减少激活稀疏性。因此，CPU 成为推理过程中的主要瓶颈，其任务是处理大量冷激活神经元，但受到计算能力的限制。</p>
@@ -626,17 +626,17 @@ batch_size影响<br>
 <p>当前主流的稀疏计算编译器主要有cuSPARSE, Sputnik, OpenAI Block Sparse, SparTA 与PIT这几种，参考论文[11],给出以下的加速对比列表数据：<br>
 场景：4096 × 4096 × 4096的矩阵乘法<br>
 指标：latency（ms）</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycFbCpx0YyfCEjg3aQo4whCAydO3phKloloocyvgHgZT5Rzke3A7s7vg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycFbCpx0YyfCEjg3aQo4whCAydO3phKloloocyvgHgZT5Rzke3A7s7vg/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>值得一提的是，PIT 的性能优于最先进的稀疏性优化，分别比 cuSPRARSE、Sputnik、OpenAI Block Sparse、SparTA 实现高达 88.7 倍、5.8 倍、17.5 倍和 5.7 倍的加速。</p>
 <h4 id="编译器对llm推理影响">编译器对LLM推理影响</h4>
 <p>OPT<br>
 实验[11]基于OPT13B 和 30B两个版本模型，在八个 V100-32GB GPU 上使用 Alpaca 数据集和PIT评估。PIT 在 OPT 上应用两种动态稀疏性优化：(1) 消除同一批次中不同长度句子的填充开销；(2)<strong>利用 FFN 层中的 ReLU 激活创建的细粒度稀疏性</strong> （高达 99%） 。批量大小设置为 32。PyTorch-S 使用 Triton 作为后端。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycqiaNzcqLjN4GyUaqvicokM7vrjzibY6l7ma8c3445RObD2SdATl3hia6hA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycqiaNzcqLjN4GyUaqvicokM7vrjzibY6l7ma8c3445RObD2SdATl3hia6hA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>End-to-end latency per batch and memory footprints of OPT</p>
 <p>PIT 的性能分别优于 PyTorch、PyTorchS 和 DeepSpeed 2.1x ∼ 2.3x、2.5x ∼ 3.0x 和 2.0x ∼ 2.2x。避免动态序列中填充的好处有助于 PIT 相对于基线实现 1.6 倍∼ 1.7 倍的加速。通过进一步利用 FFN 层 ReLU 激活中的动态稀疏性，PIT 将性能进一步提升了 1.3 倍∼ 1.4 倍。<strong>与使用块大小为 32x32 的 Triton 块稀疏内核的 PyTorch-S 相比，PIT 使用更小的微块（即 1x32）以及 SRead 和 SWrite 执行高效计算，从而避免计算浪费</strong> 。此外，PyTorch-S 还受到稀疏格式转换开销的影响，因此具有最高的延迟。在内存消耗方面，DeepSpeed 的内存使用率最低，因为它将整个编码器层融合到一个算子中，并节省了激活内存。</p>
 <p>MOE<br>
 实验[11]在SwinMoE 上 PIT 性能测试，SwinMoE 是一个具有编码器和 MoE 结构的大型视觉模型。我们在 float16 精度下测量了 A100 上 PIT 的延迟和内存使用情况。对于视觉转换器，同一批次内的输入图像将被重新缩放到相同的分辨率，以实现一致的序列长度。在我们的实验中，我们比较了不同批量大小和专家数量的 Swin-MoE 的端到端推理延迟和内存占用。MegaBlocks 优于其他基线，因为它同时执行所有专家，有效地利用稀疏内核来避免计算浪费。与 MegaBlocks 相比，PIT 通过在跨内存层次结构的数据移动中支持数据重组，进一步提高了性能。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycibic1ZYcb4tpk6fz2vSUicY9dFib61VLWluc1T5yUlz4eia4hlhjTL101ow/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLycibic1ZYcb4tpk6fz2vSUicY9dFib61VLWluc1T5yUlz4eia4hlhjTL101ow/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>End-to-end latency and memory footprints of SwinMoE on A100</p>
 <p>与 PyTorch、PyTorchS、Tutel、DeepSpeed、MegaBlocks 相比，PIT 分别实现了 1.5x ∼ 6.3x、1.5x ∼ 2.9x、1.1x ∼ 1.8x、1.2x ∼ 1.6x、1.1x ∼ 1.4x 加速。PIT 对 Swin-MoE 的性能提升小于 Switch Transformer，因为 Swin-MoE 的专家数量明显少于 SwitchTransformer。因此，当专家数量从 8 到 32 时，MoE 层仅贡献端到端延迟的 23.6% 到 61.2%。当单独比较 MoE 层的延迟时，PIT 约为 1.2x ∼ 1.7 x 比 Megablocks 快。<br>
 整理一下，输出PIT的对比数据列表：</p>
@@ -660,7 +660,7 @@ SwinMoE(MOE网络)
 A100 采用全新的 Ampere 架构。它拥有高达 6912 个 CUDA 核心和 40GB 的高速 HBM2 显存。A100 还支持第二代NVLink技术，实现快速的 GPU 到 GPU 通信，提升大型模型的训练速度。A100 增加了功能强大的新第三代 Tensor Core，同时增加了对 DL 和 HPC 数据类型的全面支持，以及新的稀疏功能，可将吞吐量进一步翻倍。<br>
 <strong>A100 中的 TF32 Tensor Core 运算提供了一种在 DL 框架和 HPC 中加速 FP32 输入/输出数据的简单路径，其运行速度比 V100 FP32 FMA 运算快 10 倍，或者在稀疏性的情况下快 20 倍。</strong> 对于 FP 16/FP 32 混合精度 DL，A100 的性能是 V100 的2.5倍，稀疏性的情况下提高到 5 倍。<br>
 在跑 AI 模型时，如果用 PyTorch 框架，相比上一代 V100 芯片，A100 在 BERT 模型的训练上性能提升 6 倍，BERT 推断时性能提升 7 倍。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyce8bU4ZKdPyzDZ6us16yxXo8jB9jibvEgcRficXNamTkGNicJscwjukib6Q/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/tA8ibKWwC0GwGicthJcMKmWe1L370mFLyce8bU4ZKdPyzDZ6us16yxXo8jB9jibvEgcRficXNamTkGNicJscwjukib6Q/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
 <p>Intel Max Series GPU<br>
 根据论文[18]，最近在 NVIDIA V100 GPU 上实现两个稀疏矩阵运算的结果，如中所示并表明我们的性能比 V100 上的参考实现 高出 10 倍。</p>
 <h4 id="总结">总结</h4>

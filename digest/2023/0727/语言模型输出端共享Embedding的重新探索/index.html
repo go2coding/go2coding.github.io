@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xMODTLoRXcdt9pJQVZwPKuZ1jbPNvBNvUG2Rapicb3NCJRXZeJvGEWjQ/640?wx_fmt=png" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xMODTLoRXcdt9pJQVZwPKuZ1jbPNvBNvUG2Rapicb3NCJRXZeJvGEWjQ/640?wx_fmt=png" width="640" >
           </div>
             <br>
             <br>
@@ -423,69 +423,69 @@
           
           <div class="single-blog-content">
             <p>作者： PaperWeekly  来源： <a href="https://mp.weixin.qq.com/s/up8c32aO9pe0q5rJBBX2ew">PaperWeekly</a></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHKVtfYDubjKdZRUjAfBQQicXjoZWJ3qnK42ooD4eeJUfJBM4SSZVa2RE5lO0j6rWwzliby0j9u4bDg/640?wx_fmt=gif" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHKVtfYDubjKdZRUjAfBQQicXjoZWJ3qnK42ooD4eeJUfJBM4SSZVa2RE5lO0j6rWwzliby0j9u4bDg/640?wx_fmt=gif" alt=""></p>
 <p><strong>©PaperWeekly 原创 · 作者 |</strong>  苏剑林</p>
 <p><strong>单位 |</strong> 科学空间</p>
 <p><strong>研究方向 |</strong> NLP、神经网络</p>
 <p>预训练刚兴起时，在语言模型的输出端重用 Embedding 权重是很常见的操作，比如 BERT、第一版的 T5、早期的 GPT，都使用了这个操作，这是因为当模型主干部分不大且词表很大时，Embedding 层的参数量很可观，如果输出端再新增一个独立的同样大小的权重矩阵的话，会导致显存消耗的激增。</p>
 <p>不过随着模型参数规模的增大，Embedding 层的占比相对变小了，加之《Rethinking embedding coupling in pre-trained language models》[1] 等研究表明共享 Embedding 可能会有些负面影响，所以现在共享 Embedding 的做法已经越来越少了。</p>
 <p>本文旨在分析在共享 Embedding 权重时可能遇到的问题，并探索如何更有效地进行初始化和参数化。尽管共享 Embedding 看起来已经“过时”，但这依然不失为一道有趣的研究题目。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wulOVRfC18yCkd6xXqGq22h6QUk8chptF0fnQ4uXeZtAktYMrWwG2SyQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wulOVRfC18yCkd6xXqGq22h6QUk8chptF0fnQ4uXeZtAktYMrWwG2SyQ/640?wx_fmt=png" alt=""></p>
 <p><strong>共享权重</strong></p>
 <p>在语言模型的输出端重用 Embedding 权重的做法，英文称之为 “Tied Embeddings” 或者 “Coupled Embeddings”，其思想主要是 Embedding 矩阵跟输出端转换到 logits 的投影矩阵大小是相同的（只差个转置），并且由于这个参数矩阵比较大，所以为了避免不必要的浪费，干脆共用同一个权重，如下图所示：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2x57F6ribvicGov8zmmUdDPD6vdwZSXTESExDMibib1nWWAPiaHTUQWY76pZw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2x57F6ribvicGov8zmmUdDPD6vdwZSXTESExDMibib1nWWAPiaHTUQWY76pZw/640?wx_fmt=png" alt=""></p>
 <p>▲ 共享 Embedding 权重的 Transformer 示意图</p>
 <p>共享 Embedding 最直接的后果可能是——它会导致预训练的初始损失非常大。这是因为我们通常会使用类似 <a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247562167&amp;idx=1&amp;sn=c5b44155ac1828c40d110a8e030e6047&amp;chksm=96eb2c37a19ca5212f58ffcd095722e8b325157e0bc8d818159100192326806b49e100294160&amp;scene=21#wechat_redirect">DeepNorm</a> 的技术来降低训练难度，它们都是将模型的残差分支初始化得接近于零。换言之，模型在初始阶段近似于一个恒等函数，这使得初始模型相当于共享 Embedding 的 2-gram 模型。接下来我们将推导这样的 2-gram 模型损失大的原因，以及分析一些解决方案。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuhfgUpIfdPSqH8YjjHbCUiaaKsMA36bIMsMtGNKoBcus5py06M0fvx3A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuhfgUpIfdPSqH8YjjHbCUiaaKsMA36bIMsMtGNKoBcus5py06M0fvx3A/640?wx_fmt=png" alt=""></p>
 <p><strong>准备工作</strong></p>
 <p>在正式开始推导之前，我们需要准备一些基础结论。</p>
 <p>首先，要明确的是，我们主要对初始阶段的结果进行分析，此时的权重都是从某个“均值为 0、方差为 ”的分布中独立同分布地采样出来的，这允许我们通过期望来估计某些求和结果。比如对于 ，我们有</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2x6yyNlEQpkB7MV9DHnVpiay3y6C1xR4JYUJLMdImL1YojDoUbTiaSvGicg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2x6yyNlEQpkB7MV9DHnVpiay3y6C1xR4JYUJLMdImL1YojDoUbTiaSvGicg/640?wx_fmt=png" alt=""></p>
 <p>因此可以取 。那么误差有多大呢？我们可以通过它的方差来感知。为此，我们先求它的二阶矩：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xzWw0EuHAIBNAsxuOMnaxtHzbKNicj6WqeVC1j1Rlab9kGH00udI6xkQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xzWw0EuHAIBNAsxuOMnaxtHzbKNicj6WqeVC1j1Rlab9kGH00udI6xkQ/640?wx_fmt=png" alt=""></p>
 <p>如果采样分布是正态分布，那么可以直接算出 ，所以</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xGMyFBjbMh7H2oZfWVZFrjgtck7FbxO3rbhM7UCbYOyfEChXDwc079g/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xGMyFBjbMh7H2oZfWVZFrjgtck7FbxO3rbhM7UCbYOyfEChXDwc079g/640?wx_fmt=png" alt=""></p>
 <p>这个方差大小也代表着  的近似程度，也就是说原本的采样方差  越小，那么近似程度越高。特别地，常见的采样方差是 （对应 ，即单位向量），那么代入上式得到 ，意味着维度越高近似程度越高。此外，如果采样分布不是正态分布，可以另外重新计算 ，或者直接将正态分布的结果作为参考结果，反正都只是一个估算罢了。</p>
 <p>如果  是另一个独立同分布向量，那么我们可以用同样的方法估计内积，结果是</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xyuLtQuGkwxtvibvTjrFkN1VYPuC36qO8edq3Uotxw4ycqvbFliaWvHzA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xyuLtQuGkwxtvibvTjrFkN1VYPuC36qO8edq3Uotxw4ycqvbFliaWvHzA/640?wx_fmt=png" alt=""></p>
 <p>以及</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xXLcibibPtgUf9ibmnHm1ELlMibV3ic7tR8kKfsDBDEBpwabAWndVfossgibg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xXLcibibPtgUf9ibmnHm1ELlMibV3ic7tR8kKfsDBDEBpwabAWndVfossgibg/640?wx_fmt=png" alt=""></p>
 <p>同样地，取  的话，那么方差是 ，维度越高近似程度越高。以上两个结果可以说是《n维空间下两个随机向量的夹角分布》[2]、<a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247540198&amp;idx=1&amp;sn=abbb8ea3b0c730adc4d0af5385c241af&amp;chksm=96ea8266a19d0b70cd7c993a3de76868f1aea924678a2ada77a68163787f5f86efd367c17f67&amp;scene=21#wechat_redirect">《让人惊叹的Johnson-Lindenstrauss引理：理论篇》</a>中的结论的统计版本。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wukOjHSmSsEuRCB0fJu69CtdNgLnvFPDUCgeicOppBKuDvniaD3q8XWQ0Q/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wukOjHSmSsEuRCB0fJu69CtdNgLnvFPDUCgeicOppBKuDvniaD3q8XWQ0Q/640?wx_fmt=png" alt=""></p>
 <p><strong>损失分析</strong></p>
 <p>对语言模型来说，最终要输出一个逐 token 的  元分布，这里  是词表大小。假设我们直接输出均匀分布，也就是每个 token 的概率都是 ，那么不难计算交叉熵损失将会是 。这也就意味着，合理的初始化不应该使得初始损失明显超过 ，因为  代表了最朴素的均匀分布，明显超过  等价于说远远不如均匀分布，就好比是故意犯错，并不合理。</p>
 <p>那么，为什么共享 Embedding 会出现这种情况呢？假设初始 Embedding 是 ，前面已经说了，初始阶段残差分支接近于零，所以输入输入 token ，模型输出就是经过 Normalization 之后的 Embedding 。常见的 Normalization 就是 Layer Norm 或者 RMS Norm，由于初始化分布是零均值的，所以 Layer Norm 跟 RMS Norm 大致等价，因此输出是</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xRwu2ZzVUbOicqtwJKYQ7gz6hDZNsWLDgKvticRBQ5UoHnCcAuNbr1zgg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xRwu2ZzVUbOicqtwJKYQ7gz6hDZNsWLDgKvticRBQ5UoHnCcAuNbr1zgg/640?wx_fmt=png" alt=""></p>
 <p>接下来重用 Embedding，内积然后 Softmax，所建立的分布实质是</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xBrUpfF74ZMu9UJtyYkLPwz0HsnTSYG9avetRC4Lgr8qJicu6u8ibnPfA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xBrUpfF74ZMu9UJtyYkLPwz0HsnTSYG9avetRC4Lgr8qJicu6u8ibnPfA/640?wx_fmt=png" alt=""></p>
 <p>对应的损失函数就是</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xMODTLoRXcdt9pJQVZwPKuZ1jbPNvBNvUG2Rapicb3NCJRXZeJvGEWjQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xMODTLoRXcdt9pJQVZwPKuZ1jbPNvBNvUG2Rapicb3NCJRXZeJvGEWjQ/640?wx_fmt=png" alt=""></p>
 <p>语言模型任务是为了预测下一个 token，而我们知道自然句子中叠词的比例很小，所以基本上可以认为 ，那么根据结果 (4) 就有 。所以，初始损失函数是</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xQeSuKxPO4hOljicKe0bgewRqAOgas2wwgkibkjgqk7Ihs065apH50QeA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xQeSuKxPO4hOljicKe0bgewRqAOgas2wwgkibkjgqk7Ihs065apH50QeA/640?wx_fmt=png" alt=""></p>
 <p>后面的  再次用到了式（1）和式（4）。常见的初始化方差 ，或者是一个常数，或者是 （此时 ），不管是哪一种，当  较大时，都导致  占主导，于是损失将会是  级别，这很容易就超过了均匀分布的 。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuiaLfO9V4lkD8cXK7ImEicqib5bPGH6syOrWzicR2KaqPyAicMccs8icC03Gw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuiaLfO9V4lkD8cXK7ImEicqib5bPGH6syOrWzicR2KaqPyAicMccs8icC03Gw/640?wx_fmt=png" alt=""></p>
 <p><strong>一些对策</strong></p>
 <p>根据上述推导结果，我们就可以针对性地设计一些对策了。比较直接的方案是调整初始化，根据式（9），我们只需要让 ，那么初始损失就是变成  级别的，也就是说初始化的标准差要改为 。</p>
 <p>一般来说，我们会希望参数的初始化方差尽量大一些，这样梯度相对来说没那么容易下溢，而  有时候会显得过小了。为此，我们可以换一种思路：很明显，式（9）之所以会偏大，是因为出现了 ，由于两个  相同，它们内积变成了模长，从而变得很大，如果能让它们不同，那么就不会出现这一个占主导的项了。</p>
 <p>为此，最简单的方法自然是干脆不共享 Embedding，此时是  而不是 ，用（4）而不是（1）作为近似，于是式（9）渐近于 。如果还想保留共享 Embedding，我们可以在最后的 Normalization 之后，再接一个正交初始化的投影层，这样  变成了 ，根据 <a href="https://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247540198&amp;idx=1&amp;sn=abbb8ea3b0c730adc4d0af5385c241af&amp;chksm=96ea8266a19d0b70cd7c993a3de76868f1aea924678a2ada77a68163787f5f86efd367c17f67&amp;token=1308088062&amp;lang=zh_CN&amp;scene=21#wechat_redirect">Johnson-Lindenstrauss 引理</a>，经过随机投影的向量近似于独立向量了，所以也近似于不共享的情况，这其实就是 BERT 的解决办法。特别地，这个投影层还可以一般化地加上 bias 和激活函数。</p>
 <p>如果一丁点额外参数都不想引入，那么可以考虑在 Normalization 之后“打乱”  的各个维度，</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xBhMblkSClJL53Kdyr5oGeuNII2zZ3nurJPQgNMz3bkiaRgdKbJrPggw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xBhMblkSClJL53Kdyr5oGeuNII2zZ3nurJPQgNMz3bkiaRgdKbJrPggw/640?wx_fmt=png" alt=""></p>
 <p>这里的  是拼接操作，那么  和  也接近正交了，内积自然也约等于0。这相当于（在初始阶段）将原来的  的 Embedding 矩阵劈开为两个  的矩阵然后构建不共享 Embedding 的 2-gram 模型。另外，我们还可以考虑其他打乱操作，比如 ShuffleNet [3] 中的先 reshape，然后 transpose 再 reshape 回来。</p>
 <p>在笔者的实验中，直接改初始化标准差为  收敛速度是最慢的，其余方法收敛速度差不多，至于最终效果，所有方法似乎都差不多。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wukGHdevfTibLOpic6945Lrhqmt43pKicyIhGs4m7ANzKOfY9RJgmTicZGdg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wukGHdevfTibLOpic6945Lrhqmt43pKicyIhGs4m7ANzKOfY9RJgmTicZGdg/640?wx_fmt=png" alt=""></p>
 <p><strong>文章小结</strong></p>
 <p>本文重温了语言模型输出端共享 Embedding 权重的操作，推导了直接重用 Embedding 来投影输出可能会导致损失过大的可能性，并探讨了一些解决办法。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrIRticN5qUOe4cN5Zdl45HF7TFUJRRMRPPQ1ibVVsD93Mu88jpW557nTcJD0vVSKn338X6TZXNENibpLSUibC42CsqF7/640?wx_fmt=svg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrIRticN5qUOe4cN5Zdl45HF7TFUJRRMRPPQ1ibVVsD93Mu88jpW557nTcJD0vVSKn338X6TZXNENibpLSUibC42CsqF7/640?wx_fmt=svg" alt=""></p>
 <p><strong>参考文献</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrIRticN5qUOe4cN5Zdl45HF7TFUJRRMRPPQ1ibVVsD93Mu88jpW557nTcJD0vVSKn338X6TZXNENibpLSUibC42CsqF7/640?wx_fmt=svg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrIRticN5qUOe4cN5Zdl45HF7TFUJRRMRPPQ1ibVVsD93Mu88jpW557nTcJD0vVSKn338X6TZXNENibpLSUibC42CsqF7/640?wx_fmt=svg" alt=""></p>
 <p>[1] <a href="https://arxiv.org/abs/2010.12821">https://arxiv.org/abs/2010.12821</a></p>
 <p>[2] <a href="https://kexue.fm/archives/7076">https://kexue.fm/archives/7076</a></p>
 <p>[3] <a href="https://arxiv.org/abs/1707.01083">https://arxiv.org/abs/1707.01083</a></p>
 <p><strong>更多阅读</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xMejj5Sys1COWuJREqXsqu8djIdN4tmLzH1TNCdYP6ibVKfBBHic3ADbg/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xFPsSHsuOrUYApEh8cLNtphpKZLrgyUOZeWdQz88BSzx4voJULHseeg/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xiaByCN4ESYJMryHFGnMGscQtaLqnOOWxWe9LiaCmwFiaXR8XEib1FZ7SgQ/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHHMXQ2IicFvJwssWxgWhKuK7ulQVyw7gPTxZia00vCxia2vzhRH6pGq8t1FN1zY48ibULAEZpic41k6eg/640?wx_fmt=gif" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xMejj5Sys1COWuJREqXsqu8djIdN4tmLzH1TNCdYP6ibVKfBBHic3ADbg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xFPsSHsuOrUYApEh8cLNtphpKZLrgyUOZeWdQz88BSzx4voJULHseeg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGywspGzvz2MF0RcQj5no2xiaByCN4ESYJMryHFGnMGscQtaLqnOOWxWe9LiaCmwFiaXR8XEib1FZ7SgQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHHMXQ2IicFvJwssWxgWhKuK7ulQVyw7gPTxZia00vCxia2vzhRH6pGq8t1FN1zY48ibULAEZpic41k6eg/640?wx_fmt=gif" alt=""></p>
 <p><strong>#投 稿 通 道#</strong></p>
 <p>** 让你的文字被更多人看到**</p>
 <p>如何才能让更多的优质内容以更短路径到达读者群体，缩短读者寻找优质内容的成本呢？<strong>答案就是：你不认识的人。</strong></p>
@@ -499,7 +499,7 @@
 <p>• 投稿邮箱：hr@paperweekly.site</p>
 <p>• 来稿请备注即时联系方式（微信），以便我们在稿件选用的第一时间联系作者</p>
 <p>• 您也可以直接添加小编微信（<strong>pwbot02</strong> ）快速投稿，备注：姓名-投稿</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgmic1CRCSOKfDibC3dZ4BaJuYyYTWJyw8gFxqon34STk3icf9aJbY4rqMpmhNjTGJXIGGFsCdTBHy3Tw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgmic1CRCSOKfDibC3dZ4BaJuYyYTWJyw8gFxqon34STk3icf9aJbY4rqMpmhNjTGJXIGGFsCdTBHy3Tw/640?wx_fmt=png" alt=""></p>
 <p><strong>△长按添加PaperWeekly小编</strong></p>
 <p>🔍</p>
 <p>现在，在**「知乎」** 也能找到我们了</p>
@@ -507,7 +507,7 @@
 <p>点击**「关注」** 订阅我们的专栏吧</p>
 <p>·</p>
 <p>·</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgnZ3nlEAOI3MyTd7jqeD6cq8uTbkM2xZNpribyNr9liaPJ722zaHxd0YpQvib2nxOYmWibydCVY7W94ew/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgnZ3nlEAOI3MyTd7jqeD6cq8uTbkM2xZNpribyNr9liaPJ722zaHxd0YpQvib2nxOYmWibydCVY7W94ew/640?wx_fmt=jpeg" alt=""></p>
 <p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
 
 

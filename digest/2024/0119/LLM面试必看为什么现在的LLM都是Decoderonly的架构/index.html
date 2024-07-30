@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GyB40QtlPKJEicpNNOdMJbXE5yKsVIraGLia9adibtO1Du6XfJmiaVAuRBicqOwiaODgCAN7rjIsvQK1FhA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GyB40QtlPKJEicpNNOdMJbXE5yKsVIraGLia9adibtO1Du6XfJmiaVAuRBicqOwiaODgCAN7rjIsvQK1FhA/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -432,12 +432,12 @@
 <p>面试官礼貌地说有点道理^_^，然后开始发威→__→：“那T5这种encoder-decoder也能兼顾理解和生成啊？像FLAN那样instruction tuning之后zero-shot性能也不错呢？为啥现在几十几百B参数量的大模型基本都是decoder-only呢？”</p>
 <p>更加慌张的我QaQ：“呃呃，确实有encoder-decoder和PrefixLM这些其他架构，现在大家对哪个更好好像还没有统一的定论，但到几十B这个规模还没人进行过系统的比较，大概是OpenAI先把decoder-only做work了，形成了轨迹依赖，大家都跟上了，之后或许会有更系统的探索。”</p>
 <p>当时是面暑期实习，面试官还是放过了我，但我当时的内心是这样的：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GyB40QtlPKJEicpNNOdMJbXEhXZRzxaWdx8oWnFtPXj830LLvCLlXQomPbuyYajvPl0kcJU9kibbN3A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GyB40QtlPKJEicpNNOdMJbXEhXZRzxaWdx8oWnFtPXj830LLvCLlXQomPbuyYajvPl0kcJU9kibbN3A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>半年前差点被这个问题挂在面试现场的我</p>
 <p>现在想来，这个回答既不全面（没有主动提到T5那样的encoder-decoder架构，也忘了GLM、XLNET、PrefixLM等等其他架构），也没涉及到问题的科学本质：都知道decoder-only好，为啥好呢？</p>
 <p>这个没有统一答案、却又对LLM的发展极其重要的问题，在24届算法岗面试热度颇高，我找工作的一路上就被不同公司的面试官们问了四五次，从面试官的反馈和贵乎各位大佬的回答中总结了一套目前来看比较完备的回答，希望能帮到有需要的各位：</p>
 <p>首先概述几种主要的架构：以BERT为代表的encoder-only、以T5和BART为代表的encoder-decoder、以GPT为代表的decoder-only，还有以UNILM为代表的PrefixLM（相比于GPT只改了attention mask，前缀部分是双向，后面要生成的部分是单向的causal mask），可以用这张图辅助记忆：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GyB40QtlPKJEicpNNOdMJbXE5yKsVIraGLia9adibtO1Du6XfJmiaVAuRBicqOwiaODgCAN7rjIsvQK1FhA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/tA8ibKWwC0GyB40QtlPKJEicpNNOdMJbXE5yKsVIraGLia9adibtO1Du6XfJmiaVAuRBicqOwiaODgCAN7rjIsvQK1FhA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>这里的causal decoder就是GPT这样的decoder-only，non-causal-decoder就是指Prefix-LM。图片来自[1]</p>
 <p>然后说明要比较的对象：首先淘汰掉BERT这种encoder-only，因为它用masked language modeling预训练，不擅长做生成任务，做NLU一般也需要有监督的下游数据微调；相比之下，decoder-only的模型用next token prediction预训练，兼顾理解和生成，在各种下游任务上的zero-shot和few-shot泛化性能都很好。我们需要讨论的是，为啥引入了一部分双向attention的encoder-decoder和Prefix-LM没有被大部分大模型工作采用？（它们也能兼顾理解和生成，泛化性能也不错）</p>
 <p>铺垫完了，相信这时候面试官已经能感受到你对各种架构是有基本了解的，不至于太菜，接下来是主干回答：</p>

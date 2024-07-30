@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwURRdDj4FfQcSR9Cs7amnBfDvPalGGxRRypJcKYdLE7uJHyhZPaKibJw/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwURRdDj4FfQcSR9Cs7amnBfDvPalGGxRRypJcKYdLE7uJHyhZPaKibJw/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -434,13 +434,13 @@ Code: https://github.com/Infini-AI-Lab/Sequoia/
 <p>我们引入Sequoia，这是一个可扩展、强大且硬件感知的推测解码框架，可以在消费级GPU（通过卸载）和高端GPU（在芯片上）上提高LLM推理速度，而且无需任何近似。我们在下文中展示，通过创建大型推测标记树，Sequoia 可以在单个RTX-4090上为Llama2-70B提供服务，平均标记之间的时间（TBT）低至0.57秒，比高度优化的卸载服务系统快8倍，比DeepSpeed-Zero-Inference快9倍。在芯片上设置中，Sequoia 将在A100 GPU上分别将Llama2-7B、Llama2-13B和Vicuna-33B的解码速度提高了4.04倍、3.73倍和2.27倍。</p>
 <h4 id="inference-speed-with-sequoia">Inference Speed with Sequoia</h4>
 <p>Offloading Results</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwswmsec7Dwk8bqiaQ6VWib4nkhTndy2qHWYhWBsJyDCCXYpz6yONwxS4w/640?wx_fmt=png&amp;from=appmsg" alt="">On-chip Results</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwhoOMwpykKcRCDfqWadTne4HfPt5q3EB1xfb8okyo71v8dxhbwLmNxQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwswmsec7Dwk8bqiaQ6VWib4nkhTndy2qHWYhWBsJyDCCXYpz6yONwxS4w/640?wx_fmt=png&amp;from=appmsg" alt="">On-chip Results</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwhoOMwpykKcRCDfqWadTne4HfPt5q3EB1xfb8okyo71v8dxhbwLmNxQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>Sequoia 可以加速各种模型大小和硬件类型的 LLM 推断。我们评估了 Sequoia 与各种大小的 LLM（Llama2-70B-chat、Vicuna-33B、Llama2-22B、Llama2-13B 和 Llama2-7B），在离线处理（在 RTX 4090 和 2080Ti GPU 上）和片上处理（A100）设置下进行评估。我们在离线处理设置下使用 MT-Bench 进行提示，在片上处理设置下使用 C4 验证集。评估结果如上所示。</p>
 <h4 id="why-sequoia">Why Sequoia?</h4>
 <p>Sequoia通过对推测解码进行核心改进，显著加速了在卸载和片上设置中的LLM服务。首先，Sequoia能够更好地与推测标记的数量进行扩展 - Sequoia利用动态规划算法搜索树结构，以最大化每个预算（即推测树的大小）上接受标记的数量。其次，通过使用无重复抽样，Sequoia比使用top-k抽样和有重复抽样更能适应不同的解码温度。最后，Sequoia提供了一个硬件感知优化器，以选择每种硬件配置的最佳树大小和深度。更多详细信息，请参阅我们的论文。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwURRdDj4FfQcSR9Cs7amnBfDvPalGGxRRypJcKYdLE7uJHyhZPaKibJw/640?wx_fmt=png&amp;from=appmsg" alt="">下面我们展示了 Sequoia 中两个树结构的例子。左边的树有 64 个节点，适合在芯片推断中使用，而右边的树有 768 个节点，适合在卸载设置中使用。我们的树构建算法会更多地分配子节点给前几层节点，这些节点有更高的接受概率。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwAzRtPvETDbhMA9ljEdeoxmDhK1ickiaV2RMvDoSAztw9YibibAHDm0EhPQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwURRdDj4FfQcSR9Cs7amnBfDvPalGGxRRypJcKYdLE7uJHyhZPaKibJw/640?wx_fmt=png&amp;from=appmsg" alt="">下面我们展示了 Sequoia 中两个树结构的例子。左边的树有 64 个节点，适合在芯片推断中使用，而右边的树有 768 个节点，适合在卸载设置中使用。我们的树构建算法会更多地分配子节点给前几层节点，这些节点有更高的接受概率。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/4d6kn6AwWwyBGxKJLnZg0gkD1SATxzqwAzRtPvETDbhMA9ljEdeoxmDhK1ickiaV2RMvDoSAztw9YibibAHDm0EhPQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <h4 id="conclusion-and-future-work">Conclusion and Future Work</h4>
 <p>利用 Sequoia，任何人都可以使用 RTX 4090 或其他消费级（低成本）GPU 来托管非常强大的 70B 模型，而无需近似，从而提升 AI 生成内容的应用。Sequoia 在小批量设置下还可以在高端 GPU 上提供大幅加速，改善像聊天机器人这样对延迟敏感的应用的性能。</p>
 <p>我们相信 Sequoia 在未来的硬件上将表现特别出色，因为它的性能随着硬件的计算/带宽比例而良好扩展，而这个比例随着时间的推移一直在增加（例如 V100、A100 和 H100）。Sequoia 借助智能算法帮助缓解了内存层次结构（SRAM、HBM、RAM、SSD 等）中的带宽差距，为 AI 加速器设计开辟了新的机遇。我们对为未来的硬件设计更快的算法感到兴奋！</p>

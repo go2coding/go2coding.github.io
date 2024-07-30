@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbkMXqOvQvRiaiapPuzymo0fqiaFG5nlibFPZTDWy7jFMTTiaCFjnVSDFQTPg/640?wx_fmt=png" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbkMXqOvQvRiaiapPuzymo0fqiaFG5nlibFPZTDWy7jFMTTiaCFjnVSDFQTPg/640?wx_fmt=png" width="640" >
           </div>
             <br>
             <br>
@@ -429,7 +429,7 @@
 <p>而最近开源外挂的方案越来越多，最近看到一个工作，zhihaiLLM：github.com/zhihaiLLM/wisdomInterrogatory，其实现了之前所说的知识库细化、意图识别分发、关键词与向量化多路召回的知识库完整链路，是个很好的示范，但也有很多的优化空间，比如向量化做的更好、多路召回做投票、如何做更细致的标签等等。‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍</p>
 <p>值得我们借鉴的是，其知识库细化、意图识别分发、关键词与向量化多路召回的知识库的具体实现细节，包括数据的构成等，都是可以受益的点。</p>
 <p>而进一步的，截至到现在，法律类的大模型已经达到了7个：‍</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAb43OY2UY5ibULfL44OwXZh0uKoVVyJuticFnereTFtZJ7tbx6tAEX6g4Q/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAb43OY2UY5ibULfL44OwXZh0uKoVVyJuticFnereTFtZJ7tbx6tAEX6g4Q/640?wx_fmt=png" alt=""></p>
 <p>LawGPT-zh：https://github.com/LiuHC0428/LAW-GPT</p>
 <p>LaWGPT：https://github.com/pengxiao-song/</p>
 <p>lawyer-llama：https://github.com/AndrewZhe/lawyer-llama</p>
@@ -440,14 +440,14 @@
 <p>这些开源方案都很有意思，尤其是现在大家发现，靠检索太容易带偏，里面的水还挺深的，本文主要从ChatLaw引入关键词和领域嵌入提升召回相关性、zhihaiLLM融合意图识别、知识检索的问答方案、zhihaiLLM外挂知识数据的构成与构造方案、zhihaiLLM知识增强的三个关键步骤及源码实现等几个角度进行介绍，供大家一起参考。</p>
 <h4 id="一chatlaw引入关键词和领域嵌入提升召回相关性">一、ChatLaw引入关键词和领域嵌入提升召回相关性‍‍‍‍‍‍‍‍‍‍‍‍‍‍</h4>
 <p>文章https://zhuanlan.zhihu.com/p/641561673中介绍了当前chatlaw的实现方案，与标准的Langchain方案不同，作者认为，现在的组成实际是ChatLaw=ChatLawLLM+ keyword LM+lawsLLM，属于一种集成式的方案。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaIDQVgJTUbAMeGyKnckeqQM8O9iaXr6LJMTgneYicia9JIkMOsIsvDeVMPBxMLcmYnibWuKtxzpwwtfA/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaIDQVgJTUbAMeGyKnckeqQM8O9iaXr6LJMTgneYicia9JIkMOsIsvDeVMPBxMLcmYnibWuKtxzpwwtfA/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
 <p>如上图所示，</p>
 <p>首先，为了缓解<strong>单纯使用向量检索出现结果不相关</strong> 的问题，Keyword LLM用于将用户口语化的诉求转化为法律行业关键词，并用于检索知识库中的法律知识。</p>
 <p>实际上，作者最初尝试了利用MySQL和Elasticsearch进行检索的传统方案，但效果不佳，所以单独微调了一个LLM来抽取user queries的keywords，然后分别遍历keywords进行embedding，与用户输入input的embedding进行拼接，执行召回。</p>
 <p>这个实际上是<strong>通过提取关联词的方案来加入一些限定的文档主题信息</strong> ，而关于关键词提取，我们在前面介绍过TFIDF，TextRank传统方案，以及Keybert等有监督方案，这些都可以尝试。而对于使用LLM进行关键词提取的，工作较少，作者提到了一个商品观点关键词提取的类似项目，可以参考：</p>
 <p>地址：https://huggingface.co/JessyTsu1/comment_opinion_extract_ChatGLM_base</p>
 <p>该模型利用5000条淘宝评论数据训练，先使用GPT4通过prompt抽取数据的关键词，经过清洗再使用ChatGLM进行训练。效果如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaIDQVgJTUbAMeGyKnckeqQDNkHD8vxg7hRAKmOtIibd1fHSg7ib50tGLtJNmKeaUuEoqJLbJt3hiaUQ/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJiaIDQVgJTUbAMeGyKnckeqQDNkHD8vxg7hRAKmOtIibd1fHSg7ib50tGLtJNmKeaUuEoqJLbJt3hiaUQ/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
 <p>其次，由于领域语料的问题，通用的embedding可能效果交差，所以搞了一个专门的embedding模型，Law LLM，其底层采用BERT对一些法律数据如文书，法规等进行训练，采用的是9.37k个国家判例法示例的数据集【数量级并不多】</p>
 <p>该模型用于对user queries以及关键词keywords进行向量化，提取相应的法律规定和司法解释参考文献。提取的过程为：遍历每个关键词，取关键词embddding和用户输入embedding做拼接【并设定阈值alpha做加权】，再与知识库的每个文章做相似度计算，每个文章的得分为与所有关键词+用户输入拼接向量相似度之和【这个的逻辑是能够照顾到所有的关键主题信息】，然后按照从大到小顺序进行排列，最终取TopK作为上下文。</p>
 <p>最后，ChatLaw LLM对检索出来的结果进行分析，参考相关的法律条款，输出结果。</p>
@@ -484,7 +484,7 @@
 <p>同时对数据进行聚类和下采样。先使用Sentence-BERT对数据进行句子嵌入，然后对嵌入向量进行正则化和降维。之后利用KMeans算法对数据进行聚类，并在聚类簇中使用KCenter算法进行降采样。</p>
 <h4 id="三zhihaillm外挂知识数据的构成与构造方案">三、zhihaiLLM外挂知识数据的构成与构造方案</h4>
 <p>在增强知识库数据方面，一共收集6种类型的知识库，包括法条类、案例类、模板类、书籍类、法律考试类、法律日常问答类。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAb2COibdMFEhW2Kjgib6Y72HwYTQNgbGp2I3m0tRXrpKIpmicqAicH8cBXcA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAb2COibdMFEhW2Kjgib6Y72HwYTQNgbGp2I3m0tRXrpKIpmicqAicH8cBXcA/640?wx_fmt=png" alt=""></p>
 <p>其中，在知识库收集与处理上，</p>
 <p><strong>1、法条库</strong></p>
 <p>包含宪法、法律（宪法相关法、民商法、刑法、经济法、行政法、社会法、诉讼与非诉讼程序法）、司法解释、地方性法规（浙江、河南、北京、广东、重庆、山东、上海）、监察法规和行政法规。将这类文件输出为多个txt文件，其中刑法是json文件，key是标题，value是内容。</p>
@@ -509,7 +509,7 @@
 <p>涵盖民法, 国际私法, 环境资源法, 法理学, 国际经济法, 中国特色社会主义法治理论, 民事诉讼法, 刑法, 刑事诉讼法, 司法制度和法律职业道德, 商法, 劳动与社会保障法, 宪法, 行政法与行政诉讼法, 国际法, 知识产权法, 经济法, 中国法律史等领域。</p>
 <p>根据标题处理为多个txt文件以及与其对应的json文件，key是标题，value是内容。</p>
 <p>法律学.txt，数据样式如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbEDsU0kqjdCvewj3T18FyzB5dH31VMsicTTx6NlibmwhwuB1icq2sqZYDw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbEDsU0kqjdCvewj3T18FyzB5dH31VMsicTTx6NlibmwhwuB1icq2sqZYDw/640?wx_fmt=png" alt=""></p>
 <p>法律学.json，数据样例如下：</p>
 <p>&ldquo;法的起源与历史类型 法的产生&rdquo;: &ldquo;法作为一种文明现象，是人类历史发展到一定阶段的产物。马克思主义法学认为，法不是从来就有的，也不是永恒存在的，它是人类历史发展到奴隶社会阶段才出现的社会现象。法是随着生产力的提高.社会经济的发展.私有制和阶级的产生.国家的出现而产生的，经历了一个长期的渐进的过程。法产生的主要标志包括国家的产生.权利和义务观念的形成以及法律诉讼和司法审判的出现。原始社会没有法律，人们的生活由习惯和宗教等原始规范予以调整。法律产生之后，逐步在社会生活中发挥着越来越重要的作用。法律与原始社会规范相比，两者之间存在如下区别:法律与原始社会规范相比，两者之间存在如下区别:1.产生的方式不同。法是由国家制定或认可的，原始社会规范是先民在长期的生产和生活过程中自发形成的。法律与原始社会规范相比，两者之间存在如下区别:2.反映的利益和意志不同。法反映统治阶级的利益和意志，原始社会规范反映原始社会全体成员的利益和意志。法律与原始社会规范相比，两者之间存在如下区别:3.实施的机制不同。法以国家强制力保证实施，原始社会规范主要依靠社会舆论.传统力量和氏族部落领袖的威信保证实施。法律与原始社会规范相比，两者之间存在如下区别:4.适用的范围不同。法适用于国家主权范围内的所有居民，原始社会规范只适用于相同血缘的本氏族部落成员。&rdquo;,</p>
 <p><strong>4、案例库</strong></p>
@@ -527,7 +527,7 @@
 <p>任何一个知识点都是一个[key, value]的pair，其中：<strong>key是该知识点的内容简介，用于检索，value是知识点的具体内容，用于输入到模型中作为参考</strong> 。</p>
 <h4 id="四zhihaillm知识增强的三个关键步骤及源码实现">四、zhihaiLLM知识增强的三个关键步骤及源码实现</h4>
 <p>整个知识增强的方案如下图所示，包括意图识别、知识检索以及知识融合三个关键步骤：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbkMXqOvQvRiaiapPuzymo0fqiaFG5nlibFPZTDWy7jFMTTiaCFjnVSDFQTPg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbkMXqOvQvRiaiapPuzymo0fqiaFG5nlibFPZTDWy7jFMTTiaCFjnVSDFQTPg/640?wx_fmt=png" alt=""></p>
 <p><strong>1、意图识别</strong></p>
 <p>在意图识别（多步检索）上，不同问题需要不同类型的知识库来辅助问答，首先需要识别出问题意图获取哪些知识。</p>
 <p>通过问题中的关键词和上述五种类型知识库的特征的关键词匹配，以此识别出问题涉及的知识类型并用对应知识库辅助。</p>
@@ -536,7 +536,7 @@
 <p>{&ldquo;法律法条&rdquo;: [&ldquo;法律&rdquo;,&ldquo;法条&rdquo;,&ldquo;判罚&rdquo;,&ldquo;罪名&rdquo;,&ldquo;刑期&rdquo;,&ldquo;本院认为&rdquo;,&ldquo;观点&rdquo;,&ldquo;条文&rdquo;,&ldquo;条款&rdquo;,&ldquo;案由&rdquo;,&ldquo;定罪&rdquo;,&ldquo;量刑&rdquo;,&ldquo;法院观点&rdquo;,&ldquo;法官意见&rdquo;,&ldquo;条例&rdquo;,&ldquo;规定&rdquo;,&ldquo;执法依据&rdquo;,&ldquo;法规&rdquo;,&ldquo;罪责&rdquo;,&ldquo;量刑&rdquo;,&ldquo;诉讼&rdquo;,&ldquo;立法&rdquo;], &ldquo;法律书籍&rdquo;: [&ldquo;依据&rdquo;,&ldquo;法律读物&rdquo;,&ldquo;法学著作&rdquo;,&ldquo;法律参考书&rdquo;,&ldquo;法典&rdquo;,&ldquo;法规&rdquo;,&ldquo;参考书&rdquo;,&ldquo;读本&rdquo;,&ldquo;丛书&rdquo;,&ldquo;法理&rdquo;,&ldquo;法学&rdquo;,&ldquo;法哲学&rdquo;,&ldquo;法学家&rdquo;,&ldquo;著作&rdquo;,&ldquo;文献&rdquo;,&ldquo;学说&rdquo;,&ldquo;学术&rdquo;], &ldquo;法律文书模板&rdquo;: [&ldquo;文书&rdquo;,&ldquo;起诉书&rdquo;,&ldquo;法律文书&rdquo;,&ldquo;起诉状&rdquo;,&ldquo;判决书&rdquo;,&ldquo;裁定书&rdquo;,&ldquo;答辩状&rdquo;,&ldquo;法律合同&rdquo;,&ldquo;协议&rdquo;,&ldquo;证据&rdquo;,&ldquo;证明&rdquo;,&ldquo;合同&rdquo;,&ldquo;格式&rdquo;,&ldquo;模板&rdquo;,&ldquo;样本&rdquo;,&ldquo;规范&rdquo;,&ldquo;范本&rdquo;], &ldquo;法律案例&rdquo;: [&ldquo;法律&rdquo;,&ldquo;判罚&rdquo;,&ldquo;事实&rdquo;,&ldquo;案例&rdquo;,&ldquo;罪名&rdquo;,&ldquo;刑期&rdquo;,&ldquo;本院认为&rdquo;,&ldquo;观点&rdquo;,&ldquo;法律案件&rdquo;,&ldquo;典型案例&rdquo;,&ldquo;案情&rdquo;,&ldquo;案由&rdquo;,&ldquo;定罪&rdquo;,&ldquo;量刑&rdquo;,&ldquo;证据&rdquo;,&ldquo;判例&rdquo;,&ldquo;裁决&rdquo;,&ldquo;仲裁&rdquo;,&ldquo;先例&rdquo;,&ldquo;判决&rdquo;,&ldquo;司法&rdquo;], &ldquo;法律考试&rdquo;: [&ldquo;选项&rdquo;,&ldquo;选择&rdquo;,&ldquo;A,B,C,D&rdquo;,&ldquo;ABCD&rdquo;,&ldquo;A,B,C和D&rdquo;,&ldquo;考试&rdquo;,&ldquo;题目&rdquo;,&ldquo;法考&rdquo;,&ldquo;法律考试&rdquo;,&ldquo;考题&rdquo;,&ldquo;选择题&rdquo;,&ldquo;判断题&rdquo;,&ldquo;多选题&rdquo;,&ldquo;单选题&rdquo;,&ldquo;填空题&rdquo;,&ldquo;辨析题&rdquo;,&ldquo;案例分析题&rdquo;,&ldquo;答案&rdquo;,&ldquo;试题&rdquo;,&ldquo;试卷&rdquo;,&ldquo;法学&rdquo;,&ldquo;考研&rdquo;,&ldquo;司法考试&rdquo;,&ldquo;律师考试&rdquo;]}</p>
 <p>通过识别问题意图，缩小需要检索的知识库范围，减少易混淆知识带来的影响，提升检索精确度。</p>
 <p>如下图所示：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbdd1gPFw6cnmUFrb0YpKbsW8Tcibpn262YTtKF7HibC9Ic7nIXIYDsHnQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbdd1gPFw6cnmUFrb0YpKbsW8Tcibpn262YTtKF7HibC9Ic7nIXIYDsHnQ/640?wx_fmt=png" alt=""></p>
 <p><strong>2、知识检索</strong></p>
 <p>在知识检索（多路检索）上，同时采用<strong>统计特征层面的检索和语义特征层面的检索</strong> 。</p>
 <p>对于统计特征，<strong>预先提取知识库中每条知识的关键词，比如法条库中每条法条的关键词是所属法律和法条条数</strong> ，使用fuzzy matching提取问题中的关键词和知识关键词匹配获取相关知识，匹配的逻辑如下图所示：</p>
@@ -591,9 +591,9 @@ def key_words_match_knowledge(dic_all, choices, query):
         (&quot;Dallas Cowboys&quot;, 90)  
 </code></pre>
 <p>对于语义特征，使用向量相似度检索，为了提升检索精确度，<strong>预先准备每条知识对应的摘要，向量检索时使用知识摘要和问题进行相似度计算</strong> ，找到相关知识后替换成具体知识【这里为什么使用摘要，然后再用摘要替换成原先文本，<strong>考虑的是超长问题以及长文本带来的噪声问题</strong> 】。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbZjibNx2ymTgOlY3NDo0Z2BatWiav8fHAn1YeJeOG2ONbDlUeibPVeHN3w/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbZjibNx2ymTgOlY3NDo0Z2BatWiav8fHAn1YeJeOG2ONbDlUeibPVeHN3w/640?wx_fmt=png" alt=""></p>
 <p>在检索模型训练阶段，为了获得更好的检索效果，额外利用对比学习训练了检索模型的embedding，具体地，<strong>将案例所对应的真实法条、类似案例、相关书籍描述等知识作为正例，并通过随机抽取和易混淆抽取（抽取和案例相似度高但并不对应的知识）</strong>  两种方式获取负例【这里的出发点是解决领域embedding的问题】</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbDo6tkJLyOeUFMN3w8CUPq3sbeic82UnSWFodvNs9yKF39CHTlnWXxag/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAbDo6tkJLyOeUFMN3w8CUPq3sbeic82UnSWFodvNs9yKF39CHTlnWXxag/640?wx_fmt=png" alt=""></p>
 <p><strong>3、知识融合</strong></p>
 <p>在知识融合阶段，由于知识检索在意图识别阶段可能涉及多个知识库类型，将检索到的不同来源的知识融合后输入给法律大模型。</p>
 <p>比如询问一个案例如何判罚时，<strong>意图识别阶段识别出应在法条库和类案库做检索，把和知识库名和其下检索到的知识拼接，再和问题拼接，共同输入到模型生成答案</strong> ：</p>
@@ -679,7 +679,7 @@ application = LangChainApplication(config)
 </code></pre>
 <p><strong>4、模型效果</strong></p>
 <p>如下图所示，其模型效果如下：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAb7n3QYybd3uO3ChibMg7L0hujSG62aLw3WolvYiczDCcItPFzm1PXeoKw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJh3LOOecE18QruDYgNdqmAb7n3QYybd3uO3ChibMg7L0hujSG62aLw3WolvYiczDCcItPFzm1PXeoKw/640?wx_fmt=png" alt=""></p>
 <h4 id="总结">总结</h4>
 <p>本文主要从ChatLaw引入关键词和领域嵌入提升召回相关性、zhihaiLLM融合意图识别、知识检索的问答方案、zhihaiLLM外挂知识数据的构成与构造方案、zhihaiLLM知识增强的三个关键步骤及源码实现等几个角度进行介绍。‍‍‍‍‍‍‍‍‍‍</p>
 <p>其中，项目github.com/zhihaiLLM/wisdomInterrogatory大家可以关注，当然，这个项目也存在一些不足，也正如该工作所说，目前通过纯embedding匹配的检索效果仍然一般，后面考虑设计一套流程，可以自动训练得到针对某一知识库的专用检索模型， 同时，模型对融合的知识的理解能力仍有限，考虑在模型训练中对结合知识输出这方面进行增强。</p>

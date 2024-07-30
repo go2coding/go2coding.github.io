@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ibCRW6ic88SnfItKbLRc82rwdxQnf70ST14v23ZdGEGmFnia5jXoiacWRU4oUMa2SAWOciaYG5iasUybhqQTG6uPOf1w/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/ibCRW6ic88SnfItKbLRc82rwdxQnf70ST14v23ZdGEGmFnia5jXoiacWRU4oUMa2SAWOciaYG5iasUybhqQTG6uPOf1w/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -425,7 +425,7 @@
             <p>作者： 深度学习机器  来源： <a href="https://mp.weixin.qq.com/s/Zz-5jR15-dISdxr1xcLmow">深度学习机器</a></p>
 <h4 id="一-传统方法">一 传统方法</h4>
 <p>之前的文章已经介绍过向量数据库在RAG（Retrieval Augmented Generative）中的应用，本文将会讨论另一个重要的工具-Embedding模型。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ibCRW6ic88SnfItKbLRc82rwdxQnf70ST1EqwqicUgAVRkMaGaklLSnj338lDHtPRJibhzMeb2Ry9h2KqJPUxCS62g/640?wx_fmt=png&amp;from=appmsg" alt="">在这里插入图片描述</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/ibCRW6ic88SnfItKbLRc82rwdxQnf70ST1EqwqicUgAVRkMaGaklLSnj338lDHtPRJibhzMeb2Ry9h2KqJPUxCS62g/640?wx_fmt=png&amp;from=appmsg" alt="">在这里插入图片描述</p>
 <p>一般来说，构建生产环境下的RAG系统是直接使用Embedding模型对用户输入的Query进行向量化表示，并且从已经构建好的向量数据库中检索出相关的段落用户大模型生成。但是这种方法很明显会受到Embedding模型性能的影响，比如是否支持多语言、跨语言检索、训练数据的质量等。因此，以改进Embedding模型为目标提升RAG系统性能一般会有两种做法：</p>
 <p>方法1，在使用向量模型获取密集向量后，再使用Cross-encoder作为精排模型，对第一次召回的结果进行重排，以提高最终结果的质量。方法2，使用稀疏向量搭配密集向量进行召回。密集向量即对整个文本进行向量化表示产生的向量，稀疏向量则是对原始文本的编码表示，如TF-IDF，BM25等。其中，稀疏向量可以帮助识别和捕捉特定的语义信息，比如文本中的关键词，而密集向量则可以提供更丰富的语义表达，是通过大量长文本学习而来的。通过同时将这两种向量进行召回，可以获得更丰富、更全面的信息，从而提升 RAG 的效果。</p>
 <p>方法1和方法2既可以独立使用，也可以搭配使用，这就大大增加了算法工程师的武器库，通过搭积木的方式来提高RAG系统的效果。</p>
@@ -436,7 +436,7 @@
 <p>其二，LLM受限于上下文长度的限制，所以能利用到的向量片段数量是有限的，尽管现在越来越多的研究使得LLM的上下文窗口越来越长，如改进位置编码或者注意力机制等，但也有实验表明再长的上下文输入给大模型总会由遗失或者处理不好的情况，称为“Lost in middle”现象。因此，更好的办法是把更有用的上下文筛选出来，重点在于提升质而不是量。</p>
 <h4 id="精排模型结构">精排模型结构</h4>
 <p>下面有两个模型，分别是Bi-Encoder和Cross-Encoder。左边的Bi-Encoder实际上就是我们常见的向量化模型，需要注意的是模型的结构并不是有2个Bert，而是只有1个Bert模型，但是对于两个句子分别做了向量化表示，最终比较这两个向量的相似度。<strong>这里”Bi“表示的是处理的过程，而不是实际的结构</strong> 。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/ibCRW6ic88SnfItKbLRc82rwdxQnf70ST14v23ZdGEGmFnia5jXoiacWRU4oUMa2SAWOciaYG5iasUybhqQTG6uPOf1w/640?wx_fmt=png&amp;from=appmsg" alt="">在这里插入图片描述</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/ibCRW6ic88SnfItKbLRc82rwdxQnf70ST14v23ZdGEGmFnia5jXoiacWRU4oUMa2SAWOciaYG5iasUybhqQTG6uPOf1w/640?wx_fmt=png&amp;from=appmsg" alt="">在这里插入图片描述</p>
 <p>而精排模型用到的Cross-Encoder结构则是把两个句子的输入concat到一起，最终预测这两个句子是否相关，有点类似于Bert训练时的next sentence prediction（NSP）。不难发现，这实际上就是一个分类模型，而且并不会产生具体的向量表示，只会产生一个介于0和1之间的值，用于表示句子对的相似性。而且，在使用时，需要将Query与待查询的句子拼接到一起再输入给模型，所以这就决定了输入的句子对数量不能太多，否则带来的计算耗时将会是无法估量的。</p>
 <h4 id="精排模型的本质">精排模型的本质</h4>
 <p>直观上来讲，用Bi-Encoder“目的更加通用”，是为了得到输入的向量化表示，这些向量不仅有大小，还有方向，因此就有这么一个学习向量化时遇到的经典例子：国王-男人=女王-女人。</p>

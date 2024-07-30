@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgXyDvSsgeicnZalKnP7N8sLNkX6wBSTicDia8xStocmIbGM69ZwK280GwPiagotia8y7oRGSkWeImBibkQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgXyDvSsgeicnZalKnP7N8sLNkX6wBSTicDia8xStocmIbGM69ZwK280GwPiagotia8y7oRGSkWeImBibkQ/640?wx_fmt=png&amp;from=appmsg" width="640" >
           </div>
             <br>
             <br>
@@ -436,7 +436,7 @@
 }  
 </code></pre>
 <p>如下所示：</p>
-<p>task_id表示任务的ID，prompt表示题目（通常直接请求大模型获取答案），entry_point是唯一标记，canonica_solution是参考答案，test是测试单元。<img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgXyDvSsgeicnZalKnP7N8sLiaCuqlnxsibiazA9ucQuGFsYBZkdnrS1TOd529y8X4PqOxHk6VmZ02zkQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>task_id表示任务的ID，prompt表示题目（通常直接请求大模型获取答案），entry_point是唯一标记，canonica_solution是参考答案，test是测试单元。<img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgXyDvSsgeicnZalKnP7N8sLiaCuqlnxsibiazA9ucQuGFsYBZkdnrS1TOd529y8X4PqOxHk6VmZ02zkQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <h4 id="二humaneval的评估逻辑">二、HumanEval的评估逻辑</h4>
 <p>每一个测试问题重复实验n次，然后通过单元测试，计算平均通过率。我们可以在源码地址：https://github.com/abacaj/code-eval/tree/main/human-eval中看到起执行逻辑</p>
 <p><strong>1、读取每个样本，请求模型获得结果</strong></p>
@@ -549,10 +549,10 @@ def filter_code(completion: str) -&gt; str:
 <p>因此，Kulal等人（2019年）使用pass@k指标评估功能正确性，每个问题生成k个代码样本，如果任何样本通过单元测试，则认为问题已解决，并报告总分数。</p>
 <p>但<strong>是一次实验随机性太大，需要多次实验求平均值。pass@k需要对每一个测试问题重复实验t次，并且每次都生成k个代码，最后计算平均通过率。假如重复实验100次来估计pass@100，就需要生成 100*100=10000个代码，这样的计算量是难以接受的。而t越小，估计的pass@k就越不准（方差越大）。</strong></p>
 <p>因此，为了评估pass@k，该工作会为每个任务生成n≥k个样本（本文中使用n=200，k≤100），计算通过单元测试的正确样本c≤n的数量，并计算无偏估计值。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgXyDvSsgeicnZalKnP7N8sLNkX6wBSTicDia8xStocmIbGM69ZwK280GwPiagotia8y7oRGSkWeImBibkQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgXyDvSsgeicnZalKnP7N8sLNkX6wBSTicDia8xStocmIbGM69ZwK280GwPiagotia8y7oRGSkWeImBibkQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>其中，c是生成的n个代码中通过测试的数量。n越大估计越准确，但计算代价肯定远远小于t*k。</p>
 <p>假设模型只能生成这n个代码，而且他们每一种被生成出来的概率是相等的，其中有c个可以通过测试。那么模型任意生成k个代码，全都不能通过测试的概率是：生成k个不能通过测试的代码的情况总和与生成k个代码的全部情况总和之比，即：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgXyDvSsgeicnZalKnP7N8sLykTNXpJaTTod3e1PDN0ypicoVp3PkayiaRp4NYpEmficfZh6qXlhqrpeA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fUBU1yiaEmJgXyDvSsgeicnZalKnP7N8sLykTNXpJaTTod3e1PDN0ypicoVp3PkayiaRp4NYpEmficfZh6qXlhqrpeA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
 <p>根据大数定理，当样本总量趋近无穷大的时候，样本的平均值无限接近数学期望。因此只要求出其的均值，即得到了对pass@k的无偏估计。</p>
 <p>具体代码实现：</p>
 <pre><code>def estimate_pass_at_k(  

@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHPZr8NsdM3mr4BmlP5CpxuniaZU6UfJLL1TVwr990FY3j344rEjvrTlA/640?wx_fmt=png" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHPZr8NsdM3mr4BmlP5CpxuniaZU6UfJLL1TVwr990FY3j344rEjvrTlA/640?wx_fmt=png" width="640" >
           </div>
             <br>
             <br>
@@ -423,63 +423,63 @@
           
           <div class="single-blog-content">
             <p>作者： PaperWeekly  来源： <a href="https://mp.weixin.qq.com/s/hhHIPNwi-SoPnplP7kJWcw">PaperWeekly</a></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHKVtfYDubjKdZRUjAfBQQicXjoZWJ3qnK42ooD4eeJUfJBM4SSZVa2RE5lO0j6rWwzliby0j9u4bDg/640?wx_fmt=gif" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHKVtfYDubjKdZRUjAfBQQicXjoZWJ3qnK42ooD4eeJUfJBM4SSZVa2RE5lO0j6rWwzliby0j9u4bDg/640?wx_fmt=gif" alt=""></p>
 <p><strong>©PaperWeekly 原创 · 作者 |</strong>  苏剑林</p>
 <p>**单位 | ** 追一科技</p>
 <p>**研究方向 | ** NLP、神经网络</p>
 <p>对关心如何扩展 LLM 的 Context 长度的读者来说，上周无疑是激动人心的一周，开源社区接连不断地出现令人振奋的成果。首先，网友 @kaiokendev 在他的项目 SuperHOT [1] 中实验了“位置线性内插”的方案，显示通过非常少的长文本微调，就可以让已有的 LLM 处理 Long Context。</p>
 <p>几乎同时，Meta 也提出了同样的思路，带着丰富的实验结果发表在论文《Extending Context Window of Large Language Models via Positional Interpolation》[2] 上。惊喜还远不止此，随后网友 @bloc97 提出了 NTK-Aware Scaled RoPE [3]，实现了不用微调就可以扩展 Context 长度的效果！</p>
 <p>以上种种进展，尤其是 NTK-Aware Scaled RoPE，迫使笔者去重新思考 <a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247523398&amp;idx=1&amp;sn=a73bd746cee54a5a2b72a52127fba4d0&amp;chksm=96ea43c6a19dcad0fea381ed5f79a17a8350ba221975cb5d40b2410eb15ea8f442fad29e181c&amp;scene=21#wechat_redirect">RoPE</a> 的含义。经过分析，笔者发现 RoPE 的构造可以视为一种  进制编码，在这个视角之下，开源社区的这些进展可以理解为对进制编码编码的不同扩增方式。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wulOVRfC18yCkd6xXqGq22h6QUk8chptF0fnQ4uXeZtAktYMrWwG2SyQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wulOVRfC18yCkd6xXqGq22h6QUk8chptF0fnQ4uXeZtAktYMrWwG2SyQ/640?wx_fmt=png" alt=""></p>
 <p><strong>进制表示</strong></p>
 <p>假设我们有一个 1000 以内（不包含 1000）的整数  要作为条件输入到模型中，那么要以哪种方式比较好呢？</p>
 <p>最朴素的想法是直接作为一维浮点向量输入，然而 0～999 这涉及到近千的跨度，对基于梯度的优化器来说并不容易优化得动。那缩放到 0～1 之间呢？也不大好，因为此时相邻的差距从 1 变成了 0.001，模型和优化器都不容易分辨相邻的数字。总的来说，基于梯度的优化器都有点“矫情”，它只能处理好不大不小的输入，太大太小都容易出问题。</p>
 <p>所以，为了避免这个问题，我们还需要继续构思新的输入方式。在不知道如何让机器来处理时，我们不妨想想人是怎么处理呢。对于一个整数，比如 759，这是一个 10 进制的三位数，每位数字是 0～9。既然我们自己都是用 10 进制来表示数字的，为什么不直接将 10 进制表示直接输入模型呢？也就是说，我们将整数  以一个三维向量  来输入， 分别是  的百位、十位、个位。这样，我们既缩小了数字的跨度，又没有缩小相邻数字的差距，代价了增加了输入的维度——刚好，神经网络擅长处理高维数据。</p>
 <p>如果想要进一步缩小数字的跨度，我们还可以进一步缩小进制的基数，如使用 8 进制、6 进制甚至 2 进制，代价是进一步增加输入的维度。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuhfgUpIfdPSqH8YjjHbCUiaaKsMA36bIMsMtGNKoBcus5py06M0fvx3A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuhfgUpIfdPSqH8YjjHbCUiaaKsMA36bIMsMtGNKoBcus5py06M0fvx3A/640?wx_fmt=png" alt=""></p>
 <p><strong>直接外推</strong></p>
 <p>假设我们还是用三维 10 进制表示训练了模型，模型效果还不错。然后突然来了个新需求，将  上限增加到 2000 以内，那么该如何处理呢？</p>
 <p>如果还是用 10 进制表示的向量输入到模型，那么此时的输入就是一个四维向量了。然而，原本的模型是针对三维向量设计和训练的，所以新增一个维度后，模型就无法处理了。可能有读者想说，为什么不能提前预留好足够多的维度呢？没错，是可以提前预留多几维，训练阶段设为 0，推理阶段直接改为其他数字，这就是外推（Extrapolation）。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHA4QoIzvcF8ibZvGxPlYZzz2licNkCkATNJ3zEMla5whyia3t9kJcKnyaQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHA4QoIzvcF8ibZvGxPlYZzz2licNkCkATNJ3zEMla5whyia3t9kJcKnyaQ/640?wx_fmt=png" alt=""></p>
 <p>▲ 直接外推</p>
 <p>然而，训练阶段预留的维度一直是 0，如果推理阶段改为其他数字，效果不见得会好，因为模型对没被训练过的情况不一定具有适应能力。也就是说，由于某些维度的训练数据不充分，所以直接进行外推通常会导致模型的性能严重下降。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wukOjHSmSsEuRCB0fJu69CtdNgLnvFPDUCgeicOppBKuDvniaD3q8XWQ0Q/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wukOjHSmSsEuRCB0fJu69CtdNgLnvFPDUCgeicOppBKuDvniaD3q8XWQ0Q/640?wx_fmt=png" alt=""></p>
 <p><strong>线性内插</strong></p>
 <p>于是，有人想到了将外推改为内插（Interpolation），简单来说就是将 2000 以内压缩到 1000 以内，比如通过除以 2，1749 就变成了 874.5，然后转为三维向量 [8,7,4.5] 输入到原来的模型中。从绝对数值来看，新的  实际上对应的是 1498，是原本对应的 2 倍，映射方式不一致；从相对数值来看，原本相邻数字的差距为 1，现在是 0.5，最后一个维度更加“拥挤”。所以，做了内插修改后，通常都需要微调训练，以便模型重新适应拥挤的映射关系。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHf3E1wSYicVVPm5wT25oJJSU40SbEmIRVc8uty1ftsELfIrmtNXn4r9g/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHf3E1wSYicVVPm5wT25oJJSU40SbEmIRVc8uty1ftsELfIrmtNXn4r9g/640?wx_fmt=png" alt=""></p>
 <p>▲ 线性内插</p>
 <p>当然，有读者会说外推方案也可以微调。是的，但内插方案微调所需要的步数要少得多，因为很多场景（比如位置编码）下，相对大小（或许说序信息）更加重要，换句话说模型只需要知道 874.5 比 874 大就行了，不需要知道它实际代表什么多大的数字。而原本模型已经学会了 875 比 874 大，加之模型本身有一定的泛化能力，所以再多学一个 874.5 比 874 大不会太难。</p>
 <p>不过，内插方案也不尽完美，当处理范围进一步增大时，相邻差异则更小，并且这个相邻差异变小集中在个位数，剩下的百位、十位，还是保留了相邻差异为1。换句话说，内插方法使得不同维度的分布情况不一样，每个维度变得不对等起来，模型进一步学习难度也更大。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuiaLfO9V4lkD8cXK7ImEicqib5bPGH6syOrWzicR2KaqPyAicMccs8icC03Gw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuiaLfO9V4lkD8cXK7ImEicqib5bPGH6syOrWzicR2KaqPyAicMccs8icC03Gw/640?wx_fmt=png" alt=""></p>
 <p><strong>进制转换</strong></p>
 <p>有没有不用新增维度，又能保持相邻差距的方案呢？有，我们也许很熟悉，那就是进制转换！三个数字的 10 进制编码可以表示 0～999，如果是 16 进制呢？它最大可以表示 。所以，只需要转到 16 进制，如 1749 变为 ，那么三维向量就可以覆盖目标范围，代价是每个维度的数字从 0～9 变为 0～15。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHk4Pjeq6wwvEgVuBbLnBvrwwnTTccWbp254EzFRTLwDXlW7LkcyNofg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHk4Pjeq6wwvEgVuBbLnBvrwwnTTccWbp254EzFRTLwDXlW7LkcyNofg/640?wx_fmt=png" alt=""></p>
 <p>▲ 进制转换</p>
 <p>仔细想想，就会发现这真是一个绝妙的想法。刚才说到，我们关心的场景主要利用序信息，原来训练好的模型已经学会了 ，而在 16 进制下同样有 ，比较规则是一模一样的（模型根本不知道你输入的是多少进制）。唯一担心的是每个维度超过 9 之后（10～15）模型还能不能正常比较，但事实上一般模型也有一定的泛化能力，所以每个维度稍微往外推一些是没问题的。所以，这个转换进制的思路，甚至可能不微调原来模型也有效！另外，为了进一步缩窄外推范围，我们还可以换用更小的 进制而不是 16 进制。</p>
 <p>接下来我们将会看到，这个进制转换的思想，实际上就对应着文章开头提到的 NTK-aware scaled RoPE！</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wukGHdevfTibLOpic6945Lrhqmt43pKicyIhGs4m7ANzKOfY9RJgmTicZGdg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wukGHdevfTibLOpic6945Lrhqmt43pKicyIhGs4m7ANzKOfY9RJgmTicZGdg/640?wx_fmt=png" alt=""></p>
 <p><strong>位置编码</strong></p>
 <p>为了建立起它们的联系，我们先要建立如下结果：</p>
 <p>位置  的旋转位置编码（RoPE），本质上就是数字  的  进制编码！</p>
 <p>看上去可能让人意外，因为两者表面上迥然不同。但事实上，两者的运算有着相同的关键性质。为了理解这一点，我们首先回忆一个 10 进制的数字 ，我们想要求它的  进制表示的（从右往左数）第 m 位数字，方法是</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHOfJWRWcibuLNVOyZWKYiapia8ibJ5TLFeKictFFfyXQW04xxs79Zdn3icRSA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHOfJWRWcibuLNVOyZWKYiapia8ibJ5TLFeKictFFfyXQW04xxs79Zdn3icRSA/640?wx_fmt=png" alt=""></p>
 <p>也就是先除以  次方，然后求模（余数）。然后再来回忆 RoPE，它的构造基础是 Sinusoidal 位置编码，可以改写为</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHuGoGEdDGlCZmib93XXOjibh1hoQcpe2pyw8DQd2hffUgXiakeanRwaPNA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHuGoGEdDGlCZmib93XXOjibh1hoQcpe2pyw8DQd2hffUgXiakeanRwaPNA/640?wx_fmt=png" alt=""></p>
 <p>其中，。现在，对比式（1），式（2）是不是也有一模一样的 ？至于模运算，它的最重要特性是周期性，式（2）的  是不是刚好也是周期函数？所以，除掉取整函数这个无关紧要的差异外，RoPE（或者说 Sinusoidal位置编码）其实就是数字  的  进制编码！</p>
 <p>建立起这个联系后，前面几节讨论的整数  的扩增方案，就可以对应到文章开头的各种进展上了。其中，直接外推方案就是啥也不改，内插方案就是将  换成 ，其中  是要扩大的倍数，这就是 Meta 的论文所实验的 Positional Interpolation，里边的实验结果也证明了外推比内插确实需要更多的微调步数。</p>
 <p>至于进制转换，就是要扩大  倍表示范围，那么原本的  进制至少要扩大成  进制（式（2）虽然是  维向量，但  是成对出现的，所以相当于  位  进制表示，因此要开  次方而不是  次方），或者等价地原来的底数  换成 ，这基本上就是 NTK-Aware Scaled RoPE [3]。跟前面讨论的一样，由于位置编码更依赖于序信息，而进制转换基本不改变序的比较规则，所以 NTK-Aware Scaled RoPE 在不微调的情况下，也能在更长 Context 上取得不错的效果。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuJXXicvv3JrPNYrFlYadg4ibA8SxC6OvibZyBHGuub04X1AXxeRTC0WUJA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuJXXicvv3JrPNYrFlYadg4ibA8SxC6OvibZyBHGuub04X1AXxeRTC0WUJA/640?wx_fmt=png" alt=""></p>
 <p><strong>追根溯源</strong></p>
 <p>可能有读者好奇，这跟 NTK 有什么关系呢？NTK 全称是 “Neural Tangent Kernel”，我们之前在<a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247519368&amp;idx=1&amp;sn=dbdc0b8df893e35b06de0134cb93829c&amp;chksm=96ea5308a19dda1e10b7c7717ddfccd5a32048c5092fb2c3fdaed8b23d5893b016cd7074897d&amp;scene=21#wechat_redirect">《从动力学角度看优化算法：SGD ≈ SVM？》</a>也稍微涉及过。要说上述结果跟NTK的关系，更多的是提出者的学术背景缘故，提出者对《Fourier Features Let Networks Learn High Frequency Functions in Low Dimensional Domains》[4] 等结果比较熟悉，里边利用 NTK 相关结果证明了神经网络无法直接学习高频信号，解决办法是要将它转化为 Fourier 特征——其形式就跟式（1）的 Sinusoidal 位置编码差不多。</p>
 <p>所以，提出者基于 NTK 相关结果的直觉，推导了 NTK-Aware Scaled RoPE。笔者向提出者请教过他的推导，其实他的推导很简单，就是把外推和内插结合起来——高频外推、低频内插。具体来说，式（2）最低频是  项，引入参数  变为 ，让它跟内插一致，即</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHPZr8NsdM3mr4BmlP5CpxuniaZU6UfJLL1TVwr990FY3j344rEjvrTlA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHPZr8NsdM3mr4BmlP5CpxuniaZU6UfJLL1TVwr990FY3j344rEjvrTlA/640?wx_fmt=png" alt=""></p>
 <p>那么解得 。至于最高频是  项，引入  后变为 ，由于  通常很大， 很接近 1，所以它还是接近于 ，即等价于外推。</p>
 <p>所以这样的方案简单巧妙地将外推和内插结合了起来。另外，由于  比较大（BERT 是 64，LLAMA 是 128）， 跟  差别不大，所以它跟笔者基于进制思想提出的  解是基本一致的。还有，从提出者这个思想来看，任意能实现“高频外推、低频内插”的方案都是可以的，并非只有上述引入  的方案，这个读者可以亲自尝试一下。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuCkR96mP8kh7KicSzPQiaIQa3ft5MLn54FNK0UD2MI99iaHjT9m9NjLl7A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuCkR96mP8kh7KicSzPQiaIQa3ft5MLn54FNK0UD2MI99iaHjT9m9NjLl7A/640?wx_fmt=png" alt=""></p>
 <p><strong>个人测试</strong></p>
 <p>作为号称不用微调就可以增加 LLM 的 Context 长度的方案，笔者第一次看到 NTK-Aware Scaled RoPE 时，也感到很震惊，并且迫不及待地去测试它。毕竟根据<a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247623880&amp;idx=1&amp;sn=70f0071082f9d2ce4122c006636a58c3&amp;chksm=96e43b48a193b25e2e56d51bebd0d3fec3d015135c0f5ff82773dbea1bd32ae55b8bb96bb50f&amp;scene=21#wechat_redirect">《Transformer升级之路：一种全局长度外推的新思路》</a>的经验，在笔者所偏爱的 “GAU+Post Norm” 组合上，很多主流的方案都失效了，那么这个方法又如何？</p>
 <p>当  取 8 时，对比结果如下（关于“重复”与“不重复”的区别，可以参考<a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247623880&amp;idx=1&amp;sn=70f0071082f9d2ce4122c006636a58c3&amp;chksm=96e43b48a193b25e2e56d51bebd0d3fec3d015135c0f5ff82773dbea1bd32ae55b8bb96bb50f&amp;scene=21#wechat_redirect">这里</a>）</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxH5t14JIGBXxibib3CoFqoxaEicicqEQbk8W7A8aZIyw9gCmgggk59RU1D0A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxH5t14JIGBXxibib3CoFqoxaEicicqEQbk8W7A8aZIyw9gCmgggk59RU1D0A/640?wx_fmt=png" alt=""></p>
 <p>以上报告的都是没有经过长文本微调的结果，其中 Baseline 就是外推，PI（Positional Interpolation）就是 Baseline 基础上改内插，NTK-RoPE 就是 Baseline 基础上改 NTK-Aware Scaled RoPE。带  的选项，是指预训练时加入了<a href="http://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247554395&amp;idx=1&amp;sn=9a80699d35c41809ab9160f1bc9158fb&amp;chksm=96eacadba19d43cd11b60825e2190654238936eceaf584417ff61340beb4b82d8e1ed17b7d2b&amp;scene=21#wechat_redirect">《从熵不变性看Attention的Scale操作》</a>中的 scale，考虑这个变体是因为笔者觉得 NTK-RoPE 虽然解决了 RoPE 的长度泛化问题，但没有解决注意力不集中问题。</p>
 <p>表格的实验结果完全符合预期：</p>
 <ol>
@@ -497,22 +497,22 @@
 </li>
 </ol>
 <p>所以，NTK-RoPE 成功地成为目前第二种笔者测试有效的不用微调就可以扩展 LLM 的 Context 长度的方案（第一种自然是 <a href="https://mp.weixin.qq.com/s?__biz=MzIwMTc4ODE0Mw==&amp;mid=2247627388&amp;idx=1&amp;sn=8c81ca987f0449e75996332e24f0c599&amp;chksm=96e42dfca193a4eabddf1e3cb427b863c03893b82ab7273d23ebb0afc5066455326ddc7ddf8b&amp;token=48314340&amp;lang=zh_CN&amp;scene=21#wechat_redirect">NBCE</a>），再次为提出者的卓越洞察力点赞！更加值得高兴的是，NTK-RoPE 在“重复”外推上比“不重复”外推效果明显好，表明这样修改之后是保留了全局依赖，而不是单纯将注意力局部化。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuVuiaibMol0X7B6x4onAYZicTibE3rQT0tEItSMLGWPb1pqiaxL7gRibKHVFQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDGhKg9nnSz5qQrwKvXibt3wuVuiaibMol0X7B6x4onAYZicTibE3rQT0tEItSMLGWPb1pqiaxL7gRibKHVFQ/640?wx_fmt=png" alt=""></p>
 <p><strong>写在最后</strong></p>
 <p>本文从  进制编码的角度理解 RoPE，并借此介绍了目前开源社区关于 Long Context 的一些进展，其中还包含了一种不用微调就可以增加 Context 长度的修改方案。</p>
 <p>仅仅一周，开源社区的 Long Context 进展就让人应接不暇，也大快人心，以至于网友 @ironborn123 评论道：上周看上去是插值器的报复:) OpenClosedAI 最好小心了。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrIRticN5qUOe4cDonWMfmReo0589n5Mm9GN9XxwicMiczaZdclOVJ7QnSX4pumUphX4vvZsjiakyJKUGmDO5kVQdgmfT/640?wx_fmt=svg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrIRticN5qUOe4cDonWMfmReo0589n5Mm9GN9XxwicMiczaZdclOVJ7QnSX4pumUphX4vvZsjiakyJKUGmDO5kVQdgmfT/640?wx_fmt=svg" alt=""></p>
 <p><strong>参考文献</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrIRticN5qUOe4cDonWMfmReo0589n5Mm9GN9XxwicMiczaZdclOVJ7QnSX4pumUphX4vvZsjiakyJKUGmDO5kVQdgmfT/640?wx_fmt=svg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_svg/lpHDr05YrIRticN5qUOe4cDonWMfmReo0589n5Mm9GN9XxwicMiczaZdclOVJ7QnSX4pumUphX4vvZsjiakyJKUGmDO5kVQdgmfT/640?wx_fmt=svg" alt=""></p>
 <p>[1] <a href="https://kaiokendev.github.io/til#extending-context-to-8k">https://kaiokendev.github.io/til#extending-context-to-8k</a></p>
 <p>[2] <a href="https://arxiv.org/abs/2306.15595">https://arxiv.org/abs/2306.15595</a></p>
 <p>[3] <a href="https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_scaled_rope_allows_llama_models_to_have/">https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_scaled_rope_allows_llama_models_to_have/</a></p>
 <p>[4] <a href="https://arxiv.org/abs/2006.10739">https://arxiv.org/abs/2006.10739</a></p>
 <p><strong>更多阅读</strong></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxH9g3c0tRK9UgsMibCLVPFe0QyoyLn813moudlQicSv2EA0t7DnTma6Aicg/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHkXfGDQ3FicCspXGFpcnl3SJvTc7dqcGb9Xk0L5YSlr4EvGVfLjaq1TQ/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHCoUoa9qCAv06KscTWU1w7fH6SC214wicF1J8f0V027a4LsCRjeYiaepQ/640?wx_fmt=png" alt=""></p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHHMXQ2IicFvJwssWxgWhKuK7ulQVyw7gPTxZia00vCxia2vzhRH6pGq8t1FN1zY48ibULAEZpic41k6eg/640?wx_fmt=gif" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxH9g3c0tRK9UgsMibCLVPFe0QyoyLn813moudlQicSv2EA0t7DnTma6Aicg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHkXfGDQ3FicCspXGFpcnl3SJvTc7dqcGb9Xk0L5YSlr4EvGVfLjaq1TQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/Psho9dm7oDEewG8B7cbosiaGoS1PqouxHCoUoa9qCAv06KscTWU1w7fH6SC214wicF1J8f0V027a4LsCRjeYiaepQ/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/Psho9dm7oDHHMXQ2IicFvJwssWxgWhKuK7ulQVyw7gPTxZia00vCxia2vzhRH6pGq8t1FN1zY48ibULAEZpic41k6eg/640?wx_fmt=gif" alt=""></p>
 <p><strong>#投 稿 通 道#</strong></p>
 <p>** 让你的文字被更多人看到 **</p>
 <p>如何才能让更多的优质内容以更短路径到达读者群体，缩短读者寻找优质内容的成本呢？<strong>答案就是：你不认识的人。</strong></p>
@@ -526,7 +526,7 @@
 <p>• 投稿邮箱：hr@paperweekly.site</p>
 <p>• 来稿请备注即时联系方式（微信），以便我们在稿件选用的第一时间联系作者</p>
 <p>• 您也可以直接添加小编微信（<strong>pwbot02</strong> ）快速投稿，备注：姓名-投稿</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgmic1CRCSOKfDibC3dZ4BaJuYyYTWJyw8gFxqon34STk3icf9aJbY4rqMpmhNjTGJXIGGFsCdTBHy3Tw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgmic1CRCSOKfDibC3dZ4BaJuYyYTWJyw8gFxqon34STk3icf9aJbY4rqMpmhNjTGJXIGGFsCdTBHy3Tw/640?wx_fmt=png" alt=""></p>
 <p><strong>△长按添加PaperWeekly小编</strong></p>
 <p>🔍</p>
 <p>现在，在**「知乎」** 也能找到我们了</p>
@@ -534,7 +534,7 @@
 <p>点击**「关注」** 订阅我们的专栏吧</p>
 <p>·</p>
 <p>·</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgnZ3nlEAOI3MyTd7jqeD6cq8uTbkM2xZNpribyNr9liaPJ722zaHxd0YpQvib2nxOYmWibydCVY7W94ew/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/VBcD02jFhgnZ3nlEAOI3MyTd7jqeD6cq8uTbkM2xZNpribyNr9liaPJ722zaHxd0YpQvib2nxOYmWibydCVY7W94ew/640?wx_fmt=jpeg" alt=""></p>
 <p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
 
 

@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2rpNNj3nnEichwbDaKKbJbSqibYN5YkibK9m6f9T0x6LcsfLbw6kDDRiadGiavjh5ibKibZLE11Ty6DAYYeg/640?wx_fmt=jpeg" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2rpNNj3nnEichwbDaKKbJbSqibYN5YkibK9m6f9T0x6LcsfLbw6kDDRiadGiavjh5ibKibZLE11Ty6DAYYeg/640?wx_fmt=jpeg" width="640" >
           </div>
             <br>
             <br>
@@ -424,7 +424,7 @@
           <div class="single-blog-content">
             <pre><code>作者： AINLP  来源： [AINLP](https://mp.weixin.qq.com/s/Y8wbPsRJ4i4PjgJuHQSkrg)
 </code></pre>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJuK8UUBxdZXj1c20hUg374YPgXibgDGytAy87YxvVk4WCRFWrdKJPshStrlPJp4vGEGUQodxt7ibOw/640?wx_fmt=jpeg" alt=""></p>
 <p>本文提供了一个使用 Hugging Face 🤗 Transformers 在任意多语种语音识别 (ASR) 数据集上微调 Whisper 的分步指南。同时，我们还深入解释了 Whisper 模型、Common Voice 数据集以及微调等理论知识，并提供了数据准备和微调的相关代码。如果你想要一个全部是代码，仅有少量解释的 Notebook，可以参阅这个 Google Colab。</p>
 <h4 id="目录">目录</h4>
 <ol>
@@ -457,7 +457,7 @@
 <p>这么多的标注数据使得我们可以直接在 <em>有监督</em> 语音识别任务上预训练 Whisper，从标注音频转录数据  中直接习得语音到文本的映射。因此，Whisper 几乎不需要额外的微调就已经是高性能的 ASR 模型了。这让 Wav2Vec 2.0 相形见绌，因为 Wav2Vec 2.0 是在 <em>无监督</em> 掩码预测任务上预训练的，所以其训得的模型仅从未标注的纯音频数据中习得了从语音到隐含状态的中间映射。虽然无监督预训练能产生高质量的语音表征，但它 <strong>学不到</strong> 语音到文本的映射，要学到语音到文本的映射只能靠微调。因此，Wav2Vec 2.0 需要更多的微调才能获得较有竞争力的性能。</p>
 <p>在 68 万小时标注数据的加持下，预训练 Whisper 模型表现出了强大的泛化到多种数据集和领域的能力。其预训练 checkpoint 表现出了与最先进的 ASR 系统旗鼓相当的性能: 在 LibriSpeech ASR 的无噪测试子集上的单词错误率 (word error rate，WER) 仅为约 3%，另外它还在 TED-LIUM 上创下了新的记录 - 4.7% 的 WER ( <em>详见</em> Whisper 论文 的表 8)。Whisper 在预训练期间获得的广泛的多语种 ASR 知识对一些数据匮乏的小语种特别有用。稍稍微调一下，预训练 checkpoint 就可以进一步适配特定的数据集和语种，从而进一步改进在这些语种上的识别效果。</p>
 <p>Whisper 是一个基于 transformer 的编码器 - 解码器模型 (也称为 <em>序列到序列</em> 模型)，它将音频的频谱图特征 <em>序列</em> 映射到文本的词 <em>序列</em>。首先，通过特征提取器将原始音频输入变换为对数梅尔声谱图 (log-Mel spectrogram)。然后，transformer 编码器对声谱图进行编码，生成一系列编码器隐含状态。最后，解码器基于先前输出的词以及编码器隐含状态，自回归地预测下一个输出词。图 1 是 Whisper 模型的示意图。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_svg/k0Ue4mIpaV9Hz8FR0hrJ2DDEBHtlR741Dlr9ZZqb6q6tpLr1yXb8iae1icIC7EVuTA4xf8N8oRRibINtRE0Nd1o5e5qico5ibicNfJ/640?wx_fmt=svg" alt=""><strong>图 1:</strong>  Whisper 模型，该模型是标准的基于 transformer 的编码器-解码器架构。首先将对数梅尔声谱图输入到编码器，然后将编码器生成的最终隐含状态通过交叉注意机制输入给解码器。最后，解码器基于编码器隐含状态和先前的输出词，自回归地预测下一个输出词。图源: OpenAI Whisper 博客。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_svg/k0Ue4mIpaV9Hz8FR0hrJ2DDEBHtlR741Dlr9ZZqb6q6tpLr1yXb8iae1icIC7EVuTA4xf8N8oRRibINtRE0Nd1o5e5qico5ibicNfJ/640?wx_fmt=svg" alt=""><strong>图 1:</strong>  Whisper 模型，该模型是标准的基于 transformer 的编码器-解码器架构。首先将对数梅尔声谱图输入到编码器，然后将编码器生成的最终隐含状态通过交叉注意机制输入给解码器。最后，解码器基于编码器隐含状态和先前的输出词，自回归地预测下一个输出词。图源: OpenAI Whisper 博客。</p>
 <p>在序列到序列模型中，编码器负责从语音中提取出重要特征，将输入转换为一组隐含状态表征。解码器扮演语言模型的角色，处理隐含状态表征并生成对应的文本。我们把在模型架构 <strong>内部</strong>  集成语言模型的做法称为 <em>深度融合</em>。与之相对的是 <em>浅融合</em>，此时，语言模型在 <strong>外部</strong> 与编码器组合，如 CTC + -gram ( <em>详见</em> Internal Language Model Estimation 一文)。通过深度融合，可以用同一份训练数据和损失函数对整个系统进行端到端训练，从而获得更大的灵活性和更优越的性能 ( <em>详见</em> ESB Benchmark)。</p>
 <p>Whisper 使用交叉熵目标函数进行预训练和微调，交叉熵目标函数是训练序列标注模型的标准目标函数。经过训练，模型可以正确地对目标词进行分类，从而从预定义的词汇表中选出输出词。</p>
 <p>Whisper 有五种不同尺寸的 checkpoint。其中，四个小尺寸 checkpoint 又各有两个版本: 英语版和多语种版，而最大的 checkpoint 只有多语种版。所有九个预训练 checkpoints 都可以在 Hugging Face Hub 上找到。下表总结了这些 checkpoint 的信息及其 Hub 链接:</p>
@@ -547,7 +547,7 @@ Your token has been saved to /root/.huggingface/token
 <p>一旦身份验证成功，你就会看到数据集预览。数据集预览展示了数据集的前 100 个样本。更重要的是，它还加载了可供实时收听的音频。我们可以在下拉菜单选择 hi
 来选择 Common Voice 的印地语子集 ( hi
 是印地语的语言标识符代码):</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2rpNNj3nnEichwbDaKKbJbSqeiafFZzt1nHkFnPbNYvlmoqRwG6PE8MibNFhEWgjYE2Uibj9xKhnOpBDw/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2rpNNj3nnEichwbDaKKbJbSqeiafFZzt1nHkFnPbNYvlmoqRwG6PE8MibNFhEWgjYE2Uibj9xKhnOpBDw/640?wx_fmt=jpeg" alt=""></p>
 <p>点击第一个音频的播放按钮，你就可以收听音频并看到相应的文本了。你还可以滚动浏览训练集和测试集中的样本，以更好地了解待处理音频和文本数据。从语调和风格可以看出，这些音频是旁白录音。你可能还会注意到录音者和录音质量的巨大差异，这是众包数据的一个共同特征。</p>
 <p>使用 🤗 Datasets 来下载和准备数据非常简单。仅需一行代码即可完成 Common Voice 数据集的下载和准备工作。由于印地语数据非常匮乏，我们把 训练集
 和 验证集
@@ -604,7 +604,7 @@ print(common_voice)
 <p>Whisper 特征提取器执行两个操作。首先，填充或截断一批音频样本，将所有样本的输入长度统一至 30 秒。通过在序列末尾添加零 (音频信号中的零对应于无信号或静音)，将短于 30 秒的样本填充到 30 秒。而对超过 30 秒的样本，直接截断为 30 秒就好了。由于这一批数据中的所有样本都被填充或截断到统一长度 (即 30 s) 了，因此将音频馈送给 Whisper 模型时就不需要注意力掩码了。这是 Whisper 的独门特性，其他大多数音频模型都需要用户提供一个注意力掩码，详细说明填充位置，这样模型才能在自注意力机制中忽略填充部分。经过训练的 Whisper 模型可以直接从语音信号中推断出应该忽略哪些部分，因此无需注意力掩码。</p>
 <p>Whisper 特征提取器执行的第二个操作是将第一步所得的音频变换为对数梅尔声谱图。这些频谱图是信号频率的直观表示，类似于傅里叶变换。图 2 展示了一个声谱图的例子，其中  轴表示梅尔频段 (Mel channel)，对应于特定的频段， 轴表示时间，颜色对应于给定时刻该频段的对数强度。Whisper 模型要求输入为对数梅尔声谱图。</p>
 <p>梅尔频段是语音处理的标准方法，研究人员用它来近似表示人类的听觉范围。对于 Whisper 微调这个任务而言，我们只需要知道声谱图是语音信号中频率的直观表示。更多有关梅尔频段的详细信息，请参阅 梅尔倒谱 一文。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2rpNNj3nnEichwbDaKKbJbSqibYN5YkibK9m6f9T0x6LcsfLbw6kDDRiadGiavjh5ibKibZLE11Ty6DAYYeg/640?wx_fmt=jpeg" alt=""><strong>图 2：</strong>  将音频信号变换为对数梅尔声谱图。左图：一维音频离散信号。右图：对应的对数梅尔声谱图。图源：谷歌 SpecAugment 博文.</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2rpNNj3nnEichwbDaKKbJbSqibYN5YkibK9m6f9T0x6LcsfLbw6kDDRiadGiavjh5ibKibZLE11Ty6DAYYeg/640?wx_fmt=jpeg" alt=""><strong>图 2：</strong>  将音频信号变换为对数梅尔声谱图。左图：一维音频离散信号。右图：对应的对数梅尔声谱图。图源：谷歌 SpecAugment 博文.</p>
 <p>幸运的是，🤗 Transformers Whisper 特征提取器仅用一行代码即可执行填充和声谱图变换两个操作！我们使用以下代码从预训练的 checkpoint 中加载特征提取器，为音频数据处理做好准备:</p>
 <pre><code>from transformers import WhisperFeatureExtractor  
   
@@ -941,7 +941,7 @@ trainer = Seq2SeqTrainer(
 32.10</p>
 <p>最佳 WER 是 32.0% —— 对 8 小时的训练数据来说还不错！那与其他 ASR 系统相比，这个表现到底处于什么水平？为此，我们可以查看 hf-speech-bench
 ，这是一个按语种和数据集对模型分别进行 WER 排名的排行榜。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2rpNNj3nnEichwbDaKKbJbSqhn96vrjxzotaOpUcVccqpyQe6kFa0mPw2L3UPvObyp3glK1MFvYlRw/640?wx_fmt=jpeg" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/5LJDib8HPR2rpNNj3nnEichwbDaKKbJbSqhn96vrjxzotaOpUcVccqpyQe6kFa0mPw2L3UPvObyp3glK1MFvYlRw/640?wx_fmt=jpeg" alt=""></p>
 <p>微调后的模型显著提高了 Whisper small
 checkpoint 的零样本性能，也突出展示了 Whisper 强大的迁移学习能力。</p>
 <p>当将训练结果推送到 Hub 时，只需配置适当的关键字参数 (key-word arguments，kwargs) 就可以自动将 checkpoint 提交到排行榜。如需适配自己的数据集、语种和模型名称，仅需对下述代码作出相应的修改即可:</p>
@@ -1013,7 +1013,7 @@ iface.launch()
 
 **请备注具体方向+所用到的相关技术点** 
 
-![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+![](https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSJADkmZ2IX6Z23znAibuEevotDMq9iaMxiapK7jfMibiauGFkycicAJEs6x5U9SGyDJZ0S1tRed9TPNUUDQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
 
 
 
@@ -1027,7 +1027,7 @@ AINLP 是一个有趣有AI的自然语言处理社区，专注于 AI、NLP、机
   
 
 
-![](https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
+![](https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/nW2ZPfuYqSKABHCqVVQkVYPrM4XY1vsd0iaeuXzyJnoFc8cibd5mYb4wdA3WMQtiaPVmr0XLZHMuVibqWncibpnTSnQ/640?wx_fmt=jpeg&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1)
 
 **阅读至此了，分享、点赞、在看三选一吧🙏** 
 </code></pre>

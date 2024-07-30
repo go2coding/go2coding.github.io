@@ -415,7 +415,7 @@
           </ul>
 
           <div class="_1NCGf">
-              <img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoRCchnOB0E2n9VhbcJSfup7Ev0a5ibGE1iclF7pSz3K0S7wSEhkFiaq3D3A/640?wx_fmt=png" width="640" >
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoRCchnOB0E2n9VhbcJSfup7Ev0a5ibGE1iclF7pSz3K0S7wSEhkFiaq3D3A/640?wx_fmt=png" width="640" >
           </div>
             <br>
             <br>
@@ -452,19 +452,19 @@
 <p>以上场景可能在产品中被使用，因此作为产品团队，我们可以通过了解 LangChain 的实现底层逻辑、可行性和限制来预先规划，并帮助未来的产品设计工作。以下将以通过 LangChain 实现文档问答机器人为例。</p>
 <h4 id="通过-langchain-实现文档问答机器人">通过 LangChain 实现文档问答机器人</h4>
 <p>首先需要做的还是数据清洗+存储</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoRTDjvVIWJRiaerhicVqa1jBFlC97IJAx2t1YbZFFjZd7wq5ibGaq4k3RvA/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoRTDjvVIWJRiaerhicVqa1jBFlC97IJAx2t1YbZFFjZd7wq5ibGaq4k3RvA/640?wx_fmt=png" alt=""></p>
 <p>这里涉及到一个知识点是向量，关于向量的具体原理可以去网上查找，资料很多，如果不想找的话可以暂时只记住向量计算主要是计算内容之间的相似程度即可。</p>
 <p>而向量在这里主要是降低 AI 使用费用的，因为如果要将所有文档都告诉 AI，一个是很多模型的上下文长度不够，另外一方面是由于成本实在太高了。因此当我们将文档交给 LLMs 转化成向量后，如果有一个地方进行存储，这就是向量数据库了。</p>
 <p>目前比较火热的向量数据库有很多：付费的有Pincone，免费的有 Redis、Chroma、PostgreSQL 等，具体区别和差异就是另外一个话题了。</p>
 <p>接下来我们来模拟一下真实的用户使用流程，看看如何利用这些向量并结合 LLMs 优化用户问答体验：</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoR5yngAlicuHxzdpOMHjHHicVqibHaS8gibzMibjLGWXgVX0N4NUKnYJdiaocg/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoR5yngAlicuHxzdpOMHjHHicVqibHaS8gibzMibjLGWXgVX0N4NUKnYJdiaocg/640?wx_fmt=png" alt=""></p>
 <p>下面我将通过 LangChain 实现上面的流程：</p>
 <p><a href="https://github.com/xukecheng/APITable-LLMs-Enhancement-Experiments/blob/main/apitable_devbook_vector_db_qa_with_sources.ipynb">https://github.com/xukecheng/APITable-LLMs-Enhancement-Experiments/blob/main/apitable_devbook_vector_db_qa_with_sources.ipynb</a></p>
 <p>当然这里还有一份 OpenAI 官方的实例可以参考：</p>
 <p><a href="https://github.com/openai/openai-cookbook/blob/main/examples/Question_answering_using_embeddings.ipynb">https://github.com/openai/openai-cookbook/blob/main/examples/Question_answering_using_embeddings.ipynb</a></p>
 <p>通过上述流程，可以方便快捷地实现一个文档问答系统，甚至可初步投入使用。然而，我们也需要了解该模式的缺点。因为得失常并存，例如采用向量数据库降低 LLMs 使用费用时，会失去聊天上下文的便利性：通过上面对于整体的流程说明后，可以知道我们主要工作是需要根据用户问题获取相关文档内容，那么假如实现聊天上下文，用户首先问如何实现表格内快速查找替换，然后我们返回了相关文档，再然后用户又问了一个关于如何合并单元格的问题，此时的 Prompt = 第一个问题 + 第一个问题的相关文档 + 第二个问题，如果此时将 Prompt 直接发送给 LLMs 获取向量必定是不准确的，因此就需要做更精细的 Prompt 管理，例如说只将第二个问题单独发给 LLMs 获取向量再进行对比获取相关文档，然后组成新的 Prompt = 第一个问题 + 第一个问题的相关文档 + 第二个问题 + 第二个问题的相关文档，以此组成聊天上下文发送给 LLMs 获取最终答案。</p>
 <p>在市场上，文档 + AI 这一需求在市面上也催生出了一些 SaaS 产品，有些甚至已经有了不少的用户，比如说 LangChain 官方文档网站中使用的产品：https://www.mendable.ai/。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoRCchnOB0E2n9VhbcJSfup7Ev0a5ibGE1iclF7pSz3K0S7wSEhkFiaq3D3A/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoRCchnOB0E2n9VhbcJSfup7Ev0a5ibGE1iclF7pSz3K0S7wSEhkFiaq3D3A/640?wx_fmt=png" alt=""></p>
 <h4 id="fine-tuning微调">Fine-tuning（微调）</h4>
 <p>上面主要是关于 AI 技术中关于向量（Embeddings）相关的应用，向量是一种很强大的工具可以用在很多其他方面：内容推荐、文本比较、数据分析等。而另外一个需要厘清的技术是微调（Fine-tuning）。在 OpenAI 开放 API 的初期，绝大部分人以为微调就是可以让 GPT 按照自己提供的数据集回答问题，但其实微调并不是做这个的，相反向量计算才是做这个，从上面的示例中也能看到。</p>
 <blockquote>
@@ -472,7 +472,7 @@
 </blockquote>
 <p>那么微调到底是做什么的呢？从目前网上的实践经验来看，我发现微调主要是可以让 GPT 模型对于特定领域的内容有着更好的理解能力和更适当的表达方式：比如说可以通过一定的语料加强模型对于中文的理解，例如去识别评论里的阴阳怪气、反问并准确地做出情感分析。</p>
 <p>而要实现这一点，也需要准备海量的优质训练文本，训练文本越多，微调的价格也越高，根据我在网上看到的实践来看，要达到一定的效果需要数百到数千美元不等，且不含购买或准备训练文本的费用。</p>
-<p><img src="https://aibard123.top/showpic.php?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoR4qmoe2JmTRH9TVJib2qJoxA866j0GQydgd3WYpXCjeYbCjBmWDMqMYw/640?wx_fmt=png" alt=""></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/B7xyZb5QVzZPDKYGJe5HrOr22Yt6viaoR4qmoe2JmTRH9TVJib2qJoxA866j0GQydgd3WYpXCjeYbCjBmWDMqMYw/640?wx_fmt=png" alt=""></p>
 <p>因此，很多时候 Embeddings 或 Prompt Engineering 才是性价比更高的选择。</p>
 <h4 id="openai-function-calling-对于构建应用的影响">OpenAI Function Calling 对于构建应用的影响</h4>
 <p>LLMs 目前的领头羊 OpenAI 在本月进行了一次 API 方面的更新，更新内容包含新增 mode、降价等等，但是其中对于构建产品来说最重要的更新是支持 16K 上下文和 Chat Completions API 新增函数调用功能，前者支持了更多上下文，后者则有可能改变使用 AI 构建产品的方式。</p>
