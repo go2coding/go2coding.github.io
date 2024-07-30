@@ -1,0 +1,1303 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>VectorGraph：蚂蚁首个开源GraphRAG框架设计解读 作者： 蚂蚁开源 来源： 蚂蚁开源 点击蓝字，关注我们 检索增强生成 （RAG：Retrieval Augmented Generation）技术旨在把信息检索与大模型结合，以缓解大模型推理“幻觉”的问题。近来关于RAG的研究如火如荼，支持RAG的开源框架也层出不穷，并孕  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">VectorGraph：蚂蚁首个开源GraphRAG框架设计解读</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              July 30, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 蚂蚁开源  来源： <a href="https://mp.weixin.qq.com/s/3RrvotKJVf8OAJqWg3pbbg">蚂蚁开源</a></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p>点击蓝字，关注我们</p>
+<p><strong>检索增强生成</strong> （RAG：Retrieval Augmented Generation）技术旨在把信息检索与大模型结合，以缓解大模型推理“幻觉”的问题。近来关于RAG的研究如火如荼，支持RAG的开源框架也层出不穷，并孕育了大量专业领域的AI工程应用。我们设计了一个通用的开源RAG框架，以兼容未来多样化的基础研究建设和工程化应用诉求。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>01</strong></p>
+<p><strong>概述</strong></p>
+<p>RAG的目标是通过知识库增强内容生成的质量，通常做法是将检索出来的文档作为提示词的上下文，一并提供给大模型让其生成更可靠的答案。更进一步地，RAG的整体链路还可以与提示词工程（Prompt Engineering）、模型微调（Fine Tuning）、知识图谱（Knowledge Graph）等技术结合，构成更广义的RAG问答链路。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4D80T7gF1KAklDfyeRM9Cj27boiclDicN0Lb7p8gzXbAfdKhKhPoMdzzAg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：广义的RAG问答链路）</p>
+<p>除了传统意义上的增强内容生成，RAG的理念还可以进一步泛化到链路的其他阶段：</p>
+<ul>
+<li>
+<p>•<strong>增强训练</strong> ：REALM[7]引入了知识检索器增强大模型预训练，以改进大模型的问答质量和可解释性。</p>
+</li>
+<li>
+<p>•<strong>增强微调</strong> ：RA-DIT[10]实现了对大模型和检索器的双指令微调，RAFT[11]通过微调让大模型可以识别干扰文档。</p>
+</li>
+<li>
+<p>•<strong>增强语料</strong> ：MuRAG[12]支持了多模态数据的检索，提升了大模型在文本/图像混合检索场景下的推理质量。</p>
+</li>
+<li>
+<p>•<strong>增强知识</strong> ：GraphRAG[22]使用图社区摘要解决总结性查询任务的问题，将知识图谱技术应用到RAG。</p>
+</li>
+<li>
+<p>•<strong>增强检索</strong> ：CRAG[13]通过对检索到的文档置信度进行评估，提升问答上下文的质量。</p>
+</li>
+<li>
+<p>•<strong>增强推理</strong> ：RAT[8]在推理阶段将RAG与CoT相结合，以改进长期推理和生成任务的效果。</p>
+</li>
+</ul>
+<p>我们希望向大家分享一下：引入知识图谱技术后，传统RAG链路到Graph RAG链路会有什么样的变化，如何兼容RAG中的向量数据库（Vector Database）和图数据库（Graph Database）基座，以及蚂蚁的Graph RAG开源技术方案和未来优化方向。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>02</strong></p>
+<p><strong>传统RAG</strong></p>
+<p>首先回顾一下传统RAG的核心链路。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DjgKjn8gRUCib35NP7R7tFGuexgCZniaRycd5SUf9UvuqtR3libEM9x8bw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：基于Vector的RAG链路）</p>
+<p>传统RAG的核心链路分为三个阶段：</p>
+<ul>
+<li>
+<p>•<strong>索引（向量嵌入）</strong> ：通过Embedding模型服务实现文档的向量编码，写入向量数据库。</p>
+</li>
+<li>
+<p>•<strong>检索（相似查询）</strong> ：通过Embedding模型服务实现查询的向量编码，使用相似性查询（ANN）实现topK结果搜索。</p>
+</li>
+<li>
+<p>•<strong>生成（文档上下文）</strong> ：Retriver检索的结果文档作为上下文和问题一起提交给大模型处理。</p>
+</li>
+</ul>
+<p>传统RAG希望通过知识库的关联知识增强大模型问答的上下文以提升生成内容质量，但也存在诸多问题。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DOwa73iaD5icefkXpYMpibEdMhmpAPCvKoafOu54jfYOPF3UhQWgnsS7Sw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：传统RAG的不足）</p>
+<p><strong>论文[23]</strong> 总结了传统RAG的7个问题：</p>
+<ol>
+<li>
+<p>1.<strong>知识库内容缺失</strong> ：现有的文档其实回答不了用户的问题，系统有时被误导，给出的回应其实是“胡说八道”，理想情况系统应该回应类似“抱歉，我不知道”。</p>
+</li>
+<li>
+<p>2.<strong>TopK截断有用文档</strong> ：和用户查询相关的文档因为相似度不足被TopK截断，本质上是相似度不能精确度量文档相关性。</p>
+</li>
+<li>
+<p>3.<strong>上下文整合丢失</strong> ：从数据库中检索到包含答案的文档，因为重排序/过滤规则等策略，导致有用的文档没有被整合到上下文中。</p>
+</li>
+<li>
+<p>4.<strong>有用信息未识别</strong> ：受到LLM能力限制，有价值的文档内容没有被正确识别，这通常发生在上下文中存在过多的噪音或矛盾信息时。</p>
+</li>
+<li>
+<p>5.<strong>提示词格式问题</strong> ：提示词给定的指令格式出现问题，导致大模型/微调模型不能识别用户的真正意图。</p>
+</li>
+<li>
+<p>6.** 准确性不足** ：LLM没能充分利用或者过度利用了上下文的信息，比如给学生找老师首要考虑的是教育资源的信息，而不是具体确定是哪个老师。另外，当用户的提问过于笼统时，也会出现准确性不足的问题。</p>
+</li>
+<li>
+<p>7.<strong>答案不完整</strong> ：仅基于上下文提供的内容生成答案，会导致回答的内容不够完整。比如问“文档 A、B和C的主流观点是什么？”，更好的方法是分别提问并总结。</p>
+</li>
+</ol>
+<p>总的来看：</p>
+<ul>
+<li>
+<p>• 问题1-3：属于知识库工程层面的问题，可以通过完善知识库、增强知识确定性、优化上下文整合策略解决。</p>
+</li>
+<li>
+<p>• 问题4-6：属于大模型自身能力的问题，依赖大模型的训练和迭代。</p>
+</li>
+<li>
+<p>• 问题7：属于RAG架构问题，更有前景的思路是使用Agent引入规划能力。</p>
+</li>
+</ul>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>03</strong></p>
+<p><strong>Graph RAG</strong></p>
+<p>考虑到传统RAG能力上的不足，Graph RAG从增强知识确定性角度做了进一步的改进，也就是最开始提到的知识内容增强的思路。相比于传统的基于Vector格式的知识库存储，Graph RAG引入了知识图谱技术，使用Graph格式存储知识。</p>
+<p>正如<strong>论文****[2]</strong> 所阐述的：基于知识图谱，可以为RAG提供高质量的上下文，以减轻模型幻觉。</p>
+<blockquote>
+<p>Structured data, such as knowledge graphs (KGs), provide high-quality context and mitigate model hallucinations.</p>
+</blockquote>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DVedq0pdzRH6Fwxp7TGjxhWq9a7TVoPBU9wbwLkz85btdHr7H0Gd7wQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：基于Graph的RAG链路）</p>
+<p>类似地，Graph RAG的核心链路分如下三个阶段：</p>
+<ul>
+<li>
+<p>•<strong>索引（三元组抽取）</strong> ：通过LLM服务实现文档的三元组提取，写入图数据库。</p>
+</li>
+<li>
+<p>•<strong>检索（子图召回）</strong> ：通过LLM服务实现查询的关键词提取和泛化（大小写、别称、同义词等），并基于关键词实现子图遍历（DFS/BFS），搜索N跳以内的局部子图。</p>
+</li>
+<li>
+<p>•<strong>生成（子图上下文）</strong> ：将局部子图数据格式化为文本，作为上下文和问题一起提交给大模型处理。</p>
+</li>
+</ul>
+<p>需要说明的是，从文本中提取三元组和关键词借助了现有的文本大模型的能力，传统的NLP技术如分词、句法分析、实体识别等已经不再是SOTA。另外，借助于大模型微调技术，可以针对性的构建面向知识抽取、实体识别、自然语言翻译的专有大模型。比如由蚂蚁和浙大联合研发的大模型知识抽取框架OneKE[38]在零样本泛化性能上全面超过了现有模型。以及借助于Text2GQL、Text2Cypher技术微调的图查询语言专有模型，可以直接将自然语言转换为图查询语言，代替基于关键词中心的子图搜索从而获得更精确的图谱数据。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DpDsPjhgf3goSgTUZlK8ZkTHkt2xOj6VQYcCjvWO6vExLy8Png7MzPQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：OneKE知识抽取模型能力透视）</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>04</strong></p>
+<p><strong>通用RAG设计</strong></p>
+<p>基于以上对传统RAG和Graph RAG的能力介绍，我们可以发现两种RAG架构的核心差异在于知识存储格式的变化（从Vector到Graph），从而导致了RAG中索引、检索和生成阶段流转数据格式的变化。而RAG的关键流程并未发生根本的改变，基于这个相似性前提，我完全可以抽象出一个更通用的RAG结构，以兼容向量索引和图索引，甚至更多的索引格式（如全文索引等）。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>4.1 架构设计</strong></p>
+<p>于是一个兼容多种知识索引格式的通用RAG架构，可以按照如下方式设计。</p>
+<ul>
+<li>
+<p>• 所有的索引存储统一抽象为IndexStore，LLM服务作为构建索引能力依赖（文本模型、嵌入模型等）。</p>
+</li>
+<li>
+<p>• 索引存储当下支持向量存储（VectorStore）和知识图谱（Knowledge Graph）两种，保留对其他索引格式的扩展能力。</p>
+</li>
+<li>
+<p>• 知识图谱层负责知识的表示和语义抽象，数据底座是图存储（GraphStore）。当然也可以直接对接外部的知识图谱系统。</p>
+</li>
+<li>
+<p>• 最底层接入多样化的向量数据库、图数据库、大模型服务等外部组件。</p>
+</li>
+<li>
+<p>• 最上层借助于IndexStore核心抽象，搭配外围的Loader/Splitter实现文本读取切分、Transformer实现索引的构建、Retriver/Synthesizer实现知识检索与合成，构建完整的RAG能力。</p>
+</li>
+</ul>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Drxj4wXzbEx0KBaia5ibdp1p7pGENck8H9PRjKsQ3o84Wh8ULuEhyRmzg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：通用RAG架构）</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>4.2 领域建模</strong></p>
+<p>建模是架构落地的第一步，这里对通用RAG的核心设计做出说明：</p>
+<ul>
+<li>
+<p>• 为了让框架有足够的灵活性，我们将索引的加工和存储进行了分离，并使用“桥接模式”构建抽象依赖关系。</p>
+</li>
+<li>
+<p>• 索引的加工接口（Transformer）提供三类特定实现：嵌入、抽取、翻译。向量索引走嵌入的方式，如Text2Vector、OpenAI Embedding等。图索引走Extractor，如三元组抽取、关键词抽取等。翻译可以作为通用能力单独对待，承载DSL的模型微调能力，如Text2SQL、Text2GQL、Text2Cypher等。索引加工的输入是Splliter切分好的文本块（未来也可以是多模态数据），输出是索引存储系统，是连接内容和存储的桥梁。</p>
+</li>
+<li>
+<p>• 索引的存储接口（IndexStore）提供了向量存储和知识图谱两类实现，知识图谱接口依赖于图存储接口，也可以单独实现。从这里也能看出图存储系统的定位是数据基座而非搜索语义，它和向量存储不在同一个架构层次。</p>
+</li>
+<li>
+<p>• 大模型服务的接口设计未在图中展开，我们可以将其看做索引加工过程依赖的内部能力。</p>
+</li>
+</ul>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DmTAzGydZibFwJsERxnHOlEo6Ricr0uJ1p8GTBXJ2UoWOwLgSUnQQP6GQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：通用RAG建模）</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>4.3 技术选型</strong></p>
+<p>综上所述，要构建一个完整的开源Graph RAG链路，离不开三个重要的子系统：一个可以支持RAG的AI工程框架，一个知识图谱系统和一个图存储系统。开源的AI工程框架有诸多选型：LangChain、LlamaIndex、RAGFlow、DB-GPT等。知识图谱系统有：Jena、RDF4J、Oxigraph、OpenSPG等。图存储系统有Neo4j、JanusGraph、NebulaGraph、TuGraph等。</p>
+<p>而作为蚂蚁首个对外开源的Graph RAG框架，我们采用蚂蚁全自主的开源产品：DB-GPT[50] + OpenSPG[42] + TuGraph[46]。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DG17jxtMQCDkicjqbsDhp1UAj6sA3gPrxvbZZPjdRsPqWEm2J8qrpDYg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：蚂蚁Graph RAG开源方案）</p>
+<p>▍4.3.1 AI工程框架（@DB-GPT）</p>
+<p>DB-GPT是一个开源的AI原生数据应用开发框架，目的是构建大模型领域的基础设施，通过开发多模型管理(SMMF)、Text2SQL效果优化、RAG框架以及优化、Multi-Agents框架协作、AWEL(智能体工作流编排)等多种技术能力，让围绕数据库构建大模型应用更简单，更方便。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4D5bvMZOh7kGMiaAFtcyd7PRGYIvYmsGgDf0nvD6Jb5kT5uB4EbalkS5Q/640?wx_fmt=png&amp;from=appmsg" alt="">（图：DB-GPT技术架构）</p>
+<h4 id="432-知识图谱openspg">▍4.3.2 知识图谱（@OpenSPG）</h4>
+<p>OpenSPG是蚂蚁集团结合多年金融领域多元场景知识图谱构建与应用业务经验的总结，并与OpenKG联合推出的基于SPG(Semantic-enhanced Programmable Graph)框架研发的知识图谱引擎。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DPjQ5oobic1yhkN2wmMkp5e94GfTv9zRxR6811Cor1AZA1lluykhEGUw/640?wx_fmt=png&amp;from=appmsg" alt="">（图：OpenSPG技术架构）</p>
+<h4 id="433-图数据库tugraph">▍<strong>4.3.3 图数据库（@TuGraph）</strong></h4>
+<p>TuGraph是蚂蚁集团与清华大学联合研发的大规模图处理系统，构建了包含图数据库、图计算引擎、图机器学习、图研发平台的完善图技术体系。支持海量多源的关联数据的实时处理，显著提升数据分析效率，支撑了蚂蚁支付、安全、社交、公益、数据治理等300多个场景应用，多次打破图数据库性能基准测试LDBC-SNB世界纪录，并跻身IDC中国图数据库市场领导者象限。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DDhrbJSU54fKdqNDZ015r89pdRP0SmBZWrYJnibIBcpwsmoR3gwySsWQ/640?wx_fmt=png&amp;from=appmsg" alt="">（图：TuGraph技术架构）</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>05</strong></p>
+<p><strong>开源技术方案</strong></p>
+<p>在DB-GPT的v0.5.6[47]版本中，我们提供了完整的Graph RAG框架实现（PR 1506[48]）。接下来我们结合这个PR，阐述Graph RAG的关键实现细节。<img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>5.1 索引</strong></p>
+<p>索引加工的统一抽象是TransformerBase
+接口，目前提供了嵌入、抽取、翻译三类转换器。而图索引的构建，则通过三元组提取器TripletExtractor
+来实现。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DxibiadboBqyTGGPCVf3sFZ2EAo450qLn4OXCDH2l0VaTV1FS5hTN4kcg/640?wx_fmt=png&amp;from=appmsg" alt="">（图：TransformerBase接口的继承树）</p>
+<p>ExtractorBase
+接口负责信息提取的职责，当下已有的三元组提取器和关键词提取器都依赖了大模型能力，所以抽象类LLExtractor
+负责与LLM交互的公共逻辑，具体的实现类只需要提供提示词模板和结果解析即可。三元组提取器TripletExtractor
+的提示词模板（受LlamaIndex启发），核心理念是通过few-shot样本引导大模型生成三元组结构。</p>
+<pre><code>TRIPLET_EXTRACT_PT = (  
+    &quot;Some text is provided below. Given the text, &quot;  
+    &quot;extract up to knowledge triplets as more as possible &quot;  
+    &quot;in the form of (subject, predicate, object).\n&quot;  
+    &quot;Avoid stopwords.\n&quot;  
+    &quot;---------------------\n&quot;  
+    &quot;Example:\n&quot;  
+    &quot;Text: Alice is Bob's mother.\n&quot;  
+    &quot;Triplets:\n(Alice, is mother of, Bob)\n&quot;  
+    ...TL;DR...  
+    &quot;Text: Philz is a coffee shop founded in Berkeley in 1982.\n&quot;  
+    &quot;Triplets:(Philz, is, coffee shop)\n(Philz, founded in, Berkeley)\n(Philz, founded in, 1982)\n&quot;  
+    &quot;---------------------\n&quot;  
+    &quot;Text: {text}\n&quot;  
+    &quot;Triplets:\n&quot;  
+)
+</code></pre>
+<p>大模型让三元组抽取变成了一件非常简单的事情，但是要提高三元组的抽取质量也不是一件容易的事情。最简单的是通过提示词工程不断优化提示词模板，让通用大模型给出更理想的答案。另外使用专有的知识抽取大模型（如OneKE）可以取得更好的效果，这部分工作还在进行中，我们期望看到OnekeExtractor
+的社区贡献早日发布。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>5.2 存储</strong></p>
+<p>索引存储的统一抽象是IndexStoreBase
+接口，目前提供了向量、图、全文三类索引实现。知识图谱接口KnowledgeGraphBase
+是Graph RAG的存储底座，目前DB-GPT内置的BuiltinKnowledgeGraph
+实现就是基于文本大模型能力构建的，OpenSPG
+的接入工作已经在逐步推进。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Des8J7Dib7PV4ORiaAHoQPWXoMQA9pjp2XKNzGribC3T1GIJeqxhwPgVNA/640?wx_fmt=png&amp;from=appmsg" alt="">（图：IndexStoreBase接口的继承树）</p>
+<p>知识图谱提供了和向量数据库同样的接口，让知识的存取过程透明化。文档内容经过三元组解析器_triplet_extractor
+解析后，直接写入图存储_graph_store
+。</p>
+<pre><code>async def aload_document(self, chunks: List[Chunk]) -&gt; List[str]:  
+    &quot;&quot;&quot;Extract and persist triplets to graph store.  
+    Args:  
+        chunks: List[Chunk]: document chunks.  
+    Return:  
+        List[str]: chunk ids.  
+    &quot;&quot;&quot;  
+    for chunk in chunks:  
+        triplets = await self._triplet_extractor.extract(chunk.content)  
+        for triplet in triplets:  
+            self._graph_store.insert_triplet(*triplet)  
+        logger.info(f&quot;load {len(triplets)} triplets from chunk {chunk.chunk_id}&quot;)  
+    return [chunk.chunk_id for chunk in chunks]
+</code></pre>
+<p>图存储接口GraphStoreBase
+提供统一的图存储抽象，目前内置了MemoryGraphStore
+和TuGraphStore
+的实现，分别用于本地测试和生产部署，并预留了Neo4jStore
+的扩展点。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DzudhayFfKq2DrS6KbIZseZorxeumibz59AAuQObJk4mpzGYZggtZTpg/640?wx_fmt=png&amp;from=appmsg" alt="">（图：GraphStoreBase接口的继承树）</p>
+<p>具体的图存储提供了三元组写入的实现，一般会调用图数据库的查询语言来完成。例如TuGraphStore
+会根据三元组生成具体的Cypher语句并执行。</p>
+<pre><code>def insert_triplet(self, subj: str, rel: str, obj: str) -&gt; None:  
+    &quot;&quot;&quot;Add triplet.&quot;&quot;&quot;  
+    ...TL;DR...  
+    subj_query = f&quot;MERGE (n1:{self._node_label} {{id:'{subj}'}})&quot;  
+    obj_query = f&quot;MERGE (n1:{self._node_label} {{id:'{obj}'}})&quot;  
+    rel_query = (  
+        f&quot;MERGE (n1:{self._node_label} {{id:'{subj}'}})&quot;  
+        f&quot;-[r:{self._edge_label} {{id:'{rel}'}}]-&gt;&quot;  
+        f&quot;(n2:{self._node_label} {{id:'{obj}'}})&quot;  
+    )  
+    self.conn.run(query=subj_query)  
+    self.conn.run(query=obj_query)  
+    self.conn.run(query=rel_query)
+</code></pre>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>5.3 检索</strong></p>
+<p>接口ExtractorBase
+的另一个实现则是关键词抽取器KeywordExtractor
+，负责提取用户问题中涉及的实体关键词，它也是借助大模型的能力实现的，同样继承于LLExtractor
+，提示词模板如下。</p>
+<pre><code>KEYWORD_EXTRACT_PT = (  
+    &quot;A question is provided below. Given the question, extract up to &quot;  
+    &quot;keywords from the text. Focus on extracting the keywords that we can use &quot;  
+    &quot;to best lookup answers to the question.\n&quot;  
+    &quot;Generate as more as possible synonyms or alias of the keywords &quot;  
+    &quot;considering possible cases of capitalization, pluralization, &quot;  
+    &quot;common expressions, etc.\n&quot;  
+    &quot;Avoid stopwords.\n&quot;  
+    &quot;Provide the keywords and synonyms in comma-separated format.&quot;  
+    &quot;Formatted keywords and synonyms text should be separated by a semicolon.\n&quot;  
+    &quot;---------------------\n&quot;  
+    &quot;Example:\n&quot;  
+    &quot;Text: Alice is Bob's mother.\n&quot;  
+    &quot;Keywords:\nAlice,mother,Bob;mummy\n&quot;  
+    &quot;Text: Philz is a coffee shop founded in Berkeley in 1982.\n&quot;  
+    &quot;Keywords:\nPhilz,coffee shop,Berkeley,1982;coffee bar,coffee house\n&quot;  
+    &quot;---------------------\n&quot;  
+    &quot;Text: {text}\n&quot;  
+    &quot;Keywords:\n&quot;  
+)
+</code></pre>
+<p>关键词的抽取涉及到文本中实体识别技术，在构造提示词时需要考虑单词的大小写、别称、同义词等情况，这部分还有很大的优化空间。另外，借助于模型微调直接翻译自然语言到图查询语句也是值得探索的方向。</p>
+<p>图存储接口GraphStoreBase
+提供了基于关键词的探索接口 explore
+，会根据抽取的关键词召回局部子图。</p>
+<pre><code>@abstractmethod  
+def explore(  
+    self,  
+    subs: List[str],  
+    direct: Direction = Direction.BOTH,  
+    depth: Optional[int] = None,  
+    fan: Optional[int] = None,  
+    limit: Optional[int] = None,  
+) -&gt; Graph:  
+    &quot;&quot;&quot;Explore on graph.&quot;&quot;&quot;
+</code></pre>
+<p>这里对接口含义做补充说明：</p>
+<ul>
+<li>
+<p>• subs：子图搜索的起点列表。</p>
+</li>
+<li>
+<p>• direct：搜索方向，默认双向搜索，即同时探索引用和被引用关系。</p>
+</li>
+<li>
+<p>• depth：搜索深度，控制图搜索的最大跳数，默认不做限制。</p>
+</li>
+<li>
+<p>• fan：扇出限制，控制每一跳的最大邻居数，避免数据热点问题，默认不做限制。</p>
+</li>
+<li>
+<p>• limit：结果边数限制，默认不做限制。</p>
+</li>
+<li>
+<p>• 返回值：Graph接口类型，表示搜索结果子图，提供了便捷的点边更新API。</p>
+</li>
+</ul>
+<p>TuGraph的explore
+接口实现核心逻辑是将上述参数转化为Cypher查询语句，形如：</p>
+<pre><code>query = (  
+    f&quot;MATCH p=(n:{self._node_label})&quot;  
+    f&quot;-[r:{self._edge_label}*1..{depth}]-(m:{self._node_label}) &quot;  
+    f&quot;WHERE n.id IN {subs} RETURN p LIMIT {limit}&quot;  
+)
+</code></pre>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>5.4 生成</strong></p>
+<p>和其他向量数据库类似，BuiltinKnowledgeGraph
+同样实现了IndexStoreBase
+的相似性查询接口。</p>
+<pre><code>async def asimilar_search_with_scores(  
+    self,  
+    text,  
+    topk,  
+    score_threshold: float,  
+    filters: Optional[MetadataFilters] = None,  
+) -&gt; List[Chunk]:  
+    &quot;&quot;&quot;Search neighbours on knowledge graph.&quot;&quot;&quot;  
+    if not filters:  
+        logger.info(&quot;Filters on knowledge graph not supported yet&quot;)  
+  
+    # extract keywords and explore graph store  
+    keywords = await self._keyword_extractor.extract(text)  
+    subgraph = self._graph_store.explore(keywords, limit=topk)  
+    logger.info(f&quot;Search subgraph from {len(keywords)} keywords&quot;)  
+  
+    content = (  
+        &quot;The following vertices and edges data after [Subgraph Data] &quot;  
+        &quot;are retrieved from the knowledge graph based on the keywords:\n&quot;  
+        f&quot;Keywords:\n{','.join(keywords)}\n&quot;  
+        &quot;---------------------\n&quot;  
+        &quot;You can refer to the sample vertices and edges to understand &quot;  
+        &quot;the real knowledge graph data provided by [Subgraph Data].\n&quot;  
+        &quot;Sample vertices:\n&quot;  
+        &quot;(alice)\n&quot;  
+        &quot;Sample edges:\n&quot;  
+        &quot;(alice)-[reward]-&gt;(alice)\n&quot;  
+        &quot;---------------------\n&quot;  
+        f&quot;Subgraph Data:\n{subgraph.format()}\n&quot;  
+    )  
+    return [Chunk(content=content, metadata=subgraph.schema())]
+</code></pre>
+<p>关键词通过关键词抽取器_keyword_extractor
+完成，抽取到的关键词传递给图存储对象_graph_store
+进行子图探索，探索结果子图直接格式化到提示词上下文字符串content
+内。</p>
+<p>细心的读者可以发现，子图探索的结果直接封装为Graph
+接口类型，我们甚至还提供了一个MemoryGraph
+工具类实现。这样实现图探索接口时，就无需将查询结果转化为Path/Table等内存不友好的格式了，同时也降低了提示词中编码子图数据的token开销。当然这是建立大模型对Graph数据结构原生的理解基础上，我们相信这是当下主流大模型的基本能力。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DoATIkkxX7ibNR2U3iaicewfFEOGic9Uax7mo4rUsGk5ooB2mdAUPthGzZg/640?wx_fmt=png&amp;from=appmsg" alt="">（图：Graph接口的核心API）<img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>5.5 测试</strong></p>
+<p>我们使用《变形金刚》的故事材料tranformers_story.md[49]作为测试文本，验证DB-GPT上Graph RAG的效果。具体操作手册见DB-GPT的文档《Graph RAG User Manual》[31]。</p>
+<p>启动DB-GPT后，新增Knowledge Space，选择Knowledge Graph存储类型。上传tranformers_story.md后切片自动构建图索引。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DHRhhVtPhZ7OE7HLkJc7ZKQymCxYoLf6hQ9EpCSZEicaeUMPqibUVAsZw/640?wx_fmt=png&amp;from=appmsg" alt="">（图：创建知识图谱）</p>
+<p>构建好的知识图谱支持快速预览。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DGyJABfAbHqjWE4I8E71NnFy82QyAHED6eQBHcdHKD0gBGczJHiciauSQ/640?wx_fmt=png&amp;from=appmsg" alt="">（图：知识图谱预览）</p>
+<p>基于知识图谱的对话测试。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DDbcvfCa9jHcqqtwUWrXoEyDuuIibNpy6ic7pN7LO0Q8n36qFhibWGNr6Q/640?wx_fmt=png&amp;from=appmsg" alt="">（图：知识图谱对话）</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>06</strong></p>
+<p><strong>优化方向</strong></p>
+<p>其实大家在对DB-GPT上Graph RAG实现进行初步的测试后，会发现当下仍有不少体验问题。不避讳的讲，这里除了功能完善度的原因之外，还有Graph RAG自身设计上的不足，这也为后续的进一步优化方向提供了思路。</p>
+<p><strong>文章[26]</strong> 总结了Graph RAG的不足：</p>
+<blockquote>
+<p>GraphRAG, like RAG, has clear limitations, which include how to form graphs, generate queries for querying these graphs, and ultimately decide how much information to retrieve based on these queries. The main challenges are ‘query generation’, ‘reasoning boundary’, and ‘information extraction’.</p>
+</blockquote>
+<p>总的来看分为三大类：</p>
+<ol>
+<li>
+<p>1.<strong>信息抽取</strong> ：如何构建高质量的知识图谱？</p>
+</li>
+<li>
+<p>2.<strong>查询生成</strong> ：如何在生成知识图谱上的查询？</p>
+</li>
+<li>
+<p>3.<strong>推理边界</strong> ：如何限制查询结果的规模？</p>
+</li>
+</ol>
+<p>像前边提到的，知识抽取/关键词/查询语言的微调模型主要专注于信息抽取和查询生成。另外，<strong>论文[24]</strong> 实现的基于图的推理增强框架（RoG）则是在推理边界方向尝试的创新（思路有点类似RAT）：</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DSZlvob0KzRGdzLicNnwVaRuBWNm5ia7APUiayOuxUYOdybHVvkaozcrqA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：RoG：基于图的推理增强）</p>
+<p>当然上述三个阶段也可以被简化合并为两个阶段：内容索引阶段和检索生成阶段。我们就这两个大的阶段分别讨论Graph RAG后续可能的优化方向和思路。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>6.1 内容索引阶段</strong></p>
+<p>Graph RAG的内容索引阶段主要目标便是构建高质量的知识图谱，值得继续探索的有以下方向：</p>
+<ul>
+<li>
+<p>•<strong>图谱元数据</strong> ：从文本到知识图谱，是从非结构化信息到结构化信息的转换的过程，虽然图一直被当做半结构化数据，但有结构的LPG（Labeled Property Graph）除了有利于图存储系统的性能优化，还可以协助大模型更好地理解知识图谱的语义，帮助其生成更准确的查询。</p>
+</li>
+<li>
+<p>•<strong>知识抽取微调</strong> ：通用大模型在三元组的识别上实际测试下来仍达不到理想预期，针对知识抽取的微调模型反而表现出更好地效果，如前面提到的OneKE。</p>
+</li>
+<li>
+<p>•<strong>图社区总结</strong> ：这部分源自于微软的Graph RAG的研究工作，通过构建知识图谱时生成图社区摘要，以解决知识图谱在面向总结性查询时“束手无策”的问题。另外，同时结合图社区总结与子图明细可以生成更高质量的上下文。</p>
+</li>
+<li>
+<p>•<strong>多模态知识图谱</strong> ：多模态知识图谱可以大幅扩展Graph RAG知识库的内容丰富度，对客观世界的数据更加友好，浙大的MyGO[37]框架提出的方法提升MMKGC（Multi-modal Knowledge Graph Completion）的准确性和可靠性。Graph RAG可以借助于MMKG（Multi-modal Knowledge Graph）和MLLM（Multi-modal Large Language Model）实现更全面的多模态RAG能力。</p>
+</li>
+<li>
+<p>•<strong>混合存储</strong> ：同时使用向量/图等多种存储系统，结合传统RAG和Graph各自的优点，组成混合RAG。参考<strong>文章[27]</strong> 提出的多种Graph RAG架构，如图学习语义聚类、图谱向量双上下文增强、向量增强图谱搜索、混合检索、图谱增强向量搜索等，可以充分利用不同存储的优势提升检索质量。</p>
+</li>
+</ul>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DoibdhXunPT0OM4dVqI4lEKcic2VI0z8pek8ia7R7b36tKRwdJHURjg89A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>（图：混合检索的Graph RAG）</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>6.2 检索生成阶段</strong></p>
+<p>Graph RAG的检索生成阶段主要目标便是从知识图谱上召回高质量上下文，值得继续探索的有以下方向：</p>
+<ul>
+<li>
+<p>•<strong>图语言微调</strong> ：使用自然语言在知识图谱上做召回，除了基本的关键词搜索方式，还可以尝试使用图查询语言微调模型，直接将自然语言翻译为图查询语句，这里需要结合图谱的元数据以获得更准确的翻译结果。过去，我们在<a href="https://mp.weixin.qq.com/s?__biz=MzkyNDI4Njc5NA==&amp;mid=2247489993&amp;idx=1&amp;sn=cc4d121e3d57b7613a65c0c9da243a85&amp;scene=21#wechat_redirect">Text2GQL</a>上做了一些初步的工作。</p>
+</li>
+<li>
+<p>•<strong>混合RAG</strong> ：这部分与前边讲过的混合存储是一体的，借助于底层的向量/图/全文索引，结合关键词/自然语言/图语言多种检索形式，针对不同的业务场景，探索高质量Graph RAG上下文的构建。</p>
+</li>
+<li>
+<p>•<strong>测试验证</strong> ：Graph RAG的测试和验证可以参考传统RAG的Benchmark方案，如RAGAS[32]、ARES[35]、RECALL[36]、RGB[33]、CRUD-RAG[34]等。</p>
+</li>
+<li>
+<p>•<strong>RAG智能体</strong> ：从某种意义上说，RAG其实是Agent的简化形式（知识库可以看到Agent的检索工具），同时当下我们也看到RAG对记忆和规划能力的集成诉求（如RAT/RoG等），因此未来RAG向带有记忆和规划能力的智能体架构演进几乎是必然趋势。另外，Agent自身需要的长期记忆存储也会反向依赖RAG的知识库，所以RAG与Agent其实是相辅相成、互相促进的。</p>
+</li>
+</ul>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>07</strong></p>
+<p><strong>尾记</strong></p>
+<p>通过以上介绍，相信大家对RAG到Graph RAG的技术演进有了更进一步的了解，并且基于RAG的索引、检索、生成三个基本阶段抽象出了通用的RAG框架，兼容了Vector、Graph、FullText等多种索引形式，最终在开源技术中完整落地。最后通过探讨Graph RAG未来的优化与演进方向，总结了内容索引和检索生成阶段的不同改进思路，以及RAG向Agent架构的演化趋势。Graph RAG是个相对新颖AI工程领域，需要探索和改进的工作还有很多要做，我们诚邀DB-GPT/OpenSPG/TuGraph的广大开发者们一起参与共建。</p>
+<p>前不久Jerry Liu（LlamaIndex CEO）在技术报告《Beyond RAG: Building Advanced Context-Augmented LLM Applications》中也抛出了“RAG的未来是Agent”相似观点。所以，无论是“RAG for Agents”还是“Agents for RAG”，亦或是“从RAG到Graph RAG再到Agents”，目光可及的是智能体将是未来AI应用的主旋律。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>08</strong></p>
+<p><strong>参考资料</strong></p>
+<ol>
+<li></li>
+<li>
+<ol>
+<li>RALM_Survey：https://github.com/2471023025/RALM_Survey</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Retrieval-Augmented Generation for Large Language Models: A Survey：https://arxiv.org/abs/2312.10997</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>A Survey on Retrieval-Augmented Text Generation for Large Language Models：https://arxiv.org/abs/2404.10981</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Retrieving Multimodal Information for Augmented Generation: A Survey：https://arxiv.org/abs/2303.10868</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Evaluation of Retrieval-Augmented Generation: A Survey：https://arxiv.org/abs/2405.07437</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>GFMPapers：https://github.com/BUPT-GAMMA/GFMPapers</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>REALM: Retrieval-Augmented Language Model Pre-Training：https://arxiv.org/abs/2002.08909</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>RAT: Retrieval Augmented Thoughts Elicit Context-Aware Reasoning in Long-Horizon Generation：https://arxiv.org/abs/2403.05313</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>RAG and RAU: A Survey on Retrieval-Augmented Language Model in Natural Language Processing：https://arxiv.org/pdf/2404.19543</li>
+</ol>
+</li>
+<li>
+<ol start="10">
+<li>RA-DIT: Retrieval-Augmented Dual Instruction Tuning：https://arxiv.org/abs/2310.01352</li>
+</ol>
+</li>
+<li>
+<ol start="11">
+<li>RAFT: Adapting Language Model to Domain Specific RAG：https://arxiv.org/abs/2403.10131</li>
+</ol>
+</li>
+<li>
+<ol start="12">
+<li>MuRAG: Multimodal Retrieval-Augmented Generator for Open Question Answering over Images and Text：https://arxiv.org/abs/2210.02928</li>
+</ol>
+</li>
+<li>
+<ol start="13">
+<li>Corrective Retrieval Augmented Generation：https://arxiv.org/abs/2401.15884</li>
+</ol>
+</li>
+<li>
+<ol start="14">
+<li>Full Fine-Tuning, PEFT, Prompt Engineering, and RAG: Which One Is Right for You?：https://deci.ai/blog/fine-tuning-peft-prompt-engineering-and-rag-which-one-is-right-for-you/</li>
+</ol>
+</li>
+<li>
+<ol start="15">
+<li>An Easy Introduction to Multimodal Retrieval-Augmented Generation：https://developer.nvidia.com/blog/an-easy-introduction-to-multimodal-retrieval-augmented-generation/</li>
+</ol>
+</li>
+<li>
+<ol start="16">
+<li>Towards Long Context RAG：https://www.llamaindex.ai/blog/towards-long-context-rag</li>
+</ol>
+</li>
+<li>
+<ol start="17">
+<li>Full Fine-Tuning, PEFT, Prompt Engineering, and RAG: Which One Is Right for You?：https://deci.ai/blog/fine-tuning-peft-prompt-engineering-and-rag-which-one-is-right-for-you/</li>
+</ol>
+</li>
+<li>
+<ol start="18">
+<li>Advance RAG- Improve RAG performance：https://luv-bansal.medium.com/advance-rag-improve-rag-performance-208ffad5bb6a</li>
+</ol>
+</li>
+<li>
+<ol start="19">
+<li>Advanced Retrieval-Augmented Generation: From Theory to LlamaIndex Implementation：https://towardsdatascience.com/advanced-retrieval-augmented-generation-from-theory-to-llamaindex-implementation-4de1464a9930</li>
+</ol>
+</li>
+<li>
+<ol start="20">
+<li>RAGFlow：https://github.com/infiniflow/ragflow</li>
+</ol>
+</li>
+<li>
+<ol start="21">
+<li>LangChain RAG：https://python.langchain.com/v0.1/docs/use_cases/question_answering/</li>
+</ol>
+</li>
+<li>
+<ol start="22">
+<li>From Local to Global: A Graph RAG Approach to Query-Focused Summarization：https://arxiv.org/abs/2404.16130</li>
+</ol>
+</li>
+<li>
+<ol start="23">
+<li>Seven Failure Points When Engineering a Retrieval Augmented Generation System：https://arxiv.org/abs/2401.05856</li>
+</ol>
+</li>
+<li>
+<ol start="24">
+<li>Reasoning on Graphs: Faithful and Interpretable Large Language Model Reasoning：https://arxiv.org/abs/2310.01061</li>
+</ol>
+</li>
+<li>
+<ol start="25">
+<li>GraphRAG: Unlocking LLM discovery on narrative private data：https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/</li>
+</ol>
+</li>
+<li>
+<ol start="26">
+<li>From RAG to GraphRAG , What is the GraphRAG and why i use it?：https://medium.com/@jeongiitae/from-rag-to-graphrag-what-is-the-graphrag-and-why-i-use-it-f75a7852c10c</li>
+</ol>
+</li>
+<li>
+<ol start="27">
+<li>GraphRAG: Design Patterns, Challenges, Recommendations：https://gradientflow.com/graphrag-design-patterns-challenges-recommendations/</li>
+</ol>
+</li>
+<li>
+<ol start="28">
+<li>lettria：https://www.lettria.com/features/graphrag</li>
+</ol>
+</li>
+<li>
+<ol start="29">
+<li>Implementing GraphRAG for Query-Focused Summarization：https://dev.to/stephenc222/implementing-graphrag-for-query-focused-summarization-47ib</li>
+</ol>
+</li>
+<li>
+<ol start="30">
+<li>LlamaIndex Graph RAG：https://docs.llamaindex.ai/en/stable/examples/query_engine/knowledge_graph_rag_query_engine/</li>
+</ol>
+</li>
+<li>
+<ol start="31">
+<li>DB-GPT Graph RAG：https://docs.dbgpt.site/docs/latest/cookbook/rag/graph_rag_app_develop</li>
+</ol>
+</li>
+<li>
+<ol start="32">
+<li>RAGAS: Automated Evaluation of Retrieval Augmented Generation：https://arxiv.org/abs/2309.15217</li>
+</ol>
+</li>
+<li>
+<ol start="33">
+<li>Benchmarking Large Language Models in Retrieval-Augmented Generation：https://arxiv.org/abs/2309.01431</li>
+</ol>
+</li>
+<li>
+<ol start="34">
+<li>CRUD-RAG: A Comprehensive Chinese Benchmark for Retrieval-Augmented Generation of Large Language Models：https://arxiv.org/abs/2401.17043v2</li>
+</ol>
+</li>
+<li>
+<ol start="35">
+<li>ARES: An Automated Evaluation Framework for Retrieval-Augmented Generation Systems：https://arxiv.org/abs/2311.09476</li>
+</ol>
+</li>
+<li>
+<ol start="36">
+<li>RECALL: A Benchmark for LLMs Robustness against External Counterfactual Knowledge：https://arxiv.org/abs/2311.08147</li>
+</ol>
+</li>
+<li>
+<ol start="37">
+<li>MyGO: Discrete Modality Information as Fine-Grained Tokens for Multi-modal Knowledge Graph Completion：https://arxiv.org/abs/2404.09468</li>
+</ol>
+</li>
+<li>
+<ol start="38">
+<li>OneKE：https://github.com/zjunlp/DeepKE/blob/main/example/llm/OneKE.md</li>
+</ol>
+</li>
+<li>
+<ol start="39">
+<li>Apache Jena：https://github.com/apache/jena</li>
+</ol>
+</li>
+<li>
+<ol start="40">
+<li>Eclipse RDF4J：https://github.com/eclipse-rdf4j/rdf4j</li>
+</ol>
+</li>
+<li>
+<ol start="41">
+<li>Oxigraph：https://github.com/oxigraph/oxigraph</li>
+</ol>
+</li>
+<li>
+<ol start="42">
+<li>OpenSPG：https://github.com/OpenSPG/openspg</li>
+</ol>
+</li>
+<li>
+<ol start="43">
+<li>Neo4j：https://github.com/neo4j/neo4j</li>
+</ol>
+</li>
+<li>
+<ol start="44">
+<li>JanusGraph：https://github.com/JanusGraph/janusgraph</li>
+</ol>
+</li>
+<li>
+<ol start="45">
+<li>NebulaGraph：https://github.com/vesoft-inc/nebula</li>
+</ol>
+</li>
+<li>
+<ol start="46">
+<li>TuGraph：https://github.com/TuGraph-family/tugraph-db</li>
+</ol>
+</li>
+<li>
+<ol start="47">
+<li>DB-GPT v0.5.6: <a href="https://github.com/eosphoros-ai/DB-GPT/releases/tag/v0.5.6">https://github.com/eosphoros-ai/DB-GPT/releases/tag/v0.5.6</a></li>
+</ol>
+</li>
+<li>
+<ol start="48">
+<li>Graph RAG PR: <a href="https://github.com/eosphoros-ai/DB-GPT/pull/1506">https://github.com/eosphoros-ai/DB-GPT/pull/1506</a></li>
+</ol>
+</li>
+<li>
+<ol start="49">
+<li>tranformers_story.md: <a href="https://github.com/eosphoros-ai/DB-GPT/blob/main/examples/test_files/tranformers_story.md">https://github.com/eosphoros-ai/DB-GPT/blob/main/examples/test_files/tranformers_story.md</a></li>
+</ol>
+</li>
+<li>
+<ol start="50">
+<li>DB-GPT：https://github.com/eosphoros-ai/DB-GPT</li>
+</ol>
+</li>
+<li></li>
+</ol>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4DgoJuh5s1sMria4IxZJkTiatS5qYYYmfeP3OiaB7qa9ZKhq2HuNqPPCTpQ/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>·END·</strong></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_gif/vMAIKCFcH8RRiaCIekOx6MRpicqiaE8ay4Dic24ue0At7PtqibZKNUIZ0NaPKg733lrTOEMLLYuuSphbqBXWaUqR9yw/640?wx_fmt=gif&amp;from=appmsg" alt=""></p>
+<p><strong>欢迎关注TuGraph代码仓库✨</strong>****</p>
+<p>TuGraph-DB 图数据库</p>
+<p><a href="https://github.com/tugraph-family/tugraph-db">https://github.com/tugraph-family/tugraph-db</a></p>
+<p>TuGraph-Analytics 流式图计算引擎</p>
+<p><a href="https://github.com/tugraph-family/tugraph-analytics">https://github.com/tugraph-family/tugraph-analytics</a></p>
+<p>TuGraph-AGL 图学习引擎</p>
+<p><a href="https://github.com/tugraph-family/tugraph-antgraphlearning">https://github.com/tugraph-family/tugraph-antgraphlearning</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+可关注我们的公众号：每天AI新工具
+
+<p><img src="/images/aitools/2024/03/qrcode_for_gh_dde1b429630d_258.jpg" alt=""></p>
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

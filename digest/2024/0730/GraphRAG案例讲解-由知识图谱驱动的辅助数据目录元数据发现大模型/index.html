@@ -1,0 +1,762 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>GraphRAG案例讲解-由知识图谱驱动的辅助数据目录元数据发现大模型 作者： 知识图谱科技 来源： 知识图谱科技 AI-Assisted Data Catalogs: An LLM Powered by Knowledge Graphs for Metadata Discovery 投资公司的数据团队在为投资组合经理（PMs）、量化分析师和研究人员提供必要工具和见解，以有效利用数据资产方面发挥着至关重要的作用。他们工作的关键部分是促进数据发现，确保用户能够轻松  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#236b0cdd2e18418fd17d3cdfcace239e" class="smooth">
+                                            <i class="fas fa-plug fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>插件</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#ab6eb4cc1d108e5fb0a8063ab7a7e439" class="smooth">
+                                            <i class="fas fa-file fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>开源项目</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">GraphRAG案例讲解-由知识图谱驱动的辅助数据目录元数据发现大模型</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              July 30, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYv2sdne9afY2CaoDXwTVZQA3wq2D4yC9DVHfXw6SLh0Ay8jyiahyARVg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 知识图谱科技  来源： <a href="https://mp.weixin.qq.com/s/fkAc1p19FgTsuLrTcA0k7A">知识图谱科技</a></p>
+<h4 id="ai-assisted-data-catalogs-an-llm-powered-by-knowledge-graphs-for-metadata-discovery">AI-Assisted Data Catalogs: An LLM Powered by Knowledge Graphs for Metadata Discovery</h4>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYK135k7aal79AiaOiaQTOY6h5j7cGp9D58Z1lYMKP6JqjtibeO9Mtd7ZicA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>投资公司的数据团队在为投资组合经理（PMs）、量化分析师和研究人员提供必要工具和见解，以有效利用数据资产方面发挥着至关重要的作用。他们工作的关键部分是促进数据发现，确保用户能够轻松地从各种数据集中找到必要的数据点，包括结构化和非结构化的另类数据、市场数据和参考数据集。</p>
+<p>在较大的投资或交易公司中，管理这些数据集可能会尤为具有挑战性。可能需要监督数百甚至数千个数据集，创建全面的文档并理解相关的数据资产是一项复杂且资源密集型的任务。对于投资组合经理、量化分析师和研究人员来说，深入了解可用数据集及如何浏览这些数据集至关重要，这可能会耗费大量时间和资源。</p>
+<ul>
+<li>
+<p>让我们来看看前台专业人员为数据团队提出的一些常见问题模式。</p>
+</li>
+<li>
+<p>美国股票有哪些可用数据集？</p>
+</li>
+<li>
+<p>实体星巴克有哪些可用数据集？</p>
+</li>
+<li>
+<p>科技行业有哪些可用数据集？</p>
+</li>
+<li>
+<p>人流量数据集可以与哪些参考数据集一起使用？</p>
+</li>
+<li>
+<p>展示使用邮政编码的不同数据集中的所有列？</p>
+</li>
+<li>
+<p>提供一些用于探索网页流量数据的范例Jupyter笔记本？</p>
+</li>
+<li>
+<p>您能展示使用卫星图像数据集进行的分析示例吗？</p>
+</li>
+<li>
+<p>我们评估了哪些人流数据供应商？</p>
+</li>
+<li>
+<p>使用网页流量和人流量数据集构建的数据产品有哪些？</p>
+</li>
+</ul>
+<p>尽管看似无关紧要，回答一些问题可能是一项艰巨的任务。这通常涉及查阅各种文件、搜寻无数电子邮件、研究大量代码行，并寻求具有数据集经验的同事的帮助。这些看似简单的问题可能会成为漫长而具有挑战性的过程，突显了在任何项目中文档和沟通的至关重要性。让信息发现变得更加容易的一种方法是创建数据目录、文档和示例脚本，使用户能够自给自足。</p>
+<p>随着基于LLMs和基于RAG的架构日益流行，对文档进行语义搜索已经成为收集信息和查找答案的一种常见方法。然而，这些答案并非总是直截了当的，因为它们可能需要LLM从多个来源获取信息才能提供逻辑回应。在这种情况下，基于文档的语义搜索在向量数据库上可能不足以满足需求。</p>
+<p>在本文中，我们将探讨解决这一问题的另一种方法。通过使用从数据资产元数据派生的 Neo4j 知识图谱，我们可以赋予 LLMs 回答复杂问题的能力。本文以及其附带的 GitHub 代码将展示这种方法及其潜在利益。</p>
+<p>随着我们的进展，有几个重要主题将会讨论。然而，我想首先概述这些目标。</p>
+<p>*<strong>我们的目标是利用 LLM 为用户关于数据集和数据资产的重要自然语言问题提供答案。在实现这一目标中的一个关键因素是将元数据表示为图，并利用语义和图搜索结合 LLM 的帮助。</strong></p>
+<p>*<strong>通过在元数据级别通过基于 LLM 的实体映射技术连接不同的替代数据集，并利用 LLM 工作流将这些关联信息与结构化数据源集成，我们可以极大地增强数据的发现能力。</strong></p>
+<p>为数据集收集元数据可能是一项具有挑战性的任务，因为数据通常分散存储在不同的系统中。然而，与其手动从各种来源收集这些信息，一个更高效的方法是使用数据目录或可观察性平台。这不仅节省时间和精力，还确保收集到所有必要的元数据。在我的情况下，我将数据集存储在 Snowflake、Databricks 和 PostgreSQL 中，并使用 DataHub 检索它们。通过利用平台的 GraphQL API，我能够轻松访问所需信息并在 Neo4j 中生成图表。</p>
+<p>在之前的文章中，我分享了一个实用指南，介绍了如何利用 DataHub 实现数据可观察性和治理，从而改善数据操作并在最终用户中建立信任。对于那些对元数据模型以及为无缝数据操作收集此信息的重要性不熟悉的人，我强烈推荐阅读那篇文章。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYt3KUlAfgRkORtnQSLJ8LfQrZvLZjNe4unJFNibshoaibJt194icZdYQtg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>对于这个项目，我们将利用<strong>OpenAI API、Neo4j、LangChain和Chromadb</strong> 。OpenAI 模型将被用于LLM，但您可以灵活地切换到您喜好的任何其他LLM。我已经在Ollama中使用llama3测试了与之的兼容性，它已被证明对我们的用例同样有效。</p>
+<p>让我们想象一家拥有少量替代数据集的假设权益自主交易公司。大多数交易公司通常拥有一个安全主表，用于跟踪他们交易的证券，这对他们的运营和研究至关重要，我们的假设公司也有一个基本的安全主表，其中包含有限数量的证券。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYrm3lXKzLujfjA8GNKibQFNjEicCedEcFfeiaJ3NhicoHGCaNYJPZOGGchQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>注意：上述提到的每个数据集都包含一个时间组件，并且大多数都结构化为时点（PiT）。另外，元数据实体之间存在时点关系。然而，为简单起见，我们将不会将此纳入本体论设计中。</p>
+<p>初始步骤是将表元数据实体描述为图形。在这个阶段，我们将拥有两种类型的节点 — 数据集和列。虽然我们可以将元数据模型（来自DataHub）中的其他数据资产，如笔记本和流水线，纳入其中，但我们目前的主要焦点将放在这两者上。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYSmRBPlgia1IvAd4GybEEM2lEYTlgFRQk0G9jQzsxgqhicnm3ojX2YjUQ/640?wx_fmt=png&amp;from=appmsg" alt="">知识图谱中表示为节点的数据集和列</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYLSa8Lc17bqV5icUosgdXzAqhXuQiaKNDADRcVSVPpBeDYxq4oKOOGFRQ/640?wx_fmt=png&amp;from=appmsg" alt="">列和数据集节点类型具有属性</p>
+<p>此外，我们还在图中包含这些对象的元数据，比如描述和示例值。此外，我们将标记需要嵌入的节点，特别是数据集和参考列。借助Neo4j的向量索引和与LangChain 的无缝集成，我们可以轻松地利用LLM来嵌入这些节点中的多个属性，从而产生可供在下一步中用于基于RAG的查询的向量嵌入和索引。</p>
+<p>####<strong>基于简单RAG的问题</strong></p>
+<p>LLM现在可以使用向量索引轻松回答简单问题了。例如，我们可以询问有关在美国测量零售店人流量的数据集，或者请求查看来自不同数据集的邮政编码列。在幕后，LLM嵌入问题并在图中找到具有类似向量嵌入的节点。然后利用这个背景来准确回答问题，而不是做出假设。简单的向量数据库也可以进行相似性搜索并检索最接近的节点，但在处理更复杂的问题时可能会遇到困难。例如，如果我们要求在步行流量数据集中列出所有列，则向量数据库可能无法在嵌入文本中未提及它们时检索到它们。这就是图表表现出色的地方，因为它们可以检索与问题在语义上相关的连接节点。这为LLM提供了更相关的上下文，使其在传统向量数据库中脱颖而出。你可以在这本笔记本中找到所有这些问题及其答案。</p>
+<h4 id="高级问题和使用llm进行后端操作">高级问题和使用LLM进行后端操作。</h4>
+<p>让我们尝试向我们的智能体提出一个更复杂的问题。</p>
+<p><strong>你能展示与星巴克公司相关的所有数据集吗？</strong> 或者 你能展示所有与消费者自由裁量部门相关的数据集吗？</p>
+<p>然而，这些问题提出了一些挑战，我们简单的基于 RAG 的方法可能无法处理。数据点尚未加载到图中（仅加载了元数据），因此无法从图中回答任何关于实体或数据集本身的问题。另外，我们不清楚这些数据集之间以及可用于连接它们的列之间的关系。</p>
+<p>我将展示如何使用 LLM 和 LangChain 处理这两个问题。</p>
+<p>让我们首先着手解决第二个问题，以星巴克为例。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WY9hM1CjDokicTWgic6Bvh5ph4iaFiaRNM35JjlCtX5lLibDxLmNxzMObZBfA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在检查了人流数据集之后，我们发现星巴克的代码在符号列中列出。但这是否意味着只有人流数据集可用于分析星巴克？</p>
+<p>经进一步调查，我们发现人流数据集中的商店也具有邮政编码，在天气数据集中也有，但被称为邮政编码。尽管术语不同，但仔细查看列描述和样本值会发现它们表示相同的信息。这意味着这两个数据集都可以用来收集有关星巴克位置的见解。换句话说，有两个数据集可用于分析星巴克的股票。</p>
+<p>在secmaster和foot-traffic表中分别识别了股票代码和符号列的类似项，以及在foot-traffic和天气数据集中的邮政编码和邮政编码列，我们可以在图中建立这些列之间的新关系。这将使我们能够有效地连接并回答更复杂的问题。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYv2sdne9afY2CaoDXwTVZQA3wq2D4yC9DVHfXw6SLh0Ay8jyiahyARVg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>人工筛选数据并链接列可能是一项乏味的任务。然而，借助LLM的帮助，这个过程可以加快。实体解决映射领域广阔而复杂，有许多技术可以与LLM和图表结合使用。<strong>以下是对我特别有效的四种技术</strong> 。</p>
+<h4 id="方法1-简单的向量余弦相似度">方法1: 简单的向量余弦相似度</h4>
+<p>在图中找到相似列的最简单方法是使用矢量余弦相似性。这种方法很直接，因为我们可以利用现有的节点矢量嵌入，而无需再次访问LLM API。通过运行基本的密码查询，我们可以比较向量对并确定它们的余弦相似度，这将帮助我们识别相似的列。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYBhG1jqdibyYlTpNsjrttSibJLLMKoedqH3R0fzWJW7HI8lpRUPIMBdBQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="方法2-简单提示prompting">方法2: 简单提示prompting</h4>
+<p>最简单的匹配实体的方法是通过提示，因为它不涉及使用嵌入或 RAGs。但是，这种方法在匹配过程和 LLM API 消耗方面可能有点昂贵。这是因为我们需要接近 n(n-1)/2 次地调用 API，其中 n 是要比较的列数。</p>
+<pre><code>You are given two columns from different tables that need to be compared to  determine if they represent the same identifiers.   
+Here are the details of the columns:  
+	Column 1:  
+	name: zip_code,  
+	description: ZIP code of the location where the data was collected.,  
+	values: 10001,  
+	  
+	Column 2:  
+	name: post_code,  
+	description: Postal code where the location is situated.,  
+	values: 10001,73070,  
+  
+Compare these columns and answer the following questions:  
+1.Do these columns seem to represent the same type of identifier based on name and the description?  
+2.Based on the sample values, can we infer that these values are similar enough that they are taken from the same identifier ?
+</code></pre>
+<h4 id="方法3-简单rag">方法3: 简单RAG</h4>
+<p>另一种考虑的方法是使用基于标记的方法，通过确定哪些嵌入列最相似来实现。可以通过使用特定提示来增强这种技术，从而实现成功的列匹配。然而，其中一个缺点是我们从输入列开始进行矢量搜索，这意味着如果列或实体不能准确地由矢量表示，我们可能会在上下文中检索到不正确的数据点。</p>
+<pre><code>You are given the below details about a column, find columns that represent the same identifier. There could be more than one match.  
+Use only the information from the given context  
+Compare these columns based on the flowing criteria's and provide an explanation.  
+1.Do these columns seem to represent the same type of identifier based on name and the description?  
+2.Compare the sample values to infer if these values are similar enough that they are taken from the same identifier, they don't have to be the same.  
+  
+Column details:  
+ name: zip_code,  
+ description: ZIP code of the location where the data was collected.,  
+ values: 10001,  
+   
+Retrieved information:  
+{context}
+</code></pre>
+<h4 id="方法-4-高级rag-graphrag">方法 4: 高级RAG-GraphRAG</h4>
+<p>上面提到的RAG方法可以与图中的高级RAG查询相结合，从中拉取连接的节点。例如，假设我们有一个名为ZIP的新列，表示邮政编码，并且在语义搜索中与天气数据集中的zip_code列匹配，RAG还将从foot_traffic数据集中获取连接的zip_code和postal_code列，因为它们之前有连接。这与简单的RAG方法（方法3）相反，后者仅会获取zip_code列。</p>
+<p>现在，想象我们要引入一个新数据集，其中有一个名为ZP的列，包含邮政编码信息。通过使用这种连接检索过程，我们为LLM提供了来自以前连接的三个节点的知识。随着我们继续添加更多列，LLM获得更多信息以映射未来的列。在我的测试中，这种方法被证明是最有效和可扩展的解决方案。</p>
+<p>您可以在这个笔记本中找到所有4种方法的代码。</p>
+<p><strong>就LLM API成本而言，方法1是最便宜的，方法2是最昂贵的，而方法3和4在我进行的测试中在成本与性能方面最为有效</strong> 。这些技术并不是要完全取代人类判断，而是要简化专业人士的决策过程。目标是让他们更容易确定要连接哪些列。重要的不是简单的是或否答案，而是LLM创建的详细论点以匹配列，为我们提供最多信息。通过让人类参与其中，我们可以识别错误的阳性和阴性，并通过将它们用作进一步训练的示例来改善LLM的表现。</p>
+<p>使用LLM的优势之一是它们能够编写SQL查询和Cyphers，Neo4j的声明性查询语言。通过LangChain，我们可以生成查询，以提供我们所需的信息。</p>
+<p>例如，如果我们想知道所有可用数据集，我们之前创建的向量索引上的语义或图搜索是不够的。相反，我们需要构建一个Cypher查询，使用其输出作为我们的LLM获取答案的上下文。幸运的是，Neo4j和LangChain具有必要的工具来实现这一点。</p>
+<p>同样，在连接数据集的工作背景下，我们可以要求LLM为问题创建一个Cypher查询，</p>
+<p>展示我如何从sec_master导航到不同数据集？</p>
+<pre><code>MATCH path = (d:dataset {name: 'sec_master'})-[r*]-(d2:dataset)  
+UNWIND nodes(path) as n  
+return n, r
+</code></pre>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYT5NYUpOtmGVIDN1dmh3CK4h4licRwIWn4vcYxjibYdL2dhO1pic1WgG4g/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>通过列匹配练习，我们成功建立了连接数据集与安全主数据和其他数据集之间的新连接。</p>
+<p>让我们重新审视一下我们在尝试确定星巴克可用数据集时面临的初始挑战。我们如何弥合元数据图与数据层之间的差距？</p>
+<p>一种解决方案是将所有数据导入图中，从而更容易查询实体并利用先前讨论过的方法。但是，我必须警告你，这项任务比看起来更复杂。节点和关系的数量庞大，可能需要对本体进行彻底检修。</p>
+<p>一种更高效的方法是创建一个LLM代理工作流，将图和存储信息的数据存储库整合在一起。这将简化流程，使其更易管理。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WY1z8XkXEIsgW7THYQcPmQ4zGyrb6eria29N4J1BRjD3L4IVczxsCziblQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>我们流程中的第一步是确定问题所指的实体。可以通过将每一行代表一个文档的 sec_master 表嵌入到向量数据库中来轻松实现这一目标。然后，我们可以执行相似性搜索，以确定涉及的实体。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYia6ysm16UrCumd3yibjK5Kz5SicJdb9B0b4wWNEQzWe1H8eJ139CX9icQg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>我们已经发现了一种确定各种数据集之间连接的方法。有了这些信息，我们可以轻松地为每条路径创建 SQL 查询，并在数据存储的 SQL 仓库中高效地搜索所需的实体。请求 LLM 从sec_master找到所有路径，它将为您提供下面的密码查询。</p>
+<p>我需要一个密码查询，从sec_master数据集遍历到相关数据集？在密码查询中返回类型、名称和基础表。</p>
+<pre><code>MATCH path = (d:dataset {name: 'sec_master'})-[*]-(d2:dataset)  
+UNWIND nodes(path) as n  
+RETURN n.type, n.name, n.table;
+</code></pre>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYAfWTeAfgKmlxOGyy3Wdiaia6Lm7qB6dzFGVj3ibwT4V0TcykZu4fHVfCw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>具有路径的密文输出。这只是一个遍历路径。</p>
+<p>使用一些简单的Python代码，我们可以将来自密码查询的输出转换为SQL查询。通过在sec_master表上添加where子句，我们可以将搜索范围缩小到最初通过向量搜索识别的特定实体。然后，我们可以获取以下SQL查询。</p>
+<pre><code>select count(*)  
+from graph_db.public.sec_master a   
+inner join graph_db.public.foot_traffic b on a.ticker = b.symbol  
+inner join graph_db.public.foot_traffic c on b.post_code = c.zip_code  
+Where a.ticker = &quot;SBUX&quot;
+</code></pre>
+<p>如果我们的雪花查询产生任何结果，这意味着数据存在，我们可以在我们感兴趣的实体或部门的所有遍历路径上运行类似的SQL查询。因此，我们最终可以找出多少数据集包含关于星巴克的信息。在这种情况下，有两个：客流量数据集（直接提到星巴克股票代号SBUX）和天气数据集（通过客流量数据中的邮政编码与星巴克相连）。</p>
+<p>您可以在此笔记本中找到上述语义搜索和SQL查询生成的代码。</p>
+<p>乍一看，这可能看起来令人生畏，但是借助LangChain和LangGraph等框架的帮助，我们可以轻松地融入复杂的LLM逻辑。实际上，在我们讨论的所有场景中，我们必须在三种工作流程之间进行选择：对索引进行语义搜索，创建一个Cypher来回答问题，或者涉及多个代理和检索器的更复杂过程。因此，利用像LangGraph这样的框架对问题进行分类，并根据问题类型开发特定链是至关重要的。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/fCSKic7a6ViarqvBsqNWmdmGibkwKkQm8WYMoQw7Uiaic9b4mQVG46M8vMGOC3WJQxXKURA49QR4WSfmgrhW5icLomHg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在本文中，我展示了一些有关发现的商业用例。通过结合各种替代性数据集，我们可以开启一个超越迄今讨论的全新的Alpha研究潜力世界。通过图谱和LLM的力量，我们可以发现基本表元数据之外的宝贵见解和机会，这些见解和机会通常很难获得。此外，我们的重点主要集中在基本表元数据上。然而，在数据资产的元数据模型中，还有许多其他元素我们尚未探索。这些元素包括流水线、事件、数据使用者和质量问题。将我们的功能扩展到这些实体中将需要另一篇专门讨论利用这些信息来源在数据操作中的影响的文章。这一想法也可以应用于其他操作，比如交易或风险操作，仅限于一个人的想象力。</p>
+<p>实体解析映射的概念已成为广泛研究的主题，特别是在金融和银行业。根据我的经验，与传统的NLP方法相比，大型语言模型（LLMs）在这一领域展现出了巨大潜力。然而，这个领域还有很多有待探索。</p>
+<p>基于图谱的RAG在RAG社区中越来越受欢迎，我对微软开源GraphRAG项目<a href="http://mp.weixin.qq.com/s?__biz=MzI3ODE5Mzc1Ng==&amp;mid=2247488990&amp;idx=1&amp;sn=2639861fe2ec1bb0b8ec3c979b63a7dc&amp;chksm=eb5be6eddc2c6ffbc900afb197bce41fc495658b9508248025dd72ff6af590a94dd61c2f265b&amp;scene=21#wechat_redirect">重磅 - 微软官宣正式在GitHub开源GraphRAG</a>感到非常兴奋。在这个简短项目中，我们仅仅触及了远程搜索器的表面。这是一个快速发展的研究领域，图搜索无疑是RAG的未来。</p>
+<ul>
+<li>
+<p>对我来说，这些都是我在项目中工作经验中得出的关键经验点。</p>
+</li>
+<li>
+<p>利用元数据图和LLM的力量成功解决与数据资产相关的复杂查询。</p>
+</li>
+<li>
+<p>通过基于LLM的实体解析映射连接不同的替代性数据集。</p>
+</li>
+<li>
+<p>通过LLM链和图表将结构化数据和元数据图合并的概念，使用类似LangChain和LangGraphs的工具。</p>
+</li>
+<li>
+<p>融入语义和图搜索技术的无限潜力。</p>
+</li>
+</ul>
+<p>维护元数据图的关键作用，以及如何为推动收入的同时提高运营效率做出贡献。</p>
+<p><strong>参考:</strong></p>
+<p>AI-Assisted Data Catalogs: An LLM Powered by Knowledge Graphs for Metadata Discovery | by Saeed Rahman | Jul, 2024 | DataHub (datahubproject.io)</p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzI3ODE5Mzc1Ng==&amp;mid=2247489153&amp;idx=1&amp;sn=e132d13975981a3be62ee98ab2a8b058&amp;chksm=eb5be5b2dc2c6ca4a2d1072179df94229244485afbe7bcbad06140d8cf48413eac3e0d2d2356&amp;scene=21#wechat_redirect">引入GraphRAG的场景条件分析</a></p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzI3ODE5Mzc1Ng==&amp;mid=2247489509&amp;idx=1&amp;sn=26645e57f22fc8cab7d66cd90d9d17c6&amp;chksm=eb5be4d6dc2c6dc0602db0d9cfc04ed11668891a9717e79179f72b0a7cec30522e1279c77a35&amp;scene=21#wechat_redirect">“大模型+知识图谱”双轮驱动的医药数智化转型新范式-OpenKG TOC专家谈</a></p>
+<p><a href="http://mp.weixin.qq.com/s?__biz=MzI3ODE5Mzc1Ng==&amp;mid=2247488990&amp;idx=1&amp;sn=2639861fe2ec1bb0b8ec3c979b63a7dc&amp;chksm=eb5be6eddc2c6ffbc900afb197bce41fc495658b9508248025dd72ff6af590a94dd61c2f265b&amp;scene=21#wechat_redirect">重磅 - 微软官宣正式在GitHub开源GraphRAG</a></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+可关注我们的公众号：每天AI新工具
+
+<p><img src="/images/aitools/2024/03/qrcode_for_gh_dde1b429630d_258.jpg" alt=""></p>
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
