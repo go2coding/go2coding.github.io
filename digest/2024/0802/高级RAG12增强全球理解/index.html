@@ -1,0 +1,1129 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>高级RAG12：增强全球理解 作者： barry的异想世界 来源： barry的异想世界 原理、代码解释与洞察 许多重要的现实任务，包括科学文献综述、法律案件简报和医学诊断，都需要跨片段或文档的知识理解。 现有的RAG方法无法帮助LLMs完成需要跨片段边界理解信息的任务，因为每个片  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e5ce844860451fff3faf3d8f8894971d" class="smooth">
+                                            <i class="fas fa-music fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音乐生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#fd71852fd52d5e18ef4f9a252f1eac58" class="smooth">
+                                            <i class="fas fa-search fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>AI搜索</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">高级RAG12：增强全球理解</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 2, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJvdt8z37LFQibTlUmvk1iaM5l0XOWIhd4f3cXD4w8nvSzTicAwqKbPmd9A/640?wx_fmt=jpeg&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： barry的异想世界  来源： <a href="https://mp.weixin.qq.com/s/40c3Vi68fKjMdDRys-SaMg">barry的异想世界</a></p>
+<h4 id="原理代码解释与洞察">原理、代码解释与洞察</h4>
+<p>许多重要的现实任务，包括科学文献综述、法律案件简报和医学诊断，都需要跨片段或文档的知识理解。</p>
+<p>现有的RAG方法无法帮助LLMs完成需要跨片段边界理解信息的任务，因为每个片段都是独立编码的。</p>
+<p>本文将介绍四种创新方法，以增强文档或语料库的全局理解，并分享从中获得的洞察和思考。</p>
+<p>这四种方法如下：</p>
+<ul>
+<li>
+<p>RAPTOR：这是一种基于树的检索系统，递归地嵌入、聚类和总结文本片段。</p>
+</li>
+<li>
+<p>Graph RAG：该方法结合了知识图谱生成、社区检测、RAG和查询聚焦摘要（QFS），以促进对整个文本语料库的全面理解。</p>
+</li>
+<li>
+<p>HippoRAG：这一检索框架受到人类长期记忆的海马索引理论启发，与LLMs、知识图谱和个性化PageRank算法协同工作。</p>
+</li>
+<li>
+<p>spRAG：该方法通过两种关键技术，即AutoContext和相关段落提取（RSE），来提升标准RAG系统的性能。</p>
+</li>
+</ul>
+<h4 id="raptor递归抽象化处理树形组织检索系统">RAPTOR：递归抽象化处理树形组织检索系统</h4>
+<p>RAPTOR 是一种新颖的基于树的检索系统，旨在递归地嵌入、聚类和总结文本段落。它自底向上构建树结构，提供不同层次的总结。</p>
+<p>在推理过程中，RAPTOR 从该树中检索信息，结合长文档在不同抽象层次的数据。</p>
+<h4 id="关键概念">关键概念</h4>
+<p>RAPTOR 采用递归方法，根据文本块的嵌入将其组织成簇。它为每个簇生成摘要，自底向上构建树结构。这一过程如图1所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJq3LLia42T0mqTzOqW3WWwJQOo1BZLhrYrtTejribwNIYSFjicXGN4rUEA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>以下我们将深入探讨与图1相关的具体主题：</p>
+<ul>
+<li>
+<p>构建 RAPTOR 树</p>
+</li>
+<li>
+<p>检索过程</p>
+</li>
+</ul>
+<h4 id="构建-raptor-树">构建 RAPTOR 树</h4>
+<p><strong>文本分块</strong></p>
+<p>将检索语料库划分为每块包含100个词元的连续块。如果一个块超过100个词元，RAPTOR会将整个句子移至下一个块，以保持上下文和语义的一致性。</p>
+<pre><code>def split_text(  
+    text: str, tokenizer: tiktoken.get_encoding(&quot;cl100k_base&quot;), max_tokens: int, overlap: int = 0  
+):  
+    &quot;&quot;&quot;  
+    根据分词器和允许的最大词元数将输入文本分割成更小的块。  
+  
+    参数:  
+        text (str): 待分割的文本。  
+        tokenizer (CustomTokenizer): 用于分割文本的分词器。  
+        max_tokens (int): 允许的最大词元数。  
+        overlap (int, optional): 块之间的重叠词元数。默认为0。  
+  
+    返回:  
+        List[str]: 文本块列表。  
+    &quot;&quot;&quot;  
+    ...  
+    ...          
+        # 如果将句子添加到当前块超过最大词元数，则开始一个新的块  
+        elif current_length + token_count &gt; max_tokens:  
+            chunks.append(&quot; &quot;.join(current_chunk))  
+            current_chunk = current_chunk[-overlap:] if overlap &gt; 0 else []  
+            current_length = sum(n_tokens[max(0, len(current_chunk) - overlap):len(current_chunk)])  
+            current_chunk.append(sentence)  
+            current_length += token_count  
+    ...  
+    ...  
+</code></pre>
+<p><strong>嵌入</strong></p>
+<p>使用Sentence-BERT生成这些块的密集向量表示。</p>
+<p>这些块及其对应的嵌入构成了RAPTOR树结构的叶节点。</p>
+<pre><code>class TreeBuilder:  
+    &quot;&quot;&quot;  
+    TreeBuilder类负责构建一个层次化的文本抽象结构，即“树”，使用摘要模型和嵌入模型。  
+    &quot;&quot;&quot;  
+    ...  
+    ...  
+    def build_from_text(self, text: str, use_multithreading: bool = True) -&gt; Tree:  
+        &quot;&quot;&quot;从输入文本构建一个黄金树结构，可选是否使用多线程。  
+  
+        参数:  
+            text (str): 输入文本。  
+            use_multithreading (bool, optional): 创建叶节点时是否使用多线程。默认: True。  
+  
+        返回:  
+            Tree: 黄金树结构。  
+        &quot;&quot;&quot;  
+        chunks = split_text(text, self.tokenizer, self.max_tokens)  
+  
+        logging.info(&quot;创建叶节点&quot;)  
+  
+        if use_multithreading:  
+            leaf_nodes = self.multithreaded_create_leaf_nodes(chunks)  
+        else:  
+            leaf_nodes = {}  
+            for index, text in enumerate(chunks):  
+                __, node = self.create_node(index, text)  
+                leaf_nodes[index] = node  
+  
+        layer_to_nodes = {0: list(leaf_nodes.values())}  
+  
+        logging.info(f&quot;创建了{len(leaf_nodes)}个叶节点嵌入&quot;)  
+        ...  
+        ...  
+</code></pre>
+<p><strong>聚类方法</strong></p>
+<p>聚类在构建RAPTOR树中至关重要，它将文本段落组织成连贯的组。通过将相关内容聚集在一起，它增强了后续的检索过程。</p>
+<p>RAPTOR的聚类方法具有以下特点：</p>
+<ol>
+<li>
+<p>使用高斯混合模型（GMMs）和UMAP降维进行软聚类。</p>
+</li>
+<li>
+<p>UMAP参数可调整以识别全局和局部聚类。</p>
+</li>
+<li>
+<p>使用贝叶斯信息准则（BIC）进行模型选择，以确定最佳聚类数。</p>
+</li>
+</ol>
+<p>该聚类方法的核心是一个节点可以属于多个聚类。这消除了固定类别数量的需求，因为单个文本段通常包含多个主题的信息，从而确保其被包含在多个摘要中。</p>
+<p>使用GMM对节点进行聚类后，每个聚类内的节点由LLM进行摘要。这一过程将大块内容转化为所选节点的简洁连贯摘要。</p>
+<p>在实现中，使用gpt-3.5 turbo生成摘要。相应的提示如图2所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJaevmN1WLR73mlBwicPJNiaiaEcsuP20oQ8clfZGR9icIPOUoibhMickxQJpA/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p><strong>构建算法</strong></p>
+<p>至此，我们已经获得了整个树的叶节点并确定了聚类算法。</p>
+<p>如图1中部所示，被分组在一起的节点形成兄弟节点，而父节点则包含该特定聚类的摘要。生成的摘要包含树的非叶节点。</p>
+<p>摘要节点被重新嵌入，嵌入、聚类和摘要的过程持续进行，直到无法进一步聚类为止。这最终形成了一个结构化、多层次的原始文档树形表示。</p>
+<p>相应的代码如下所示。</p>
+<pre><code>class ClusterTreeConfig(TreeBuilderConfig):  
+    ...  
+    ...  
+    def construct_tree(  
+        self,  
+        current_level_nodes: Dict[int, Node],  
+        all_tree_nodes: Dict[int, Node],  
+        layer_to_nodes: Dict[int, List[Node]],  
+        use_multithreading: bool = False,  
+    ) -&gt; Dict[int, Node]:  
+        ...  
+        ...  
+  
+        for layer in range(self.num_layers):  
+  
+            new_level_nodes = {}  
+  
+            logging.info(f&quot;构建第{layer}层&quot;)  
+  
+            node_list_current_layer = get_node_list(current_level_nodes)  
+  
+            if len(node_list_current_layer) &lt;= self.reduction_dimension + 1:  
+                self.num_layers = layer  
+                logging.info(  
+                    f&quot;停止层构建: 无法创建更多层。树中总层数: {layer}&quot;  
+                )  
+                break  
+  
+            clusters = self.clustering_algorithm.perform_clustering(  
+                node_list_current_layer,  
+                self.cluster_embedding_model,  
+                reduction_dimension=self.reduction_dimension,  
+               **self.clustering_params,  
+            )  
+  
+            lock = Lock()  
+  
+            summarization_length = self.summarization_length  
+            logging.info(f&quot;摘要长度: {summarization_length}&quot;)  
+  
+            ...  
+            ...  
+</code></pre>
+<h4 id="检索过程">检索过程</h4>
+<p>拥有了一棵 RAPTOR 树后，应如何利用它进行查询？</p>
+<p>查询方式有两种：基于树遍历和基于压缩树，如图 3 所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJwxA5CfbIZTosslcSrOFZkQp778AtCju7Bx8GIceZnibFBQ7mp5iaNHKQ/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>树遍历从根层开始，根据与查询向量的余弦相似度检索前 k 个节点（此处为前 1 个）。在每一层，从前一层的前 k 个节点的子节点中检索前 k 个节点，相应代码如下所示。</p>
+<pre><code>class TreeRetriever(BaseRetriever):  
+    ...  
+    ...  
+    def retrieve_information(  
+        self, current_nodes: List[Node], query: str, num_layers: int  
+    ) -&gt; str:  
+        &quot;&quot;&quot;  
+        根据查询从树中检索最相关的信息。  
+  
+        参数:  
+            current_nodes (List[Node]): 当前节点的列表。  
+            query (str): 查询文本。  
+            num_layers (int): 遍历的层数。  
+  
+        返回:  
+            str: 使用最相关节点创建的上下文。  
+        &quot;&quot;&quot;  
+  
+        query_embedding = self.create_embedding(query)  
+  
+        selected_nodes = []  
+  
+        node_list = current_nodes  
+  
+        for layer in range(num_layers):  
+  
+            embeddings = get_embeddings(node_list, self.context_embedding_model)  
+  
+            distances = distances_from_embeddings(query_embedding, embeddings)  
+  
+            indices = indices_of_nearest_neighbors_from_distances(distances)  
+  
+            if self.selection_mode == &quot;threshold&quot;:  
+                best_indices = [  
+                    index for index in indices if distances[index] &gt; self.threshold  
+                ]  
+  
+            elif self.selection_mode == &quot;top_k&quot;:  
+                best_indices = indices[: self.top_k]  
+  
+            nodes_to_add = [node_list[idx] for idx in best_indices]  
+  
+            selected_nodes.extend(nodes_to_add)  
+  
+            if layer != num_layers - 1:  
+  
+                child_nodes = []  
+  
+                for index in best_indices:  
+                    child_nodes.extend(node_list[index].children)  
+  
+                # 取唯一值  
+                child_nodes = list(dict.fromkeys(child_nodes))  
+                node_list = [self.tree.all_nodes[i] for i in child_nodes]  
+  
+        context = get_text(selected_nodes)  
+        return selected_nodes, context  
+</code></pre>
+<p>相比之下，压缩树将树压缩为单层，并根据余弦相似度检索节点，直到达到阈值数量的令牌，相应代码如下所示。</p>
+<pre><code>class TreeRetriever(BaseRetriever):  
+    ...  
+    ...  
+    def retrieve_information_collapse_tree(self, query: str, top_k: int, max_tokens: int) -&gt; str:  
+        &quot;&quot;&quot;  
+        根据查询从树中检索最相关的信息。  
+  
+        参数:  
+            query (str): 查询文本。  
+            max_tokens (int): 最大令牌数。  
+  
+        返回:  
+            str: 使用最相关节点创建的上下文。  
+        &quot;&quot;&quot;  
+  
+        query_embedding = self.create_embedding(query)  
+  
+        selected_nodes = []  
+  
+        node_list = get_node_list(self.tree.all_nodes)  
+  
+        embeddings = get_embeddings(node_list, self.context_embedding_model)  
+  
+        distances = distances_from_embeddings(query_embedding, embeddings)  
+  
+        indices = indices_of_nearest_neighbors_from_distances(distances)  
+  
+        total_tokens = 0  
+        for idx in indices[:top_k]:  
+  
+            node = node_list[idx]  
+            node_tokens = len(self.tokenizer.encode(node.text))  
+  
+            if total_tokens + node_tokens &gt; max_tokens:  
+                break  
+  
+            selected_nodes.append(node)  
+            total_tokens += node_tokens  
+  
+        context = get_text(selected_nodes)  
+        return selected_nodes, context  
+</code></pre>
+<p>那么哪种方法更好呢？</p>
+<p>RAPTOR 进行了比较，如图 4 所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJ14qaGTOibB3S8rJkrrL34cice1r5GyTRTqibMdWG9BrrOq6iaT89vAOTAg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>如图 4 所示，使用 2000 个令牌的压缩树效果最佳。这是因为与树遍历相比，它提供了更多的灵活性。具体而言，通过同时搜索所有节点，它能够以适合给定问题的适当粒度级别检索信息。</p>
+<p>图 5 展示了 RAPTOR 如何检索与灰姑娘故事相关的两个查询的信息：“故事的中心主题是什么？”和“灰姑娘是如何找到幸福结局的？”。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJYOViapDJUN1LJlicFWO9LH3AWqxtAEKpCRGKMWuF28M5cq7x24JD2YLQ/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>高亮节点表示 RAPTOR 的选择，而箭头指向 DPR（密集段落检索）的叶节点。重要的是，RAPTOR 提供的上下文通常包括 DPR 检索到的信息，无论是直接还是通过更高层次的摘要。</p>
+<h4 id="graph-rag">Graph RAG</h4>
+<p>Graph RAG 利用LLM分两阶段构建基于图的文本索引：</p>
+<ul>
+<li>
+<p>首先，从源文档中提取知识图谱。</p>
+</li>
+<li>
+<p>随后，为所有紧密关联的实体组生成社区摘要。</p>
+</li>
+</ul>
+<p>针对查询，每个社区摘要贡献部分回答。这些部分回答随后被聚合，形成最终的全局答案。</p>
+<h4 id="概述">概述</h4>
+<p>图6展示了Graph RAG的流程。紫色框表示索引操作，绿色框表示查询操作。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJ6M7u2h5LSd8iaWaSGQNKrUf4KSHBaCribRibOrkV9HqaALqy0EKIdqktQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>Graph RAG利用特定于数据集领域的LLM提示来检测、提取和总结节点（如实体）、边（如关系）和协变量（如声明）。</p>
+<p>社区检测用于将图划分为LLM可以在索引和查询时总结的元素（节点、边、协变量）组。</p>
+<p>特定查询的全局答案是通过对与该查询相关的所有社区摘要进行最后一轮查询聚焦总结生成的。</p>
+<p>图6中每一步的实现将在下文解释。值得注意的是，截至2024年6月12日，Graph RAG尚未开源，因此无法与源代码相关讨论。</p>
+<h4 id="第一步源文档--文本块">第一步：源文档 → 文本块</h4>
+<p>块大小权衡是RAG长期存在的问题。</p>
+<p>如果块太长，LLM调用次数减少。然而，由于上下文窗口的限制，理解和处理大量信息变得困难，这可能导致召回率下降。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJehB3DF9VcAFKRgmVXfnDzk6A8j0UohbKumHfnq3MjEvMQhGI0SZYBQ/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>如图7所示，对于HotPotQA数据集，600个token的块大小提取的有效实体数量是2400个token块大小的两倍。</p>
+<h4 id="步骤2文本块--元素实例实体与关系">步骤2：文本块 → 元素实例（实体与关系）</h4>
+<p>该方法通过从每个文本块中提取实体及其关系来构建知识图谱，这一过程结合了大型语言模型（LLMs）和提示工程技术。</p>
+<p>同时，Graph RAG采用多阶段迭代流程。这一流程要求LLM判断是否已提取所有实体，类似于二元分类问题。</p>
+<h4 id="步骤3元素实例--元素摘要--图社区--社区摘要">步骤3：元素实例 → 元素摘要 → 图社区 → 社区摘要</h4>
+<p>在前一步骤中，提取实体、关系和声明实际上是一种抽象摘要的形式。</p>
+<p>然而，Graph RAG 认为这还不够，需要使用 LLM 对这些“元素”进行进一步的摘要。</p>
+<p>一个潜在的担忧是，LLM 可能不会总是以相同的文本格式提取对同一实体的引用。这可能导致重复的实体元素，从而在图中生成重复的节点。</p>
+<p>这种担忧很快就会消失。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJF5RtBCp8WG4s1L0zk57Aiaw47aQgZTBHFuxu0UrtvSVmSR9X9mibib1Yw/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>Graph RAG 采用社区检测算法来识别图中的社区结构，将紧密关联的实体纳入同一社区。图8展示了在 MultiHop-RAG 数据集中使用 Leiden 算法 识别的图社区。</p>
+<p>在这种情况下，即使 LLM 在提取过程中未能一致地识别实体的所有变体，社区检测也能帮助建立这些变体之间的联系。一旦被归入一个社区，就意味着这些变体指的是同一实体内涵，只是表达方式或同义词不同。这类似于知识图谱领域的实体消歧。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJodicJsu571DKyRqwFYicHsKWEezJ4MN4p0nSIfNibFJWGfwvkHAuAmuZg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>在识别社区之后，我们可以在 Leiden 层次结构中为每个社区生成类似报告的摘要。这些摘要在理解数据集的全局结构和语义方面具有独立的价值。它们也可以用来理解语料库，没有任何问题。</p>
+<p>图9展示了社区摘要的生成方法。</p>
+<h4 id="第四步社区总结--社区答案--全局答案">第四步：社区总结 → 社区答案 → 全局答案</h4>
+<p>我们现在来到了最后一步：基于上一步的社区总结生成最终答案。</p>
+<p>由于社区结构的层级性，不同层级的总结可以回答各种问题。</p>
+<p>然而，这引出了另一个问题：在多个层级的社区总结中，哪个层级能在细节和覆盖范围之间取得平衡？</p>
+<p>Graph RAG 在进一步评估（Graph RAG 论文中的第3节）后，选择了最合适的抽象层级。</p>
+<p>对于给定的社区层级，任何用户查询的全局答案都会生成，如图10所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJDia4FUCbw9jVRThiamWicibia9fiabz48MLwBDUqGbD2prq34oCCibroYpSHA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="hipporag">HippoRAG</h4>
+<p>HippoRAG 是一种新颖的检索框架，灵感源自人类长期记忆的海马索引理论。它与大型语言模型（LLMs）、知识图谱及个性化PageRank算法协同工作，模拟了人类记忆中大脑新皮层和海马体的不同角色。</p>
+<h4 id="关键理念">关键理念</h4>
+<p>图11展示了人类大脑如何相对容易地处理知识整合的复杂任务。</p>
+<p>海马体记忆索引理论，一种著名的人类长期记忆理论，为这种卓越能力提供了一种可能的解释。</p>
+<p>具体而言，基于环境的、持续更新的记忆依赖于新皮层与C形海马体之间的相互作用。新皮层处理并存储实际的记忆表征，而海马体则维护海马体索引。这一索引是一组相互连接的索引，指向新皮层中的记忆单元并存储它们的关联。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJvdt8z37LFQibTlUmvk1iaM5l0XOWIhd4f3cXD4w8nvSzTicAwqKbPmd9A/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>在图11中，我们的目标是识别出一位参与阿尔茨海默病研究的斯坦福大学教授，从众多可能描述成千上万斯坦福教授和阿尔茨海默病研究者的段落中。</p>
+<ul>
+<li>
+<p>传统的RAG，独立编码段落，除非一个段落同时提及这两个特征，否则难以识别托马斯教授。</p>
+</li>
+<li>
+<p>相比之下，熟悉这位教授的人可以迅速记住他，这得益于我们大脑的关联记忆能力，据信是由图11中蓝色所示的C形海马体索引结构驱动的。</p>
+</li>
+<li>
+<p>受此机制启发，HippoRAG使LLMs能够构建和利用类似的关联图来管理知识整合任务。</p>
+</li>
+</ul>
+<h4 id="概述-1">概述</h4>
+<p>受图11启发，HippoRAG的每个组成部分对应于人类长期记忆的三个组成部分之一，如图12所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_jpg/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJXZvrqubDYyqlyqKkO20ZysXL3bLmAiahcvQ1kgmoglKuLWJqxMNJ0wg/640?wx_fmt=jpeg&amp;from=appmsg" alt=""></p>
+<p>HippoRAG模拟人类长期记忆的三个组成部分，以模拟其模式分离和完成功能。</p>
+<ul>
+<li>
+<p>对于离线索引，LLM将段落处理成开放知识图谱（KG）三元组。这些随后被添加到人工海马索引中，同时合成旁海马区域（PHR）检测同义词。在上例中，HippoRAG提取涉及托马斯教授的三元组，并将其整合到KG中。</p>
+</li>
+<li>
+<p>对于在线检索，LLM大脑皮层从查询中提取命名实体。旁海马检索编码器随后将它们与海马索引关联。HippoRAG利用个性化PageRank算法进行基于上下文的检索，并提取与托马斯教授相关的信息。</p>
+</li>
+</ul>
+<h4 id="整体流程演示">整体流程演示</h4>
+<p>以下是一个实际示例，介绍HippoRAG的流程。</p>
+<p>图13展示了问题、答案及其支持段落和干扰段落。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJHljq23QoJgBbLQcX8MngvC1JKplUFKqg7lx1pJVnmHgiawZYZjmnRMw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>图14描绘了索引阶段，包括OpenIE过程和相关知识图谱子图。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJjEczz6kd7w8ibendtQmg3GhL4Iib4MAQhIlKyVIc6tGHtEGa88XnBFoQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>最后，图15展示了检索阶段，展示了查询命名实体识别（NER）、查询节点检索、个性化PageRank（PPR）算法对节点概率的影响以及顶级检索结果的计算。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJlIPBicl34yUvQ9p6QJcswv0WNAICUMaWlqwJicQmluF77R1Udz2icMxmg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>接下来，结合源代码，我们将具体讨论HippoRAG如何构建长期记忆以及如何在两个方面进行检索。</p>
+<h4 id="构建长期记忆的方法">构建长期记忆的方法</h4>
+<p>构建长期记忆的过程主要包含以下三个步骤。</p>
+<p>首先，利用LLM通过OpenIE从检索语料库的每个段落中提取一组命名实体，如图16所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJELGSKdtQJYEwGeIFw6C6ibapgnibw1PNbXMRkq1xRSI4fdG7pNq6lq4Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>接下来，将这些命名实体添加到OpenIE提示中，以提取最终的三元组，如图17所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJrovricxkf4WEL6ObgWhxicJrJuKiabHSPSypAPUiaeMicClbLP8fIJmJH8A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>最后，使用经过微调的现成密集编码器来创建知识图谱，该图谱也将用于检索。</p>
+<h4 id="如何检索">如何检索</h4>
+<p>首先，使用LLM从用户查询中提取一组命名实体，如图18所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJ5Mov6HFYSDpEj9pE2RE4DtDWY7yVGpJzDNBSjqeBc8d4kcD8QiblBZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>然后，根据检索编码器确定的相似度，将这些命名实体链接到知识图谱中的节点。我们将这些选定的节点称为查询节点。</p>
+<p>在海马体中，海马索引元素之间的神经通路使得相关邻域能够被激活并向上游回忆。</p>
+<p>为了模仿这一高效的图搜索过程，HippoRAG利用了个性化PageRank（PPR）算法，这是一种仅通过一组用户定义的源节点在图上分布概率的PageRank版本。相应的代码如下所示。</p>
+<pre><code>    def rank_docs(self, query: str, top_k=10):  
+        &quot;&quot;&quot;  
+        Rank documents based on the query  
+        @param query: the input phrase  
+        @param top_k: the number of documents to return  
+        @return: the ranked document ids and their scores  
+        &quot;&quot;&quot;  
+        ...  
+        ...  
+        # Run Personalized PageRank (PPR) or other Graph Alg Doc Scores  
+        if len(query_ner_list) &gt; 0:  
+            combined_vector = np.max([top_phrase_vectors], axis=0)  
+  
+            if self.graph_alg == 'ppr':  
+                ppr_phrase_probs = self.run_pagerank_igraph_chunk([top_phrase_vectors])[0]  
+            elif self.graph_alg == 'none':  
+                ppr_phrase_probs = combined_vector  
+            elif self.graph_alg == 'neighbor_2':  
+                ppr_phrase_probs = self.get_neighbors(combined_vector, 2)  
+            elif self.graph_alg == 'neighbor_3':  
+                ppr_phrase_probs = self.get_neighbors(combined_vector, 3)  
+            elif self.graph_alg == 'paths':  
+                ppr_phrase_probs = self.get_neighbors(combined_vector, 3)  
+            else:  
+                assert False, f'Graph Algorithm {self.graph_alg} Not Implemented'  
+  
+            fact_prob = self.facts_to_phrases_mat.dot(ppr_phrase_probs)  
+            ppr_doc_prob = self.docs_to_facts_mat.dot(fact_prob)  
+            ppr_doc_prob = min_max_normalize(ppr_doc_prob)  
+        else:  
+            ppr_doc_prob = np.ones(len(self.extracted_triples)) / len(self.extracted_triples)  
+        ...  
+        ...  
+</code></pre>
+<p>最后，正如海马体信号向上游发送时所做的那样，HippoRAG聚合输出PPR节点概率，并将其用于对先前索引的段落进行排序以进行检索。</p>
+<h4 id="sprag">spRAG</h4>
+<p>spRAG 是一种用于管理复杂查询的方法。它通过以下两种关键技术提升了标准 RAG 的性能：</p>
+<ol>
+<li>
+<p>AutoContext</p>
+</li>
+<li>
+<p>相关段落提取（Relevant Segment Extraction，简称 RSE）</p>
+</li>
+</ol>
+<p>我们重点探讨 spRAG 如何跨块处理复杂查询。值得注意的是，目前关于 spRAG 的资料仅限于分析结合代码，尚无相关论文。</p>
+<h4 id="autocontext自动注入文档级上下文">AutoContext：自动注入文档级上下文</h4>
+<p>在传统的RAG中，文档通常被分割成固定长度的块进行嵌入。这种简单的方法往往忽略了文档级的上下文信息，导致上下文嵌入不够准确和全面。</p>
+<p>为了解决这一问题，开发了AutoContext。其核心思想是在嵌入每个块之前，自动将文档级的上下文信息融入其中。</p>
+<p>具体来说，它会生成一个1-2句的文档摘要，并连同文件名一起添加到每个块的开头。这样一来，每个块不再是孤立的，而是携带了整个文档的上下文信息。获取文档摘要的代码如下所示。</p>
+<pre><code>def get_document_context(auto_context_model: LLM, text: str, document_title: str, auto_context_guidance: str = &quot;&quot;):  
+    # 如果内容过长，则截断  
+    max_content_tokens = 6000 # 如果这个数字改变，也要更新上面的截断提示信息  
+    text, num_tokens = truncate_content(text, max_content_tokens)  
+    if num_tokens &lt; max_content_tokens:  
+        truncation_message = &quot;&quot;  
+    else:  
+        truncation_message = TRUNCATION_MESSAGE  
+  
+    # 获取文档上下文  
+    prompt = PROMPT.format(auto_context_guidance=auto_context_guidance, document=text, document_title=document_title, truncation_message=truncation_message)  
+    chat_messages = [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: prompt}]  
+    document_context = auto_context_model.make_llm_call(chat_messages)  
+    return document_context  
+</code></pre>
+<h4 id="相关片段提取智能组合相关文本块">相关片段提取：智能组合相关文本块</h4>
+<p>RSE 是一个后处理步骤。其目标是通过智能识别和组合能够提供最相关信息的文本块，从而形成更长的片段。</p>
+<p>具体来说，RSE 首先将检索到的内容相似或语义相关的文本块进行分组。然后，根据查询需求，智能地选择和组合这些文本块，形成最佳片段。相应的代码如下所示。</p>
+<pre><code>def get_best_segments(all_relevance_values: list[list], document_splits: list[int], max_length: int, overall_max_length: int, minimum_value: float) -&gt; list[tuple]:  
+    &quot;&quot;&quot;  
+    该函数接收文本块的相关性值，然后运行优化算法以找到最佳片段。  
+  
+    - all_relevance_values: 每个元文档的每个文本块的相关性值列表，每个外层列表代表一个查询  
+    - document_splits: 表示每个文档开始的索引列表 - 最佳片段不会与这些索引重叠  
+  
+    返回  
+    - best_segments: 表示元文档中最佳片段索引的元组列表（结束索引不包括在内）  
+    &quot;&quot;&quot;  
+    best_segments = []  
+    total_length = 0  
+    rv_index = 0  
+    bad_rv_indices = []  
+    while total_length &lt; overall_max_length:  
+        # 遍历查询  
+        if rv_index &gt;= len(all_relevance_values):  
+            rv_index = 0  
+        # 如果所有查询都没有更多有效片段，则完成  
+        if len(bad_rv_indices) &gt;= len(all_relevance_values):  
+            break  
+        # 检查是否已确定该查询没有更多有效片段 - 如果是，跳过  
+        if rv_index in bad_rv_indices:  
+            rv_index += 1  
+            continue  
+  
+        # 找到该查询的最佳剩余片段  
+        relevance_values = all_relevance_values[rv_index] # 获取该查询的相关性值  
+        best_segment = None  
+        best_value = -1000  
+        for start in range(len(relevance_values)):  
+            # 跳过负值起始点  
+            if relevance_values[start] &lt; 0:  
+                continue  
+            for end in range(start+1, min(start+max_length+1, len(relevance_values)+1)):  
+                # 跳过负值结束点  
+                if relevance_values[end-1] &lt; 0:  
+                    continue  
+                # 检查该片段是否与任何最佳片段重叠  
+                if any(start &lt; seg_end and end &gt; seg_start for seg_start, seg_end in best_segments):  
+                    continue  
+                # 检查该片段是否与任何文档分割重叠  
+                if any(start &lt; split and end &gt; split for split in document_splits):  
+                    continue  
+                # 检查该片段是否会超过总体最大长度  
+                if total_length + end - start &gt; overall_max_length:  
+                    continue  
+                segment_value = sum(relevance_values[start:end]) # 将片段值定义为其文本块相关性值的总和  
+                if segment_value &gt; best_value:  
+                    best_value = segment_value  
+                    best_segment = (start, end)  
+  
+        # 如果没有找到有效片段，标记该查询已完成  
+        if best_segment is None or best_value &lt; minimum_value:  
+            bad_rv_indices.append(rv_index)  
+            rv_index += 1  
+            continue  
+  
+        # 否则，将片段添加到最佳片段列表中  
+        best_segments.append(best_segment)  
+        total_length += best_segment[1] - best_segment[0]  
+        rv_index += 1  
+  
+    return best_segments  
+</code></pre>
+<h4 id="洞察与思考">洞察与思考</h4>
+<h4 id="算法与数据结构的比较">算法与数据结构的比较</h4>
+<p>RAPTOR 通过聚类构建树状数据结构，并基于此结构进行检索。</p>
+<p>尽管 Graph RAG 和 HippoRAG 都采用知识图谱，但它们存在一些差异：</p>
+<ul>
+<li>
+<p>在数据结构方面，Graph RAG 通过汇总知识元素来整合信息。因此，每当新增数据时，汇总过程需要重复进行。RAPTOR 也是如此。相反，HippoRAG 只需在知识图谱中添加边即可无缝集成新知识。</p>
+</li>
+<li>
+<p>在检索算法方面，Graph RAG 依赖于社区检测，而 HippoRAG 则使用个性化 PageRank（PPR）算法。</p>
+</li>
+</ul>
+<p>与其他算法不同，spRAG 不使用复杂的数据结构。它仅将文档摘要和文件名添加到每个块中，然后基于相关性值进行检索。这也意味着 spRAG 的索引和查询速度应该是最快的。</p>
+<h4 id="关于性能">关于性能</h4>
+<p>HippoRAG 以 RAPTOR 为基准进行了实验，展示了一些超越 RAPTOR 的结果，如图 19 所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJHGFEjn3Wv732icd1y0rJDWyDwicsiaQzrlhb1WQNpiavkq2BklOOthRrvg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>在 Graph RAG 论文 中，并未包含性能对比实验。</p>
+<p>此外，目前尚无关于 spRAG 的论文可供参考。</p>
+<h4 id="关于增强范围">关于增强范围</h4>
+<p>四种方法——RAPTOR、Graph RAG、HippoRAG 和 spRAG——旨在提升对整个语料库的理解。</p>
+<p>它们各自基于整个语料库构建数据结构。</p>
+<h4 id="关于可定制性">关于可定制性</h4>
+<p>在此背景下，HippoRAG 因其所有组件均为现成产品而表现更优，无需额外训练，如图 20 所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/0CSaDCjxEJjHnYhAMZyUqtCOkx53I6xJicr3dFzFWpYUCkvB3ZhL8iaF1v8iab0kaehsTylAw9RPcbJMNicFM0z0AQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>因此，通过微调特定组件，存在显著的改进潜力。</p>
+<h4 id="结论">结论</h4>
+<p>本文介绍了四种新方法，以提升传统RAG在文档或语料库上的全球理解能力，并辅以代码解释。同时，也分享了我的见解和思考。</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+可关注我们的公众号：每天AI新工具
+
+<p><img src="/images/aitools/2024/03/qrcode_for_gh_dde1b429630d_258.jpg" alt=""></p>
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
