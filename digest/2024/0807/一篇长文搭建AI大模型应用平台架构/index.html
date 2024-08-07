@@ -1,0 +1,943 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>一篇长文搭建AI大模型应用平台架构 作者： PaperAgent 来源： PaperAgent 在研究了6家知名公司如何部署生成式AI应用程序后，注意到它们的平台有很多相似之处。概述了生成式AI大模型应用平台 的常见组件 、它们的作用 以及它们的实现方式 。尽力保持架构的通用性，但某些应用程序可能会有所不同。 Generative AI大模型应用平  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e5ce844860451fff3faf3d8f8894971d" class="smooth">
+                                            <i class="fas fa-music fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音乐生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#fd71852fd52d5e18ef4f9a252f1eac58" class="smooth">
+                                            <i class="fas fa-search fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>AI搜索</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">一篇长文搭建AI大模型应用平台架构</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 7, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvpfgqek5fBPmibQdFa7gqdiatuyEEEvMPZr2Eu3lvnI9osT1IYwwdKvXw/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： PaperAgent  来源： <a href="https://mp.weixin.qq.com/s/z4yZYobPukxtvizfuX8qRA">PaperAgent</a></p>
+<p>在研究了6家知名公司如何部署生成式AI应用程序后，注意到它们的平台有很多相似之处。概述了<strong>生成式AI大模型应用平台</strong> 的<strong>常见组件</strong> 、它们的<strong>作用</strong> 以及它们的<strong>实现方式</strong> 。尽力保持架构的通用性，但某些应用程序可能会有所不同。</p>
+<p><strong>Generative AI大模型应用平台整体架构</strong></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvrMSibnPiaq5JVI7ibnhLjcIjrxfFZibbMqu1K5TtLqahVPWlHPsfyic7kMg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这是一个相当复杂的系统。<strong>将从最简单的架构开始，逐步（Step by Step）添加更多组件</strong> 。在最简单的形式中，应用程序接收查询并将其发送到模型。模型生成响应，并将其返回给用户。没有护栏，没有增强上下文，也没有优化。<strong>模型 API</strong> 框指的是第三方 API（例如 OpenAI、Google、Anthropic）和自托管 API。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvJkJ9ABQ7soNAZrUaMvk4lB8omxLEeBQIOMnwvMian98O1Syt6IibgEjg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>从这里，可以根据需要逐步添加更多组件：</p>
+<ul>
+<li>
+<p>通过让模型访问外部数据源和信息收集工具（<strong>RAG、Agentic RAG</strong> ），增强模型的上下文输入。</p>
+</li>
+<li>
+<p>设置<strong>护栏</strong> 来保护系统和用户。</p>
+</li>
+<li>
+<p>添加<strong>模型路由器和网关</strong> 以支持复杂的管道并增加更多安全性。</p>
+</li>
+<li>
+<p>使用<strong>缓存</strong> （Prompt 、Exact、Semantic cache）优化延迟和成本。</p>
+</li>
+<li>
+<p>添加<strong>复杂逻辑和写操作</strong> 以最大化系统的能力。****</p>
+</li>
+</ul>
+<p><strong>可观测性</strong> ，它可以让你对系统进行监控和调试以获得可见性，以及<strong>编排</strong> ，它涉及将所有组件串联在一起，是平台的两个基本组成部分。</p>
+<h4 id="step-1-上下文增强rag">Step 1. 上下文增强（RAG）</h4>
+<p>平台的初始扩展通常涉及添加机制，以允许系统为每个查询添加必要的信息。收集相关信息的过程称为上下文构建。</p>
+<p>许多查询需要上下文才能回答。上下文中的相关信息越多，模型对其内部知识的依赖就越少，而由于其训练数据和训练方法，这些知识可能不可靠。研究表明，访问上下文中的相关信息可以帮助模型生成更详细的响应，同时减少幻觉。</p>
+<p>例如，对于查询“Acme 的 fancy-printer-A300 能否打印 100pps？”，如果模型获得 fancy-printer-A300 的规格，它将能够做出更好的响应。</p>
+<p>基础模型的上下文构建相当于传统 ML 模型的特征工程。它们的目的相同：为模型提供处理输入所需的信息。</p>
+<p>上下文学习，即从上下文中学习，是一种持续学习的形式。它使模型能够不断吸收新信息来做出决策，防止其过时。例如，使用上周数据训练的模型将无法回答有关本周的问题，除非其情境中包含新信息。通过使用最新信息（例如 fancy-printer-A300 的最新规格）更新模型的上下文，该模型将保持最新状态，并可以在截止日期之后响应查询。</p>
+<p>####<strong>1.1 RAGs</strong></p>
+<p>最著名的上下文构建模式是RAG，即检索增强生成。RAG由两个组件组成：<strong>生成器</strong> （例如语言模型）和<strong>检索器</strong> ，后者从外部来源检索相关信息。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvtiaORsJIrsfyPmIFAbthIWBKwDc48o6aNhFU8SYY41A3xnwwiaoZQNXw/640?wx_fmt=png&amp;from=appmsg" alt="">检索并非RAG所独有的功能。它是搜索引擎、推荐系统、日志分析等的支柱。许多为传统检索系统开发的检索算法都可以用于 RAG。</p>
+<p>外部存储源通常包含非结构化数据，例如备忘录、合同、新闻更新等。它们可以统称为<em><strong>文档</strong></em> 。一个文档可以是 10 个标记，也可以是 100 万个标记。简单地检索整个文档可能会导致上下文变得任意长。RAG 通常要求将文档拆分为<em>可管理的块</em>，这可以根据模型的最大上下文长度和应用程序的延迟要求确定。</p>
+<p>一旦来自外部存储源的数据被加载和分块，就会使用两种主要方法进行检索。</p>
+<p>*<strong>基于Term的检索</strong></p>
+<p>这可以像关键字搜索一样简单。例如，给定查询“transformer”，获取包含此关键字的所有文档。更复杂的算法包括 BM25（利用 TF-IDF）和 Elasticsearch（利用倒排索引）。</p>
+<p>基于Term的检索通常用于文本数据，但它也适用于具有文本元数据（如标题、标签、说明、评论等）的图像和视频。</p>
+<p>*<strong>基于嵌入的检索（也称为向量搜索）</strong></p>
+<p>使用嵌入模型（例如BERT、句子转换器以及OpenAI 或 Google 提供的专有嵌入模型）将数据块转换为嵌入向量。给定一个查询，将检索由向量搜索算法确定的向量最接近查询嵌入的数据。</p>
+<p>向量搜索通常被称为最近邻搜索，使用近似最近邻 (ANN) 算法，例如FAISS（Facebook AI 相似性搜索）、Google 的ScaNN、Spotify 的ANNOY和hnswlib（分层可导航小世界）。</p>
+<p>这不仅适用于文本文档，还适用于图像、视频、音频和代码。许多团队甚至尝试汇总 SQL 表和数据框，然后使用这些摘要生成用于检索的嵌入。</p>
+<pre><code>***召回率** ：算法找到的最近邻的比例。
+
+
+***每秒查询数（QPS）** ：算法每秒能够处理的查询数量。这对于高流量应用至关重要。
+
+
+***构建时间** ：构建索引所需的时间。如果你需要频繁更新索引（例如，因为你的数据发生变化），这个指标尤其重要。
+
+
+***索引大小** ：算法创建的索引的大小，这对于评估其可扩展性和存储需求至关重要。
+</code></pre>
+<p>基于Term的检索比基于嵌入的检索更快、更便宜。它开箱即用，是一个有吸引力的入门选择。BM25 和 Elasticsearch 都在业界广泛使用，是更复杂检索系统的强大基线。基于嵌入的检索虽然计算成本高昂，但随着时间的推移可以得到显著改进，从而超越基于Term的检索。</p>
+<p><strong>生产检索系统通常结合多种方法。将基于术语的检索和基于嵌入的检索相结合称为</strong><em><strong>混合搜索</strong></em>**。**</p>
+<p>一种常见的模式是<strong>顺序的</strong> 。首先，一个便宜但不太精确的检索器（例如基于Term的系统）会获取候选词。然后，一个更精确但更昂贵的机制（例如 k-最近邻）会从这些候选词中找出最佳词。第二步也称为重新排序。</p>
+<p>例如，给定术语“transformer”，可以获取包含单词 transformer 的所有文档，无论它们是关于电气设备、神经结构还是电影。然后使用向量搜索在这些文档中找到与您的 transformer 查询实际相关的文档。</p>
+<p>上下文重新排序与传统的搜索重新排序不同，项目的确切位置不那么重要。在搜索中，排名（例如第一或第五）至关重要。在上下文重新排序中，文档的顺序仍然很重要，因为它会影响模型处理文档的能力。正如论文Lost in the middle所建议的那样，<strong>模型可能会更好地理解上下文开头和结尾的文档</strong> 。但是，只要包含文档，其顺序的影响就不如搜索排名中的影响大。</p>
+<p>另一种模式是<strong>组合</strong> 。检索器的工作方式是按文档与查询的相关性得分对文档进行排名。可以使用多个检索器同时获取候选，然后将这些不同的排名组合在一起以生成最终排名。</p>
+<p>####<strong>1.2 包含表格数据的RAGs</strong></p>
+<p>外部数据源也可以是结构化的，例如数据框或 SQL 表。从 SQL 表中检索数据与从非结构化文档中检索数据有很大不同。给定查询，系统的工作方式如下。</p>
+<ul>
+<li>
+<p>文本到 SQL：根据用户查询和表模式，确定需要什么 SQL 查询。</p>
+</li>
+<li>
+<p>SQL 执行：执行 SQL 查询。</p>
+</li>
+<li>
+<p>生成：根据 SQL 结果和原始用户查询生成响应。</p>
+</li>
+</ul>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvkU24lDfzTubMibictrPjOic4ccBOKz7YevZ61YSRXlLzicN52ib8qX34NKw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>对于文本转 SQL 步骤，如果有许多可用表的架构无法全部放入模型上下文中，则可能需要一个中间步骤来预测每个查询要使用哪些表。文本转 SQL 可以由用于生成最终响应的同一模型或许多专门的文本转 SQL 模型之一完成。</p>
+<p>####<strong>1.3 Agentic RAGs</strong></p>
+<p>互联网是数据的一个重要来源。像 Google 或 Bing API 这样的网络搜索工具可以让模型访问丰富的最新资源，以收集每个查询的相关信息。例如，给定查询“今年谁获得了奥斯卡奖？”，系统会搜索有关最新奥斯卡奖的信息，并使用此信息生成对用户的最终回复。</p>
+<p>基于Term的检索、基于嵌入的检索、SQL 执行和 Web 搜索是模型可以采取的操作，以增强其上下文。可以将每个操作视为模型可以调用的函数。可以合并外部操作的工作流也称为<em><strong>agentic</strong></em> 。</p>
+<p><strong>Agentic RAGs架构</strong></p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvr0YNuDvfZOhNECROMK2wfU3gyxl1p03WN0smfGpicib9k9XxUop8wQhA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>» Action vs 工具 «</strong></p>
+<p>一个工具允许执行一项或多项操作。例如，人员搜索工具可能允许执行两项操作：按姓名搜索和按电子邮件搜索。但是，两者之间的区别很小，因此会交替使用<em>action</em>和<em>工具</em>。</p>
+<p><strong>» 只读actions与写入actions «</strong></p>
+<p>从外部源检索信息但不改变其状态的操作是只读actions。赋予模型写入actions（例如更新表中的值）可使模型执行更多任务，但也会带来更多风险。</p>
+<p>####<strong>1.4 查询重写</strong></p>
+<p>通常，需要重写用户查询以增加获取正确信息的可能性。考虑以下对话。</p>
+<hr>
+<pre><code>User: When was the last time John Doe bought something from us?
+AI: John last bought a Fruity Fedora hat from us two weeks ago, on January 3, 2030.
+User: How about Emily Doe?
+</code></pre>
+<p>最后一个问题“Emily Doe 怎么样？”含糊不清。如果逐字使用此查询来检索文档，则可能会得到不相关的结果。需要重写此查询以反映用户实际询问的内容。新查询本身应该有意义。最后一个问题应该重写为“Emily Doe 上次从我们这里买东西是什么时候？”</p>
+<p>查询重写通常使用其他 AI 模型来完成，使用类似于“给定以下对话，重写最后的用户输入以反映用户实际询问的内容”的提示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvfEtdG5w40FjeCrhkBmV49YMtBy2NwDvxowWL4g8DCG9v9IgSpPkudw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>查询重写可能会变得很复杂，特别是当需要进行身份解析或整合其他知识时。如果用户问“他的妻子怎么样？”，首先需要查询数据库以找出他的妻子是谁。如果没有这些信息，重写模型应该承认这个查询是不可解决的，而不是产生一个名字的幻觉，从而导致错误的答案。</p>
+<h4 id="step-2-设置护栏">Step 2. 设置护栏</h4>
+<p>护栏有助于降低 AI 风险，不仅保护您的用户，还保护开发人员。只要有可能出现故障，就应该设置护栏。这篇文章讨论了两种类型的护栏：输入护栏和输出护栏。</p>
+<p><strong>2.1 输入护栏</strong></p>
+<p>输入护栏通常可以防止两种类型的风险：将私人信息泄露给外部 API，以及执行危害系统的恶意提示（模型越狱）。</p>
+<p>####<strong>向外部 API 泄露私人信息</strong></p>
+<p>此风险特定于使用外部模型 API，即当你需要将数据发送到组织外部时。例如，员工可能会将公司的机密或用户的私人信息复制到提示中，并将其发送到托管模型的任何地方。<br>
+早期最引人注目的事件之一是三星员工将三星的专有信息放入 ChatGPT 中，意外泄露了公司的机密。目前尚不清楚三星是如何发现这次泄密的，以及泄露的信息是如何被用来对付三星的。然而，这起事件的严重性足以让三星在 2023 年 5 月禁止使用 ChatGPT。<br>
+使用第三方 API 时，没有万无一失的方法可以消除潜在的泄漏。但是，你可以使用护栏来缓解它们。你可以使用许多可用的自动检测敏感数据的工具之一。要检测哪些敏感数据由你指定。常见的敏感数据类别有：</p>
+<ul>
+<li>
+<p>个人信息（身份证号码、电话号码、银行账户）。</p>
+</li>
+<li>
+<p>人类的面孔。</p>
+</li>
+<li>
+<p>与公司知识产权或特权信息相关的特定关键字和短语。</p>
+</li>
+</ul>
+<p>许多敏感数据检测工具使用 AI 来识别潜在的敏感信息，例如确定字符串是否类似于有效的家庭住址。如果发现查询包含敏感信息，您有两个选择：阻止整个查询或从中删除敏感信息。例如，可以使用占位符 [PHONE NUMBER] 屏蔽用户的电话号码。如果生成的响应包含此占位符，请使用 PII 可逆字典将此占位符映射到原始信息，以便您可以取消屏蔽，如下所示。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvhAeL8XFoKD5xGNERoA87NiaSbWNAnVmu4AsnGombZllnLzQee6IFrWg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>模型越狱</strong></p>
+<p><strong>试图越狱人工智能模型，让它们说坏话或做坏事，已经成为一项在线运动</strong> 。虽然有些人可能会觉得让 ChatGPT 发表有争议的言论很有趣，但如果客户支持聊天机器人（带有您的名称和徽标）做同样的事情，那就没那么有趣了。这对于有权使用工具的人工智能系统来说尤其危险。想象一下，如果用户找到一种方法让系统执行破坏数据的 SQL 查询。<br>
+为了解决这个问题，应该首先在系统上设置护栏，以便不会自动执行任何有害操作。例如，未经人工批准，不能执行可以插入、删除或更新数据的 SQL 查询。这种增加的安全性的缺点是它会降低系统速度。</p>
+<p>为了防止应用程序发表不该发表的离谱言论，可以为应用程序定义超出范围的主题。例如，如果应用程序是客户支持聊天机器人，它就不应该回答政治或社会问题。一个简单的方法是过滤掉包含通常与有争议的话题相关的预定义短语的输入，例如“移民”或“反疫苗”。更复杂的算法使用人工智能来分类输入是否与预定义的受限主题之一有关。<br>
+如果系统中的有害提示很少见，可以使用异常检测算法来识别不寻常的提示。</p>
+<p>####<strong>2.2 输出护栏</strong></p>
+<p>AI 模型是概率性的，因此其输出不可靠。可以设置护栏来显著提高应用程序的可靠性。输出护栏有两个主要功能：</p>
+<ul>
+<li>
+<p>评估每一次生成的质量。</p>
+</li>
+<li>
+<p>指定处理不同故障模式的策略。</p>
+</li>
+</ul>
+<p>####<strong>输出质量测量</strong></p>
+<p>要发现不符合标准的输出，需要了解故障是什么样子的。以下是故障模式的示例及其发现方法。</p>
+<p>*<strong>空的回应</strong> 。</p>
+<p>*<strong>格式错误的响应</strong> 不符合预期的输出格式。例如，如果应用程序需要 JSON，而生成的响应缺少右括号。有些验证器适用于某些格式，例如正则表达式、JSON 和 Python 代码验证器。还有一些用于约束抽样的工具，例如指导、大纲和讲师。</p>
+<p>*<strong>有害反应</strong> ，例如种族主义或性别歧视的反应。可以使用多种毒性检测工具之一来捕获这些反应。</p>
+<p>*<strong>模型产生的幻觉是事实不一致的反应</strong> 。幻觉检测是一个活跃的研究领域，其解决方案包括SelfCheckGPT和SAFE、搜索引擎事实性评估器。可以通过为模型提供足够的背景信息和提示技术（例如思路链）来缓解幻觉。</p>
+<p>*<strong>包含敏感信息的回复</strong> 。这可能发生在两种情况下。</p>
+<pre><code>* 模型已针对敏感数据进行了训练并将其重新输出。
+
+* 系统从内部数据库检索敏感信息以丰富其上下文，然后将该敏感信息传递给响应。
+</code></pre>
+<p>可以通过不针对敏感数据训练模型并首先不允许其检索敏感数据来防止这种故障模式。可以使用与输入护栏相同的工具来检测输出中的敏感数据。</p>
+<p>*<strong>品牌风险响应</strong> ，例如错误描述贵公司或竞争对手的响应。例如，当由 X 训练的模型 Grok 生成一个响应，暗示 Grok 是由 OpenAI 训练的，这导致互联网怀疑 X 窃取了 OpenAI 的数据。这种故障模式可以通过关键字监控来缓解。一旦确定了与品牌和竞争对手相关的输出，就可以阻止这些输出，将它们传递给人工审核员，或者使用其他模型来检测这些输出的情绪，以确保只返回正确的情绪。</p>
+<p>*<strong>通常情况下，回答都很糟糕</strong> 。例如，如果要求模型写一篇文章，而那篇文章写得很糟糕，或者你要求模型提供低热量蛋糕食谱，而生成的食谱含有过多的糖。使用人工智能评判员来评估模型回答的质量已经成为一种流行的做法。这些人工智能评判员可以是通用模型（比如 ChatGPT、Claude），也可以是经过训练的专门评分员，他们可以根据查询对回答输出具体的分数。</p>
+<p>####<strong>故障管理</strong></p>
+<p>AI 模型是概率性的，这意味着如果您再次尝试查询，可能会得到不同的响应。许多故障可以通过使用基本的重试逻辑来缓解。例如，如果响应为空，请重试 X 次或直到您得到非空响应。同样，如果响应格式不正确，请重试，直到模型生成格式正确的响应。</p>
+<p>但是，这种重试策略可能会产生额外的延迟和成本。一次重试意味着 API 调用次数增加 2 倍。如果在失败后进行重试，则用户所经历的延迟将增加一倍。为了减少延迟，可以并行进行调用。例如，对于每个查询，不必等待第一个查询失败后再重试，而是同时将此查询发送到模型两次，获得两个响应，然后选择更好的一个。这会增加冗余 API 调用的数量，但保持延迟可控。</p>
+<p>依靠人工来处理棘手的查询也很常见。例如，如果查询包含特定的关键短语，则可以将其转交给人工操作员。一些团队使用专门的模型（可能在内部训练）来决定何时将对话转交给人工。例如，当情绪分析模型检测到用户生气时，一个团队会将对话转交给人工操作员。另一个团队在一定次数后转移对话，以防止用户陷入无限循环。</p>
+<p>####<strong>2.3 护栏权衡</strong></p>
+<p><strong>可靠性与延迟的权衡</strong> ：虽然承认护栏的重要性，但一些团队告诉我，延迟更重要。他们决定不实施护栏，因为护栏会显著增加应用程序的延迟。然而，这些团队是少数。大多数团队发现，增加的风险比增加的延迟更昂贵。</p>
+<p>在流完成模式下，输出防护措施可能无法正常工作。默认情况下，整个响应在显示给用户之前生成，这可能需要很长时间。在流完成模式下，新令牌在生成时会流式传输给用户，从而减少用户等待查看响应的时间。缺点是很难评估部分响应，因此在系统防护措施确定应阻止不安全的响应之前，它们可能会被流式传输给用户。</p>
+<p><strong>自托管与第三方 API 的权衡</strong> ：自托管模型意味着不必将数据发送给第三方，从而减少了对输入护栏的需求。然而，这也意味着您必须自己实现所有必要的护栏，而不是依赖第三方服务提供的护栏。</p>
+<p>护栏可以是独立的工具，也可以是模型网关的一部分。如果使用评分器，则将其归类在模型 API 下，因为评分器通常也是 AI 模型。用于评分的模型通常比用于生成的模型更小、更快。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvpfgqek5fBPmibQdFa7gqdiatuyEEEvMPZr2Eu3lvnI9osT1IYwwdKvXw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="step-3-添加模型路由器和网关">Step 3. 添加模型路由器和网关</h4>
+<p>随着应用程序变得越来越复杂并且涉及更多的模型，出现了两种类型的工具来处理多种模型：<strong>路由器和网关</strong> 。</p>
+<p>####<strong>3.1 路由器</strong></p>
+<p>应用程序可以使用<strong>不同的模型来响应不同类型的查询</strong> 。针对不同的查询提供不同的解决方案有几个好处。首先，这允许拥有专门的解决方案，例如一个专门用于技术故障排除的模型和另一个专门用于订阅的模型。专用模型的性能可能比通用模型更好。其次，这可以节省成本。<strong>可以将更简单的查询路由到更便宜的模型，而不是将所有查询路由到昂贵的模型</strong> 。</p>
+<p>路由器通常由<strong>一个意图分类器</strong> 组成，该分类器可以预测用户想要做什么。根据预测的意图，查询将被路由到适当的解决方案。例如，对于客户支持聊天机器人，如果意图是：</p>
+<ul>
+<li>
+<p>要重置密码 –&gt; 将此用户引导至有关密码重置的页面。</p>
+</li>
+<li>
+<p>要纠正计费错误 –&gt; 将此用户转接给人工操作员。</p>
+</li>
+<li>
+<p>要解决技术问题 –&gt; 将此查询路由到针对故障排除进行微调的模型。</p>
+</li>
+</ul>
+<p>意图分类器还可以帮助您的系统避免超出范围的对话。例如，可以使用意图分类器来预测查询是否超出范围。如果查询被视为不合适（例如，如果用户询问您将在即将到来的选举中投票给谁），聊天机器人可以使用其中一个常规回复（“作为聊天机器人，我没有投票权。如果您对我们的产品有疑问，我很乐意为您提供帮助。”）礼貌地拒绝参与，而不会浪费 API 调用。</p>
+<p>如果系统可以访问多个操作，路由器可以包含<strong>下一步操作预测器</strong> ，以帮助系统决定下一步要采取什么操作。如果查询不明确，则一个有效的操作是要求澄清。例如，在响应查询“冻结”时，系统可能会问：“您想冻结您的帐户还是在谈论天气？”或者简单地说，“对不起。你能详细说明一下吗？”</p>
+<p>意图分类器和下一步行动预测器可以是通用模型或专用分类模型。专用分类模型通常比通用模型小得多且速度快得多，<strong>因此系统可以使用多个专用分类模型，而不会产生显著的额外延迟和成本</strong> 。</p>
+<p>当将查询路由到具有不同上下文限制的模型时，查询的上下文可能需要进行相应调整。假设一个包含 1,000 个标记的查询，该查询适用于具有 4K 上下文限制的模型。然后系统执行操作（例如网络搜索），该操作会返回 8,000 个标记上下文。可以截断查询的上下文以适应最初预期的模型，也可以将查询路由到具有更大上下文限制的模型。</p>
+<p>####<strong>3.2 网关</strong></p>
+<p><strong>模型网关是一个中间层，可让组织以统一且安全的方式与不同的模型进行交互</strong> 。模型网关的最基本功能是让开发人员能够以相同的方式访问不同的模型 - 无论是自托管模型还是 OpenAI 或 Google 等商业 API 背后的模型。模型网关使维护代码变得更加容易。如果模型 API 发生变化，只需更新模型网关，而不必更新使用此模型 API 的所有应用程序。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvWq0LJPj9nwLZpbhiaKzJFp5GQvsPwgEqZ3qicMBIMEr7taNUAq5XQmVg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>最简单的模型网关形式是一个统一的包装器，如以下代码示例所示。此示例旨在了解如何实现模型网关。它不具备功能性，因为它不包含任何错误检查或优化。</p>
+<hr>
+<pre><code>import google.generativeai as genai
+import openai
+  
+
+def openai_model(input_data, model_name, max_tokens):
+    openai.api_key = os.environ[&quot;OPENAI_API_KEY&quot;]
+    response = openai.Completion.create(
+        engine=model_name,
+        prompt=input_data,
+        max_tokens=max_tokens
+    )
+    return {&quot;response&quot;: response.choices[0].text.strip()}
+  
+
+def gemini_model(input_data, model_name, max_tokens):
+    genai.configure(api_key=os.environ[&quot;GOOGLE_API_KEY&quot;])
+    model = genai.GenerativeModel(model_name=model_name)
+    response = model.generate_content(input_data, max_tokens=max_tokens)
+    return {&quot;response&quot;: response[&quot;choices&quot;][0][&quot;message&quot;][&quot;content&quot;]}
+  
+
+@app.route('/model', methods=['POST'])
+def model_gateway():
+    data = request.get_json()
+    model_type = data.get(&quot;model_type&quot;)
+    model_name = data.get(&quot;model_name&quot;)
+    input_data = data.get(&quot;input_data&quot;)
+    max_tokens = data.get(&quot;max_tokens&quot;)
+  
+
+    if model_type == &quot;openai&quot;:
+        result = openai_model(input_data, model_name, max_tokens)
+    elif model_type == &quot;gemini&quot;:
+        result = gemini_model(input_data, model_name, max_tokens)
+    return jsonify(result)
+</code></pre>
+<p>模型网关是<strong>访问控制和成本管理</strong> 。不必向所有想要访问 OpenAI API 的人提供的组织tokens（这些tokens很容易泄露），而只需向人们提供模型网关的访问权限，从而创建一个集中且受控的访问点。网关还可以实现细粒度的访问控制，指定哪个用户或应用程序应该有权访问哪个模型。此外，网关可以监控和限制 API 调用的使用，从而防止滥用并有效管理成本。</p>
+<p>模型网关还可用于实施回退策略，以克服速率限制或 API 故障（不幸的是后者很常见）。当主要 API 不可用时，网关可以将请求路由到替代模型，短暂等待后重试，或以其他优雅的方式处理故障。这可确保您的应用程序能够顺利运行而不会中断。</p>
+<p>由于请求和响应已经流经网关，因此它是实现其他功能（如负载平衡、日志记录和分析）的好地方。一些网关服务甚至提供缓存和护栏。</p>
+<p>由于网关的实现相对简单，因此有许多现成的网关。例如 Portkey 的网关、MLflow AI 网关、WealthSimple 的llm-gateway、TrueFoundry、Kong和Cloudflare。</p>
+<p>随着网关和路由器的增加，生成式AI平台变得更加精彩。与评分一样，路由也位于模型网关中。与用于评分的模型一样，用于路由的模型通常比用于生成的模型小。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvlpFFBz2sVLcBpCQciaQrIEKmX3kNvr6S7t0iaqGzwuicIh3DQwz8lf7Aw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="step-4-使用缓存减少延迟">Step 4. 使用缓存减少延迟</h4>
+<p><strong>缓存可能是生成式AI平台中最被低估的组件。缓存可以显著降低应用程序的延迟和成本</strong> 。</p>
+<p>缓存技术也可用于训练，但由于本文是关于部署的，将重点介绍用于推理的缓存。一些常见的推理缓存技术包括<strong>提示缓存、精确缓存和语义缓存</strong> 。提示缓存通常由使用的推理 API 实现。在评估推理库时，了解它支持的缓存机制会很有帮助。</p>
+<p><em>注意力机制的 KV 缓存超出了本次讨论的范围。</em></p>
+<p>####<strong>4.1 提示缓存</strong></p>
+<p>应用程序中的许多提示都有重叠的文本段。例如，所有查询都可以共享相同的系统提示。提示缓存会存储这些重叠的段以供重复使用，因此只需处理一次即可。<strong>不同提示中常见的重叠文本段是系统提示</strong> 。如果没有提示缓存，模型需要在每个查询中处理系统提示。有了提示缓存，它只需要为第一个查询处理一次系统提示。</p>
+<p>对于系统提示较长的应用程序，<strong>提示缓存可以显著减少延迟和成本</strong> 。如果系统提示是 1000 个令牌，并且应用程序今天生成 100 万个模型 API 调用，则提示缓存将会每天免于处理大约 10 亿个重复输入令牌！但是，这并非完全免费。与 KV 缓存一样，提示缓存大小可能非常大，需要大量的工程工作。</p>
+<p>对于涉及长文档的查询，提示缓存也很有用。例如，如果许多用户查询与同一篇长文档（例如一本书或一个代码库）相关，则可以缓存这篇长文档以供查询重复使用。</p>
+<p>自 2023 年 11 月Gim 等人推出以来，<strong>prompt cache</strong>  已被纳入模型 API。Google 宣布 Gemini API 将于 2024 年 6 月以<em>context cache</em>的名称提供此功能。与常规输入令牌相比，缓存的输入令牌可享受 75% 的折扣，但必须为缓存存储支付额外费用（每小时 1.00 美元/100 万个令牌）。鉴于 prompt cache 的明显优势，如果它变得像 KV 缓存一样受欢迎，将不会让人感到惊讶。</p>
+<p>虽然<strong>llama.cpp 也有提示缓存</strong> ，但它似乎只缓存整个提示并用于同一聊天会话中的查询。它的文档有限，但从阅读代码中猜测，在长时间的对话中，它会缓存以前的消息并仅处理最新消息。</p>
+<p>####<strong>4.2 精确缓存</strong></p>
+<p>如果提示缓存和 KV 缓存是基础模型所独有的，<strong>那么精确缓存则更为通用和直接</strong> 。系统会存储已处理的项目，以便在以后请求精确项目时重新使用。例如，如果用户要求模型总结产品，系统会检查缓存以查看是否缓存了该产品的摘要。如果是，则获取此摘要。如果没有，则总结产品并缓存摘要。</p>
+<p><strong>精确缓存还用于基于嵌入的检索，以避免重复的向量搜索</strong> 。如果传入的查询已经在向量搜索缓存中，则获取缓存的搜索结果。如果没有，则对此查询执行向量搜索并缓存结果。</p>
+<p>缓存对于需要多个步骤（例如思路链）和/或耗时操作（例如检索、SQL 执行或 Web 搜索）的查询尤其有吸引力。</p>
+<p>可以使用内存存储实现精确缓存，以实现快速检索。但是，由于内存存储有限，因此也可以使用 PostgreSQL、Redis 或分层存储等数据库实现缓存，以平衡速度和存储容量。制定驱逐策略对于管理缓存大小和保持性能至关重要。常见的驱逐策略包括最近最少使用 (LRU)、最不频繁使用 (LFU) 和先进先出 (FIFO)。</p>
+<p>缓存查询的时间取决于该查询再次被调用的可能性。特定于用户的查询（例如“我最近的订单状态如何”）不太可能被其他用户重复使用，因此不应缓存。同样，缓存对时间敏感的查询（例如“天气怎么样？”）也没有什么意义。一些团队会训练一个小型分类器来预测是否应该缓存查询。</p>
+<p>####<strong>4.3 语义缓存</strong></p>
+<p><strong>与精确缓存不同，语义缓存不要求传入查询与任何缓存查询相同。语义缓存允许重复使用类似的查询</strong> 。假设一个用户问“What’s the capital of Vietnam?”，模型会生成答案“河内”。后来，另一个用户问“What’s the capital city of Vietnam? ”，这是同一个问题，但多了一个单词“城市”。语义缓存的理念是系统可以重复使用答案“河内”，而不是从头计算新查询。</p>
+<p>仅当有可靠的方法来确定两个查询在语义上是否相似时，语义缓存才有效。一种常见的方法是基于嵌入的相似性，其工作原理如下：</p>
+<ul>
+<li>
+<p>对于每个查询，使用嵌入模型生成其嵌入。</p>
+</li>
+<li>
+<p>使用向量搜索找到最接近当前查询嵌入的缓存嵌入。假设此相似度得分为 X。</p>
+</li>
+<li>
+<p>如果 X 小于您设置的相似度阈值，则认为缓存查询与当前查询相同，并返回缓存结果。如果不相同，则处理此当前查询并将其与其嵌入和结果一起缓存。</p>
+</li>
+</ul>
+<p>这种方法需要一个向量数据库来存储缓存查询的嵌入。</p>
+<p><strong>与其他缓存技术相比，语义缓存的价值更令人怀疑，因为它的许多组件都容易出现故障。</strong> 它的成功依赖于高质量的嵌入、功能性向量搜索和值得信赖的相似性度量。设置正确的相似性阈值也很棘手，需要大量的反复试验。如果系统误认为传入的查询与另一个查询相似，则从缓存中获取的返回响应将不正确。</p>
+<p>此外，语义缓存可能非常耗时且计算量大，因为它涉及向量搜索。此向量搜索的速度和成本取决于缓存嵌入数据库的大小。</p>
+<p>如果缓存命中率较高，语义缓存可能仍然值得使用，这意味着可以通过利用缓存结果有效地回答大部分查询。然而，在考虑语义缓存的复杂性之前，请务必评估与之相关的效率、成本和性能风险。</p>
+<p>添加缓存系统后，生成式AI平台如下所示。KV 缓存和提示缓存通常由模型 API 提供程序实现，因此未在此图中显示。如果必须将它们可视化，将它们放在模型 API 框中，有一个新的箭头用于将生成的响应添加到缓存中。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvwyYdlCa9ANJ9PslT78dQwG2pQ3PS3NayIkjQmI564ibv4M6uzRJ1A3A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<h4 id="step-5-添加复杂逻辑与写动作">Step 5. 添加复杂逻辑与写动作</h4>
+<p>到目前为止，讨论过的应用程序的流程相当简单。基础模型生成的输出大部分返回给用户（除非他们没有通过护栏）。但是，应用程序流程可能会更复杂，包含循环和条件分支。<strong>模型的输出还可用于调用写入操作，例如撰写电子邮件或下订单</strong> 。</p>
+<p>####<strong>5.1 复杂逻辑</strong></p>
+<p><strong>一个模型的输出可以有条件地传递到另一个模型，或作为下一步输入的一部分反馈给同一个模型。这个过程一直持续到系统中的某个模型决定任务已完成，并应将最终响应返回给用户。</strong></p>
+<p>当让系统能够规划并决定下一步做什么时，就会发生这种情况。例如，考虑查询“规划巴黎周末行程”。该模型可能首先生成一个潜在活动列表：参观埃菲尔铁塔、在咖啡馆吃午餐、游览卢浮宫等。然后可以将每一项活动反馈到模型中以生成更详细的计划。例如，“参观埃菲尔铁塔”可以促使模型生成子任务，例如查看开放时间、购买门票和查找附近的餐馆。这个迭代过程持续进行，直到创建全面而详细的行程。</p>
+<p>基础设施现在有一个箭头，<strong>将生成的响应指向上下文构建</strong> ，然后再反馈给模型网关中的模型。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvbaxXYVOUzibvkV5gEJCnHVH9FzxrTrIwffyp4cnibt94zJ1jnSZ3q2dA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>####<strong>5.2 写操作</strong></p>
+<p>用于构建上下文的操作是只读操作。它们允许模型从其数据源读取以收集上下文。但系统也可以有写操作，<strong>对数据源和世界进行更改</strong> 。例如，如果模型输出：“向 X 发送一封包含消息 Y 的电子邮件”，系统将调用该操作send_email(recipient=X, message=Y)。</p>
+<p><strong>写操作使系统功能更加强大</strong> 。它们可以让你自动化整个客户拓展工作流程：研究潜在客户、寻找他们的联系人、起草电子邮件、发送第一封电子邮件、阅读回复、跟进、提取订单、用新订单更新数据库等。</p>
+<p>然而，让人工智能自动改变我们生活的前景令人恐惧。就像你不应该让实习生有权删除你的生产数据库一样，你也不应该允许不可靠的人工智能发起银行转账。对系统功能及其安全措施的信任至关重要。你需要确保系统受到保护，以免被那些试图操纵系统执行有害操作的坏人所利用。</p>
+<p>与其他软件系统一样，人工智能系统也容易受到网络攻击，但它们还有另一个弱点：提示注入。<strong>提示注入是指攻击者操纵输入提示进入模型，使其表现出不良行为</strong> 。可以将提示注入视为针对人工智能而非人类进行的社会工程。</p>
+<p>许多公司担心的情况是，他们让人工智能系统访问其内部数据库，而攻击者会诱骗该系统泄露这些数据库中的私人信息。如果系统对这些数据库具有写权限，攻击者可以诱骗系统破坏数据。</p>
+<p>任何想要利用人工智能的组织都需要认真对待安全问题。然而，这些风险并不意味着人工智能系统永远不应该被赋予在现实世界中行动的能力。人工智能系统可能会失败，但人类也会失败。如果我们能让人们相信机器能带我们进入太空，希望有一天，安全问题足以让我们信任自主人工智能系统。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvpibgpNeHbNoRWIB894icAWWYu7b6wb789xl0FnFKvJCmgDDekJYe0DKA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>####<strong>5.3 可观察性</strong></p>
+<p>虽然将可观察性放在了单独的部分，但它应该从一开始就集成到平台中，而不是事后才添加。可观察性对于各种规模的项目都至关重要，其重要性随着系统的复杂性而增长。</p>
+<p>可观察性的所有细微差别并未全部涵盖，仅简要概述监控的三大支柱：<strong>日志、追踪和指标</strong> 。关于用户反馈、偏差检测和调试就不过多介绍了。</p>
+<p>####<strong>指标</strong></p>
+<p>讨论监控时，大多数人都会想到指标。要跟踪哪些指标取决于想要跟踪系统的哪些方面，这些指标与应用程序相关。但是，一般来说，需要跟踪两种类型的指标：<strong>模型指标和系统指标</strong> 。</p>
+<p>系统指标可以告诉整个系统的状态。<strong>常见指标包括吞吐量、内存使用率、硬件利用率以及服务可用性/正常运行时间</strong> 。系统指标是所有软件工程应用程序所共有的。</p>
+<p><strong>模型指标评估模型的性能，例如准确度、毒性和幻觉率</strong> 。应用程序管道中的不同步骤也有自己的指标。例如，在 RAG 应用程序中，检索质量通常使用上下文相关性和上下文精度来评估。向量数据库可以通过索引数据所需的存储空间以及查询数据所需的时间来评估</p>
+<p>模型输出失败的原因有很多种。识别这些问题并制定指标来监控这些问题至关重要。例如，可能希望跟踪模型超时、返回空响应或生成格式错误的响应的频率。如果担心模型泄露敏感信息，请找到一种方法来跟踪这些信息。</p>
+<p>与长度相关的指标（例如查询、上下文和响应长度）有助于了解模型的行为。一个模型是否比另一个模型更冗长？某些类型的查询是否更有可能导致冗长的答案？它们对于检测应用程序中的变化特别有用。如果平均查询长度突然减少，则可能表明存在需要调查的潜在问题。</p>
+<p>长度相关指标对于跟踪延迟和成本也很重要，因为较长的上下文和响应通常会增加延迟并产生更高的成本。</p>
+<p>跟踪延迟对于了解用户体验至关重要。常见的<strong>延迟指标</strong> 包括：</p>
+<p>*<strong>第一个令牌的时间(TTFT)：</strong> 生成第一个令牌所需的时间。</p>
+<p>*<strong>令牌间隔时间（TBT）</strong> ：每个令牌生成之间的间隔。</p>
+<p>*<strong>每秒令牌数(TPS)</strong> ：生成令牌的速率。</p>
+<p>*<strong>每个输出令牌的时间（TPOT）</strong> ：生成每个输出令牌所需的时间。</p>
+<p>*<strong>总延迟</strong> ：完成响应所需的总时间。</p>
+<p>还需要跟踪成本。与成本相关的指标包括查询数量以及输入和输出令牌的数量。如果使用具有速率限制的 API，则跟踪每秒的请求数非常重要，以确保保持在分配的限制范围内并避免潜在的服务中断。</p>
+<p>计算指标时，可以选择抽样检查或详尽检查。抽样检查涉及对数据子集进行抽样以快速识别问题，而详尽检查则评估每个请求以获得全面的性能视图。选择取决于您的系统要求和可用资源，两者结合可提供平衡的监控策略。</p>
+<p>计算指标时，确保可以按相关轴（例如用户、发布、提示/链版本、提示/链类型和时间）进行细分。这种粒度有助于了解性能变化并识别特定问题。</p>
+<p>####<strong>日志</strong></p>
+<p><strong>日志的理念很简单：记录一切</strong> 。记录系统配置。记录查询、输出和中间输出。记录组件的启动、结束、崩溃等时间。记录日志时，请确保为其添加标签和 ID，这样可以帮助了解此日志来自系统的哪个位置。</p>
+<p>记录所有内容意味着日志量会快速增长。许多用于自动日志分析和日志异常检测的工具都由 AI 提供支持。</p>
+<p>虽然不可能手动处理日志，但每天手动检查生产数据以了解用户如何使用的应用程序很有用。随着开发人员与更多数据的交互，他们对好输出和坏输出的看法会发生变化，这使得他们既可以重写提示以增加获得良好响应的机会，也可以更新评估流程以捕捉不良响应。</p>
+<p>####<strong>追踪</strong></p>
+<p><strong>追踪是指对请求通过各种系统组件和服务的执行路径进行详细记录</strong> 。在 AI 应用程序中，追踪揭示了从用户发送查询到返回最终响应的整个过程，包括系统采取的操作、检索到的文档以及发送给模型的最终提示。它还应显示每个步骤所需的时间及其相关成本（如果可衡量）。例如，这是<strong>Langsmith</strong> 跟踪的可视化。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/AE74ia62XricHrRHb7nU7W0ibh97qQgxJVvz1t4IAwZDgEickHgrDLhKW245Q6fxx98VAR1x4MiaGxamEtog47eXSeQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>理想情况下，应该能够逐步跟踪每个查询在系统中的转换。如果查询失败，您应该能够准确指出出错的确切步骤：是处理有误、检索到的上下文不相关，还是模型生成了错误的响应。</p>
+<p>####<strong>5.4 AI管道编排</strong></p>
+<p>AI应用程序可能相当复杂，包含多个模型、从多个数据库检索数据，并且可以使用各种工具。<strong>编排器可帮助指定如何将这些不同的组件组合（串联）在一起以创建端到端的应用程序流程</strong> 。</p>
+<p>从高层次上看，编排器的工作分为两个步骤：组件定义和串联（也称为流水线）。</p>
+<p>*<strong>组件定义</strong><br>
+需要告诉编排器您的系统使用哪些组件，例如模型（包括用于生成、路由和评分的模型）、系统可以从中检索数据的数据库以及系统可以采取的操作。与模型网关直接集成可以帮助简化模型入门，并且一些编排器工具希望成为网关。许多编排器还支持与评估和监控工具集成。</p>
+<p>*<strong>串联（或流水线）</strong><br>
+告诉编排器系统从接收用户查询到完成任务所采取的步骤顺序。简而言之，串联只是函数组合。以下是流水线的示例。</p>
+<p>编排器负责在步骤之间传递数据，并提供工具来帮助确保当前步骤的输出符合下一步所需的格式。</p>
+<pre><code>1. 处理原始查询。
+
+2. 根据处理后的查询检索相关数据。
+
+3. 原始查询和检索到的数据结合在一起，创建符合模型预期格式的提示。
+
+4. 模型根据提示生成响应。
+
+5. 评估响应。
+
+6. 如果响应被认为良好，则将其返回给用户。如果不好，则将查询路由给人工操作员。
+</code></pre>
+<p>编排器负责在步骤之间传递数据，并可以提供工具，帮助确保当前步骤的输出格式是下一个步骤所期望的。</p>
+<p>在为具有严格延迟要求的应用程序设计管道时，尽可能多地并行执行。例如，如果有一个路由组件（决定将查询发送到哪里）和一个PII（个人身份信息） 删除组件，它们可以同时执行这两项操作。</p>
+<p>有很多 AI 编排工具，包括<strong>L****angChain、LlamaIndex、Flowise、Langflow和Haystack</strong> 。每个工具都有自己的 API，不在这里展示实际的代码。</p>
+<p>虽然在启动项目时直接使用编排工具很诱人，但首先不要使用编排工具来构建应用程序。任何外部工具都会增加复杂性。编排器可以抽象出系统工作原理的关键细节，使理解和调试系统变得困难。</p>
+<p>随着您进入应用程序开发过程的后期阶段，可能会决定使用编排器可以让任务更轻松。在评估编排器时，牢记以下三个方面。</p>
+<p>*<strong>集成和可扩展性</strong><br>
+评估编排器是否支持已在使用或将来可能采用的组件。例如，如果想使用 Llama 模型，请检查编排器是否支持该模型。考虑到有多少模型、数据库和框架，编排器不可能支持所有内容。因此，还需要考虑编排器的可扩展性。如果它不支持特定组件，那么改变它有多难？</p>
+<p>*<strong>支持复杂管道</strong><br>
+随着应用程序的复杂性不断增加，可能需要管理涉及多个步骤和条件逻辑的复杂管道。支持分支、并行处理和错误处理等高级功能的编排器将帮助您高效管理这些复杂性。</p>
+<p>*<strong>易用性、性能和可扩展性</strong><br>
+考虑编排器的用户友好性。寻找直观的 API、全面的文档和强大的社区支持，因为这些可以大大减少团队的学习曲线。避免使用会发起隐藏 API 调用或给您的应用程序带来延迟的编排器。此外，确保编排器能够随着应用程序、开发人员和流量数量的增长而有效扩展。</p>
+<h4 id="6-结论">6. 结论</h4>
+<p><strong>从基本架构开始，然后逐渐添加组件以应对日益增长的应用程序复杂性</strong> 。每增加一个组件都会带来一系列好处和挑战，需要仔细考虑和实施。</p>
+<p>虽然组件分离对于保持系统模块化和可维护性很重要，但这种<strong>分离是流动的</strong> 。<strong>组件之间有很多重叠</strong> 。例如，模型网关可以与护栏共享功能。缓存可以在不同的组件中实现，例如在矢量搜索和推理服务中。</p>
+<p><strong>全文1.36万字</strong> ，但还有很多细节还没有进一步探讨，尤其是关于可观察性、上下文构建、复杂逻辑、缓存和护栏。</p>
+<p>推荐阅读</p>
+<ul>
+<li>
+<p>• <a href="http://mp.weixin.qq.com/s?__biz=Mzk0MTYzMzMxMA==&amp;mid=2247484447&amp;idx=1&amp;sn=f01188d29e2c5133addbd67229db4ee7&amp;chksm=c2ce3e6ef5b9b77874aa250e55522bbbaf214df817ad5f5f1ff98135255863522daeebdf2d3b&amp;scene=21#wechat_redirect">对齐LLM偏好的直接偏好优化方法：DPO、IPO、KTO</a></p>
+</li>
+<li>
+<p>• <a href="http://mp.weixin.qq.com/s?__biz=Mzk0MTYzMzMxMA==&amp;mid=2247483838&amp;idx=1&amp;sn=547104d60f0e4620417adf503eaaab9d&amp;chksm=c2ce3bcff5b9b2d97bb4835bac4d00217f07603e64db9546c611dad53305dac4b32c6923f071&amp;scene=21#wechat_redirect">2024：ToB、Agent、多模态</a></p>
+</li>
+<li>
+<p>• <a href="http://mp.weixin.qq.com/s?__biz=Mzk0MTYzMzMxMA==&amp;mid=2247487375&amp;idx=1&amp;sn=e16bc2fdaac04e58e99cfd2a1dc0b0cb&amp;chksm=c2ce35fef5b9bce80dcf0a70b753707036fe7f962d7888d60396490841a538b0f46e952f53f0&amp;scene=21#wechat_redirect">RAG全景图：从RAG启蒙到高级RAG之36技，再到终章Agentic RAG！</a></p>
+</li>
+<li>
+<p>• <a href="http://mp.weixin.qq.com/s?__biz=Mzk0MTYzMzMxMA==&amp;mid=2247485322&amp;idx=1&amp;sn=71ffb345fca514aa5ce2848cb2c9f071&amp;chksm=c2ce3dfbf5b9b4edd5b98e45c6179890bdea748fb5220636d25f42006954ea5c81afa8735725&amp;scene=21#wechat_redirect">Agent到多模态Agent再到多模态Multi-Agents系统的发展与案例讲解（1.2万字，20+文献，27张图）</a></p>
+</li>
+</ul>
+<h4 id="heading"></h4>
+<p>欢迎关注我的公众号“<strong>PaperAgent</strong> ”，每天一篇大模型（LLM）文章来锻炼我们的思维，简单的例子，不简单的方法，提升自己。</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+可关注我们的公众号：每天AI新工具
+
+<p><img src="/images/aitools/2024/03/qrcode_for_gh_dde1b429630d_258.jpg" alt=""></p>
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
