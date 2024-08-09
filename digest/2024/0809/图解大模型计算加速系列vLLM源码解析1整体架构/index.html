@@ -1,0 +1,832 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>图解大模型计算加速系列：vLLM源码解析1，整体架构 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 ####**【点击】加入大模型技术交流群** 大家好，这段时间精读了一下vLLM源码实现，打算开个系列来介绍它的源码，也把它当作我的总结和学习笔记。 整个vLLM代码读下来，给我最深的感觉就是：代码呈  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e5ce844860451fff3faf3d8f8894971d" class="smooth">
+                                            <i class="fas fa-music fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音乐生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#fd71852fd52d5e18ef4f9a252f1eac58" class="smooth">
+                                            <i class="fas fa-search fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>AI搜索</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">图解大模型计算加速系列：vLLM源码解析1，整体架构</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 9, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaESTos3sAYLVD59Zz4QoLnJlBWjU7lNB3I5uMa6YQmTgzIHbLoVM91DA/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/7vJdWFt9SHP1xh9OuEVDRg">吃果冻不吐果冻皮</a></p>
+<p>####**<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群** </a></p>
+<p>大家好，这段时间精读了一下vLLM源码实现，打算开个系列来介绍它的源码，也把它当作我的总结和学习笔记。</p>
+<p>整个vLLM代码读下来，给我最深的感觉就是：<strong>代码呈现上非常干净历练，但是逻辑比较复杂，环环嵌套，毕竟它是一个耦合了工程调度和模型架构改进的巨大工程。</strong></p>
+<p>所以在源码解读的第一篇，我想先写一下对整个代码架构的介绍。<strong>在本篇中，我特意少涉及对源码本身的解读，而是把源码中的信息总结出来，配合图例先做整体介绍。</strong> 如果你不想阅读源码细节，但又想对vLLM代码有整体把握，方便后续能知道从哪里查bug的话，这篇文章或许可以帮到你。如果你后续想更深入阅读源码的话，这篇文章可以作为一个引子，后续的细节解读都将在本文的基础上扩展开。</p>
+<p>阅读本文前，建议先看<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247488465&amp;idx=2&amp;sn=d9422378c06d0cd151119e21eaf3886f&amp;chksm=fd3bfa82ca4c7394fe6817a6245eae8654e83e0274c659b3786c6090807cc91e47640fdc1221&amp;scene=21#wechat_redirect">vLLM原理篇讲解</a>。</p>
+<p>话不说，进入正文吧～</p>
+<p><strong>【如果本文有帮助，欢迎大家点赞、收藏和在看～】</strong></p>
+<h4 id="一调用vllm的两种方式">一、调用vLLM的两种方式</h4>
+<p>根据vLLM的官方文档，它向用户提供了两种调用它的方法，分别是：</p>
+<p>*<strong>Offline Batched Inference</strong> （<strong>同步</strong> ，离线批处理）</p>
+<p>*<strong>API Server For Online Serving</strong> （<strong>异步</strong> ，在线推理服务），在这下面又提供了2种支持的API类型：</p>
+<pre><code>***OpenAI-Compatible API Server** （官方推荐）：兼容了OpenAI请求格式的server，包括OpenAI Completions API和OpenAI Chat API。
+
+
+
+
+***Simple Demo API Server** （测试开发用，官方不推荐，相关脚本也不再维护）
+</code></pre>
+<p><strong>在代码实现上，vLLM首先实现了一个推理内核引擎(LLMEngine)，在此基础上封装了上述两种调用方法。</strong> 在本系列的讲解中，我们会先以“offline bacthed inference”作为入口，详细解说内核引擎LLMEngine的各块细节。在此基础上我们再来看“online serving”的运作流程。</p>
+<p>现在，让我们来看这两种调用方法的具体例子。</p>
+<h4 id="11-offline-batched-inference">1.1 Offline Batched Inference</h4>
+<pre><code>from vllm import LLM, SamplingParams  
+  
+# ===========================================================================  
+# batch prompts  
+# ===========================================================================  
+prompts = [&quot;Hello, my name is&quot;,  
+           &quot;The president of the United States is&quot;,  
+           &quot;The capital of France is&quot;,  
+           &quot;The future of AI is&quot;,]  
+  
+# ===========================================================================  
+# 采样参数  
+# ===========================================================================  
+sampling_params = SamplingParams(temperature=0.8, top_p=0.95)  
+  
+# ===========================================================================  
+# 初始化vLLM offline batched inference实例，并加载指定模型  
+# ===========================================================================  
+llm = LLM(model=&quot;facebook/opt-125m&quot;)  
+  
+# ===========================================================================  
+# 推理  
+# ===========================================================================  
+outputs = llm.generate(prompts, sampling_params)  
+  
+# ===========================================================================  
+# 对每一条prompt，打印其推理结果  
+# ===========================================================================  
+for output in outputs:  
+    prompt = output.prompt  
+    generated_text = output.outputs[0].text  
+    print(f&quot;Prompt: {prompt!r}, Generated text: {generated_text!r}&quot;)  
+</code></pre>
+<p>在传统离线批处理中，我们每次给模型发送推理请求时，都要：</p>
+<ul>
+<li>
+<p>等一个batch的数据齐全后，一起发送</p>
+</li>
+<li>
+<p>整个batch的数据一起做推理</p>
+</li>
+<li>
+<p>等一个batch的数据全部推理完毕后，一起返回推理结果</p>
+</li>
+</ul>
+<p><strong>这种“团体间等成员到齐，再一起行动”的行为，就被称为“同步”。</strong></p>
+<p>在vLLM中，当我们使用离线批处理模式时，表面上是在做“同步”推理，也即batch_size是静态固定的。<strong>但推理内核引擎（LLMEngine）在实际运作时，batch_size是可以动态变更的：在每一个推理阶段（prefill算1个推理阶段，每个decode各算1个推理阶段）</strong> 处理的batch size可以根据当下显存的实际使用情况而变动。</p>
+<p>举个例子来说：</p>
+<ul>
+<li>
+<p>给定一个很大的batch，此时尽管vLLM采用了PagedAttention这样的显存优化技术，我们的gpu依然无法同时处理这么大的batch。</p>
+</li>
+<li>
+<p>所以batch中的每一条数据，会被先放到一个waiting队列中。vLLM会用自己的调度策略从waiting队列中依次取数，加入running队列中，直到它认为取出的这些数据将会打满它为1个推理阶段分配好的显存。此时waiting队列中可能还会剩一些数据。</p>
+</li>
+<li>
+<p>在每1个推理阶段，vLLM对running队列中的数据做推理。如果这1个推理阶段执行完毕后，有的数据已经完成了生成（比如正常遇到<eos>
+了），就将这些完成的数据从running队列中移开，并释放它占据的物理块显存。</p>
+</li>
+<li>
+<p>这时，waiting队列中的数据就可以继续append进running队列中，做下1个阶段的推理。</p>
+</li>
+<li>
+<p>因此在每1个推理阶段，vLLM处理的batch size可能会动态变更。</p>
+</li>
+<li>
+<p>将LLMEngine包装成离线批处理形式后，所有的数据必须等到一起做完推理才能返给我们。所以从体感上，我们可能很难感知到内核引擎的“动态”逻辑。</p>
+</li>
+</ul>
+<p><strong>以上是一个浅显粗暴的例子，目的是帮助大家理解“在vLLM中，即使是同步形式的离线批处理，其背后的内核引擎也是按动态batch的形式来实现的”，</strong> 实际的调度策略（Scheduler）要更加复杂，我们将在后续的解读中来具体看它。</p>
+<p><strong>也正是因为LLMEngine这种“动态处理”的特性，才使得它同时也能成为异步在线服务的内核引擎</strong> ：当一条条请求发来时，它们都先进入LLMEngine调度器（Scheduler）的waiting队列中（实际并不是直接进入waiting队列中的，而是在传给LLMEngine前先进入asyncio.Queue()中，然后再由LLMEngine调度进waiting队列中的，这些细节我们也放在后面说，这里不影响理解就行）。此时模型正常执行它的1个推理阶段，调度器也正常处理新来的请求。当模型准备执行下1个推理阶段时，调度器再根据设定的策略，决定哪些数据可以进入running队列进行推理。由于在线服务是异步的，先推理完成的数据就可以先发给客户端了（如果采用流式传输，也可以生成多少先发多少）。</p>
+<p><strong>在这个过程中，vLLM通过PagedAttention技术和“先来先服务（FCFS），后来先抢占，gpu不够就先swap到cpu上”的调度策略，在1个推理阶段处理尽可能多的请求，解决高并发场景下的推理吞吐问题。这就是整个vLLM运作的核心思想。（对这行黑体字里的术语有疑惑的朋友，建议先看<a href="http://mp.weixin.qq.com/s?__biz=Mzg2NjcwNjcxNQ==&amp;mid=2247485614&amp;idx=1&amp;sn=5600ea665d942b7ff290caded1e2252f&amp;chksm=ce47fcdaf93075cc4582bfb15eb822840c332d56122df5b59bd8722426d07ac5b097cf032ba4&amp;scene=21#wechat_redirect">vLLM原理篇</a>讲解）</strong></p>
+<h4 id="12-api-server-for-online-serving">1.2 API Server For Online Serving</h4>
+<pre><code># ===========================================================================  
+# Server：起服务  
+# ===========================================================================  
+$ python -m vllm.entrypoints.openai.api_server --model meta-llama/Llama-2-7b-hf  
+  
+# ===========================================================================  
+# Client：发请求（OpenAI API）  
+# ===========================================================================  
+$ curl http://localhost:8000/v1/completions \  
+    -H &quot;Content-Type: application/json&quot; \  
+    -d '{  
+        &quot;model&quot;: &quot;meta-llama/Llama-2-7b-hf&quot;,  
+        &quot;prompt&quot;: &quot;San Francisco is a&quot;,  
+        &quot;max_tokens&quot;: 7,  
+        &quot;temperature&quot;: 0  
+    }'  
+</code></pre>
+<p>vLLM在实现在线服务时，采用uvicorn部署fastapi app实例，以此实现异步的请求处理。而核心处理逻辑封装在AsyncLLMEngine
+类中（它继承自LLMEngine）。<strong>所以，只要我们搞懂了LLMEngine，对vLLM的这两种调用方式就能举一反三了。</strong></p>
+<h4 id="13-总结">1.3 总结</h4>
+<p>vLLM的两种调用方式与内核引擎LLMEngine的关系如下（图片来自vLLM团队2023 first meetup PPT）:</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaExT3R510fAD7NtyqqGPkwTnmTiaBdwazaKeMDiagSVmfmDsibRMicTq5ZaQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>图中左侧是用户使用界面，罗列了上述所说的两种调用方式</strong> （注意，如前文所说，做demo用的api server官方已经不再维护了，openai_api_server才是官方推荐的使用方式，user custom server目前还没有实现）。<strong>右侧则是开发者界面，不难发现LLMEngine是vLLM的核心逻辑。</strong></p>
+<p>我们来看开发者界面下的几个函数，先来看LLMEngine：</p>
+<ul>
+<li>
+<p>add_request()
+：该方法将每一个请求包装成vLLM能处理的数据类型(SequenceGroup，后面我们会详细解释)，并将其加入调度器（Scheduler）的waiting队列中。<strong>在LLMEngine中，这个函数是按照“同步”的方式设计的</strong> ，也就是它被设计为“遍历batch中的每条数据，然后做相应处理”。所以这个函数本身只适合批处理场景。在异步的online serving中将会把它重写成异步的形式。</p>
+</li>
+<li>
+<p>abort_request
+：在推理过程中，并不是所有的请求都能有返回结果。比如客户端断开连接时，这个请求的推理就可以终止了（abort），这个函数就被用来做这个操作。</p>
+</li>
+<li>
+<p>step()
+：<strong>负责执行1次推理过程（1个prefill算1个次推理，每个decode各算1次推理）。</strong> 在这个函数中，vLLM的调度器会决定要送那些数据去执行本次推理，并负责给这些数据分配好物理块（这些信息都被作为metadata放在要送给模型做推理的数据中）。模型会根据这些信息，采用PagedAttention方法，实际完成推理。</p>
+</li>
+</ul>
+<p>AsyncLLMEngine
+下的函数也是同理类推，这里不赘述了。</p>
+<p>从上面的解读你可能发现了，其实只要掌握了add_request()
+和step()
+这两个函数，就等于掌握LLMEngine的全部思想了！于是你兴奋地打开这两个函数，发现它们的实现代码只有十几行，你突然感觉自己好像是去项羽那吃席的刘邦，因为你渐渐发现：</p>
+<p><strong>背后有万行代码逻辑正在等你😊</strong></p>
+<p>所以说，<strong>vLLM真得是一个巨大的工程，它耦合了调度工程和模型本身的改造，代码中的嵌套非常复杂</strong> 。所以在代码解读的第一篇，我们得先理清整个代码架构，然后再逐一攻克细节。</p>
+<h4 id="二vllm代码整体架构">二、vLLM代码整体架构</h4>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaER4dnnXICo0sXwhyq9wzsSelfUKdM2ib1LqobeburM7jibugUicWhYFQZA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>LLMEngine可以具体分成两个部分：</p>
+<h4 id="21-centralized-controller">2.1 Centralized Controller</h4>
+<p><strong>Centralized Controller，也就是前文我们所说的调度器</strong> 。它和LLMEngine所在的进程是同一个，且两者都是在CPU上的。</p>
+<p>*<strong>调度器的主要作用就是，在每1个推理阶段，决定要把哪些数据送给模型做推理，同时负责给这些模型分配KV Cache物理块</strong> 。但要注意，它只是分配了物理块的id，而不是物理块本身。物理块的实际分配是模型在推理过程中根据物理块id来操作的，也就是CacheEngine做的事情。</p>
+<p>*<strong>调度器下维护着BlockSpaceManager。它负责管理BlockAllocator（实际参与分配物理块的类）。BlockAllocator又分成gpu和cpu两种类型，分别管理这两类设备上的物理块。你可能会问，cpu上的物理块是什么呢？</strong> 你还记得调度器有一个swap策略吗？当gpu上显存不足时，它会把后来的请求抢占，并将其相关的KV cache物理块全部都先swap（置换、卸载）在cpu上，等后续gpu显存充足时，再把它们加载回gpu上继续做相关请求的推理。所以在cpu上我们也需要一个管控物理块的BlockAllocator。<strong>实际代码实现时，Block相关的部分可不止这两个class，还有一些更复杂的逻辑细节。这个我们放在本系列后面的文章中讲解</strong></p>
+<h4 id="22-distributed-workers">2.2 Distributed Workers</h4>
+<p>Distributed Workers，也就是分布式系统，你可以将每个worker理解成一块gpu。它的作用是将我们要使用的模型load到各块卡上（目前对单卡装不下的模型，vLLM支持tp/pp推理），然后对Controller传来的数据做1次推理，返回相关结果。我们来细看下这块：</p>
+<p>*<strong>Distributed Workers：</strong> 图中绘制为Distributed Workers这个绿色块，<strong>其实按vLLM的源码内容，写成Executor会更合适一些。它就是所有Workers的管控中心</strong> ，它指定了用什么方法管控这些Workers，负责分布式环境的初始化，目前支持的方法有：</p>
+<pre><code>* cpu_executor：（较少用），使用cpu做推理时可考虑
+
+
+* gpu_executor：单卡（world_size = 1）的情况下可用
+
+
+* ray_gpu_executor：使用ray这个分布式计算框架实现的executor，适用于多卡环境
+</code></pre>
+<p>*<strong>Worker：在硬件上，它指gpu；在代码上，它指的是Worker实例（每个gpu上的进程维护自己的Worker实例）</strong> 。在每个Worker实例中又管控着如下两个重要实例：</p>
+<pre><code>***CacheEngine** ：负责管控gpu/cpu上的KV cache物理块（调度器的block manager只负责物理块id的分配，CacheEngine则是根据这个id分配结果实打实地在管理物理块中的数据）
+
+
+***Worker.model** ：根据vLLM代码，这里写成**model_runner** 会更合适一些。**它负责加载模型，并执行推理。调用PagedAttention的相关逻辑，就维护这个实例关联的代码下。** 
+</code></pre>
+<h4 id="三加载模型与预分配显存">三、加载模型与预分配显存</h4>
+<p>现在你已经从代码层面知道vLLM的整体架构了，<strong>你是不是迫不及待想看看：当一条请求过来时，整个vLLM是怎么运作的呢？</strong> 现在，我们就来解析这个流程。</p>
+<p><strong>在vLLM正式开始处理1条请求（也就是LLMEngine的调度器正式开始运作时），它需要做两件和初始化相关的事：</strong></p>
+<p>*<strong>加载模型</strong></p>
+<p>*<strong>预分配显存</strong></p>
+<p>我们分别来看这两个步骤。</p>
+<h4 id="31-加载模型">3.1 加载模型</h4>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEPT2Bic5I8EjBJia6srANict38OQvEPnlngBMHPn5BuWOymQBqVxw1kiaQA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这里在做的事很直观：把你的base model加载到worker上。如果你是online加载的，vLLM默认使用HuggingFace，你也可以在环境变量中把相关配置改成ModelScope。</p>
+<h4 id="32-预分配显存">3.2 预分配显存</h4>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaESTos3sAYLVD59Zz4QoLnJlBWjU7lNB3I5uMa6YQmTgzIHbLoVM91DA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>欸这个就非常有意思了。<strong>在模型部署的初始化阶段（推理正式开始前），vLLM会通过模拟实验的方式，来决定gpu/cpu上到底有多少个KV cache物理块可以分配给后续的请求们做推理。vLLM管这个步骤叫</strong> profile_num_available_blocks
+。我们来看看这个模拟实验是怎么做的：</p>
+<h4 id="1杜撰假数据">（1）杜撰假数据</h4>
+<p>首先，用户在初始化LLMEngine引擎时，会提供两个重要参数：</p>
+<ul>
+<li>
+<p>max_num_seqs
+：<strong>在1个推理阶段中，LLMEngine最多能处理的seq数量</strong> （1条seq就是指我们待推理的1条数据）。默认是256</p>
+</li>
+<li>
+<p>max_num_batched_tokens
+：<strong>在1个推理阶段中，LLMEngine最多能处理的token数量</strong> 。默认是2048</p>
+</li>
+</ul>
+<p>根据这两个参数，我们可以假设在模型推理中，平均一个seq要处理max_num_batched_tokens // max_num_seqs
+个token，余数部分我们默认放在第一个seq中。例如，假设max_num_batched_tokens=10，max_num_seqs = 3
+，那么我们就能杜撰出3条seq，每个seq的长度分别为4，3，3</p>
+<h4 id="2用假数据模拟一次前向推理">（2）用假数据模拟一次前向推理</h4>
+<p>我们现在想知道在1次推理过程中，可以分配多少的显存给KV cache。我们可以使用如下公式计算：</p>
+<p><strong>分配给KV cache显存 = gpu总显存 - 不使用KV cache情况下做1次FWD时的显存占用（包括模型本身和FWD过程中的中间数据）</strong></p>
+<p>对于“不使用KV cache做1次FWD时的显存占用”，我们就可以用杜撰出来的假数据模拟一次FWD来计算得出。<strong>在前向推理之后，我们把gpu上的缓存清一次，让它不要影响后续模型的正常推理。</strong></p>
+<h4 id="3计算可分配的kv-cache物理块总数">（3）计算可分配的KV cache物理块总数</h4>
+<p>从（2）的模拟实验中，我们已经预估了一块卡上“分配给KV Cache的总显存”。现在，我们可以来计算总的物理块数量了。</p>
+<p>我们易知：<strong>总物理块数量 = 分配给KV Cache的显存大小/ 物理块大小，其中“大小”的单位是bytes。</strong></p>
+<p>物理块大小（block_size）也是可以由用户自定义的，vLLM推荐的默认值是block_size = 16。</p>
+<p>由大模型中KV值的定义，我们易知：K_cache_block_size = block_size * num_heads * head_size * num_layers * dtype_size
+其中dtype_size表示精度对应的大小，例如fp16就是2，fp32就是4</p>
+<p>同理可知：V_cache_block_size = K_cache_block_size</p>
+<p>则最终一个物理块的大小为：</p>
+<p>cache_block_size = block_size * num_heads * head_size * num_layers * dtype_size * 2</p>
+<p>知道了物理块的大小，我们就能求出物理块的总数了。</p>
+<p>CPU上物理块总数也是同理，但与GPU不同的是，它不需要做模拟实验。CPU上可用的内存总数是用户通过参数传进来的（默认是4G）。也就是我们认为只能在这4G的空间上做swap。将上面公式中“分配给KV Cache的显存大小”替换成4G，就能得到CPU上物理块的数量。</p>
+<h4 id="4将预分配的kv-cache加载到gpu上">（4）将预分配的KV Cache加载到gpu上</h4>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEdx8wNPBzPhgQwuQP7D92y7Uq3jM8mjrudKnqTibDgc0goico0QhO1rmw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>当我们确定好KV Cache block的大小后，我们就可以创建empty tensor，将其先放置到gpu上，实现显存的预分配。以后这块显存就是专门用来做KV Cache的了。</strong> 也正是因为这种预分配，你可能会发现在vLLM初始化后，显存的占用比你预想地要多（高过模型大小），这就是预分配起的作用。相关代码如下（帮助大家更好看一下KV cache tensor的shape）:</p>
+<pre><code>    def _allocate_kv_cache(  
+        self,  
+        num_blocks: int,  
+        device: str,  
+    ) -&gt; List[torch.Tensor]:  
+        &quot;&quot;&quot;Allocates KV cache on the specified device.&quot;&quot;&quot;  
+        kv_cache_shape = self.attn_backend.get_kv_cache_shape(  
+            num_blocks, self.block_size, self.num_heads, self.head_size)  
+        pin_memory = is_pin_memory_available() if device == &quot;cpu&quot; else False  
+        kv_cache: List[torch.Tensor] = []  
+        # =======================================================================  
+        # kv_cache_shape: (2, num_blocks, block_size * num_kv_heads * head_size)  
+        # =======================================================================  
+        for _ in range(self.num_layers):  
+            kv_cache.append(  
+                torch.empty(kv_cache_shape,  
+                            dtype=self.dtype,  
+                            pin_memory=pin_memory,  
+                            device=device))  
+        return kv_cache  
+</code></pre>
+<p>由于这篇文章的主要目的是帮大家了解vLLM代码框架，所以关于预分配的详细代码（注释版）的讲解，我们放在后面的系列中说。这篇文章会尽量少放代码。</p>
+<p>整个预分配的过程，其实也是在提醒我们：当你发现vLLM推理吞吐量可能不及预期，或者出现难以解释的bug时，可以先查查输出日志中pending(waiting)/running/swapped的序列数量，以及此时KV Cache部分的显存利用程度，尝试分析下这些默认的预分配设置是不是很好契合你的推理场景，如果不行，可以先尝试调整这些参数进行解决。</p>
+<h4 id="四scheduler调度">四、Scheduler调度</h4>
+<p>好，目前为止，vLLM所有初始化的工作都完成了，我们现在可以来处理一条请求了。这就是我们调度器发挥作用的时候了，整个调度过程如下：</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEyQDCyr1f9SNia2Nk3dJceDyZr6iauKzPFPd2wFx6xibd2AicPZoiatYiaslg/640?wx_fmt=png&amp;from=appmsg" alt=""><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_png/GmyBmIxnRkO6pPZW1EZzxCib9Qua6vWiaEkbdybaYL3LojKia25VvJpe2N0CTiaULZndK1JvurhNPwYW3gSUqhYaHw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>具体的内容我们在前文说了很多了。<strong>这里只提一点：你会发现这出现了叫swapped的队列，这是前文没有提过的。</strong></p>
+<p>如果你读过vLLM的原理篇，<strong>你可能记得vLLM的调度策略中有一项叫做：后来先抢占（Preemption）</strong> 。它是指在准备执行当前这1个推理阶段时，如果gpu上没有足够的资源对running队列中的全部数据完成下1次推理，我们就取出running队列中最后来的数据，将它的KV Cache swapped到CPU上，同时将这个数据从running移到swapped中。<strong>我们重复执行这个步骤，直到当前gpu上有足够的KV Cache空间留给剩在running中的全部数据为止。</strong></p>
+<p>而存放在Swapped队列中的数据，也会在后续gpu上有足够空间时，被重新加入running计算。</p>
+<p>详细的调度策略会更精细复杂，我们放在对Scheduler单独的代码解析中来说。</p>
+<p><strong>关于vLLM整体代码架构，我们就介绍到这了。对于这个精妙而复杂的系统，我们还有很多细节可以探索。在本系列后续的文章中，我们将来仔细研究这些细节。</strong></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+可关注我们的公众号：每天AI新工具
+
+<p><img src="/images/aitools/2024/03/qrcode_for_gh_dde1b429630d_258.jpg" alt=""></p>
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+

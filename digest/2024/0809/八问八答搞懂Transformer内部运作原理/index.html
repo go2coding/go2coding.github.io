@@ -1,0 +1,672 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>八问八答搞懂Transformer内部运作原理 作者： DASOU 来源： DASOU 引自机器之心 七年前，论文《Attention is all you need》提出了 transformer 架构，颠覆了整个深度学习领域。 如今，各家大模型都以 transformer 架构为基础，但 transformer 内部运作原理，仍是一个未解之谜。 去年，transformer 论文作者之一 Llion Jones 宣布创立人工  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e5ce844860451fff3faf3d8f8894971d" class="smooth">
+                                            <i class="fas fa-music fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音乐生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#fd71852fd52d5e18ef4f9a252f1eac58" class="smooth">
+                                            <i class="fas fa-search fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>AI搜索</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">八问八答搞懂Transformer内部运作原理</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 9, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSTHOIm1EoibzeakVELic8I47VtVhlcvlp944v39HN4IWClrYUho4bfvKg/640?wx_fmt=png&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： DASOU  来源： <a href="https://mp.weixin.qq.com/s/SNorbYD_d6MWJF-kCFUcGA">DASOU</a></p>
+<blockquote>
+<p>引自机器之心</p>
+</blockquote>
+<p>七年前，论文《Attention is all you need》提出了 transformer 架构，颠覆了整个深度学习领域。</p>
+<p>如今，各家大模型都以 transformer 架构为基础，但 transformer 内部运作原理，仍是一个未解之谜。</p>
+<p>去年，transformer 论文作者之一 Llion Jones 宣布创立人工智能公司 Sakana AI。近期，Sakana AI 发表了一篇题为《Transformer Layers as Painters》的论文，探究了预训练 transformer 中的信息流，并针对仅解码器和仅编码器冻结 transformer 模型进行了一系列实验。请注意，该研究没有对预训练模型进行任何类型的微调。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSXQSxbfVaNmvmiccttEStLGKTCTDHS3VibSicuMKuSdsYu0DsECxCtGXCA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>论文地址：https://arxiv.org/pdf/2407.09298v1</p>
+<p>该研究认为 transformer 的内部机制（特别是中间层）可以类比画家作画流水线来理解。</p>
+<p>作画流水线通常是将画布（输入）传递给一系列画家。有些画家擅长画鸟类，而另一些画家则擅长画轮子。每个画家从其下一级画家那里收到画布，然后其决定是否给画作添加一些笔画，或者只是将其传递给其上一级画家（使用剩余连接）。</p>
+<p>这个类比并不是一个严格的理论，而是一个思考 transformer 层的工具。受这个类比的启发，该研究测试验证了一些假设：</p>
+<ul>
+<li>
+<p>各层是否都在使用相同的表征空间？</p>
+</li>
+<li>
+<p>所有层都是必要的吗？</p>
+</li>
+<li>
+<p>中间层都执行相同的功能吗？</p>
+</li>
+<li>
+<p>层的顺序重要吗？</p>
+</li>
+<li>
+<p>这些层可以并行运行吗？</p>
+</li>
+<li>
+<p>对于某些任务来说，顺序是否比其他因素更重要？</p>
+</li>
+<li>
+<p>循环有助于层并行吗？</p>
+</li>
+<li>
+<p>哪些变体对模型性能影响最小？</p>
+</li>
+</ul>
+<p>该研究对预训练 LLM 进行了一系列实验，其中包括试验标准 transformer 执行策略的变化，并在仅解码器 (Llama) 和仅编码器 (BERT) 模型的各种基准上测量这些变化对模型性能的影响。</p>
+<p><strong>各层是否都在使用相同的表征空间？</strong></p>
+<p>为了回答不同层是否使用相同的表征空间，作者测试了 Transformer 在跳过特定层或切换相邻层的顺序时是否具有稳健性。例如，在 Llama2-7B 中，第 6 层通常期望接收第 5 层的输出。如果给第 6 层以第 4 层的输出，它是否会出现「灾难性」的行为？</p>
+<p>在图 2 中，我们可以看到，除了第一层和最后几层之外，Llama2-7B 的各层对跳层或切换层都相当稳健。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSq7fiboBUrPVyAia7sEt5KxwCiaMcjvN5RuksIymw0rInIY60n3WibmrOmg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>该实验表明，中间层共享一个表征空间，且与「外围层」（第一层和最后几层）拥有不同的表征空间。为了进一步验证这一假设，作者效仿之前的研究，测量了基准中模型（Llama2-7B、Llama2-13B 和 BERT-Large）不同层的隐藏状态激活之间的平均余弦相似度。图 3 显示了所有中间层之间的一致性。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSzkga8iaBXbOOHapDqun1SRoaTM1yv73OkA2C0qJKxfibQgyuqk2yYW1Q/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>这表明该模型可能具有「开始」、「中间」和「结束」层的三个不同的表征空间。回答问题 1：是的，中间层似乎共享一个共同的表征空间。</p>
+<p><strong>所有层都是必要的吗？</strong></p>
+<p>为了进一步测试中间层的重定向空间是否真正共享（除了具有接近的余弦相似度之外），该研究尝试了「跳过层」，即将第 N 层的输出直接发送到第 N + M 层（其中 M &gt; 1）的输入中，从而「跳过」M − 1 层，如图 1a 所示。该实验是为了看看第 N + M 层是否可以理解第 N 层的激活，尽管它仅根据从第 N + M − 1 层发来的输入进行训练。图 4 显示，Llama2-7B 和 BERT-Large 在许多基准测试上性能均出现适度下降。回答问题 2，是否所有层都是必要的：</p>
+<p>不，至少可以删除一些中间层而不会发生灾难性故障。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSyCT7WNdibhqiabKiaGaMV6UcctooJbcCTGhiaqfdDzjToTCicN6ticDYf80A/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>中间层都执行相同的功能吗？</strong></p>
+<p>如果中间层都共享一个共同的表征空间，这是否意味着除此之外的中间层是多余的呢？为了测试这一点，研究者们重新运行了前一子节中的「跳过」实验，他们将中间层的权重替换为中心层的权重，有效地在被替换的每一层上循环 T - 2N + 1 次，其中 T 是总层数（Llama2-7B 为 32 层，BERT-Large 为 24 层）。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSr5QlOcBiceOqj6ROIt8MwLxM0KRGiaYVo1bcXsPDPicYrP3aL0LoiaS3XQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>如图 5 所示，可以观察到，随着被替换层数的增加，模型在基准测试的得分迅速下降。从后文的图 11 看来，这种替换层的做法比研究者们尝试的其他方法都更糟糕。因此，研究者得出结论：中间层执行的是不同的功能，让中间层之间共享权重并不可行。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSTHOIm1EoibzeakVELic8I47VtVhlcvlp944v39HN4IWClrYUho4bfvKg/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>层的顺序重要吗？</strong></p>
+<p>之前的实验表明，中间层共享一个表示空间，但在该空间中负责不同的功能。下一个需要解决的问题是，这些功能的顺序有何意义。为了解决这个问题，研究者们设计了两组实验。首先，以与训练时相反的顺序来运行中间层。具体来说，取第 T - N 层的输出，将其输入到第 T - N - 1 层，然后将这一层的输出输入到第 T - N - 2 层，依此类推，一直到第 N 层，再将这一层的输出发送到后面的 T - N 层。在第二组实验中，研究者采用随机顺序运行中间层，并在 10 个种子值上取平均值。</p>
+<p>图 6 和图 7 分别显示了反向和以随机顺序运行中间层的结果，模型在所有基础测试集中都显示出了逐渐下降的趋势。这也表明虽然层的顺序对模型来说有一定的重要性，但即使改变了顺序，这些层仍然能够发挥作用。</p>
+<p>更有趣的是，随机打乱层的顺序比完全反过来效果更好。这可能是因为，随机打乱的顺序在某些方面保留了层之间的一些原有关系（即层 i 在层 j 之后，其中 i &gt; j），而完全反过来则完全打破了这些关系。</p>
+<p><strong>这些层可以并行运行吗？</strong></p>
+<p>为了验证层本身存在比执行的顺序更重要，研究者们设计了一个实验，并行运行中间层，将它们的平均结果发送给最终的 N 层。</p>
+<p>如图 8 所示，模型在所有基准测试中的表现均呈现了一种平缓下降趋势，然而，这种趋势并不适用于 GSM8K 中的数学应用题。</p>
+<p>实验结果显示，大部分情况下这种方法都是有效的，只是一些复杂的数学题处理得不太好。这种并行处理方法相比直接跳过一些层，效果更好，但不如按反向顺序运行层的效果出色。基于此，研究者得出结论：并行运行层在一般情况下是可行的，但对于需要顺序逻辑理解的数学问题，这种方法可能不太适用。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSeJgh6yibH29YI7LjLuTLScZGoncIzYm3YbmJpvPuticD9UXsjP7jJMEQ/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p><strong>对于某些任务来说，顺序是否比其他因素更重要？</strong></p>
+<p>对于大多数经过「改造」的模型，在面对抽象推理（ARC）或数学推理（GSM8K）基准测试时，它们往往显示出最陡峭的下降趋势。这一现象可能源于逐步推理任务对于模型层级顺序的敏感度远高于那些主要依赖语义理解的常识性任务。与那些仅通过理解语义便能完成的任务不同，推理任务要求模型同时把握结构与含义。这种观察与模型在单次处理过程中可能进行一定程度的顺序依赖性推理的假设相吻合。</p>
+<p>研究者使用了一个比喻来说明：如果画一幅由许多不同元素组成的拼贴画，那么画的顺序可能不那么重要；但如果是要画一幅精确的建筑场景，那么每一笔的顺序就变得非常重要了。据此，研究者得出了结论：数学和推理任务对模型层的顺序具有更高的依赖性，而对于那些主要依赖语义理解的任务，顺序的影响则相对较小。</p>
+<p><strong>循环有助于层之间并行吗？</strong></p>
+<p>沿用上一节中画画的的比喻，当画家在画一幅画时，不是一开始就画所有东西，而是先画一部分，比如车身，然后再根据这部分来添加其他的东西，比如车轮。在 AI 模型中，层就是所谓的画家，处理信息就是在画画，如果先得到了正确的信息，也就先画出了所谓的车身，那么它们就能更好地完成自己的工作，为画作添加车轮。</p>
+<p>对于 transformer 而言，当给予适当的输入时，层可能只在前向传播中做出贡献，并非通过残差连接「传递」输入。如果情况确实如此，那么迭代上一个实验中的并行层应该比单次执行并行层更能提高模型的性能。基于此，研究者通过将并行层的平均输出反馈到同一层中进行固定次数的迭代来测试这一点。</p>
+<p>图 9 展示了将并行层循环 3 次的结果。循环并行 3 次的结果显著优于单次迭代（并行层）。起始层 N 设定为 15（针对 Llama2-7B 模型）或 11（针对 BERT 模型）时，即处于每种情况的极左端点，仅有单一的层级受到影响。在这种特定情况下，三次循环并行的效果等同于单纯地将中间层重复三次。与此同时，对于这一点上的并行层而言，其性能与完整模型无异。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSiaiaCW6PPzfKz5UHdlCXOTCZkOSWzSMibVibdS4XUCA4YqvLLE3usliczIA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>研究者们还针对不同的迭代次数重复了相同的实验。图 10 展示了 Llama2-7B 的性能随并行化层数 M 和迭代次数的变化情况。每个 M 的最高性能迭代次数用红框标出。除了 M=29 和 M=31（几乎并行化所有层）外，最佳迭代次数大致与并行化层数成线性比例。因此，研究者得出的结论是：最佳迭代次数与并行化层数成正比。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSoTb7FC0RpYf78bLuG6BZHyIK95xetxoibzsovRVSZ7aBMlkXgsh0crA/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>** 如何调整层，对模型性能的影响最小？**</p>
+<p>最后，在图 11 中，研究者们将所有实验中对 Transformer 的「改造」进行了比较，在一个图表上显示了所有基准测试的中位数或平均性 。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/sz_mmbiz_png/KmXPKA19gW8E5b0dFwsHUBicibaNibRGEwSVDCucZ86hwY8wyrdWumFJt4sDKT2j5HpVdvsSygUlTv3XUAsG9gnNw/640?wx_fmt=png&amp;from=appmsg" alt=""></p>
+<p>中间重复 —— 用相同数量的中间层副本替换中间层 —— 表现最差， 很快就降到了随机基线的性能。相反，循环并行和随机层顺序的影响最小。因此，研究者得出的结论是：重复单一层的影响最严重。随机化层顺序和循环并行的影响最小。</p>
+<p>这些实验整体上显示出平缓的性能下降，但研究者仍然不清楚为什么这些层在大多数扰动下还能保持一定的稳健性，这个问题还需在未来的研究中进一步探讨。</p>
+<p>更多细节请参见原论文。</p>
+<p><em>参考链接：https://arxiv.org/pdf/2407.09298v1</em></p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+可关注我们的公众号：每天AI新工具
+
+<p><img src="/images/aitools/2024/03/qrcode_for_gh_dde1b429630d_258.jpg" alt=""></p>
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
