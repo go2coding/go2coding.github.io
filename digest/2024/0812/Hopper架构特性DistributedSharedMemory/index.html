@@ -1,0 +1,799 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#f9f9f9" />
+
+	<title>Hopper架构特性：DistributedSharedMemory 作者： 吃果冻不吐果冻皮 来源： 吃果冻不吐果冻皮 ####**【点击】加入大模型技术交流群** 原文：https://zhuanlan.zhihu.com/p/708645371 最近 FlashAttention3 爆火，看了下其中的技术报告，发现大量使用了 NV Hopper 架构的新特性。Ho  | AiBard123| ai工具网址导航,ai最新产品</title>
+	<link rel="shortcut icon" href="/assets/images/favicon.png" />
+    <meta name="keywords" content="chatgpt,AI,AI聊天,AI文本生成,AI绘画,AI编程,AI电商" />
+    <meta name="description" content="AiBard123 网址导航 | 免费chatgpt 汇集各类先进的人工智能产品，旨在帮助用户更快速地了解和使用这些产品,轻松地浏览不同领域的AI产品，包括语音识别、图像处理、自然语言处理。" />
+    
+    <meta name="baidu-site-verification" content="codeva-cCAOSG8MBO" />
+    
+    <link rel="stylesheet" id="block-library-css"
+        href="/assets/css/block-library.min-5.6.2.css" type="text/css" media="all" />
+    <link rel="stylesheet" id="iconfont-css" href="/assets/css/iconfont-3.03029.1.css"
+        type="text/css" media="all" />
+
+    
+    <link href="/scss/style.min.css" rel="stylesheet" />
+    
+		    <link rel="stylesheet" id="iowen-css" href="/assets/css/style-3.03029.1.css"
+        type="text/css" media="all" />
+    <link rel="stylesheet" id="custom-css" href="/assets/css/custom-style.css"
+        type="text/css" media="all" />
+		
+		<link rel="stylesheet" href=/plugins/font-awesome/css/font-awesome.min.css />
+
+
+    <link rel="stylesheet" id="fortawesome-css" href="/assets/fontawesome-5.15.4/css/all.min.css" type="text/css" />
+
+
+    <script type="text/javascript" src="/assets/js/jquery.min-3.2.1.js" id="jquery-js"></script>
+    <script type="text/javascript" src="/assets/js/content-search.js"  id="content-search-js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2073588164294660"
+     crossorigin="anonymous"></script>
+
+	
+    <script>
+        
+
+		var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8450bc732b2a86f7e4aec4ebd9fd8252";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+        
+    </script>
+    
+
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7071W80M2K"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7071W80M2K');
+    </script>
+
+</head>
+
+
+    <div class="page-container">
+	
+	<div id="sidebar" class="sticky sidebar-nav fade animate-nav" style="width: 170px">
+        
+            <div class="modal-dialog h-100 sidebar-nav-inner">
+                <div class="sidebar-logo border-bottom border-color">
+                    
+                    <div class="logo overflow-hidden">
+                        <a href="https://aibard123.com/" class="logo-expanded">
+                            <img src="/assets/images/bt8-expand-light.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt8-expand-dark.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                        <a href="https://aibard123.com/" class="logo-collapsed">
+                            <img src="/assets/images/bt.png" height="40" class="logo-light"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                            <img src="/assets/images/bt.png" height="40" class="logo-dark d-none"
+                                alt="AiBard123| ai工具网址导航,ai最新产品">
+                        </a>
+                    </div>
+                    
+                </div>
+                <div class="sidebar-menu flex-fill">
+                    <div class="sidebar-scroll">
+                        <div class="sidebar-menu-inner">
+                            <ul>
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#00834a9dd147b04c5d53d4368cdb0b57" class="smooth">
+                                            <i class="fas fa-sun fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>本月热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db0311e7ecfedd24d157f0ceb4a0897f" class="smooth">
+                                            <i class="fas fa-star-and-crescent fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>热门网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#21b5cbb2c769010fec3ce029a5f8a4a3" class="smooth">
+                                            <i class="far fa-star fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>国内热门</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#8310718935e8ec25ce0350de01e3f7dc" class="smooth">
+                                            <i class="fas fa-phone fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>对话工具</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#d58e850d9115797306c2edf61ac6ddd8" class="smooth">
+                                            <i class="fas fa-newspaper fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>写作</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2a7418a5f8f1ca4e054364a9300657df" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#7808a68ee1b34dab43011429a12de19e" class="smooth">
+                                            <i class="fas fa-image fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>图像处理</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#6729afc51f5ac49a828812fa0eb0c82f" class="smooth">
+                                            <i class="fas fa-video fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音视频</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#e5ce844860451fff3faf3d8f8894971d" class="smooth">
+                                            <i class="fas fa-music fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>音乐生成</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#db53804b7d726967c58fcc8c9ca03d27" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>办公</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#47b7af9547e034d28fe6f6d439968ac8" class="smooth">
+                                            <i class="fas fa-copy fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>提示词</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#41282bf95e43c64d579757573a03cdde" class="smooth">
+                                            <i class="fas fa-code fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>编程</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#fd71852fd52d5e18ef4f9a252f1eac58" class="smooth">
+                                            <i class="fas fa-search fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>AI搜索</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#81b1637fbe47625dbdf2094acd3b6683" class="smooth">
+                                            <i class="fas fa-language fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>文本翻译</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                                    
+                                    <li class="sidebar-item">
+                                        <a href="/#2e9ba3fa6e1ed0e9311b3e97f97f9a40" class="smooth">
+                                            <i class="fas fa-book fa-lg fa-lg icon-fw icon-lg mr-2"></i>
+                                            <span>学习网站</span>
+                                        </a>
+                                    </li>
+                                    
+                                
+                            </ul>           
+                        </div>
+                    </div>
+                </div>
+                <div class="border-top py-2 border-color">
+                    <div class="flex-bottom">
+                        <ul>
+			    <li id="menu-item-212"
+                                 class="menu-item menu-item-type-custom menu-item-object-custom menu-item-212 sidebar-item">
+                                 <a href="#friendlink" class="smooth">
+                                     <i class="fab fa-staylinked icon-fw icon-lg mr-2"></i>
+                                     <span>友情链接</span>
+                                 </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="flex-fill grid-bg">
+    <div class="big-header-banner">
+        <div id="header" class="page-header sticky">
+            <div class="navbar navbar-expand-md">
+                <div class="container-fluid p-0">
+
+                    <a href="" class="navbar-brand d-md-none" title="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-light"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                        <img src="/assets/images/bt.png" class="logo-dark d-none"
+                            alt="AiBard123| ai工具网址导航,ai最新产品">
+                    </a>
+
+                    <div class="collapse navbar-collapse order-2 order-md-1">
+                        <div class="header-mini-btn">
+                            <label>
+                                <input id="mini-button" type="checkbox">
+                                <svg viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <path class="line--1" d="M0 40h62c18 0 18-20-17 5L31 55"></path>
+                                    <path class="line--2" d="M0 50h80"></path>
+                                    <path class="line--3" d="M0 60h62c18 0 18 20-17-5L31 45"></path>
+                                </svg>
+                            </label>
+
+                        </div>
+
+                        <ul class="navbar-nav site-menu" style="margin-right: 16px;">
+                        
+			<li >
+				<a href="/">
+                                    <i class="fa fa-home fa-lg mr-2"></i>
+                                    <span>首页</span>
+                                </a>
+				<ul class="sub-menu">
+				
+				</ul>
+			    </li>
+			
+			</ul>
+
+                        
+                        <div class="rounded-circle weather">
+                            <div id="he-plugin-simple" style="display: contents;"></div>
+                            <script>WIDGET = {
+                                    CONFIG: {
+                                        "modules": "01234",
+                                        "background": 5,
+                                        "tmpColor": "008000",
+                                        "tmpSize": 14,
+                                        "cityColor": "008000",
+                                        "citySize": 14,
+                                        "aqiColor": "#008000",
+                                        "aqiSize": 14,
+                                        "weatherIconSize": 24,
+                                        "alertIconSize": 18,
+                                        "padding": "10px 10px 10px 10px",
+                                        "shadow": "1",
+                                        "language": "auto",
+                                        "borderRadius": 5,
+                                        "fixed": "false",
+                                        "vertical": "middle",
+                                        "horizontal": "left",
+                                        "key": "085791e805a24491b43b06cf58ab31e7"
+                                    }
+                                }
+                            </script>
+                            <script src="https://widget.qweather.net/simple/static/js/he-simple-common.js?v=2.0"></script>
+                        </div>
+                        
+                    </div>
+
+                    <ul class="nav navbar-menu text-xs order-1 order-md-2">
+                        
+                        
+                        <li class="nav-item mr-3 mr-lg-0 d-none d-lg-block">
+                            <script>
+                                fetch('https://v1.hitokoto.cn')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                    const hitokoto = document.getElementById('hitokoto_text')
+                                    hitokoto.href = 'https://hitokoto.cn/?uuid=' + data.uuid
+                                    hitokoto.innerText = data.hitokoto
+                                    })
+                                    .catch(console.error)
+                            </script>                           
+                            <div id="hitokoto"><a href="#" target="_blank" id="hitokoto_text">疏影横斜水清浅，暗香浮动月黄昏。</a></div>
+                        </li>
+                        
+                        
+                        <li class="nav-search ml-3 ml-md-4">
+                            <a href="javascript:" data-toggle="modal" data-target="#search-modal"><i
+                                    class="iconfont icon-search icon-2x"></i></a>
+                        </li>
+                        <li class="nav-item d-md-none mobile-menu ml-3 ml-md-4">
+                            <a href="javascript:" id="sidebar-switch" data-toggle="modal"
+                                data-target="#sidebar"><i class="iconfont icon-classification icon-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="placeholder" style="height:74px"></div>
+    </div>
+
+
+
+
+<body class="page-body boxed-container  io-grey-mode">
+    <main role="main" class="flex-shrink-0">
+    <div class="container">
+        
+        <div class="content">
+            <style>
+    body{
+	    background: #f9f9f9;
+	}
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+
+ 
+@media (min-width: 1000px) {
+  .container, .container-sm {
+    max-width: 800px;
+  }
+}
+
+</style>
+
+<div class="featured-post-content">
+
+    <a href="/digest/" class="featured-post-title">
+       AI 文摘
+    </a>
+
+</div>
+
+<section class="blog-single">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-12 order-1 order-lg-2">
+        <article class="single-blog">
+          <p class="title">Hopper架构特性：DistributedSharedMemory</p>
+            <br/>
+          <ul class="meta">
+            <li>
+              By <a href=https://aibard123.com/about>AiBard123</a>
+            </li>
+            <li>
+              <i class="fa fa-clock-o"></i>
+              August 12, 2024 - 2 min read
+            </li>
+          </ul>
+
+          <div class="_1NCGf">
+              <img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/yXChImmsky9Rm1NBP69PH2pzKNpGp4ZQ50mInguW2sM39eMebiascfnWVibf5VhSaQbfYYClJcB1musdCk6baBjw/640?wx_fmt=other&amp;from=appmsg" width="640" >
+          </div>
+            <br>
+            <br>
+            <br>
+          
+          <div class="single-blog-content">
+            <p>作者： 吃果冻不吐果冻皮  来源： <a href="https://mp.weixin.qq.com/s/iwDiqv3sgzSR2wt0ExafFg">吃果冻不吐果冻皮</a></p>
+<p>####**<a href="http://mp.weixin.qq.com/s?__biz=MzU3Mzg5ODgxMg==&amp;mid=2247485828&amp;idx=1&amp;sn=7355c99bc907b972773f795cea9326c8&amp;chksm=fd3be0d7ca4c69c10d842b0150a754178f9bd7691ec1e8a64c7a441822ca45833e718a9008bd&amp;scene=21#wechat_redirect">【点击】加入大模型技术交流群** </a></p>
+<p>原文：https://zhuanlan.zhihu.com/p/708645371</p>
+<p>最近 FlashAttention3 爆火，看了下其中的技术报告，发现大量使用了 NV Hopper 架构的新特性。Hooper 架构围绕影响并行程序性能的两个关键因素进行设计，分别是数据局部性以及异步执行。所以 Hopper 架构（https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth）针对这两个关键因素，在软件层提供了两方面的编程能力：</p>
+<ol>
+<li>
+<p>新线程、显存层次：通过新增 Thread Block Cluster 这一线程层次，提供跨 Thread Block 的 Shared Memory 访问。开发者可以基于 Thread Block Cluster ，利用 Distributed Shared Memory 实现高效的多 Thread Block 的协同运行；</p>
+</li>
+<li>
+<p>访存计算异步执行：Hopper 在硬件层提供了 TMA 单元，在软件层可以通过 cuda::memcpy_async 使用 TMA 单元实现异步的 Global Memory 和 Shared Memory 之间的拷贝。</p>
+</li>
+</ol>
+<p>本文主要学习 Thread Block Clusters，研究如何基于 Distributed Shared Memory 实现多 Thread Block 的协同运行。</p>
+<h4 id="1-thread-block-clusters-的前世今生">1. Thread Block Clusters 的前世今生</h4>
+<h4 id="11-hooper-架构前的-gpu-线程结构">1.1 Hooper 架构前的 GPU 线程结构</h4>
+<p>一直以来，GPU 的线程结构都是三层结构，自底向上分别是 Thread（线程）、Thread Block（线程块）以及 Grid（网格），如下图所示。Grid 是最上层的结构，Grid 中所有线程可以访问 Global Memory 的内容。一个 Grid 由多个不同的 Thread Block 组成， 每个 Thread Block 有一块 Shared Memory，同一个 Thread Block 中的所有线程可以通过 Shared Memory 交换数据，在软件层可以通过__syncthreads()等 API 实现同步操作。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/yXChImmsky9Rm1NBP69PH2pzKNpGp4ZQzG7rbiae3ENWUaN6S6KcnPgcb2oxDPPEVmmuyaX75pIbUTjdaOItMfA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p>与线程层次对应的是显存层次，不同层次的线程可以访问不同层次的显存。如上所述，Grid、Thread Block 以及 Thread 对应可以访问的分别是 Global Memory 、Shared Memory 以及 Register / Local Memory。其中 Global Memory、Local Memory 是片外（off-chip）存储器，Shared Memory 和 Register 属于片内（on-chip）存储器。不同层次的显存访问延迟不同，以 PCIE 80GB 的 H800为例，其 Global Memory 的访问延迟约为 478 个时钟周期，Shared Memory 的访问延迟约为 30 个时钟周期，Register 约为 1 个时钟周期。由于不同的存储器访问延迟差距较大，如果我们在编程的时候可以利用片内存储器降低访问延迟，就可以提升 Kernel 的性能。庆幸的是，在 GPU 编程中，CUDA 为 Shared Memory 提供编程接口，这使得开发者在设计 Kernel 实现时，可以利用 Shared Memory 访问延迟低的特点加速 Kernel 的性能。所以在 GPU 编程中，Kernel 的设计是以 Thread Block 这个粒度展开的。但这样会导致两个问题：</p>
+<p>1.<strong>单个 Thread Block 处理的数据规模有限</strong> ，原因是 Shared Memory 的容量有限。还是以 PCIE 80GB 的 H800为例，其Global Memory 大小为 80GB，而每个 Thread Block 最大可用 Shared Memory 仅 227 KB。这使得单个 Thread Block 为了使用 Shared Memory加速性能时，只能处理一个数据规模较小的子任务。任务规模一旦变大，Shared Memory 不够用，Thread Block 就只能用高访问延迟的 Global Memory 完成任务，导致 Kernel 性能降低。</p>
+<p>2.<strong>SM 利用率较低</strong> 。单个 Thread Block 可配置的最大线程数为 1024，每个 Thread Block 会分配到一个 SM 上运行。假如每个 Thread Block 处理较大规模的数据、计算，Kernel 一次仅发射很少的 Thread Block，可能导致某些 SM 处于空闲状态，计算资源没有被充分挖掘，这样同样会限制 Kernel 的整体性能。例如在 LLM 长文本推理 进行 Decoding Attention时， 𝐾、𝑉 长度较长，此时由于显存上限问题， batch size 会小，这导致单个 Thread Block 访问的数据量、计算量较大，同时发射的 Thread Block 的数量较少，导致某些 SM 处于空闲状态，限制 Kernel 性能。</p>
+<p>按 Thread Block 这个粒度划分子任务已经难以处理一些场景，限制了 Kernel 运行效率。解决这个问题的最直接的方式是：提供更大粒度的线程组。</p>
+<h4 id="12-thread-block-clusters">1.2 Thread Block Clusters</h4>
+<p>为了解决 Thread Block 粒度过小导致的 Kernel 运行效率不足的问题，Hooper 在 Thread Block 之上再引入一层结构——Thread Block Clusters。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/yXChImmsky9Rm1NBP69PH2pzKNpGp4ZQ50mInguW2sM39eMebiascfnWVibf5VhSaQbfYYClJcB1musdCk6baBjw/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<p>一个 Thread Block Cluster 由若干个线程块构成，其线程块的数量称为 Cluster Size，目前 Hopper 架构通用的最大 Cluster Size 为 8，即一个 Thread Block Cluster 最多由 8 个 Thread Block 组成。而 H100 有点特殊（毕竟很贵），其最大的 Cluster Size 为 16。Thread Block Cluster 所有线程可以访问分布在不同线程块的Shared Memory，这种 Shared Memory 称为 Distributed Shared Memory，其对应的地址空间称为 Distributed Shared Memory 地址空间。Distributed Shared Memory 并不是一种新增的新型存储器，而是一种 Shared Memory 的“集合”，其空间大小等于所有 Thread Block 的 Shared Memory 大小总和。由于 Thread Block Cluster 中不同的 Thread Block 可能放在不同的 SM 上，L1 Cache 是每个 SM 独有的，一个 SM 无法访问另一个 SM 的 L1 Cache，所以 Distributed Shared Memory 需要使用所有 SM 都能访问的高效存储器。L2 Cache 是所有 SM 均可访问，而 Distributed Shared Memory 仅需要保证一个 Cluster 内部的 SM 可以访问即可，那么 Hopper 是否存在一层存储器支持 Cluster 内部的所有 SM 可以访问？答案是可以的。Hopper 架构在 Cluster 内部，位于 L1 和 L2 Cache 之间新增了一层SM-to-SM Network。Thread Block Cluster 内部的 SM 可以通过该层网络访问其他 SM 的 Shared Memory。在软件层，CUDA 为 Distributed Shared Memory 提供了访问的编程接口以及整个 Thread Block Cluster 的同步接口，后面会提到。Hooper 通过引入 Thread Block Cluster，开发者可以将一个子任务的数据规模 Scale 到 Cluster Size 倍，大大增加了子任务的处理能力以及 SM 利用率。</p>
+<p><img src="https://api.allorigins.win/raw?url=https://mmbiz.qpic.cn/mmbiz_jpg/yXChImmsky9Rm1NBP69PH2pzKNpGp4ZQ9sJaQibZfgbIBm1TmHibPgpRVNjcrYPyOuRF386heNk9ak3HuI3rhnJA/640?wx_fmt=other&amp;from=appmsg" alt=""></p>
+<h4 id="2-distributed-shared-memory-用法">2. Distributed Shared Memory 用法</h4>
+<p>本节主要介绍如何在 CUDA Kernel 中使用 Distributed Shared Memory。Distributed Shared Memory 的使用主要关注以下两点：</p>
+<ol>
+<li>
+<p>Distributed Shared Memory 访问方式：怎么拿到其他 Thread Block 的 Shared Memory？</p>
+</li>
+<li>
+<p>Cluster 同步方式：怎样保证当前线程访问的 Distributed Shared Memory 是合法的（已初始化、未被销毁的）？</p>
+</li>
+</ol>
+<p>下面将通过一个官方提供的直方图统计示例，讲解这两点的使用方式。</p>
+<h4 id="21-常规使用">2.1 常规使用</h4>
+<pre><code>#include &lt;cooperative_groups.h&gt;  
+  
+// Distributed Shared memory histogram kernel  
+__global__ void clusterHist_kernel(int *bins, const int nbins,  
+                                   const int bins_per_block,  
+                                   const int *__restrict__ input,  
+                                   size_t array_size)  
+{  
+  extern __shared__ int smem[];  
+  namespace cg = cooperative_groups;  
+  int tid = cg::this_grid().thread_rank();  
+  
+  // 获取当前 cluster 信息  
+  cg::cluster_group cluster = cg::this_cluster();  
+  unsigned int clusterBlockRank = cluster.block_rank();  
+  int cluster_size = cluster.dim_blocks().x;  
+  
+  for (int i = threadIdx.x; i &lt; bins_per_block; i += blockDim.x) {  
+    // 初始化直方图每个bin的值  
+    smem[i] = 0; //Initialize shared memory histogram to zeros  
+  }  
+  
+  // Cluster 同步，类似 Thread Block 的 __syncthreads()。该调用保证整个 Cluster 的  
+  // 线程都会在这个点同步。这个同步点目标是保证 cluster 中所有 Thread Block 的 smem 都  
+  // 完成初始化，可以开始运行后面的处理逻辑。  
+  cluster.sync();  
+  
+  for (int i = tid; i &lt; array_size; i += blockDim.x * gridDim.x)  
+  {  
+    int ldata = input[i];  
+  
+    //Find the right histogram bin.  
+    int binid = ldata;  
+    if (ldata &lt; 0)  
+      binid = 0;  
+    else if (ldata &gt;= nbins)  
+      binid = nbins - 1;  
+  
+    int dst_block_rank = (int)(binid / bins_per_block);  
+    int dst_offset = binid % bins_per_block;  
+  
+    // 重点：map_shared_rank 主要用于获取其他 Thread Block 的 Shared Memory 地址  
+    int *dst_smem = cluster.map_shared_rank(smem, dst_block_rank);  
+  
+    // 更新直方图 bin 的统计数字  
+    atomicAdd(dst_smem + dst_offset, 1);  
+  }  
+  
+  // 这个同步点目标是保证 cluster 中所有 Thread Block 的 smem 都处于可用的状态。  
+  // 如果不同步，可能部分 Thread Block 提前结束运行，对应的 smem 也被销毁，这时未退出的  
+  // Thread Block 有可能访问已退出的 Thread Block 对应的 smem，出现非法内存访问，  
+  // 会造成程序崩溃  
+  cluster.sync();   
+  
+  int *lbins = bins + cluster.block_rank() * bins_per_block;  
+  for (int i = threadIdx.x; i &lt; bins_per_block; i += blockDim.x)  
+  {  
+    atomicAdd(&amp;lbins[i], smem[i]);  
+  }  
+}  
+</code></pre>
+<p>在编写 Thread Block Cluster 的 Kernel 时，我们需要用到 CUDA 提供的 Cooperative Groups 模块。该模块给我们提供访问 Cluster 的接口。上述代码也是基于 Cooperative Groups 模块的接口完成 Thread Block Cluster 的同步、Distributed Shared Memory 的访问。Cluster Kernel 主要有三个关键接口需要重点讲解：</p>
+<ul>
+<li>
+<p>cg::this_cluster()：获取当前 cluster。这是实现 Thread Block Cluster Kernel 的前置步骤，需要在初始化阶段就让线程获取当前 cluster 对象，以实现 Distributed Shared Memory 的访问以及 Cluster 级别的同步。</p>
+</li>
+<li>
+<p>cluster.map_shared_rank(void *smem, int rank)：主要用于获取其他 Thread Block 的 Shared Memory 地址，通过该调用实现 Distributed Shared Memmory 的访问。第一个参数传递当前 Thread Block 的 Shared Memory 地址，第二个参数为目标 Thread Block 的下标地址。</p>
+</li>
+<li>
+<p>cluster.sync()：负责整个 Thread Block Cluster 所有线程的同步操作。同步开销成本较高，比一般的 __syncthreads()要更高。</p>
+</li>
+</ul>
+<p>值得注意的是，上述代码有两处 cluster.sync 操作。第一个 cluster.sync 与一般的 Thread Block Kernel 一样，在初始化 Shared Memory 的时候需要同步，保证所有线程完成 Shared Memory 的初始化；而第二个 cluster.sync 则不同，是用于保证当前 Thread Block 的 Shared Memory 的可用性。由于不同 Thread Block 运行速度不一样，如果不加入 cluster.sync 同步，部分 Thread Block 可能提前结束运行，退出的 Thread Block 对应的 Shared Memory 也会被销毁，这样未退出的 Thread Block 有可能访问到这些被销毁的 Shared Memory，从而导致程序崩溃。第二个 cluster.sync 算是 Thread Block Cluster Kernel 独有并且必须的，以前 Thread Block Kernel 并不需要同步操作保证 Shared Memory 的可用性。所以，一个 Thread Block Cluster Kernel 的实现范式如下：</p>
+<pre><code>#include &lt;cooperative_groups.h&gt;  
+namespace cg = cooperative_groups;  
+__global__ void cluster_kernel() {  
+    auto cluster = cg::this_cluster();  
+    extern __shared__ int shm[];  
+    // 初始化 ...   
+    init_local_shared_data(shm);  
+    // 保证初始化完成  
+    cluster.sync();  
+    // ...  
+    // 获取 Distributed Shared Memory 地址  
+    int *dsmem = cluster.map_shared_rank(&amp;shm[0], some_rank);  
+    // 处理 Distributed Shared Memory  
+    process_shared_data(dsmem);  
+    // 保证 Shared Memory 可用，避免其他 Thread Block 访问  
+    // 当前 Thread Block 的 Shared Memory 失败  
+    cluster.sync();  
+}  
+</code></pre>
+<h4 id="22-kernel-launch-方式">2.2 Kernel Launch 方式</h4>
+<p>由于传统的 Kernel Lauch 无法传递 Cluster Size 这个参数，所以 Thread Block Cluster Kernel 的 Launch 方式不能使用传统的 Kernel Lauch 方式( kernel&laquo;&lt;&hellip;&raquo;&gt;() ) 。Thread Block Cluster Kernel 需要使用 cudaLaunchKernelEx 这个函数，通过设置 cudaLaunchConfig_t 以及 cudaLaunchAttribute 设置 grid、block 以及 cluster 配置。以下是 Thread Block Cluster Kernel 的 Lauch 示例。</p>
+<pre><code>// Launch via extensible launch  
+{  
+  cudaLaunchConfig_t config = {0};  
+  config.gridDim = array_size / threads_per_block;  
+  config.blockDim = threads_per_block;  
+  
+  // cluster_size depends on the histogram size.  
+  // ( cluster_size == 1 ) implies no distributed shared memory, just thread block local shared memory  
+  int cluster_size = 2; // size 2 is an example here  
+  int nbins_per_block = nbins / cluster_size;  
+  
+  //dynamic shared memory size is per block.  
+  //Distributed shared memory size =  cluster_size * nbins_per_block * sizeof(int)  
+  config.dynamicSmemBytes = nbins_per_block * sizeof(int);  
+  
+  CUDA_CHECK(::cudaFuncSetAttribute((void *)clusterHist_kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, config.dynamicSmemBytes));  
+  
+  cudaLaunchAttribute attribute[1];  
+  attribute[0].id = cudaLaunchAttributeClusterDimension;  
+  attribute[0].val.clusterDim.x = cluster_size;  
+  attribute[0].val.clusterDim.y = 1;  
+  attribute[0].val.clusterDim.z = 1;  
+  
+  config.numAttrs = 1;  
+  config.attrs = attribute;  
+  
+  cudaLaunchKernelEx(&amp;config, clusterHist_kernel, bins, nbins, nbins_per_block, input, array_size);  
+}  
+</code></pre>
+<h4 id="23-同步优化">2.3 同步优化</h4>
+<p>上文提到，cluster.sync() 负责整个 Thread Block Cluster 所有线程的同步操作，同步开销比一般的 __syncthreads()要更高。当前线程在调用 cluster.sync() 后，需要等待所有线程调用该接口，才能继续运行。我们知道， cluster.sync() 的目的主要是完成 Shared Memory 的初始化或者保证 Thread Block不提前退出。如果允许我们在等待期间完成一些与 Shared Memory 无关的操作，这样就可以掩盖了 cluster.sync() 的部分延迟，从而提升性能。这样就需要 CUDA 提供拆分 cluster.sync() 的能力，将 cluster.sync() 拆分成两个阶段：同步点与等待点。在同步点与等待点之间，可以插入与 Shared Memory 无关的操作。CUDA 提供了以下两个接口实现 cluster.sync() 拆分的能力：</p>
+<ul>
+<li>
+<p>arrival_token cluster.barrier_arrive()：设置同步点，返回同步点标记 token。</p>
+</li>
+<li>
+<p>cluster.barrier_wait(arrival_token&amp;&amp; token): 设置等待点，输入为同步点标记 token。当 Thread Block Cluster 中所有线程都结束 barrier_arrive 调用后，等待 barrier_wait 的线程就可以结束等待，继续运行。</p>
+</li>
+</ul>
+<p>在这两个标记点中间可以插入一些与 Distributed Shared Memory 无关的操作，掩盖 barrier_arrive 的同步延迟。以下是使用这两个接口的示例代码。</p>
+<pre><code>#include &lt;cooperative_groups.h&gt;  
+  
+using namespace cooperative_groups;  
+  
+void __device__ init_shared_data(const thread_block&amp; block, int *data);  
+void __device__ local_processing(const thread_block&amp; block);  
+void __device__ process_shared_data(const thread_block&amp; block, int *data);  
+  
+__global__ void cluster_kernel() {  
+    extern __shared__ int array[];  
+    auto cluster = this_cluster();  
+    auto block   = this_thread_block();  
+  
+    // Use this thread block to initialize some shared state  
+    init_shared_data(block, &amp;array[0]);  
+  
+    auto token = cluster.barrier_arrive(); // Let other blocks know this block is running and data was initialized  
+  
+    // Do some local processing to hide the synchronization latency  
+    local_processing(block);  
+  
+    // Map data in shared memory from the next block in the cluster  
+    int *dsmem = cluster.map_shared_rank(&amp;array[0], (cluster.block_rank() + 1) % cluster.num_blocks());  
+  
+    // Make sure all other blocks in the cluster are running and initialized shared data before accessing dsmem  
+    cluster.barrier_wait(std::move(token));  
+  
+    // Consume data in distributed shared memory  
+    process_shared_data(block, dsmem);  
+    cluster.sync();  
+}  
+</code></pre>
+<p>上述代码中，在 cluster.barrier_arrive() 和 cluster.barrier_wait(std::move(token)) 之间插入了 local_processing 和 map_shared_rank，这两个调用不涉及 Shared Memory 写操作，不会影响其他 Thread Block 的 process_shared_data，可以 overlap 掉部分 cluster.sync() 同步的开销。</p>
+<h4 id="3-总结">3. 总结</h4>
+<p>本文主要介绍了 Hopper 架构的新特性——Distributed Shared Memory &amp; Thread Block Clusters，并介绍了在 CUDA 上如何使用 Distributed Shared Memory。在一些对 Shared Memory需求比较大、单个 Thread Block 的 workload 较大且SM利用率较低的场景下，Distributed Shared Memory &amp; Thread Block Clusters 是个比较好的优化选项。举个例子，我个人觉得 GEMM SplitK 类（包括 Flash Decoding）算子比较适合使用 Distributed Shared Memory 做优化。Flash Decoding Kernel 可以把当前 Thread Block 的 Online Softmax 局部状态信息放到 Share Memory 中，然后同步 Thread Block Cluster，将 Cluster 中每个 Thread Block 的状态合并，得到最终结果。这样可以降低 Flash Decoding Kernel 的输出访存开销、Reduce Kernel 的输入访存开销以及 Launch 开销，从而提升 Kernel 性能。</p>
+<p>更多AI工具，参考<a href="https://aibard123.com/">Github-AiBard123</a>，<a href="https://aibard123.com/">国内AiBard123</a></p>
+
+
+
+          </div>
+
+可关注我们的公众号：每天AI新工具
+
+<p><img src="/images/aitools/2024/03/qrcode_for_gh_dde1b429630d_258.jpg" alt=""></p>
+
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+        </div>
+    </div>
+    </main>
+
+
+
+
+<script type='text/javascript' src='/assets/js/jquery.ui.touch-punch.min-0.2.2.js' id='jqueryui-touch-js'></script>
+<script type='text/javascript' src='/assets/js/clipboard.min-5.6.2.js' id='clipboard-js'></script>
+<script type='text/javascript' src='/assets/js/tooltip-extend.js' id='iplaycode-nav-js'></script>
+<script type='text/javascript' id='popper-js-extra'>
+ 
+
+var theme = {"ajaxurl":"","addico":"https:\/\/nav.baidu.cn\/wp-content\/themes\/onenav\/images\/add.png","order":"asc","formpostion":"top","defaultclass":"io-grey-mode","isCustomize":"1","icourl":"","icopng":".png","urlformat":"1","customizemax":"10","newWindow":"0","lazyload":"1","minNav":"1","loading":"1","hotWords":"baidu","classColumns":" col-sm-6 col-md-4 col-xl-5a col-xxl-6a ","apikey":"TWpBeU1UVTNOekk1TWpVMEIvZ1M2bFVIQllUMmxsV1dZelkxQTVPVzB3UW04eldGQmxhM3BNWW14bVNtWk4="};
+ 
+</script>
+<script type='text/javascript' src='/assets/js/popper.min.js' id='popper-js'></script>
+<script type='text/javascript' src='/assets/js/bootstrap.min-4.3.1.js' id='bootstrap-js'></script>
+<script type='text/javascript' src='/assets/js/theia-sticky-sidebar-1.5.0.js' id='sidebar-js'></script>
+<script type='text/javascript' src='/assets/js/lazyload.min-12.4.0.js' id='lazyload-js'></script>
+<script type='text/javascript' src='/assets/js/fancybox.min-3.5.7.js' id='lightbox-js-js'></script>
+
+<script type='text/javascript' src='/assets/js/app-anim.js' id='appanim-js'></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var siteWelcome = $('#loading');
+        siteWelcome.addClass('close');
+        setTimeout(function() {
+            siteWelcome.remove();
+        }, 600);
+    });
+</script>
+<script>        
+    $(document).ready(function(){
+        setTimeout(function () {
+            if ($('a.smooth[href="' + window.location.hash + '"]')[0]) {
+                $('a.smooth[href="' + window.location.hash + '"]').click();
+            }else if (window.location.hash != '') {
+                $("html, body").animate({
+                    scrollTop: $(window.location.hash).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+        }, 300);
+        $(document).on('click','a.smooth',function(ev) {
+            if($('#sidebar').hasClass('show') && !$(this).hasClass('change-href')){
+                $('#sidebar').modal('toggle');
+            }
+            if($(this).attr("href").substr(0, 1) == "#"){
+                $("html, body").animate({
+                    scrollTop: $($(this).attr("href")).offset().top - 90
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            }
+            if($(this).hasClass('go-search-btn')){
+                $('#search-text').focus();
+            }
+            if(!$(this).hasClass('change-href')){
+                var menu =  $("a"+$(this).attr("href"));
+                menu.click();
+                toTarget(menu.parent().parent(),true,true);
+            }
+        });
+        $(document).on('click','a.tab-noajax',function(ev) {
+            var url = $(this).data('link');
+            if(url)
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').show().attr('href', url);
+            else
+                $(this).parents('.d-flex.flex-fill.flex-tab').children('.btn-move.tab-move').hide();
+        });
+        
+    });
+</script>
+
+<script>
+
+(function(){
+    if(document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === ''){
+        if(new Date().getHours() > 22 || new Date().getHours() < 6){
+            document.body.classList.remove('io-black-mode');
+            document.body.classList.add('io-grey-mode');
+            document.cookie = "night=1;path=/";
+            console.log('夜间模式开启');
+        }else{
+            document.body.classList.remove('night');
+            document.cookie = "night=0;path=/";
+            console.log('夜间模式关闭');
+        }
+    }else{
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+        if(night == '0'){
+            document.body.classList.remove('night');
+        }else if(night == '1'){
+            document.body.classList.add('night');
+        }
+    }
+})();
+
+$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");   
+function switchNightMode(){
+    var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+    if(night == '0'){
+	$("#search-bg").css("background", "linear-gradient(#e2c4c4, #d8d8d8)");
+        document.body.classList.remove('io-grey-mode');
+        document.body.classList.add('io-black-mode');
+        document.cookie = "night=1;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","日间模式");
+        $(".mode-ico").removeClass("icon-night");
+        $(".mode-ico").addClass("icon-light");
+    }else{
+	$("#search-bg").css("background", "linear-gradient(#4f4040, #1b1d1f)");
+        document.body.classList.remove('io-black-mode');
+        document.body.classList.add('io-grey-mode');
+        document.cookie = "night=0;path=/"
+        console.log(' ');
+        $(".switch-dark-mode").attr("data-original-title","夜间模式");
+        $(".mode-ico").removeClass("icon-light");
+        $(".mode-ico").addClass("icon-night");
+    }
+}
+</script>
+
+
+<script>
+    var newsContainer = document.getElementById('news-container');
+    var newsItems = document.getElementsByClassName('news-item');
+    var currentItem = 0;
+
+    setInterval(function() {
+        
+        newsItems[currentItem].classList.remove('show');
+        newsItems[currentItem].style.transform = 'translateY(-20px)';
+        
+        currentItem = (currentItem + 1) % newsItems.length;
+        newsItems[currentItem].style.transform = 'translateY(' + (newsContainer.offsetHeight - 20) + 'px)';
+        setTimeout(function() {
+            newsItems[currentItem].classList.add('show');
+        }, 500);
+    }, 8000);
+</script>
+
+</body>
+</html>
+
+
